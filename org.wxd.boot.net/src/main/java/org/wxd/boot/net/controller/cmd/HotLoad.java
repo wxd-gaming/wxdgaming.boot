@@ -1,0 +1,72 @@
+package org.wxd.boot.net.controller.cmd;
+
+import org.wxd.agent.AgentService;
+import org.wxd.agent.LocalShell;
+import org.wxd.agent.io.FileUtil;
+import org.wxd.agent.io.FileWriteUtil;
+import org.wxd.agent.system.Base64Util;
+import org.wxd.agent.zip.ZipUtil;
+import org.wxd.boot.lang.RunResult;
+import org.wxd.boot.net.controller.ann.TextMapping;
+import org.wxd.boot.net.web.hs.HttpSession;
+import org.wxd.boot.str.json.FastJsonUtil;
+
+import java.io.File;
+import java.util.Map;
+
+/**
+ * 热更新
+ *
+ * @author: Troy.Chen(無心道, 15388152619)
+ * @version: 2021-05-21 19:07
+ **/
+public interface HotLoad {
+
+    final String sourceDir = "bin/hot_class";
+
+    @TextMapping(remarks = "停止进程")
+    default void stop(HttpSession httpSession) throws Exception {
+        httpSession.getResponseContent().append(RunResult.ok().setData("停止进程中 等待 30 秒"));
+        httpSession.response();
+        LocalShell.exec(
+                new File(System.getProperty("user.dir")),
+                "sudo java -cp \"jshell.zip\" jshell.JarShell stop &"
+        );
+    }
+
+    @TextMapping(remarks = "重启程序")
+    default void restart(HttpSession httpSession) throws Exception {
+        httpSession.getResponseContent().append(RunResult.ok().setData("重启成功 等待 30 秒"));
+        httpSession.response();
+        LocalShell.exec(
+                new File(System.getProperty("user.dir")),
+                "sudo java -cp \"jshell.zip\" jshell.JarShell restart &"
+        );
+    }
+
+    /**
+     * tmp_hot_class
+     * 加载临时热更替文件
+     */
+    @TextMapping(remarks = "热更代码")
+    default RunResult hotLoadClass(HttpSession httpSession) throws Throwable {
+        String codebase64 = httpSession.getReqParams().getString("codebase64");
+        byte[] decode = Base64Util.decode2Byte(codebase64);
+        String javaClasses = ZipUtil.unzip2String(decode);
+
+        httpSession.getReqParams().remove("codebase64");
+
+        Map<String, byte[]> stringHashMap = FastJsonUtil.parseMap(javaClasses, String.class, byte[].class);
+
+        FileWriteUtil.writeClassFile(sourceDir, stringHashMap);
+        String hotClass = hotClass(httpSession);
+        FileUtil.del(sourceDir);
+        return RunResult.ok().setData(hotClass);
+    }
+
+    @TextMapping
+    default String hotClass(HttpSession httpSession) throws Throwable {
+        return AgentService.agentClass(sourceDir);
+    }
+
+}

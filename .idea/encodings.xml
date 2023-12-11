@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.agent/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.agent/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.mongodb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.mongodb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.redis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.redis/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.sql.mysql/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.sql.mysql/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.sql.sqlite/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.sql.sqlite/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.sql/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis.sql/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.batis/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.net/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.net/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.start/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.start/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.starter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot.starter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/org.wxd.boot/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

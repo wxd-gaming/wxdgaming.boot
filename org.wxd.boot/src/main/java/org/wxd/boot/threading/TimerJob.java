@@ -1,0 +1,71 @@
+package org.wxd.boot.threading;
+
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.wxd.boot.timer.MyClock;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 定时器任务
+ *
+ * @author: Troy.Chen(無心道, 15388152619)
+ * @version: 2023-11-10 23:04
+ **/
+@Setter
+@Accessors(chain = true)
+public final class TimerJob implements Job {
+
+    IExecutorServices IExecutorServices;
+    String queueName;
+    ExecutorServiceJob executorServiceJob;
+
+    long initialDelay;
+    long delay;
+    long lastExecTime;
+    TimeUnit unit;
+    int execCount;
+    int maxExecCount;
+
+    protected TimerJob(IExecutorServices IExecutorServices,
+                       String queueName,
+                       ExecutorServiceJob executorServiceJob,
+                       long initialDelay, long delay, TimeUnit unit,
+                       int maxExecCount) {
+        this.IExecutorServices = IExecutorServices;
+        this.queueName = queueName;
+        this.executorServiceJob = executorServiceJob;
+        this.initialDelay = initialDelay;
+        this.delay = delay;
+        this.unit = unit;
+        this.maxExecCount = maxExecCount;
+        resetLastTimer(initialDelay);
+    }
+
+    private void resetLastTimer(long d) {
+        lastExecTime = MyClock.millis() + unit.toMillis(d);
+    }
+
+    protected boolean exec() {
+        if (!executorServiceJob.append.get()) {
+            if (MyClock.millis() >= lastExecTime) {
+                this.IExecutorServices.executeJob(queueName, executorServiceJob);
+                if (maxExecCount >= 0) {
+                    execCount++;
+                    if (execCount >= maxExecCount) {
+                        return true;
+                    }
+                }
+                resetLastTimer(delay);
+            }
+        }
+        return false;
+    }
+
+    /** 取消 */
+    @Override public boolean cancel() {
+        maxExecCount = 0;
+        return true;
+    }
+
+}
