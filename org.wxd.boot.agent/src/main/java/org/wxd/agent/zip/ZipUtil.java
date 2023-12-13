@@ -36,7 +36,7 @@ public class ZipUtil {
      * @param str 压缩前的文本
      * @return 返回压缩后的文本
      */
-    public static String zip(String str) throws IOException {
+    public static String zip(String str) {
         if (str == null) {
             return null;
         }

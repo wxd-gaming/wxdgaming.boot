@@ -63,4 +63,10 @@
         <dbUser></dbUser>
         <dbPwd></dbPwd>
     </mogodb>
+    <redis>
+        <name>default</name>
+        <dbHost>192.168.50.73</dbHost>
+        <dbPort>6379</dbPort>
+        <dbPwd>test</dbPwd>
+    </redis>
 </bootConfig>
