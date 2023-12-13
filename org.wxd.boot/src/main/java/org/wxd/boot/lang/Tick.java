@@ -34,7 +34,7 @@ public class Tick extends ObjectBase {
         this.heart = heart;
         this.tick = timeUnit.toMillis(duration);
         this.last = MyClock.millis();
-        if (duration < heart)
+        if (heart > this.tick)
             throw new RuntimeException("自循环心跳 heart=" + heart + " 小于间隔执行 tick=" + this.tick);
     }
 

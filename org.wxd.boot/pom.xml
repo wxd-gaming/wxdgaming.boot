@@ -11,11 +11,6 @@
 
     <artifactId>org.wxd.boot</artifactId>
 
-
-    <properties>
-        <protobuf-java.version>3.23.4</protobuf-java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.wxd</groupId>

@@ -43,7 +43,7 @@ public class ActionTextController {
                         continue;
                     }
                     Object instance = iocInjector.getInstance(aClass);
-                    bindCmd(textController.url(), instance, listEntry.getValue());
+                    bindCmd(textController.serviceName(), textController.url(), instance, listEntry.getValue());
                 }
             }
         }
@@ -56,10 +56,10 @@ public class ActionTextController {
         Collection<Method> methodList = MethodUtil.readAllMethod(instance.getClass()).values();
         Collection<TextController> controllerList = AnnUtil.annStream(instance.getClass(), TextController.class).toList();
         if (controllerList.isEmpty()) {
-            bindCmd("", instance.getClass(), methodList);
+            bindCmd("", "", instance.getClass(), methodList);
         } else {
             for (TextController textController : controllerList) {
-                bindCmd(textController.url(), instance.getClass(), methodList);
+                bindCmd(textController.serviceName(), textController.url(), instance.getClass(), methodList);
             }
         }
     }
@@ -71,7 +71,7 @@ public class ActionTextController {
      * @param instance   绑定对象
      * @param methodList 函数查找
      */
-    static void bindCmd(String parentUrl, Object instance, Collection<Method> methodList) {
+    static void bindCmd(String serviceName, String parentUrl, Object instance, Collection<Method> methodList) {
         try (StreamBuilder stringBuilder = new StreamBuilder(1024)) {
             String url = parentUrl;
             if (StringUtil.emptyOrNull(url)) {
@@ -125,7 +125,7 @@ public class ActionTextController {
                         cmdUrl += mappingName.toLowerCase().trim();
                     }
 
-                    MappingFactory.putText(cmdUrl, instance, method);
+                    MappingFactory.putText(serviceName, cmdUrl, instance, method);
 
                     if (log.isDebugEnabled()) {
                         String remarks = mapping.remarks();

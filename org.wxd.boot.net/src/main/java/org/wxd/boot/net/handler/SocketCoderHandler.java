@@ -28,6 +28,8 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
     Logger log = LoggerFactory.getLogger(SocketCoderHandler.class);
 
+    String getName();
+
     /**
      * 如果没有找到监听，调用
      */
@@ -50,7 +52,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param messageBytes 消息报文
      */
     default void onMessage(S session, int messageId, byte[] messageBytes) {
-        ProtoMappingRecord mapping = MappingFactory.PROTO_MAP.get(messageId);
+        ProtoMappingRecord mapping = MappingFactory.protoMappingRecord(getName(), messageId);
         if (mapping != null) {
             try {
                 Message message = MessagePackage.parseMessage(messageId, messageBytes);
@@ -80,8 +82,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param message   消息
      */
     default void executor(S session, int messageId, Message message) {
-        ProtoMappingRecord mapping = MappingFactory.PROTO_MAP.get(messageId);
-
+        ProtoMappingRecord mapping = MappingFactory.protoMappingRecord(getName(), messageId);
         MessageController controller = new MessageController(mapping, session, message);
 
         if (msgExecutorBefore() != null) {

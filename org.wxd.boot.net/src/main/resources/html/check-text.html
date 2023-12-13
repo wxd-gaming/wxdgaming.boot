@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文本对比起</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <style>
+        html, body, table, textarea, button, div {padding: 0;margin: 0;box-sizing: border-box;}
+
+        html, body {height: 100%;width: 100%;overflow: hidden;}
+
+        table {height: 100%;width: 100%;}
+
+        td {height: 100%;}
+
+        /* 滚动条宽度 */
+        ::-webkit-scrollbar { width: 8px;height: 8px; background-color: transparent; }
+
+        /* 滚动条颜色 */
+        ::-webkit-scrollbar-thumb { background-color: #A8A8A8; }
+
+        label {display: block;clear: both;}
+
+    </style>
+    <script>
+
+        function con() {
+            var t1s = document.getElementById("t1").value.split(/[\n]/);
+            var t2s = document.getElementById("t2").value.split(/[\n]/);
+            let fori = t1s.length;
+            if (t2s.length > fori)
+                fori = t2s.length;
+            console.log(fori);
+            for (let i = 0; i < fori; i++) {
+
+                let l1 = null;
+                let l2 = null;
+
+                if (i < t1s.length) {
+                    l1 = t1s[i];
+                }
+
+                if (i < t2s.length) {
+                    l2 = t2s[i];
+                }
+
+                let l1ui = `
+                <lable>${l1}</lable>
+                `;
+                $("#d1").append(l1ui);
+            }
+
+        }
+
+    </script>
+</head>
+<body>
+<div style="position: relative;height: calc(50% - 50px);width: 100%;margin: 2px;">
+    <div style="width: 50%;height: 100%;float: left;">
+        <textarea id="t1" style="width: 100%;height: 100%;"></textarea>
+    </div>
+    <div style="width: 50%;height: 100%;float: left;">
+        <textarea id="t2" style="width: 100%;height: 100%;"></textarea>
+    </div>
+</div>
+<div style="height: 48px;width: 100%;">
+    <button onclick="con();">对比</button>
+</div>
+<div style="position: relative;height: calc(50%);width: 100%;overflow-y: scroll;margin: 2px;">
+    <div id="d1" style="width: 50%;height: 100%;float: left;border: #148ea4 1px solid;">
+
+    </div>
+    <div id="d2" style="width: 50%;height: 100%;float: left;border: #148ea4 1px solid;">
+
+    </div>
+</div>
+</body>
+</html>

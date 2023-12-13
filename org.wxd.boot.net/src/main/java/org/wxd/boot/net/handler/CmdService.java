@@ -73,7 +73,7 @@ public interface CmdService extends ITokenCache {
         }
 
         final String methodNameLowerCase = methodName.toLowerCase().trim();
-        TextMappingRecord mappingRecord = MappingFactory.TEXT_MAP.get(methodNameLowerCase);
+        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
         if (mappingRecord == null) {
             if ((HttpContentType.Json == httpContentType || HttpContentType.XJson == httpContentType)) {
                 out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));

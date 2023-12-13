@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>拖拽块</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script charset="utf-8" type="text/javascript" src="/js/com.wxd.js"></script>
+
+    <style>
+        html, body {width: 100%;height: 100%;overflow: hidden;}
+
+        .d {}
+
+        .d .title {position: absolute;left: 15px;top: 7px; right: 30px;border-radius: 2px;color: white;box-sizing: border-box;
+            -webkit-user-select: none; /* webkit浏览器 */ -moz-user-select: none; /* Firefox */ -ms-user-select: none; /* IE10+ */ user-select: none; /* 标准语法 */}
+
+        .d .close {position: absolute;right: 10px;top: 7px;border-radius: 2px;color: white;background-color: #333333;width: 20px;padding-left: 5px;box-sizing: border-box;
+            -webkit-user-select: none; /* webkit浏览器 */ -moz-user-select: none; /* Firefox */ -ms-user-select: none; /* IE10+ */ user-select: none; /* 标准语法 */}
+    </style>
+    <script>
+
+        function draggable(mbox_title) {
+            $(mbox_title).mousedown(function (e) {
+                //鼠标按下
+                var old_mouse = e || window.event;
+                //原鼠标坐标
+                var old_m_x = old_mouse.clientX;
+                var old_m_y = old_mouse.clientY;
+                //原div坐标
+                var parent_x = $(this).parent().offset().left;
+                var parent_y = $(this).parent().offset().top;
+
+                $(document.body).mousemove(function (e) {
+                    $(mbox_title).parent().css("transform", "translate(0,0)");
+                    //鼠标拖动时，新鼠标坐标
+                    let new_mouse = e || window.event;
+                    let new_m_x = new_mouse.clientX;
+                    let new_m_y = new_mouse.clientY;
+                    //新div坐标
+                    let x = parent_x + (new_m_x - old_m_x);
+                    let y = parent_y + (new_m_y - old_m_y);
+                    //改变面板位置
+                    $(mbox_title).parent().css("left", x + "px");
+                    $(mbox_title).parent().css("top", y + "px");
+                }).mouseup(function () {
+                    //鼠标提起后，解绑鼠标移动事件
+                    $(document.body).unbind("mousemove");
+                });
+            }).mouseup(function () {
+                //鼠标提起后，解绑鼠标移动事件
+                $(document.body).unbind("mousemove");
+            });
+
+        }
+
+        $(() => {
+            $(".d .title").each(function (i, mbox) {
+                draggable(mbox);
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div style="position: relative;width: 100%;height:100%; box-sizing: border-box;padding: 0;margin: 0;">
+
+    <div class="d" style="position: absolute;left: 100px;top: 50%;width: 300px;height: 200px;background:#148ea4;border-radius: 5px 5px 0px 0px;">
+        <strong class="title">标题</strong>
+        <span class="close">X</span>
+        <div style="position: absolute;top: 35px;left: 2px;bottom: 2px;right: 2px;background-color: #333;">
+
+        </div>
+    </div>
+
+    <div class="d" style="position: absolute;left: 350px;top: 50%;transform: translate(-50%,-50%);width: 300px;height: 200px;background:#f66e00;border-radius: 5px 5px 0px 0px;">
+        <strong class="title">标题</strong>
+        <span class="close">X</span>
+        <div style="position: absolute;top: 35px;left: 2px;bottom: 2px;right: 2px;background-color: #333;">
+
+        </div>
+    </div>
+
+    <div class="d" style="position: absolute;left: 700px;top: 50%;transform: translate(-50%,-50%);width: 300px;height: 200px;background:#8dc100;border-radius: 5px 5px 0px 0px;">
+        <strong class="title">标题</strong>
+        <span class="close">X</span>
+        <div style="position: absolute;top: 35px;left: 2px;bottom: 2px;right: 2px;background-color: #333;">
+
+        </div>
+    </div>
+
+    <div class="d" style="position: absolute;left: 1030px;top: 50%;transform: translate(-50%,-50%);width: 300px;height: 200px;background:#f2bc00;border-radius: 5px 5px 0px 0px;">
+        <strong class="title">标题</strong>
+        <span class="close">X</span>
+        <div style="position: absolute;top: 35px;left: 2px;bottom: 2px;right: 2px;background-color: #333;">
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

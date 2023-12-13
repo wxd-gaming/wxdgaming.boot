@@ -67,6 +67,7 @@ public interface ByteBufWrapper {
         }
 
         byteBuf.writeInt(messageId);
+        /*选择压缩*/
         if (messageBytes != null && messageBytes.length > 0) {
             byteBuf.writeBytes(messageBytes);
         }

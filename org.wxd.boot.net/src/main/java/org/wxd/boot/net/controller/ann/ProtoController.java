@@ -18,6 +18,7 @@ public @interface ProtoController {
     /** 自动注册的时候忽略 */
     boolean alligatorAutoRegister() default false;
 
+    /** 服务名称 */
     String service() default "";
 
 }

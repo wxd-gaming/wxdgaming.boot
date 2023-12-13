@@ -1,0 +1,111 @@
+html, body {width: 100%;height: 100%;overflow: hidden;font-size: 12px;}
+
+html, body, div, table, thead, tbody, tr, th, td, a, object, iframe, h1, h3, ul, li, dt, dl, label, span, strong {
+    padding: 0px;margin: 0px;border: 0;box-sizing: border-box;border-collapse: collapse;border-spacing: 0px;
+    }
+
+div.body {width: 100%;height: 100%;overflow: auto;}
+
+a { color: #969696; }
+
+a:hover, a:active { color: #33be85; }
+
+/* 滚动条宽度 */
+::-webkit-scrollbar { width: 8px;height: 8px; background-color: transparent; }
+
+/* 滚动条颜色 */
+::-webkit-scrollbar-thumb { background-color: #A8A8A8; }
+
+.ban_select { /*禁止选择*/-webkit-user-select: none; /* webkit浏览器 */ -moz-user-select: none; /* Firefox */ -ms-user-select: none; /* IE10+ */ user-select: none; /* 标准语法 */}
+
+.span_close {border-radius: 65px;background-color: rgba(245, 95, 28, 0.64);position: absolute;font-size: 2px;width: 20px;height: 20px;box-sizing: border-box;padding-left: 6px;padding-top: 2px;cursor: pointer;top: 8px;right: 12px;}
+
+.full_loading_bg {display: block;position: absolute;left: 0px;top: 0px;right: 0px;bottom: 0px;z-index: 9999;background: rgba(69, 68, 68, 0.2);}
+
+.full_loading_bg img {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);border: white 3px solid;border-radius: 8px;background-color: rgba(89, 89, 89, 0.44);box-shadow: 0 0 10px 5px rgba(110, 54, 54, 0.2); /*毛玻璃*/}
+
+.message_box_bg { position: absolute;display: block; width: 100%;height: 100%;box-sizing: border-box;left: 0px;top: 0px;background-color: rgba(59, 59, 59, 0.17);z-index: 9999;padding: 60px; }
+
+.message_box_bg .message_box {width: 100%;height: 100%; border-radius: 15px;border: #95B8E7 4px solid;color: rgba(0, 0, 0, 1);background: white;padding: 10px;box-shadow: 0 0 10px 5px rgba(110, 54, 54, 0.2); /*毛玻璃*/}
+
+.message_box_bg strong {position: absolute;bottom: 20px;left: 50%; transform: translate(-50%, 0);}
+
+#message_console_bg { position: absolute;display: block; width: 100%;height: 100%;box-sizing: border-box;left: 0px;top: 0px;background-color: rgba(59, 59, 59, 0.17);z-index: 9999;padding: 60px; }
+
+#message_console_bg .message_console {width: 100%;height: 100%; border-radius: 4px; /*圆角*/ border: #2a2828 1px groove; background-color: rgba(42, 40, 40, 0.9);color: white;padding: 10px;box-shadow: 0 0 10px 5px rgba(110, 54, 54, 0.2); /*毛玻璃*/}
+
+#message_console_bg strong {position: absolute;bottom: 20px;left: 50%; transform: translate(-50%, 0);}
+
+.message_alert_bg { display: none; position: absolute;background: rgba(69, 68, 68, 0.2); width: 100%;height: 100%;left: 0px;top: 0px; z-index: 999999; }
+
+.message_alert_bg .message_alert_box {display: block;position: absolute; padding: 10px 3px 3px;
+    left: 50%;top: 28%; transform: translate(-50%, 0);max-width: 55%;
+    border-radius: 6px 6px 3px 3px;border: #95B8E7 1px solid;color: rgba(0, 0, 0, 1);background: linear-gradient(to bottom, #EFF5FF 0, #E0ECFF 20%);
+    text-align: left;vertical-align: center; word-wrap: break-word;white-space: normal;box-shadow: 0 0 20px 10px rgba(110, 54, 54, 0.2); /*毛玻璃*/
+    }
+
+.message_alert_bg .message_alert_box strong {display: block;width: calc(100% - 20px);height:20px;color: #0E2D5F;}
+
+.message_alert_bg .message_alert_box div button {border-radius: 4px;border: 1px solid #bbb;padding: 5px 15px;margin-right: 15px;color: #444;cursor: pointer;}
+
+.message_alert_bg .message_alert_box .message_alert_c {
+    display: block;padding: 8px 8px 60px;margin-top: 10px;
+    border: #95B8E7 1px solid;color: #000000;background-color: #ffffff;
+    min-width: 400px; min-height: 140px; overflow: hidden;text-align: left;vertical-align: center;
+    word-wrap: break-word;white-space: normal;
+    }
+
+.message_alert_bg .message_alert_box .message_alert_c .message_alert_c_1 {display: block;overflow: auto;}
+
+.message_alert_bg .message_alert_box .message_alert_c .message_alert_c_b { position: absolute;bottom: 15px;right: 30px; }
+
+.message_notice_bg {
+    display: block; position: absolute;padding-top: 100px;left: 50%;top: 0px;
+    transform: translate(-50%, 0);min-width: 1px;
+    z-index: 9999999;text-align: center;max-width: 55%;
+    }
+
+.message_notice_bg .message_notice_box {
+    display: block;position: relative; padding: 3px;margin-top: 5px;box-shadow: 0 0 10px 5px rgba(110, 54, 54, 0.2); /*毛玻璃*/
+    border-radius: 4px;border: #95B8E7 1px solid;color: rgba(0, 0, 0, 1);background: linear-gradient(to bottom, #EFF5FF 0, #E0ECFF 20%);
+    }
+
+.message_notice_bg .message_notice_c {
+    display: block;padding: 8px;
+    border: #95B8E7 1px solid;background-color: #ffffff;min-width: 60px; min-height: 40px;
+    overflow: auto;text-align: left;vertical-align: center;
+    word-wrap: break-word;white-space: normal;
+    }
+
+.message_title_tips {
+    display: none;padding: 12px;
+    border-radius: 15px;border: #95B8E7 4px solid;color: rgba(0, 0, 0, 1);background: white;
+    position: absolute;min-width: 120px; max-width: 45%;min-height: 40px;
+    overflow: hidden;text-align: left;vertical-align: center;font-weight: bold;
+    z-index: 99999;word-wrap: break-word;white-space: normal;
+    }
+
+
+.upload_file_bg { display: block; position: absolute;background: rgba(69, 68, 68, 0.2); width: 100%;height: 100%;left: 0px;top: 0px; z-index: 9099; }
+
+.upload_file_bg .upload_file_box {
+    display: block;position: absolute; padding: 10px 3px 3px;
+    left: 50%;top: 28%; transform: translate(-50%, 0);
+    border-radius: 6px 6px 3px 3px;border: #95B8E7 1px solid;color: rgba(0, 0, 0, 1);background: linear-gradient(to bottom, #EFF5FF 0, #E0ECFF 20%);
+    text-align: left;vertical-align: center; word-wrap: break-word;white-space: normal;box-shadow: 0 0 20px 10px rgba(110, 54, 54, 0.2); /*毛玻璃*/
+    }
+
+.upload_file_bg .upload_file_box strong {padding-left: 3px;color: #0E2D5F;}
+
+.upload_file_bg .upload_file_box div button {border-radius: 4px;border: 1px solid #bbb;padding: 5px 15px;margin-right: 15px;color: #444;cursor: pointer;}
+
+.upload_file_bg .upload_file_c {
+    display: block;padding: 8px 8px 60px;margin-top: 10px;
+    border: #95B8E7 1px solid;color: #000000;background-color: #ffffff;
+    width: 530px; overflow: hidden;text-align: left;vertical-align: center;
+    word-wrap: break-word;white-space: normal;
+    }
+
+.upload_file_bg .upload_file_c .upload_file_c_1 {display: block;overflow: auto;}
+
+.upload_file_bg .upload_file_c .upload_file_c_b { position: absolute;bottom: 15px;right: 30px; }

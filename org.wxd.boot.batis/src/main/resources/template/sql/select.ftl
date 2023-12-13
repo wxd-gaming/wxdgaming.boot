@@ -1,0 +1,1 @@
+select <#list columns as column><#if column_index gt 0>,</#if>`${column}`</#list> from `${tableName}`

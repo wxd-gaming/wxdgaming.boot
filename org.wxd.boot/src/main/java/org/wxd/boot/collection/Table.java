@@ -41,27 +41,6 @@ public class Table<K1, K2, V> implements Serializable, Data2Json {
         }
     }
 
-    /** 所有的value */
-    public Collection<V> allValues() {
-        Collection<V> collection = new ArrayList<>();
-        for (Map<K2, V> value : nodes.values()) {
-            collection.addAll(value.values());
-        }
-        return collection;
-    }
-
-    public Set<Map.Entry<K1, HashMap<K2, V>>> entrySet() {
-        return this.nodes.entrySet();
-    }
-
-    public Set<K1> keySet() {
-        return this.nodes.keySet();
-    }
-
-    public Collection<HashMap<K2, V>> values() {
-        return this.nodes.values();
-    }
-
     public Table<K1, K2, V> putAll(K1 k1, Map<K2, V> m) {
         row(k1).putAll(m);
         return this;
@@ -83,6 +62,27 @@ public class Table<K1, K2, V> implements Serializable, Data2Json {
 
     public V computeIfAbsent(K1 k1, K2 k2, Function<? super K2, ? extends V> mappingFunction) {
         return row(k1).computeIfAbsent(k2, mappingFunction);
+    }
+
+    /** 所有的value */
+    public Collection<V> allValues() {
+        Collection<V> collection = new ArrayList<>();
+        for (Map<K2, V> value : nodes.values()) {
+            collection.addAll(value.values());
+        }
+        return collection;
+    }
+
+    public Set<Map.Entry<K1, HashMap<K2, V>>> entrySet() {
+        return this.nodes.entrySet();
+    }
+
+    public Set<K1> keySet() {
+        return this.nodes.keySet();
+    }
+
+    public Collection<HashMap<K2, V>> values() {
+        return this.nodes.values();
     }
 
     /** 循环 */
@@ -109,20 +109,20 @@ public class Table<K1, K2, V> implements Serializable, Data2Json {
         return null;
     }
 
-    public Optional<Map<K2, V>> optional(K1 k) {
+    public Optional<Map<K2, V>> opt(K1 k) {
         return Optional.ofNullable(nodes.get(k));
     }
 
-    public Optional<V> optional(K1 k1, K2 k2) {
-        return optional(k1).map(v -> v.get(k2));
+    public Optional<V> opt(K1 k1, K2 k2) {
+        return opt(k1).map(v -> v.get(k2));
     }
 
     public Map<K2, V> get(K1 key) {
-        return optional(key).orElse(EMPTY_MAP);
+        return opt(key).orElse(EMPTY_MAP);
     }
 
     public V get(K1 k1, K2 k2) {
-        return optional(k1, k2).orElse(null);
+        return opt(k1, k2).orElse(null);
     }
 
     public Map<K2, V> remove(K1 k1) {

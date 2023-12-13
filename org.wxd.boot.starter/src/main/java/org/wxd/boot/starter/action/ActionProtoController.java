@@ -44,7 +44,7 @@ public class ActionProtoController {
                         continue;
                     }
                     Object instance = iocInjector.getInstance(aClass);
-                    register(instance, listEntry.getValue());
+                    register(textController.service(), instance, listEntry.getValue());
                 }
             }
         }
@@ -52,10 +52,22 @@ public class ActionProtoController {
 
     public static void register(Object instance) {
         Collection<Method> methodList = MethodUtil.readAllMethod(instance.getClass()).values();
-        register(instance, methodList);
+        Class<?> aClass = instance.getClass();
+        Collection<ProtoController> controllerList = AnnUtil.annStream(aClass, ProtoController.class).toList();
+        if (controllerList.isEmpty()) {
+            log.debug("类：{} 没有标记 {} 已经忽略", aClass.getName(), ProtoController.class);
+        } else {
+            for (ProtoController textController : controllerList) {
+                if (textController.alligatorAutoRegister()) {
+                    log.debug("自动注册 {} 过滤", aClass);
+                    continue;
+                }
+                register(textController.service(), instance, methodList);
+            }
+        }
     }
 
-    static void register(Object instance, Collection<Method> methodList) {
+    static void register(String serviceName, Object instance, Collection<Method> methodList) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("\nprotobuf controller").append(" ").append(" \n")
@@ -79,7 +91,7 @@ public class ActionProtoController {
 
             int messageId = MessagePackage.getMessageId(messageClass);
 
-            MappingFactory.putProto(messageId, instance, method);
+            MappingFactory.putProto(serviceName, messageId, instance, method);
             /**消息的中午注解隐射*/
             MessagePackage.MsgName2RemarkMap.put(messageClass.getName(), protoMapping.remarks());
             if (log.isDebugEnabled()) {

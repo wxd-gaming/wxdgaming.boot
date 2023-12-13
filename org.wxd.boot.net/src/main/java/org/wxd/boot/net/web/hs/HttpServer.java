@@ -304,7 +304,7 @@ public class HttpServer extends NioServer<HttpSession> {
         }
 
         final String methodNameLowerCase = methodName.toLowerCase().trim();
-        TextMappingRecord mappingRecord = MappingFactory.TEXT_MAP.get(methodNameLowerCase);
+        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
         if (mappingRecord == null) {
             if ((httpContentType == HttpContentType.Json || httpContentType == HttpContentType.XJson)) {
                 out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));

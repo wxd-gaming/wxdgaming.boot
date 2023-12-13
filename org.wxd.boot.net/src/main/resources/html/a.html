@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <script charset="utf-8" type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/com.wxd.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/com.wxd.css">
+    <style>
+        html, body, div, span, strong {box-sizing: border-box;padding: 0;margin: 0;border: 0;}
+
+        html, body {width: 100%;height: 100%; overflow: hidden;box-sizing: border-box;padding: 0;margin: 0;border: 0;}
+    </style>
+    <script>
+        window.onload = function () {
+            wxd.message.tips_init_bind();
+            /*根据当前回话缓存数据，浏览器页面关闭就失效*/
+            let item = localStorage.getItem("page");
+            if (undefined === item || item == null || "" == null) return;
+            document.getElementById('frame').src = item;
+            /*本地永久有效的数据*/
+            localStorage.setItem('page', item);
+        };
+
+        var map = new wxd.Map();
+
+        var wsClient = new wxd.netty.WSClient();
+        wsClient.onRead = function (msg) {};
+
+
+    </script>
+</head>
+<body>
+<form target="_blank"></form>
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+<br>
+<button onclick="localStorage.setItem('page','b.html');document.getElementById('frame').src='b.html'" title="dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd">b
+</button>
+<button onclick="localStorage.setItem('page','c.html');document.getElementById('frame').src='c.html'">c</button>
+<button onclick="wxd.message.notice('1')">普通提示</button>
+<button onclick="wxd.message.notice('1444444444444444444444444444',true)" tips="true">错误提示</button>
+<button onclick="$('.upload_file_bg').show();" tips="true">上传文件</button>
+<button onclick="wxd.netty.download('http://test-center.xiaw.net:18800/sjcq/clientFtp?path=%2Fdata%2Fgame%2Fd%2Fcenter-server%2Ftarget%2Fclientlog%2F2023-04-23%2Fweb_4399_2065001202334_S48_web.log&pageSize=50');" tips="true">下载</button>
+<button onclick="wxd.copy('https://www.baidu.com');" tips="true">拷贝</button>
+<button onclick="wxd.message.alert('ddddddddddddddddddd')">弹窗
+</button>
+<button onclick="wxd.message.alert('ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd')">弹窗2
+</button>
+<iframe id="frame" src="" style="border: 0px;"></iframe>
+<!--<div class="message_notice_box">-->
+<!--    <div class="message_notice_c_bg">-->
+<!--        <div class="message_notice_c">d</div>-->
+<!--    </div>-->
+<!--    <div class="message_notice_c_bg">-->
+<!--        <div class="message_notice_c">d</div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="upload_file_bg">
+    <div class="upload_file_box">
+        <strong>文件上传</strong>
+        <div class="upload_file_c">
+            <div class="upload_file_c_1">
+                <br>
+                <input id="upfile" type="file" style="width: 400px;" value="上传配置" multiple onchange="wxd.message.notice('1')"/>
+                <br>
+                <br>
+                <span>xxx.txt</span>
+                <span>xxx.txt</span>
+                <span>xxx.txt</span>
+                <span>xxx.txt</span>
+                <span>xxx.txt</span>
+                <br>
+                <progress id="progressBar" value="0" max="100" style="width: 500px;"></progress>
+            </div>
+            <div class="upload_file_c_b">
+                <button onclick="message.alert_ok()">${ok}</button>
+                <button onclick="message.alert_ok()">${ok}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

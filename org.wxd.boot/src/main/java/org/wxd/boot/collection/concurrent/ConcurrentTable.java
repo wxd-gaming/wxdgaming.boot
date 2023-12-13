@@ -42,29 +42,6 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
         }
     }
 
-    /** 所有的value */
-    public Collection<V> allValues() {
-        Collection<V> collection = new ArrayList<>();
-        for (Map<K2, V> value : nodes.values()) {
-            collection.addAll(value.values());
-        }
-        return collection;
-    }
-
-    public Set<Map.Entry<K1, ConcurrentHashMap<K2, V>>> entrySet() {
-        return this.nodes.entrySet();
-    }
-
-    public Set<K1> keySet() {
-        final Set<K1> keySet = this.nodes.keySet();
-        return keySet;
-    }
-
-    public Collection<ConcurrentHashMap<K2, V>> values() {
-        final Collection<ConcurrentHashMap<K2, V>> values = this.nodes.values();
-        return values;
-    }
-
     public ConcurrentTable<K1, K2, V> putAll(K1 k1, Map<K2, V> m) {
         row(k1).putAll(m);
         return this;
@@ -84,12 +61,29 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
         return nodes.computeIfAbsent(k1, k -> new ConcurrentHashMap<>());
     }
 
-    public ConcurrentHashMap<K2, V> computeIfAbsent(K1 k1, Function<K1, ConcurrentHashMap<K2, V>> mappingFunction) {
-        return nodes.computeIfAbsent(k1, mappingFunction);
+    public V computeIfAbsent(K1 k1, K2 k2, Function<? super K2, ? extends V> mappingFunction) {
+        return row(k1).computeIfAbsent(k2, mappingFunction);
     }
 
-    public V computeIfAbsent(K1 k1, K2 k2, Function<K2, V> mappingFunction) {
-        return row(k1).computeIfAbsent(k2, mappingFunction);
+    /** 所有的value */
+    public Collection<V> allValues() {
+        Collection<V> collection = new ArrayList<>();
+        for (Map<K2, V> value : nodes.values()) {
+            collection.addAll(value.values());
+        }
+        return collection;
+    }
+
+    public Set<Map.Entry<K1, ConcurrentHashMap<K2, V>>> entrySet() {
+        return this.nodes.entrySet();
+    }
+
+    public Set<K1> keySet() {
+        return this.nodes.keySet();
+    }
+
+    public Collection<ConcurrentHashMap<K2, V>> values() {
+        return this.nodes.values();
     }
 
     /** 循环 */
@@ -116,19 +110,20 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
         return null;
     }
 
+    public Optional<Map<K2, V>> opt(K1 k) {
+        return Optional.ofNullable(nodes.get(k));
+    }
+
+    public Optional<V> opt(K1 k1, K2 k2) {
+        return opt(k1).map(v -> v.get(k2));
+    }
+
     public Map<K2, V> get(K1 key) {
-        Map<K2, V> k2VHashMap = nodes.get(key);
-        if (k2VHashMap != null) {
-            return k2VHashMap;
-        } else {
-            return EMPTY_MAP;
-        }
+        return opt(key).orElse(EMPTY_MAP);
     }
 
     public V get(K1 k1, K2 k2) {
-        return Optional.ofNullable(nodes.get(k1))
-                .map(v -> v.get(k2))
-                .orElse(null);
+        return opt(k1, k2).orElse(null);
     }
 
     public Map<K2, V> remove(K1 k1) {

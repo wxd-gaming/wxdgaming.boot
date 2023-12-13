@@ -77,6 +77,8 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
             if (len > 0 && tmpByteBuf.readableBytes() >= len) {
                 /*读取消息ID*/
                 int messageId = tmpByteBuf.readInt();
+                /*选择压缩*/
+                // byte isZip = tmpByteBuf.readByte();
                 byte[] messageBytes = new byte[len - 4];
                 /*读取报文类容*/
                 tmpByteBuf.readBytes(messageBytes);

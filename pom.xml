@@ -20,6 +20,7 @@
         <module>org.wxd.boot.httpclient</module>
         <module>org.wxd.boot.net</module>
         <module>org.wxd.boot.starter</module>
+        <module>org.wxd.boot.jscript</module>
     </modules>
 
     <properties>
@@ -31,6 +32,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
+        <protobuf-java.version>3.23.4</protobuf-java.version>
     </properties>
 
     <repositories>
@@ -102,11 +104,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.20.0</version>
         </dependency>
         <!--日志框架-->
     </dependencies>

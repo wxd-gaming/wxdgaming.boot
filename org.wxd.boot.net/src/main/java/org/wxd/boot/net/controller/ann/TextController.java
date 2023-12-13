@@ -1,8 +1,6 @@
 package org.wxd.boot.net.controller.ann;
 
 
-import org.wxd.boot.net.handler.CmdService;
-
 import java.lang.annotation.*;
 
 /**
@@ -21,8 +19,8 @@ public @interface TextController {
     /** 自动注册的时候忽略 */
     boolean alligatorAutoRegister() default false;
 
-    /** 实现了 {@link CmdService } 接口的类 */
-    String service() default "";
+    /** 服务名称 */
+    String serviceName() default "";
 
     /** url 会被 {@link TextMapping}.url() */
     String url() default "";
