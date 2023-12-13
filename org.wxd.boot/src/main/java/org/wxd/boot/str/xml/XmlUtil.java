@@ -44,7 +44,7 @@ public class XmlUtil {
     /**
      * 读取XML文件，加载进相应Object类型
      */
-    public static <T> T fromXml4File(String path, Class<T> type) throws Exception {
+    public static <T> T fromXml4File(String path, Class<T> type) {
         final InputStream inputStream = FileUtil.findInputStream(path);
         return fromXml(inputStream, type);
     }
@@ -52,7 +52,7 @@ public class XmlUtil {
     /**
      * 读取XML文件，加载进相应Object类型
      */
-    public static <T> T fromXml4File(File file, Class<T> type) throws Exception {
+    public static <T> T fromXml4File(File file, Class<T> type) {
         String xmlString = FileReadUtil.readString(file);
         return fromXml(xmlString, type);
     }
@@ -60,8 +60,12 @@ public class XmlUtil {
     /**
      * 读取XML文件，加载进相应Object类型
      */
-    public static <T> T fromXml(InputStream stream, Class<T> type) throws Exception {
-        return serializerThreadLocal().read(type, stream, false);
+    public static <T> T fromXml(InputStream stream, Class<T> type) {
+        try {
+            return serializerThreadLocal().read(type, stream, false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -72,8 +76,12 @@ public class XmlUtil {
      * @param type
      * @return
      */
-    public static <T> T fromXml(String source, Class<T> type) throws Exception {
-        return serializerThreadLocal().read(type, source, false);
+    public static <T> T fromXml(String source, Class<T> type) {
+        try {
+            return serializerThreadLocal().read(type, source, false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -84,9 +92,11 @@ public class XmlUtil {
      * @param type
      * @return
      */
-    public static <T> T fromXml(byte[] source, Class<T> type) throws Exception {
+    public static <T> T fromXml(byte[] source, Class<T> type) {
         try (InputStream inputStream = new ByteArrayInputStream(source)) {
             return serializerThreadLocal().read(type, inputStream, false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

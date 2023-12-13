@@ -2,6 +2,7 @@ package org.wxd.boot.threading;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.system.GlobalUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,7 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
         WxThread currentThread = (WxThread) Thread.currentThread();
         while (!terminating.get()) {
             try {
-                if (shutdowning.get() || Executors.Stopping.get()) {
+                if (shutdowning.get() || GlobalUtil.Shutting.get()) {
                     if (queue.isEmpty()) {
                         break;
                     }

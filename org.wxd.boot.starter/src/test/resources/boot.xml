@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- @author: Troy.Chen(無心道, 15388152619) -->
+<bootConfig>
+    <server>
+        <name>default</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>1700</port>
+        <jks>org_wxd_pkcs12.keystore</jks>
+        <jksPwd>wxd2021</jksPwd>
+    </server>
+    <wsserver>
+        <name>default</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>1800</port>
+        <jks>org_wxd_pkcs12.keystore</jks>
+        <jksPwd>wxd2021</jksPwd>
+        <headers/>
+    </wsserver>
+    <http>
+        <name>default</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>1900</port>
+        <jks>org_wxd_pkcs12.keystore</jks>
+        <jksPwd>wxd2021</jksPwd>
+        <resourcesPath></resourcesPath>
+        <threadCoreSize>100</threadCoreSize>
+        <threadMaxSize>200</threadMaxSize>
+        <headers>
+            <!-- 跨域支持 -->
+            <header key="Access-Control-Allow-Origin" value="*"/>
+            <header key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
+            <header key="Access-Control-Allow-Credentials" value="true"/>
+            <header key="Access-Control-Allow-Headers"
+                    value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
+            <!-- 添加缓存 -->
+            <header key="pragma" value="private"/>
+            <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>
+            <header key="cache-control" value="max-age=36000"/>
+        </headers>
+    </http>
+    <mysql>
+        <name>default</name>
+        <show_sql>true</show_sql>
+        <connectionPool>true</connectionPool>
+        <batchSizeThread>2</batchSizeThread>
+        <dbHost>192.168.50.73</dbHost>
+        <dbPort>3306</dbPort>
+        <dbBase>test3</dbBase>
+        <dbUser>root</dbUser>
+        <dbPwd>test</dbPwd>
+    </mysql>
+    <mogodb>
+        <name>default</name>
+        <show_sql>false</show_sql>
+        <connectionPool>false</connectionPool>
+        <batchSizeThread>2</batchSizeThread>
+        <dbHost>127.0.0.1</dbHost>
+        <dbPort>27017</dbPort>
+        <dbBase>org_wxd_bi</dbBase>
+        <dbUser></dbUser>
+        <dbPwd></dbPwd>
+    </mogodb>
+</bootConfig>

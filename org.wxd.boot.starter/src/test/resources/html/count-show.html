@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留存</title>
+
+    <script charset="utf-8" type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script charset="utf-8" type="text/javascript" src="/js/com.wxd.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/style/table.css"/>
+
+    <style>
+        html, body {display: block;width: 100%;height: 100%;font-size: 12px;overflow: hidden;overflow-x: auto;background: rgba(98, 143, 139, 0.31);}
+
+        html, body, div, table, tr, td {margin: 0px;border: 0px;box-sizing: border-box;}
+
+        a:link {color: #0866b4;}
+
+        a:visited { color: #0866b4;}
+
+    </style>
+
+    <script>
+        function get() {
+            let urlQuery = new wxd.Map().loadSearch();
+            urlQuery.put("content", "1");
+            let path = window.location.protocol + "//" + window.location.host + "" + window.location.pathname;
+            wxd.netty.post(path, urlQuery.toString(),
+                async function (responseText) {
+                    rows = JSON.parse(responseText);
+                    showPage();
+                    colse_loading();
+                },
+                (errorMsg) => {
+                    wxd.message.alert("异常：" + errorMsg);
+                },
+                true, 30000
+            );
+        }
+
+        let pathname = window.location.protocol + "//" + window.location.host + "" + window.location.pathname;
+        let pageIndex = 0;
+        let maxPageIndex = 0;
+        let rows = null;
+
+        async function showPage() {
+
+            $("#liucun tbody:first").html("");
+            $("#ltv tbody:first").html("");
+
+            let pageSize = $('#pageSize option:selected').val();
+            /*读取本地存储，根据个人爱好查看数据*/
+            localStorage.setItem(pathname + "pageSize", pageSize);
+            /*小数向上取整数*/
+            maxPageIndex = Math.ceil(rows.length / pageSize);
+
+            if (pageIndex < 0) pageIndex = 0;
+            if (pageIndex >= maxPageIndex) pageIndex = maxPageIndex - 1;
+            let rowIndex = pageIndex * pageSize;
+            console.log("pageIndex = " + pageIndex + ", maxPageIndex=" + maxPageIndex + ", rowIndex=" + rowIndex);
+
+            $("#page_btn #pageNum").text(pageIndex + 1);
+            $("#page_btn #maxPageNum").text(maxPageIndex);
+            $("#page_btn #maxNum").text(rows.length);
+
+            await delayed(() => {
+                if (rowIndex >= rows.length) return false;
+
+                let row = rows[rowIndex];
+                let number = rowIndex + 1;
+
+                let lc = `
+                        <tr>
+                <td tips="true" style="width: 60px;">${number}</td>
+                <td tips="true" style="width: 80px;">${row.day}</td>
+                <td tips="true">${row.recharge}</td>
+                <td tips="true">${row.register}</td>
+                <td tips="true">${row.login2}</td>
+                <td tips="true">${row.login3}</td>
+                <td tips="true">${row.login4}</td>
+                <td tips="true">${row.login5}</td>
+                <td tips="true">${row.login6}</td>
+                <td tips="true">${row.login7}</td>
+                <td tips="true">${row.login8}</td>
+                <td tips="true">${row.login9}</td>
+                <td tips="true">${row.login10}</td>
+                <td tips="true">${row.login11}</td>
+                <td tips="true">${row.login12}</td>
+                <td tips="true">${row.login13}</td>
+                <td tips="true">${row.login14}</td>
+                <td tips="true">${row.login15}</td>
+                <td tips="true">${row.login16}</td>
+                <td tips="true">${row.login17}</td>
+                <td tips="true">${row.login18}</td>
+                <td tips="true">${row.login19}</td>
+                <td tips="true">${row.login20}</td>
+                <td tips="true">${row.login21}</td>
+                <td tips="true">${row.login22}</td>
+                <td tips="true">${row.login23}</td>
+                <td tips="true">${row.login24}</td>
+                <td tips="true">${row.login25}</td>
+                <td tips="true">${row.login26}</td>
+                <td tips="true">${row.login27}</td>
+                <td tips="true">${row.login28}</td>
+                <td tips="true">${row.login29}</td>
+                <td tips="true">${row.login30}</td>
+            </tr>
+                        `;
+
+                $("#liucun tbody:first").append(lc);
+
+                let ltv = `
+                        <tr>
+                <td tips="true" style="width: 60px;">${number}</td>
+                <td tips="true" style="width: 80px;">${row.day}</td>
+                <td tips="true">${row.recharge}</td>
+                <td tips="true">${row.register}</td>
+                <td tips="true">${row.ltv1}</td>
+                <td tips="true">${row.ltv2}</td>
+                <td tips="true">${row.ltv3}</td>
+                <td tips="true">${row.ltv4}</td>
+                <td tips="true">${row.ltv5}</td>
+                <td tips="true">${row.ltv6}</td>
+                <td tips="true">${row.ltv7}</td>
+                <td tips="true">${row.ltv8}</td>
+                <td tips="true">${row.ltv9}</td>
+                <td tips="true">${row.ltv10}</td>
+                <td tips="true">${row.ltv11}</td>
+                <td tips="true">${row.ltv12}</td>
+                <td tips="true">${row.ltv13}</td>
+                <td tips="true">${row.ltv14}</td>
+                <td tips="true">${row.ltv15}</td>
+                <td tips="true">${row.ltv16}</td>
+                <td tips="true">${row.ltv17}</td>
+                <td tips="true">${row.ltv18}</td>
+                <td tips="true">${row.ltv19}</td>
+                <td tips="true">${row.ltv20}</td>
+                <td tips="true">${row.ltv21}</td>
+                <td tips="true">${row.ltv22}</td>
+                <td tips="true">${row.ltv23}</td>
+                <td tips="true">${row.ltv24}</td>
+                <td tips="true">${row.ltv25}</td>
+                <td tips="true">${row.ltv26}</td>
+                <td tips="true">${row.ltv27}</td>
+                <td tips="true">${row.ltv28}</td>
+                <td tips="true">${row.ltv29}</td>
+                <td tips="true">${row.ltv30}</td>
+            </tr>
+                        `;
+                $("#ltv tbody:first").append(ltv);
+
+                rowIndex++;
+                return true;
+            }, 10, pageSize);
+            wxd.message.tips_init();
+        }
+
+        function colse_loading() {
+            setTimeout(() => {
+                $("#div_loading").hide();
+            }, 200);
+        }
+
+        $(() => {
+            /*读取本地存储，根据个人爱好查看数据*/
+            let ps = localStorage.getItem(pathname + "pageSize");
+            if (!isNull(ps)) {
+                $('#pageSize').val(ps);
+            }
+            get();
+        });
+    </script>
+</head>
+
+<body>
+<div id="liucun" class="tableDom" style="width: calc(100%); height: calc(50% - 20px); padding: 2px 10px 2px 2px;">
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 60px;">行号</th>
+            <th style="width: 80px;">日期</th>
+            <th>充值</th>
+            <th>注册</th>
+            <th>次留</th>
+            <th>3留</th>
+            <th>4留</th>
+            <th>5留</th>
+            <th>6留</th>
+            <th>7留</th>
+            <th>8留</th>
+            <th>9留</th>
+            <th>10留</th>
+            <th>11留</th>
+            <th>12留</th>
+            <th>13留</th>
+            <th>14留</th>
+            <th>15留</th>
+            <th>16留</th>
+            <th>17留</th>
+            <th>18留</th>
+            <th>19留</th>
+            <th>20留</th>
+            <th>21留</th>
+            <th>22留</th>
+            <th>23留</th>
+            <th>24留</th>
+            <th>25留</th>
+            <th>26留</th>
+            <th>27留</th>
+            <th>28留</th>
+            <th>29留</th>
+            <th>30留</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<div id="ltv" class="tableDom" style="width: calc(100%); height: calc(50% - 30px); padding: 2px 10px 2px 2px;margin-top: 10px;">
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 60px;">行号</th>
+            <th style="width: 80px;">日期</th>
+            <th>充值</th>
+            <th>注册</th>
+            <th>首日-ltv</th>
+            <th>2-ltv</th>
+            <th>3-ltv</th>
+            <th>4-ltv</th>
+            <th>5-ltv</th>
+            <th>6-ltv</th>
+            <th>7-ltv</th>
+            <th>8-ltv</th>
+            <th>9-ltv</th>
+            <th>10-ltv</th>
+            <th>11-ltv</th>
+            <th>12-ltv</th>
+            <th>13-ltv</th>
+            <th>14-ltv</th>
+            <th>15-ltv</th>
+            <th>16-ltv</th>
+            <th>17-ltv</th>
+            <th>18-ltv</th>
+            <th>19-ltv</th>
+            <th>20-ltv</th>
+            <th>21-ltv</th>
+            <th>22-ltv</th>
+            <th>23-ltv</th>
+            <th>24-ltv</th>
+            <th>25-ltv</th>
+            <th>26-ltv</th>
+            <th>27-ltv</th>
+            <th>28-ltv</th>
+            <th>29-ltv</th>
+            <th>30-ltv</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<div id="page_btn" style="margin: 10px auto 0;width: 100%; padding-left: 30px;text-align: center;">
+    每页显示&nbsp;
+    <select id="pageSize" onchange="showPage()">
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="30" selected>30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>&nbsp;行&nbsp;&nbsp;
+    <a href="#" onclick="pageIndex=0;showPage();return false;" title="首页">首页</a>&nbsp;&nbsp;<a href="#" onclick="pageIndex--;showPage();return false;" title="前一页">上一页</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label id="pageNum">1</label>&nbsp;&nbsp;/&nbsp;&nbsp;<label id="maxPageNum">1</label>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="#" onclick="pageIndex++;showPage();return false;" title="下一页">下一页</a>&nbsp;&nbsp;<a href="#" onclick="pageIndex=maxPageIndex;showPage();return false;" title="尾页">尾页</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;总共&nbsp;<label id="maxNum">1</label>&nbsp;行数据
+</div>
+<div id="div_loading" style="display: block;position: absolute;left: 0px;top: 0px;right: 0px;bottom: 0px;z-index: 9999;background: rgba(69,68,68,0.2);">
+    <img style="position: absolute;width: 37px;height: 37px;left: 50%;top: 50%;transform: translate(-50%,-50%)" src="/loading-1.gif">
+</div>
+</body>
+</html>

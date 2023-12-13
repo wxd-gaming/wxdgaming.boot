@@ -1,6 +1,7 @@
 package org.wxd.boot.threading;
 
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.lang.Tick;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.JvmUtil;
 
@@ -10,7 +11,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 默认线程池
@@ -33,7 +34,6 @@ public final class Executors implements Serializable {
     public static final ConcurrentHashMap<Thread, ExecutorServiceJob> Run_THREAD_LOCAL = new ConcurrentHashMap<>();
     /** 全部初始化的 */
     public static final ConcurrentHashMap<String, IExecutorServices> All_THREAD_LOCAL = new ConcurrentHashMap<>();
-    public static AtomicBoolean Stopping = new AtomicBoolean(false);
     /** 属于后台线程池，一旦收到停服新号，线程立马关闭了 */
     private static IExecutorServices defaultExecutor = null;
     /** 属于后台线程池，一旦收到停服新号，线程立马关闭了 */
@@ -87,16 +87,10 @@ public final class Executors implements Serializable {
         return Optional.ofNullable(CurrentThread.get()).map(s -> s.queueName).orElse("");
     }
 
-    static {
-        JvmUtil.addShutdownHook(() -> Stopping.set(true));
-    }
-
     Executors() {}
 
     /** 守护线程 */
     protected static class GuardThread extends Thread implements Serializable {
-
-        private static final long serialVersionUID = 1L;
 
         protected GuardThread() {
             super("guard-thread");
@@ -105,9 +99,11 @@ public final class Executors implements Serializable {
         }
 
         @Override public void run() {
-            while (!Executors.Stopping.get()) {
+            Tick tick = new Tick(50, 3, TimeUnit.SECONDS);
+            while (!GlobalUtil.Shutting.get()) {
                 try {
                     try {
+                        tick.waitNext();
                         StringBuilder stringBuilder = new StringBuilder().append("\n");
                         for (ExecutorServiceJob serviceJob : Run_THREAD_LOCAL.values()) {
                             serviceJob.check(stringBuilder);
@@ -115,9 +111,6 @@ public final class Executors implements Serializable {
                         if (stringBuilder.length() > 4) {
                             LoggerFactory.getLogger(this.getClass()).info(stringBuilder.toString());
                         }
-                        Thread.sleep(5000);
-                    } catch (InterruptedException interruptedException) {
-                        this.interrupt();
                     } catch (Throwable throwable) {
                         LoggerFactory.getLogger(this.getClass()).error("guard-thread", throwable);
                         GlobalUtil.exception("guard-thread", throwable);
@@ -144,9 +137,11 @@ public final class Executors implements Serializable {
         }
 
         @Override public void run() {
-            while (!Executors.Stopping.get()) {
+            Tick tick = new Tick(1, 2, TimeUnit.MILLISECONDS);
+            while (!GlobalUtil.Shutting.get()) {
                 try {
                     try {
+                        tick.waitNext();
                         synchronized (timerJobs) {
                             Iterator<TimerJob> iterator = timerJobs.iterator();
                             while (iterator.hasNext()) {
@@ -167,9 +162,6 @@ public final class Executors implements Serializable {
                                 }
                             }
                         }
-                        Thread.sleep(2);
-                    } catch (InterruptedException interruptedException) {
-                        this.interrupt();
                     } catch (Throwable throwable) {
                         LoggerFactory.getLogger(this.getClass()).error("定时任务公共处理器", throwable);
                         GlobalUtil.exception("定时任务公共处理器", throwable);

@@ -7,14 +7,15 @@ import org.wxd.agent.exception.Throw;
 import org.wxd.agent.system.AnnUtil;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.httpclient.HttpContentType;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.Session;
-import org.wxd.boot.net.controller.CmdMappingRecord;
+import org.wxd.boot.net.controller.MappingFactory;
+import org.wxd.boot.net.controller.TextMappingRecord;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.controller.cmd.ITokenCache;
 import org.wxd.boot.net.controller.cmd.Sign;
 import org.wxd.boot.net.controller.cmd.SignCheck;
-import org.wxd.boot.net.web.hs.HttpContentType;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
@@ -24,7 +25,6 @@ import org.wxd.boot.threading.IExecutorServices;
 import org.wxd.boot.threading.Job;
 
 import java.lang.reflect.Type;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,8 +43,6 @@ public interface CmdService extends ITokenCache {
     default IExecutorServices executorServices() {
         return Executors.getLogicExecutor();
     }
-
-    ConcurrentMap<String, CmdMappingRecord> getCmdMethodMap();
 
     /** 执行前处理 */
     Predicate<Runnable> getCmdExecutorBefore();
@@ -75,7 +73,7 @@ public interface CmdService extends ITokenCache {
         }
 
         final String methodNameLowerCase = methodName.toLowerCase().trim();
-        CmdMappingRecord mappingRecord = getCmdMethodMap().get(methodNameLowerCase);
+        TextMappingRecord mappingRecord = MappingFactory.TEXT_MAP.get(methodNameLowerCase);
         if (mappingRecord == null) {
             if ((HttpContentType.Json == httpContentType || HttpContentType.XJson == httpContentType)) {
                 out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));

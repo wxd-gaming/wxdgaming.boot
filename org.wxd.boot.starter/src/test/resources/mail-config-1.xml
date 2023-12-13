@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- @author: Troy.Chen(無心道, 15388152619) -->
+<mailConfig>
+    <properties>
+        <property Key="mail.smtp.host" value="smtp.163.com"/>
+        <property Key="mail.store.protocol" value="smtp.163.com"/>
+        <property Key="mail.smtp.port" value="465"/>
+        <property Key="mail.smtp.auth" value="true"/>
+        <property Key="mail.smtp.ssl.enable" value="true"/>
+        <property Key="mail.smtp.socketFactory.class" value="javax.net.ssl.SSLSocketFactory"/>
+        <property Key="mail.smtp.socketFactory.fallback" value="false"/>
+        <property Key="mail.smtp.socketFactory.port" value="465"/>
+    </properties>
+    <mail_Send_Address>orgwxd@163.com</mail_Send_Address>
+    <mail_Send_Pwd>DYRUUFEJCKLQMIKH</mail_Send_Pwd>
+    <mail_Send_To_Address>
+        <string>492794628@qq.com</string>
+    </mail_Send_To_Address>
+</mailConfig>

@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.collection.concurrent.ConcurrentHashSet;
-import org.wxd.boot.net.ssl.SslProtocolType;
+import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.net.ssl.WxOptionalSslHandler;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.BytesUnit;
@@ -102,7 +102,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
         return this;
     }
 
-    public void start() {
+    public void open() {
         synchronized (this) {
             try {
                 /* Bind and start to accept incoming connections*/
@@ -136,7 +136,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 if (!serverChannel.isRegistered() && !serverChannel.isOpen()) {
                     log.error("端口监听异常了 {}", this.toString());
                     GlobalUtil.exception("端口监听异常" + this.toString(), null);
-                    start();
+                    open();
                 }
             }
         }
@@ -145,16 +145,16 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
     /**
      *
      */
-    public void shutdown() {
+    public void close() {
         synchronized (this) {
             if (this.bootstrap != null) {
-                log.info("====={start}====服务关闭 " + this.toString() + "=================");
+                log.info("=====服务关闭 " + this.toString() + " {start}");
                 if (serverChannel != null) {
                     serverChannel.close();
                     serverChannel = null;
                 }
                 this.bootstrap = null;
-                log.info("====={end}======服务关闭 " + this.toString() + "=================");
+                log.info("=====服务关闭 " + this.toString() + " {end}");
             }
         }
     }

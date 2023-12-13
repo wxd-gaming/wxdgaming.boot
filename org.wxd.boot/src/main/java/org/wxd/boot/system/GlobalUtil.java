@@ -1,5 +1,7 @@
 package org.wxd.boot.system;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * 全局处理
  *
@@ -7,6 +9,8 @@ package org.wxd.boot.system;
  * @version: 2023-12-11 16:52
  **/
 public class GlobalUtil {
+
+    public static final AtomicBoolean Shutting = new AtomicBoolean();
 
     public static void exception(Object msg, Throwable throwable) {
 

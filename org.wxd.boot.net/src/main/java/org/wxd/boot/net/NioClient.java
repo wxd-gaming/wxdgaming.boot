@@ -52,9 +52,6 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     protected final ChannelQueue<S> allSessionQueue = new ChannelQueue<>();
     protected final ConcurrentMap<Long, S> allSessionMap = new ConcurrentHashMap<>();
 
-    protected List<Integer> msgIds;
-    protected ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap;
-
     protected Consumer<S> onOpen = null;
     protected Consumer<S> onClose = null;
 
@@ -231,12 +228,6 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     }
 
     @Override
-    public NioClient<S> setMsgIds(List<Integer> msgIds) {
-        this.msgIds = msgIds;
-        return this;
-    }
-
-    @Override
     public ChannelQueue<S> getAllSessionQueue() {
         return allSessionQueue;
     }
@@ -244,20 +235,6 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     @Override
     public ConcurrentMap<Long, S> getAllSessionMap() {
         return allSessionMap;
-    }
-
-    @Override
-    public ConcurrentMap<Integer, ProtoMappingRecord> getMessageBeanMap() {
-        if (this.messageBeanMap == null) {
-            this.messageBeanMap = new ConcurrentHashMap<>();
-        }
-        return this.messageBeanMap;
-    }
-
-    @Override
-    public NioClient<S> setMessageBeanMap(ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap) {
-        this.messageBeanMap = messageBeanMap;
-        return this;
     }
 
     public String toString(String host, int port) {

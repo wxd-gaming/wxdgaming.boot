@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.agent.system.AnnUtil;
 import org.wxd.boot.net.SocketSession;
+import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.MessageController;
 import org.wxd.boot.net.controller.ProtoMappingRecord;
 import org.wxd.boot.net.controller.ann.ProtoMapping;
@@ -23,7 +24,7 @@ import java.util.function.Predicate;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2020-08-05 14:22
  */
-public interface SocketCoderHandler<S extends SocketSession> extends Serializable, ControllerRegister {
+public interface SocketCoderHandler<S extends SocketSession> extends Serializable {
 
     Logger log = LoggerFactory.getLogger(SocketCoderHandler.class);
 
@@ -49,7 +50,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param messageBytes 消息报文
      */
     default void onMessage(S session, int messageId, byte[] messageBytes) {
-        ProtoMappingRecord mapping = getMessageMapping(messageId);
+        ProtoMappingRecord mapping = MappingFactory.PROTO_MAP.get(messageId);
         if (mapping != null) {
             try {
                 Message message = MessagePackage.parseMessage(messageId, messageBytes);
@@ -79,7 +80,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param message   消息
      */
     default void executor(S session, int messageId, Message message) {
-        ProtoMappingRecord mapping = getMessageMapping(messageId);
+        ProtoMappingRecord mapping = MappingFactory.PROTO_MAP.get(messageId);
 
         MessageController controller = new MessageController(mapping, session, message);
 

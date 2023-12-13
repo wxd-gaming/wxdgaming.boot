@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <script charset="utf-8" type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+    <style>
+        html, body {width: 100%;height: 100%;}
+    </style>
+
+    <script>
+
+        const message = {
+
+            init_notice_end: false,
+
+            notice_init: function () {
+                if (this.init_notice_end) return;
+                /*输出样式表*/
+                $(document.head).append(`
+    <style>
+        .message_notice_box {
+            display: block; position: absolute;box-sizing: border-box;padding-top: 100px;left: 50%;top: 0px;
+            transform: translate(-50%, -0%);min-width: 1px;
+            z-index: 999999;text-align: center;max-width: 55%;
+            }
+
+        .message_notice_c_bg {
+            display: block;position: relative; box-sizing: border-box;padding: 3px;margin-top: 5px;
+            border-radius: 4px;border: #95B8E7 1px solid;color: rgba(0, 0, 0, 1);background: linear-gradient(to bottom, #EFF5FF 0, #E0ECFF 20%);
+            }
+
+        .message_notice_c {
+            display: block;box-sizing: border-box;padding: 8px;
+            border: #95B8E7 1px solid;background-color: #ffffff;min-width: 60px; min-height: 40px;
+            overflow: auto;text-align: left;vertical-align: center;
+            word-wrap: break-word;white-space: normal;
+            }
+    </style>
+                `);
+                /*输出背景框*/
+                $(document.body).append(`<div class="message_notice_box"></div>`);
+                this.init_notice_end = true;
+            },
+
+            notice: function (content, isError) {
+                this.notice_init();
+                let box_content = document.createElement("div");
+                box_content.setAttribute("class", "message_notice_c_bg");
+                if (isError === true) {
+                    box_content.setAttribute("style", "color: brown;");
+                }
+                let n_c = `
+                <div class="message_notice_c">${content}</div>
+                `;
+                box_content.innerHTML = n_c;
+
+                $(".message_notice_box").append(box_content);
+
+                setTimeout(() => {
+                    $(box_content).fadeOut(500);
+                }, 1000);
+
+                setTimeout(() => {
+                    $(box_content).remove();
+                }, 5000);
+            },
+
+            init_alert_end: false,
+            alert_ok_call: null,
+            alert_cancel_call: null,
+            alert_init: function () {
+                if (this.init_alert_end) return;
+                let style = `
+    <style>
+        .message_alert_box {
+            display: none; position: absolute;box-sizing: border-box;background: rgba(69, 68, 68, 0.2);
+            width: 100%;height: 100%;left: 0px;top: 0px; z-index: 9999999;
+            }
+
+        .message_alert_c_bg {display: block;position: absolute; box-sizing: border-box;padding: 10px 3px 3px;
+            left: 50%;top: 50%; transform: translate(-50%, -60%);max-width: 55%;
+            border-radius: 6px 6px 3px 3px;border: #95B8E7 1px solid;color: rgba(0, 0, 0, 1);background: linear-gradient(to bottom, #EFF5FF 0, #E0ECFF 20%);
+            overflow: auto; text-align: left;vertical-align: center; word-wrap: break-word;white-space: normal;
+            }
+
+        .message_alert_c_bg strong {padding-left: 3px;color: #0E2D5F;}
+
+        .message_alert_c_bg div button {border-radius: 4px;border: 1px solid #bbb;padding: 5px 15px;margin-right: 15px;color: #444;cursor: pointer;}
+
+        .message_alert_c {
+            display: block;box-sizing: border-box;padding: 8px 8px 60px;margin-top: 10px;
+            border: #95B8E7 1px solid;color: #000000;font-size: 14px;background-color: #ffffff;
+            min-width: 400px; min-height: 140px; overflow: auto;text-align: left;vertical-align: center;
+            word-wrap: break-word;white-space: normal;
+            }
+
+        .message_alert_c_b { position: absolute;bottom: 15px;right: 30px; }
+    </style>
+                `;
+
+                $(document.head).append(style);
+
+                let box = `
+<div class="message_alert_box">
+    <div class="message_alert_c_bg">
+    </div>
+</div>
+                `;
+                $(document.body).append(box);
+                this.init_alert_end = true;
+            },
+            /**
+             *
+             * 弹出提示框
+             * @param content 内容，支持html
+             * @param title 标题
+             * @param ok 确认按钮显示内容
+             * @param okCall 确认按钮回调
+             * @param cancel 取消显示的内容
+             * @param cancelCall 取消按钮回调
+             */
+            alert: function (content, title, ok, okCall, cancel, cancelCall) {
+                this.alert_init();
+                $('.message_alert_box').show();
+                if (isNull(title)) title = "提示：";
+                if (isNull(ok)) ok = "OK";
+                let btn_c = "";
+                if (!isNull(cancel) || !isNull(cancelCall)) {
+                    if (isNull(cancel)) cancel = "Cancel";
+                    btn_c = `
+<button onclick="message.alert_cancel()">${cancel}</button>
+`;
+                }
+
+                let a_c = `
+    <strong>${title}</strong>
+    <div class="message_alert_c">
+        <div>
+${content}
+        </div>
+        <div class="message_alert_c_b">
+            <button onclick="message.alert_ok()">${ok}</button>
+            ${btn_c}
+        </div>
+    </div>
+`;
+                this.alert_ok_call = okCall;
+                this.alert_cancel_call = cancelCall;
+                $(".message_alert_box .message_alert_c_bg").html(a_c);
+            },
+
+            alert_ok: function () {
+                $('.message_alert_box').hide();
+                setTimeout(() => {
+                    if (!isNull(this.alert_ok_call)) this.alert_ok_call();
+                }, 1);
+            },
+
+            alert_cancel: function () {
+                $('.message_alert_box').hide();
+                setTimeout(() => {
+                    if (!isNull(this.alert_cancel_call)) this.alert_cancel_call();
+                }, 1);
+            },
+
+            tips_x: 10,
+            tips_y: 15,
+            tips_tmp_title: "",
+            tips_init_end: false,
+            tips_init: function () {
+                if (this.tips_init_end) return;
+
+                let tips_style = `
+<style>
+    .message_title_tips {
+        display: none;padding: 12px;box-sizing: border-box;
+        border-radius: 15px;border: #95B8E7 4px solid;color: rgba(0, 0, 0, 1);background: white;
+        min-width: 120px; max-width: 75%;min-height: 40px;max-height: 75%;
+        overflow: auto;position: absolute;text-align: left;vertical-align: center;font-weight: bold;
+        z-index: 999999;word-wrap: break-word;white-space: normal;font-size: 14px;
+        }
+</style>
+                `;
+
+                $(document.head).append(tips_style);
+                $(document.body).append(`<span class="message_title_tips"></span>`);
+
+                this.tips_init_end = true;
+            },
+
+            tips_reset_css: function (e, element) {
+                // console.log($(element).css("font-size"));
+                // console.log(parseFloat($(element).css("font-size")));
+                var outerWidth = $('.message_title_tips').outerWidth();
+                let max_width = $('body').width();
+                let left = e.pageX + this.tips_x;
+                // console.log("页面宽度：" + max_width + ", 当前宽度：" + e.pageX + ", 需要宽度：" + outerWidth);
+                if (max_width - e.pageX < outerWidth + this.tips_x) {
+                    /*说明 鼠标在页面右侧*/
+                    left = max_width - this.tips_x - outerWidth;
+                }
+
+                var outerHeight = $('.message_title_tips').outerHeight();
+                let max_height = $('body').height();
+                let top = e.pageY + this.tips_y;
+                // console.log("页面高度：" + max_height + ", 当前高度：" + e.pageY + ", 需要高度：" + outerHeight);
+                if (max_height - e.pageY < outerHeight + this.tips_y) {
+                    /*说明 鼠标在页面底部*/
+                    top = e.pageY - this.tips_y - outerHeight;
+                }
+
+                $('.message_title_tips').css({
+                    "opacity": "0.9",
+                    "left": (left) + "px",
+                    "top": (top) + "px",
+                    "fontSize": (parseFloat($(element).css("fontSize")) + 8) + "px"
+                });
+            },
+            tips_init_child: function (element) {
+
+                if (($(element).attr("tips") === "true" && !isNull($(element).html())) || !isNull($(element).attr("title"))) {
+                    $(element).unbind("mouseover mouseout mousemove"); //移除之前绑定的事件防止冲突
+                    $(element).mouseover(function (e) {
+                        if (!isNull($(this).attr("title"))) {
+                            message.tips_tmp_title = $(this).attr("title");
+                            try {
+                                message.tips_tmp_title = replaceLine(message.tips_tmp_title);
+                            } catch (e) {
+                                console.error(e);
+                            }
+                            $(this).attr("title", "");
+                            $('.message_title_tips').html(message.tips_tmp_title);
+                        } else {
+                            $('.message_title_tips').html($(this).html());
+                        }
+                        $('.message_title_tips').show();
+                        message.tips_reset_css(e, this);
+                        event.stopPropagation();
+                    }).mouseout(function () {
+                        $('.message_title_tips').hide();
+                        if (!isNull(message.tips_tmp_title)) {
+                            $(this).attr("title", message.tips_tmp_title);
+                            message.tips_tmp_title = "";
+                        }
+                    }).mousemove(function (e) {
+                        message.tips_reset_css(e, this);
+                        event.stopPropagation();
+                    });
+                }
+
+                if ($(element).children().length > 0) {
+                    $(element).children().each(function (index, selement) {
+                        message.tips_init_child(selement);
+                    });
+                }
+            },
+
+            tips_init_bind: function () {
+                this.tips_init();
+                /* each()方法处理HTML元素 */
+                $("body").children().each(function (index, element) {
+                    message.tips_init_child(element);
+                });
+            },
+
+        }
+
+        function isNull(test) {
+            return test === undefined || test === null || test === '';
+        }
+
+        window.onload = function () {
+            message.tips_init_bind();
+            /*根据当前回话缓存数据，浏览器页面关闭就失效*/
+            let item = localStorage.getItem("page");
+            if (undefined === item || item == null || "" == null) return;
+            document.getElementById('frame').src = item;
+            /*本地永久有效的数据*/
+            localStorage.setItem('page', item);
+        };
+
+    </script>
+</head>
+<body>
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+<br>
+<button onclick="localStorage.setItem('page','b.html');document.getElementById('frame').src='b.html'" title="1">b</button>
+<button onclick="localStorage.setItem('page','c.html');document.getElementById('frame').src='c.html'">c</button>
+<button onclick="message.notice('1')">普通提示</button>
+<button onclick="message.notice('1444444444444444444444444444',true)" tips="true">错误提示</button>
+<button onclick="message.alert('ddddddddddddddddddd','Error','确认',()=>alert(1),'',()=>alert(2))">弹窗
+</button>
+<button onclick="message.alert('dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'+
+'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','Error','确认',()=>alert(1),'',()=>alert(2))">弹窗2
+</button>
+<iframe id="frame" src="" style="border: 0px;"></iframe>
+<!--<div class="message_notice_box">-->
+<!--    <div class="message_notice_c_bg">-->
+<!--        <div class="message_notice_c">d</div>-->
+<!--    </div>-->
+<!--    <div class="message_notice_c_bg">-->
+<!--        <div class="message_notice_c">d</div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="message_alert_box">-->
+<!--    <div class="message_alert_c_bg">-->
+<!--        <strong>${title}</strong>-->
+<!--        <div class="message_alert_c">-->
+<!--            <div>-->
+<!--                ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+<!--                dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+
+<!--            </div>-->
+<!--            <div class="message_alert_c_b">-->
+<!--                <button onclick="message.alert_ok()">${ok}</button>-->
+<!--                ${btn_c}-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+</body>
+</html>

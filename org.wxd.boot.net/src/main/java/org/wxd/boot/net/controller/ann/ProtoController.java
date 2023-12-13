@@ -1,8 +1,6 @@
 package org.wxd.boot.net.controller.ann;
 
 
-import org.wxd.boot.net.handler.ControllerRegister;
-
 import java.lang.annotation.*;
 
 /**
@@ -20,7 +18,6 @@ public @interface ProtoController {
     /** 自动注册的时候忽略 */
     boolean alligatorAutoRegister() default false;
 
-    /** 实现了 {@link ControllerRegister } 接口的类 */
     String service() default "";
 
 }

@@ -15,22 +15,19 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.agent.exception.Throw;
 import org.wxd.agent.function.ConsumerE2;
+import org.wxd.boot.httpclient.ssl.SslContextClient;
+import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.net.NioClient;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.SignConfig;
-import org.wxd.boot.net.controller.ProtoMappingRecord;
 import org.wxd.boot.net.handler.INotController;
 import org.wxd.boot.net.handler.SocketChannelHandler;
-import org.wxd.boot.net.ssl.SslContextClient;
-import org.wxd.boot.net.ssl.SslProtocolType;
 import org.wxd.boot.net.ssl.WxSslHandler;
 import org.wxd.boot.net.web.CookiePack;
 import org.wxd.boot.system.BytesUnit;
 
 import javax.net.ssl.SSLEngine;
 import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 
 /**
@@ -164,6 +161,11 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
         return this;
     }
 
+    @Override public WebSocketClient<S> setWanIp(String wanIp) {
+        super.setWanIp(wanIp);
+        return this;
+    }
+
     @Override
     public WebSocketClient<S> setPort(int port) {
         super.setPort(port);
@@ -185,18 +187,6 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
     @Override
     public WebSocketClient<S> setOnNotController(INotController<S> onNotController) {
         super.setOnNotController(onNotController);
-        return this;
-    }
-
-    @Override
-    public WebSocketClient<S> setMsgIds(List<Integer> msgIds) {
-        super.setMsgIds(msgIds);
-        return this;
-    }
-
-    @Override
-    public WebSocketClient<S> setMessageBeanMap(ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap) {
-        super.setMessageBeanMap(messageBeanMap);
         return this;
     }
 

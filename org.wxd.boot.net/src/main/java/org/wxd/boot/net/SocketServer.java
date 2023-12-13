@@ -5,11 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.wxd.boot.net.controller.MessageController;
-import org.wxd.boot.net.controller.ProtoMappingRecord;
 import org.wxd.boot.net.handler.INotController;
 import org.wxd.boot.net.handler.SocketCoderHandler;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
@@ -27,8 +25,6 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
         SessionRepository<S>,
         SocketCoderHandler<S> {
 
-    protected List<Integer> msgIds;
-    protected ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap;
     protected final ChannelQueue<S> allSessionQueue = new ChannelQueue<>();
     protected final ConcurrentMap<Long, S> allSessionMap = new ConcurrentHashMap<>();
 
@@ -42,9 +38,9 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
     protected abstract S newSession(String name, ChannelHandlerContext ctx);
 
     @Override
-    public void shutdown() {
+    public void close() {
         clearSession();
-        super.shutdown();
+        super.close();
     }
 
     @Override
@@ -61,31 +57,6 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
         if (getOnCloseSession() != null) {
             getOnCloseSession().accept(session);
         }
-    }
-
-    @Override
-    public SocketServer<S> setMsgIds(List<Integer> msgIds) {
-        this.msgIds = msgIds;
-        return this;
-    }
-
-    /**
-     * 获取映射存储
-     *
-     * @return
-     */
-    @Override
-    public ConcurrentMap<Integer, ProtoMappingRecord> getMessageBeanMap() {
-        if (this.messageBeanMap == null) {
-            this.messageBeanMap = new ConcurrentHashMap<>();
-        }
-        return this.messageBeanMap;
-    }
-
-    @Override
-    public SocketServer<S> setMessageBeanMap(ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap) {
-        this.messageBeanMap = messageBeanMap;
-        return this;
     }
 
     @Override

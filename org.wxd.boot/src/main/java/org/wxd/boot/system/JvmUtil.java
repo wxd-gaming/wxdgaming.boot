@@ -22,9 +22,7 @@ import java.util.function.Function;
  **/
 public class JvmUtil {
 
-    /**
-     * 强制设置logback 配置目录
-     */
+    /** 强制设置logback 配置目录 */
     public static void setLogbackConfig() {
         String key = "logback.configurationFile";
         if (System.getProperty(key) == null) {

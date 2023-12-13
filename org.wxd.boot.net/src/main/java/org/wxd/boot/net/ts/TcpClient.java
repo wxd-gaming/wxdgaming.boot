@@ -8,12 +8,9 @@ import org.wxd.boot.i.ILock;
 import org.wxd.boot.net.NioClient;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.controller.MessageController;
-import org.wxd.boot.net.controller.ProtoMappingRecord;
 import org.wxd.boot.net.handler.INotController;
 import org.wxd.boot.net.handler.SocketChannelHandler;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 
 /**
@@ -54,6 +51,11 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
         return this;
     }
 
+    @Override public TcpClient<S> setWanIp(String wanIp) {
+        super.setWanIp(wanIp);
+        return this;
+    }
+
     @Override
     public TcpClient<S> setPort(int port) {
         super.setPort(port);
@@ -87,18 +89,6 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
     @Override
     public TcpClient<S> setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
         super.setCmdExecutorBefore(cmdExecutorBefore);
-        return this;
-    }
-
-    @Override
-    public TcpClient<S> setMsgIds(List<Integer> msgIds) {
-        super.setMsgIds(msgIds);
-        return this;
-    }
-
-    @Override
-    public TcpClient<S> setMessageBeanMap(ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap) {
-        super.setMessageBeanMap(messageBeanMap);
         return this;
     }
 

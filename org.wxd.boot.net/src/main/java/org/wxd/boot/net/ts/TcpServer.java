@@ -4,17 +4,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.SocketServer;
 import org.wxd.boot.net.controller.MessageController;
-import org.wxd.boot.net.controller.ProtoMappingRecord;
 import org.wxd.boot.net.handler.INotController;
 import org.wxd.boot.net.handler.SocketChannelHandler;
-import org.wxd.boot.net.ssl.SslProtocolType;
 
 import javax.net.ssl.SSLContext;
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -59,6 +56,11 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
         return this;
     }
 
+    @Override public TcpServer<S> setWanIp(String wanIp) {
+        super.setWanIp(wanIp);
+        return this;
+    }
+
     @Override
     public TcpServer<S> setPort(int port) {
         super.setPort(port);
@@ -77,17 +79,6 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
 
     @Override public TcpServer<S> setSslContext(SSLContext sslContext) {
         super.setSslContext(sslContext);
-        return this;
-    }
-
-    @Override public TcpServer<S> setMsgIds(List<Integer> msgIds) {
-        super.setMsgIds(msgIds);
-        return this;
-    }
-
-    @Override
-    public TcpServer<S> setMessageBeanMap(ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap) {
-        super.setMessageBeanMap(messageBeanMap);
         return this;
     }
 

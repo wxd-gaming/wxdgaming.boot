@@ -12,24 +12,21 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.agent.function.ConsumerE2;
+import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.SocketServer;
 import org.wxd.boot.net.controller.MessageController;
-import org.wxd.boot.net.controller.ProtoMappingRecord;
 import org.wxd.boot.net.handler.INotController;
 import org.wxd.boot.net.handler.SocketChannelHandler;
-import org.wxd.boot.net.ssl.SslProtocolType;
 import org.wxd.boot.net.util.ByteBufUtil;
-import org.wxd.boot.net.web.HttpDataFactory;
+import org.wxd.boot.net.web.hs.HttpServer;
 import org.wxd.boot.system.BytesUnit;
 import org.wxd.boot.system.JvmUtil;
 
 import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -44,8 +41,6 @@ import java.util.function.Predicate;
 @Setter
 @Accessors(chain = true)
 public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
-
-    private static final long serialVersionUID = 1L;
 
     private ConsumerE2<S, String> onStringMessage;
 
@@ -106,6 +101,11 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
         return this;
     }
 
+    @Override public WebSocketServer<S> setWanIp(String wanIp) {
+        super.setWanIp(wanIp);
+        return this;
+    }
+
     @Override
     public WebSocketServer<S> setPort(int port) {
         super.setPort(port);
@@ -124,17 +124,6 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
 
     @Override public WebSocketServer<S> setSslContext(SSLContext sslContext) {
         super.setSslContext(sslContext);
-        return this;
-    }
-
-    @Override public WebSocketServer<S> setMsgIds(List<Integer> msgIds) {
-        super.setMsgIds(msgIds);
-        return this;
-    }
-
-    @Override
-    public WebSocketServer<S> setMessageBeanMap(ConcurrentMap<Integer, ProtoMappingRecord> messageBeanMap) {
-        super.setMessageBeanMap(messageBeanMap);
         return this;
     }
 
@@ -322,7 +311,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
                     }
                     session.setRequest(httpRequest);
                     session.getReqCookies().decodeServerCookie(cookieString);
-                    HttpDataFactory.queryStringMap(session.getReqParams(), uri.getQuery());
+                    HttpServer.queryStringMap(session.getReqParams(), uri.getQuery());
                     handshaker = wsFactory.newHandshaker(httpRequest);
                     final Channel channel = session.getChannelContext().channel();
                     if (handshaker != null) {

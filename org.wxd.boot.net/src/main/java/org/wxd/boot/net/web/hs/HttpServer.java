@@ -22,19 +22,21 @@ import org.wxd.agent.system.AnnUtil;
 import org.wxd.agent.zip.GzipUtil;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpDataAction;
+import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.NioServer;
 import org.wxd.boot.net.Session;
-import org.wxd.boot.net.controller.CmdMappingRecord;
+import org.wxd.boot.net.controller.MappingFactory;
+import org.wxd.boot.net.controller.TextMappingRecord;
 import org.wxd.boot.net.controller.ann.Get;
 import org.wxd.boot.net.controller.ann.Post;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.controller.cmd.Sign;
 import org.wxd.boot.net.controller.cmd.SignCheck;
 import org.wxd.boot.net.handler.SocketChannelHandler;
-import org.wxd.boot.net.ssl.SslProtocolType;
-import org.wxd.boot.net.web.HttpDataFactory;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.BytesUnit;
@@ -302,7 +304,7 @@ public class HttpServer extends NioServer<HttpSession> {
         }
 
         final String methodNameLowerCase = methodName.toLowerCase().trim();
-        CmdMappingRecord mappingRecord = getCmdMethodMap().get(methodNameLowerCase);
+        TextMappingRecord mappingRecord = MappingFactory.TEXT_MAP.get(methodNameLowerCase);
         if (mappingRecord == null) {
             if ((httpContentType == HttpContentType.Json || httpContentType == HttpContentType.XJson)) {
                 out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
@@ -511,6 +513,11 @@ public class HttpServer extends NioServer<HttpSession> {
         return this;
     }
 
+    @Override public HttpServer setWanIp(String wanIp) {
+        super.setWanIp(wanIp);
+        return this;
+    }
+
     @Override
     public HttpServer setPort(int port) {
         super.setPort(port);
@@ -558,7 +565,7 @@ public class HttpServer extends NioServer<HttpSession> {
         String extendName = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
         HttpContentType hct = httpContentType(extendName);
         response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, hct, bytes, response -> {
-            response.headers().add(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename=" + HttpDataFactory.urlEncoder(fileName));
+            response.headers().add(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename=" + HttpDataAction.urlEncoder(fileName));
         });
     }
 
@@ -737,4 +744,27 @@ public class HttpServer extends NioServer<HttpSession> {
         }
     }
 
+    /**
+     * {@code key=value&key=value&key=value&key=value&key=value}
+     */
+    public static Map queryStringMap(String queryString) {
+        ObjMap paramsMap = new ObjMap();
+        queryStringMap(paramsMap, queryString);
+        return paramsMap;
+    }
+
+    /**
+     * {@code key=value&key=value&key=value&key=value&key=value}
+     */
+    public static void queryStringMap(Map paramsMap, String queryString) {
+        if (StringUtil.emptyOrNull(queryString)) {
+            return;
+        }
+        QueryStringDecoder queryDecoder = new QueryStringDecoder(queryString, false);
+        Map<String, List<String>> uriAttributes = queryDecoder.parameters();
+        for (Map.Entry<String, List<String>> attr : uriAttributes.entrySet()) {
+            String get = String.join(",", attr.getValue());
+            paramsMap.put(attr.getKey(), get);
+        }
+    }
 }

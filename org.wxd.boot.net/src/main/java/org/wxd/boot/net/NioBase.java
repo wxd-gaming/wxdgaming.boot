@@ -6,11 +6,8 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.cache.CachePack;
-import org.wxd.boot.net.controller.CmdMappingRecord;
 import org.wxd.boot.net.handler.CmdService;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 
 /**
@@ -25,9 +22,8 @@ public abstract class NioBase implements CmdService {
 
     protected String name;
     protected String host = null;
+    protected String wanIp = null;
     protected int port;
-    /*                   方法名         方法      实例对象     */
-    private ConcurrentMap<String, CmdMappingRecord> cmdMethodMap;
     /** 消息执行前，可以添加过滤器 */
     protected Predicate<Runnable> cmdExecutorBefore;
     /** 秘钥管理器 */
@@ -54,14 +50,6 @@ public abstract class NioBase implements CmdService {
     @Override
     public CachePack<String, IAuth> getTokenCache() {
         return tokenCache;
-    }
-
-    @Override
-    public ConcurrentMap<String, CmdMappingRecord> getCmdMethodMap() {
-        if (cmdMethodMap == null) {
-            cmdMethodMap = new ConcurrentHashMap<>();
-        }
-        return cmdMethodMap;
     }
 
 }

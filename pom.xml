@@ -10,14 +10,15 @@
     <packaging>pom</packaging>
     <modules>
         <module>org.wxd.boot</module>
-        <module>org.wxd.boot.batis</module>
         <module>org.wxd.boot.agent</module>
-        <module>org.wxd.boot.batis.sql</module>
-        <module>org.wxd.boot.batis.redis</module>
+        <module>org.wxd.boot.batis</module>
         <module>org.wxd.boot.batis.mongodb</module>
-        <module>org.wxd.boot.net</module>
+        <module>org.wxd.boot.batis.redis</module>
+        <module>org.wxd.boot.batis.sql</module>
         <module>org.wxd.boot.batis.sql.mysql</module>
         <module>org.wxd.boot.batis.sql.sqlite</module>
+        <module>org.wxd.boot.httpclient</module>
+        <module>org.wxd.boot.net</module>
         <module>org.wxd.boot.starter</module>
     </modules>
 

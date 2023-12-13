@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据</title>
+
+    <script charset="utf-8" type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script charset="utf-8" type="text/javascript" src="/js/com.wxd.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/style/table.css"/>
+
+    <style>
+        html, body {display: block;width: 100%;height: 100%;font-size: 12px;overflow: hidden;overflow-x: auto;background: rgba(98, 143, 139, 0.31);}
+
+        html, body, div, table, tr, td {margin: 0px;border: 0px;box-sizing: border-box;}
+
+        a:link {color: #0866b4;}
+
+        a:visited { color: #0866b4;}
+
+    </style>
+    <script>
+
+
+        function get() {
+            let urlQuery = new wxd.Map().loadSearch();
+            urlQuery.put("content", "1");
+            wxd.netty.post(pathname, urlQuery.toString(),
+                function (responseText) {
+                    let parse = JSON.parse(responseText);
+                    let columns = parse.columns;
+                    columns.forEach((column) => {
+                        let th = `
+                        <td>${column}</td>
+                        `;
+                        $("thead:first tr").append(th);
+                    });
+
+                    rows = parse.days;
+                    showPage();
+                    colse_loading();
+                },
+                (errorMsg) => {
+                    wxd.message.alert("异常：" + errorMsg);
+                },
+                true, 30000
+            );
+        }
+
+        let pathname = window.location.protocol + "//" + window.location.host + "" + window.location.pathname;
+        let pageIndex = 0;
+        let maxPageIndex = 0;
+        let rows = null;
+
+        /**分页显示数据*/
+        async function showPage() {
+            $("tbody:first").html("");
+            let pageSize = $('#pageSize option:selected').val();
+            /*读取本地存储，根据个人爱好查看数据*/
+            localStorage.setItem(pathname + "pageSize", pageSize);
+            /*小数向上取整数*/
+            maxPageIndex = Math.ceil(rows.length / pageSize);
+
+            if (pageIndex < 0) pageIndex = 0;
+            if (pageIndex >= maxPageIndex) pageIndex = maxPageIndex - 1;
+            let rowIndex = pageIndex * pageSize;
+            console.log("pageIndex = " + pageIndex + ", maxPageIndex=" + maxPageIndex + ", rowIndex=" + rowIndex);
+
+            $("#page_btn #pageNum").text(pageIndex + 1);
+            $("#page_btn #maxPageNum").text(maxPageIndex);
+            $("#page_btn #maxNum").text(rows.length);
+
+            await delayed(() => {
+                if (rowIndex >= rows.length) return false;
+
+                let day = rows[rowIndex];
+                let number = rowIndex + 1;
+                let tr = `<tr><td tips="true" style="width: 60px;">${number}</td><td tips="true" style="width: 80px;">${day.day}</td>`;
+                let moneys = day.moneys;
+                moneys.forEach(money => {
+                    tr += `<td>${money}</td>`;
+                });
+                tr += " </tr>";
+                $("tbody:first").append(tr);
+                rowIndex++;
+                return true;
+            }, 10, pageSize);
+            wxd.message.tips_init();
+        }
+
+        function colse_loading() {
+            setTimeout(() => {
+                $("#div_loading").hide();
+            }, 200);
+        }
+
+        $(() => {
+            /*读取本地存储，根据个人爱好查看数据*/
+            let ps = localStorage.getItem(pathname + "pageSize");
+            if (!isNull(ps)) {
+                $('#pageSize').val(ps);
+            }
+            get();
+        });
+    </script>
+</head>
+
+<body>
+<div class="tableDom" style="width: calc(100%); height: calc(100% - 45px);min-width: 1900px;">
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 60px;">行号</th>
+            <th style="width: 80px;">日期</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+<div id="page_btn" style="margin: 10px auto 0;width: 100%; padding-left: 30px;text-align: center;">
+    每页显示&nbsp;
+    <select id="pageSize" onchange="showPage()">
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="30" selected>30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>&nbsp;行&nbsp;&nbsp;
+    <a href="#" onclick="pageIndex=0;showPage();return false;" title="首页">首页</a>&nbsp;&nbsp;<a href="#" onclick="pageIndex--;showPage();return false;" title="前一页">上一页</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;<label id="pageNum">1</label>&nbsp;&nbsp;/&nbsp;&nbsp;<label id="maxPageNum">1</label>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="#" onclick="pageIndex++;showPage();return false;" title="下一页">下一页</a>&nbsp;&nbsp;<a href="#" onclick="pageIndex=maxPageIndex;showPage();return false;" title="尾页">尾页</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;总共&nbsp;<label id="maxNum">1</label>&nbsp;行数据
+</div>
+<div id="div_loading" style="display: block;position: absolute;left: 0px;top: 0px;right: 0px;bottom: 0px;z-index: 9999;background: rgba(69,68,68,0.2);">
+    <img style="position: absolute;width: 37px;height: 37px;left: 50%;top: 50%;transform: translate(-50%,-50%)" src="/loading-1.gif">
+</div>
+</body>
+</html>

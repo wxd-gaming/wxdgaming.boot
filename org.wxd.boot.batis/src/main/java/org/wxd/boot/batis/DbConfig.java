@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.wxd.agent.io.FileUtil;
+import org.wxd.boot.lang.ObjectBase;
 import org.wxd.boot.str.xml.XmlUtil;
 
 import java.io.InputStream;
@@ -16,7 +17,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class DbConfig implements Serializable, Cloneable {
+public class DbConfig extends ObjectBase implements Serializable, Cloneable {
 
     /** 先从外部配置config 目录读取 然后再从resources 读取 */
     public static DbConfig loadConfigXml(String fileName) throws Exception {
@@ -38,8 +39,6 @@ public class DbConfig implements Serializable, Cloneable {
 
     /** 命名 */
     private String name;
-    /** 默认链接配置 */
-    private boolean defaultCfg = false;
     /** 链接池 */
     private boolean show_sql = false;
     /** 链接池 */

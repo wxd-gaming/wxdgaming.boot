@@ -9,10 +9,11 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.web.CookiePack;
-import org.wxd.boot.net.web.HttpDataFactory;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.BytesUnit;
 import org.wxd.boot.timer.MyClock;
@@ -37,9 +38,8 @@ import java.util.function.Function;
 @Slf4j
 public class HttpSession extends Session implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     /** 大于 5mb 的请求会使用硬盘帮忙存储，如果小5mb会使用内存 */
-    public static io.netty.handler.codec.http.multipart.HttpDataFactory factory = new DefaultHttpDataFactory(BytesUnit.Mb.toBytes(5), StandardCharsets.UTF_8);
+    public static HttpDataFactory factory = new DefaultHttpDataFactory(BytesUnit.Mb.toBytes(5), StandardCharsets.UTF_8);
 
     private long initTime = MyClock.millis();
     private long firstReadTime = 0;
@@ -280,7 +280,7 @@ public class HttpSession extends Session implements Serializable {
                 }
                 this.reqContent += queryString;
 
-                Map stringMap = HttpDataFactory.queryStringMap(queryString);
+                Map stringMap = HttpServer.queryStringMap(queryString);
                 this.getReqParams().putAll(stringMap);
             }
         }
@@ -333,7 +333,7 @@ public class HttpSession extends Session implements Serializable {
                     /*这里无需打印*/
                 }
 
-                this.reqContent = HttpDataFactory.httpData(this.getReqParams());
+                this.reqContent = HttpDataAction.httpData(this.getReqParams());
             }
         } finally {
             try {

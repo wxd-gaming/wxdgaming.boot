@@ -47,7 +47,11 @@
             <artifactId>org.wxd.boot.net</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.wxd</groupId>
+            <artifactId>org.wxd.boot.httpclient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

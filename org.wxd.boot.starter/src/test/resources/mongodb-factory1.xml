@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- @author: Troy.Chen(無心道, 15388152619) -->
+<dbFacrtoyConfig>
+    <dbConfig>
+        <name>default</name>
+        <show_sql>false</show_sql>
+        <connectionPool>false</connectionPool>
+        <batchSizeThread>2</batchSizeThread>
+        <dbHost>127.0.0.1</dbHost>
+        <dbPort>27017</dbPort>
+        <dbBase>org_wxd_bi</dbBase>
+        <dbUser></dbUser>
+        <dbPwd></dbPwd>
+    </dbConfig>
+</dbFacrtoyConfig>

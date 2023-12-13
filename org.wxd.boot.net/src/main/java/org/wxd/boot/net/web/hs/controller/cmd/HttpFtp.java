@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.wxd.agent.io.FileReadUtil;
 import org.wxd.agent.io.FileUtil;
 import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.net.controller.ann.TextMapping;
-import org.wxd.boot.net.web.HttpDataFactory;
-import org.wxd.boot.net.web.hs.HttpContentType;
 import org.wxd.boot.net.web.hs.HttpServer;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.net.web.hs.util.FtpFileUtil;
@@ -41,7 +41,7 @@ public interface HttpFtp {
             path = userHome;
         }
 
-        path = HttpDataFactory.urlDecoder(path);
+        path = HttpDataAction.urlDecoder(path);
         path = FileUtil.getCanonicalPath(path);
         if (!path.startsWith(userHome)) {
             path = userHome;

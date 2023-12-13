@@ -7,8 +7,8 @@ import org.wxd.agent.io.TemplatePack;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.collection.OfList;
 import org.wxd.boot.format.ByteFormat;
-import org.wxd.boot.net.web.HttpDataFactory;
-import org.wxd.boot.net.web.hs.HttpContentType;
+import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.JvmUtil;
@@ -73,7 +73,7 @@ public class FtpFileUtil implements Serializable {
         for (String s : pathList) {
             if (htmlPath.length() > 1) htmlPath += "/";
             htmlPath += s;
-            urls.add(new ObjMap().append("text", s).append("url", ftpUrl + "?path=" + HttpDataFactory.urlEncoder(htmlPath) + "&pageSize=" + pageSize));
+            urls.add(new ObjMap().append("text", s).append("url", ftpUrl + "?path=" + HttpDataAction.urlEncoder(htmlPath) + "&pageSize=" + pageSize));
         }
 
         int pageMaxNumber = 0;
@@ -126,7 +126,7 @@ public class FtpFileUtil implements Serializable {
                 datas.add(new ObjMap()
                         .append("id", String.valueOf(count))
                         .append("text", list.getName())
-                        .append("url", ftpUrl + "?path=" + HttpDataFactory.urlEncoder(listPath) + "&pageSize=" + pageSize)
+                        .append("url", ftpUrl + "?path=" + HttpDataAction.urlEncoder(listPath) + "&pageSize=" + pageSize)
                         .append("isFile", list.isFile())
                         .append("dateString", dateString)
                         .append("byteString", byteString)
@@ -162,7 +162,7 @@ public class FtpFileUtil implements Serializable {
                 String uriPath = httpSession.getUriPath();
                 httpSession.getReqParams().put("pageSize", pageSize);
                 httpSession.getReqParams().put("pageNumber", pageNumber);
-                String httpData = HttpDataFactory.httpDataEncoder(httpSession.getReqParams());
+                String httpData = HttpDataAction.httpDataEncoder(httpSession.getReqParams());
                 httpSession.getResHeaderMap().put(HttpHeaderNames.LOCATION.toString(), "/" + uriPath + "?" + httpData);
                 httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.TEMPORARY_REDIRECT, HttpContentType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));
             } else {
