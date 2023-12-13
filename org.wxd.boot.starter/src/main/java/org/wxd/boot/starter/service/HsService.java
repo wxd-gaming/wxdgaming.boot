@@ -1,5 +1,6 @@
 package org.wxd.boot.starter.service;
 
+import org.wxd.boot.ann.Sort;
 import org.wxd.boot.net.web.hs.HttpServer;
 import org.wxd.boot.starter.InjectorContext;
 import org.wxd.boot.starter.WebConfig;
@@ -32,10 +33,12 @@ public class HsService extends HttpServer implements IStart, IShutdown {
         }
     }
 
+    @Sort(999999)
     @Override public void start(InjectorContext iocInjector) throws Exception {
         open();
     }
 
+    @Sort(1)
     @Override public void shutdown() throws Exception {
         close();
     }

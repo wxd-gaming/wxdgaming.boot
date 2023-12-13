@@ -1,4 +1,4 @@
-package org.wxd.boot.ann;
+package org.wxd.boot.batis.ann;
 
 import java.lang.annotation.*;
 

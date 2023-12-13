@@ -58,6 +58,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
 
     public RedisDataHelper(DataWrapper dataWrapper, DbConfig dbConfig) {
         super(dataWrapper, dbConfig);
+        log.info("{} 启动 redis db host={} serviceName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName());
     }
 
     public void initDao() {

@@ -34,6 +34,11 @@
         </dependency>
         <dependency>
             <groupId>org.wxd</groupId>
+            <artifactId>org.wxd.boot.batis.mongodb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wxd</groupId>
             <artifactId>org.wxd.boot.batis.sql</artifactId>
             <version>${project.version}</version>
         </dependency>

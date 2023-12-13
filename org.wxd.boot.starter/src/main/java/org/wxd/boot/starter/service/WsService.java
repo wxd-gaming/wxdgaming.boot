@@ -1,5 +1,6 @@
 package org.wxd.boot.starter.service;
 
+import org.wxd.boot.ann.Sort;
 import org.wxd.boot.net.web.ws.WebSession;
 import org.wxd.boot.net.web.ws.WebSocketServer;
 import org.wxd.boot.starter.InjectorContext;
@@ -31,10 +32,12 @@ public class WsService extends WebSocketServer<WebSession> implements IStart, IS
         }
     }
 
+    @Sort(999999)
     @Override public void start(InjectorContext iocInjector) throws Exception {
         open();
     }
 
+    @Sort(1)
     @Override public void shutdown() throws Exception {
         close();
     }

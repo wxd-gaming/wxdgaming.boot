@@ -1,5 +1,6 @@
 package org.wxd.boot.starter.service;
 
+import org.wxd.boot.ann.Sort;
 import org.wxd.boot.net.ts.TcpServer;
 import org.wxd.boot.net.ts.TcpSession;
 import org.wxd.boot.starter.InjectorContext;
@@ -25,10 +26,12 @@ public class TsService extends TcpServer<TcpSession> implements IStart, IShutdow
                 .initBootstrap();
     }
 
+    @Sort(999999)
     @Override public void start(InjectorContext iocInjector) throws Exception {
         open();
     }
 
+    @Sort(1)
     @Override public void shutdown() throws Exception {
         close();
     }

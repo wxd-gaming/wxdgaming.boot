@@ -73,6 +73,8 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         if (dbConfig.getBatchSizeThread() > 0) {
             initBatchPool(dbConfig.getBatchSizeThread());
         }
+
+        log.info("{} 启动 mysql host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
 
     public DbSource getDruidDataSource() {

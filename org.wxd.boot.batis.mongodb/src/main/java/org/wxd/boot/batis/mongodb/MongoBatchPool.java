@@ -25,7 +25,7 @@ public class MongoBatchPool extends BatchPool {
     private MongoDataHelper dataHelper;
 
     public MongoBatchPool(MongoDataHelper dataHelper, String threadName, int batchThreadSize) {
-        super(threadName, batchThreadSize);
+        super(dataHelper.getDbConfig().getName() + "-" + threadName, batchThreadSize);
         this.dataHelper = dataHelper;
     }
 

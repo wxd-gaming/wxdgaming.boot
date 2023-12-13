@@ -145,6 +145,7 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
         if (dbConfig.getBatchSizeThread() > 0) {
             initBatchPool(dbConfig.getBatchSizeThread());
         }
+        log.info("{} 启动 mongo db host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
 
     public MongoDataHelper initBatchPool(int batchThreadSize) {
