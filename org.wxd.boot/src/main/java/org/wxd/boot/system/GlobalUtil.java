@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  **/
 public class GlobalUtil {
 
-    public static final AtomicBoolean Shutting = new AtomicBoolean();
+    public static final AtomicBoolean DEBUG = new AtomicBoolean();
+    public static final AtomicBoolean SHUTTING = new AtomicBoolean();
 
     public static void exception(Object msg, Throwable throwable) {
 

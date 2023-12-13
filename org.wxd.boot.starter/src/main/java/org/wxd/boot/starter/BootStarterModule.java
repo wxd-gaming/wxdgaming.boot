@@ -3,8 +3,10 @@ package org.wxd.boot.starter;
 import org.wxd.agent.function.ConsumerE2;
 import org.wxd.agent.system.ReflectContext;
 import org.wxd.boot.batis.DbConfig;
+import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.starter.batis.*;
 import org.wxd.boot.starter.service.*;
+import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.xml.XmlUtil;
 import org.wxd.boot.system.JvmUtil;
 
@@ -33,6 +35,9 @@ class BootStarterModule extends SystemModule {
 
         ConsumerE2<Class, ServerConfig> action = (aClass, o) -> {
             if (o.getPort() > 0) {
+                if (StringUtil.emptyOrNull(o.getName())) {
+                    o.setName(MappingFactory.FINAL_DEFAULT);
+                }
                 Object newInstance = aClass.getDeclaredConstructor(o.getClass()).newInstance(o);
                 bindSingleton(aClass, newInstance);
             }
@@ -40,6 +45,9 @@ class BootStarterModule extends SystemModule {
 
         ConsumerE2<Class, DbConfig> dbAction = (aClass, o) -> {
             if (o.getDbPort() > 0) {
+                if (StringUtil.emptyOrNull(o.getName())) {
+                    o.setName(MappingFactory.FINAL_DEFAULT);
+                }
                 Object newInstance = aClass.getDeclaredConstructor(o.getClass()).newInstance(o);
                 bindSingleton(aClass, newInstance);
             }

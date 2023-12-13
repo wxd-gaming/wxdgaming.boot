@@ -99,7 +99,7 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
 
     @Override
     public String toString() {
-        return "tcp-server-" + this.getName() + ", localhost:" + this.getPort();
+        return "tcp-server " + this.getName() + " " + getWanIp() + ":" + this.getPort();
     }
 
 }

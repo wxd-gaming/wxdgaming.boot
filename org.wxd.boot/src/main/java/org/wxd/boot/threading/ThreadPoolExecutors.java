@@ -93,7 +93,7 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
         WxThread currentThread = (WxThread) Thread.currentThread();
         while (!terminating.get()) {
             try {
-                if (shutdowning.get() || GlobalUtil.Shutting.get()) {
+                if (shutdowning.get() || GlobalUtil.SHUTTING.get()) {
                     if (queue.isEmpty()) {
                         break;
                     }

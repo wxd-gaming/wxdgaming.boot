@@ -146,16 +146,18 @@ public class HttpSession extends Session implements Serializable {
     public StringBuilder showLog() {
         if (showLogStringBuilder == null) {
             showLogStringBuilder = new StringBuilder();
-            showLogStringBuilder
-                    .append("\n")
-                    .append("\n=============================================请求================================================")
-                    .append("\n").append(request.method()).append(" ").append(this.getDomainName()).append("/").append(this.getUriPath())
-                    .append("\nSession：").append(NioFactory.getCtxName(this.getChannelContext())).append(" ").append(this.getId()).append("; Remote-Host：").append(this.getRemoteAddress()).append("; Local-Host：").append(this.getLocalAddress())
-                    .append(";\nUser-Agent：").append(this.header(HttpHeaderNames.USER_AGENT))
-                    .append(";\nContent-type：").append(this.getReqContentType())
-                    .append(";\nAccept-Encoding：").append(this.header(HttpHeaderNames.ACCEPT_ENCODING))
-                    .append(";\n").append(HttpHeaderNames.COOKIE).append("：").append(this.header(HttpHeaderNames.COOKIE))
-                    .append(";\n参数：").append(this.getReqContent());
+            if (request != null) {
+                showLogStringBuilder
+                        .append("\n")
+                        .append("\n=============================================请求================================================")
+                        .append("\n").append(request.method()).append(" ").append(this.getDomainName()).append(this.getUriPath())
+                        .append("\nSession：").append(NioFactory.getCtxName(this.getChannelContext())).append(" ").append(this.getId()).append("; Remote-Host：").append(this.getRemoteAddress()).append("; Local-Host：").append(this.getLocalAddress())
+                        .append(";\nUser-Agent：").append(this.header(HttpHeaderNames.USER_AGENT))
+                        .append(";\nContent-type：").append(this.getReqContentType())
+                        .append(";\nAccept-Encoding：").append(this.header(HttpHeaderNames.ACCEPT_ENCODING))
+                        .append(";\n").append(HttpHeaderNames.COOKIE).append("：").append(this.header(HttpHeaderNames.COOKIE))
+                        .append(";\n参数：").append(this.getReqContent());
+            }
         }
         return showLogStringBuilder;
     }
@@ -209,11 +211,6 @@ public class HttpSession extends Session implements Serializable {
         if (uriPathString.length() > 1) {
             if (uriPathString.endsWith("/")) {
                 uriPathString = uriPathString.substring(0, uriPathString.length() - 1);
-            }
-            if (uriPathString.startsWith("/")) {
-                if (uriPathString.length() > 1) {
-                    uriPathString = uriPathString.substring(1);
-                }
             }
         }
 

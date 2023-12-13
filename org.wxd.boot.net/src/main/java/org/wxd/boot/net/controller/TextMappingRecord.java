@@ -13,6 +13,8 @@ import java.lang.reflect.Method;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-12-12 20:13
  */
-public record TextMappingRecord(String path, Object instance, Method method, String executorName, String queueName) {
+public record TextMappingRecord(String serviceName, String remarks, String path,
+        Object instance, Method method,
+        String executorName, String queueName) {
 
 }

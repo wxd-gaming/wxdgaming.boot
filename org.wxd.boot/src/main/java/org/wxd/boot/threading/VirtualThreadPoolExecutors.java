@@ -86,7 +86,7 @@ public final class VirtualThreadPoolExecutors implements Executor {
         @Override public void run(VirtualThread currentThread) {
             while (!terminating.get()) {
                 try {
-                    if (shutdowning.get() || GlobalUtil.Shutting.get()) {
+                    if (shutdowning.get() || GlobalUtil.SHUTTING.get()) {
                         if (queue.isEmpty()) {
                             break;
                         }

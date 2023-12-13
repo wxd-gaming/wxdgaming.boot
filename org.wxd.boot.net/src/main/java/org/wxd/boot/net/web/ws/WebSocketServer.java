@@ -163,7 +163,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
 
     @Override
     public String toString() {
-        return "web-socket-server-" + this.getName();
+        return "web-server " + this.getName();
     }
 
     /**

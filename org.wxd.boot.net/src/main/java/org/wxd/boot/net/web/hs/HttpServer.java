@@ -214,10 +214,10 @@ public class HttpServer extends NioServer<HttpSession> {
                         String htmlPath = resourcesPath() + "/" + session.getUriPath();
                         try {
                             byte[] readFileToBytes = null;
-                            InputStream resource = FileUtil.findInputStream(htmlPath);
+                            InputStream resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
                             if (resource == null) {
                                 htmlPath = "html/" + session.getUriPath();
-                                resource = FileUtil.findInputStream(htmlPath);
+                                resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
                             }
 
                             if (resource != null) {
@@ -459,7 +459,16 @@ public class HttpServer extends NioServer<HttpSession> {
     protected String resourcesPath;
     protected Map<String, String> headerMap = new LinkedHashMap<>();
     protected ExecutorVirtualServices executorVirtualServices = null;
+    protected ClassLoader resourceClassLoader = this.getClass().getClassLoader();
 
+    @Override public void open() {
+        super.open();
+        MappingFactory.textMappingRecord(getName())
+                .forEach(v -> {
+                    log.debug("http://{}:{}{}", this.getWanIp(), this.getPort(), v.path());
+                });
+
+    }
 
     @Override protected int idleTime() {
         int idleTime = JvmUtil.getProperty(JvmUtil.Netty_Idle_Time_Http_Server, 20, Integer::valueOf);
@@ -545,13 +554,9 @@ public class HttpServer extends NioServer<HttpSession> {
         return this;
     }
 
-    public String toString(String url) {
-        return "http://localhost:" + port + "/" + url;
-    }
-
     @Override
     public String toString() {
-        return "http-server-" + this.getName() + ", " + toString("");
+        return "http-server " + this.getName() + " http://" + getWanIp() + ":" + port;
     }
 
     /** 提供文件下载功能 */
@@ -651,7 +656,7 @@ public class HttpServer extends NioServer<HttpSession> {
                 response.headers().set(HttpHeaderNames.EXPIRES.toString(), DateFormatter.format(new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2))));
             }
 
-            if (session.isShowLog()) {
+            if (session.isShowLog() || log.isDebugEnabled()) {
                 StringBuilder stringBuilder = session.showLog();
                 if (!stringBuilder.isEmpty()) {
                     if (!session.getResponseContent().isEmpty()) {

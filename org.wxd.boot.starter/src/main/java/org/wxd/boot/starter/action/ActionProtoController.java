@@ -12,6 +12,7 @@ import org.wxd.boot.net.controller.ann.ProtoController;
 import org.wxd.boot.net.controller.ann.ProtoMapping;
 import org.wxd.boot.net.message.MessagePackage;
 import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.str.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -91,9 +92,13 @@ public class ActionProtoController {
 
             int messageId = MessagePackage.getMessageId(messageClass);
 
-            MappingFactory.putProto(serviceName, messageId, instance, method);
+            String remarks = protoMapping.remarks();
+            if (StringUtil.emptyOrNull(remarks)) {
+                remarks = instance.getClass().getName() + "." + method.getName();
+            }
+            MappingFactory.putProto(serviceName, remarks, messageId, instance, method);
             /**消息的中午注解隐射*/
-            MessagePackage.MsgName2RemarkMap.put(messageClass.getName(), protoMapping.remarks());
+            MessagePackage.MsgName2RemarkMap.put(messageClass.getName(), remarks);
             if (log.isDebugEnabled()) {
                 if (msize > 0) {
                     stringBuilder.append('\n');
@@ -101,7 +106,7 @@ public class ActionProtoController {
 
                 stringBuilder
                         .append("消息 = ").append(messageId).append(":").append(messageClass.getName()).append("\n")
-                        .append("备注 = ").append(protoMapping.remarks()).append("\n")
+                        .append("备注 = ").append(remarks).append("\n")
                         .append("方法 = ").append(method.getName())
                 ;
             }

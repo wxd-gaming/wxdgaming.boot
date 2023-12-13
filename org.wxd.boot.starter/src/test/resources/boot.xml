@@ -5,7 +5,7 @@
         <name>default</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
-        <port>1700</port>
+        <port>17000</port>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
     </server>
@@ -13,7 +13,7 @@
         <name>default</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
-        <port>1800</port>
+        <port>18000</port>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <headers/>
@@ -22,7 +22,7 @@
         <name>s2s</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
-        <port>1801</port>
+        <port>18001</port>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <headers/>
@@ -31,7 +31,7 @@
         <name>default</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
-        <port>1900</port>
+        <port>19000</port>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <resourcesPath></resourcesPath>
@@ -54,7 +54,7 @@
         <name>sdk</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
-        <port>1901</port>
+        <port>19001</port>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <resourcesPath></resourcesPath>

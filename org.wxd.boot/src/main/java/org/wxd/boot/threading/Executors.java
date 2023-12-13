@@ -100,7 +100,7 @@ public final class Executors implements Serializable {
 
         @Override public void run() {
             Tick tick = new Tick(50, 3, TimeUnit.SECONDS);
-            while (!GlobalUtil.Shutting.get()) {
+            while (!GlobalUtil.SHUTTING.get()) {
                 try {
                     try {
                         tick.waitNext();
@@ -138,7 +138,7 @@ public final class Executors implements Serializable {
 
         @Override public void run() {
             Tick tick = new Tick(1, 2, TimeUnit.MILLISECONDS);
-            while (!GlobalUtil.Shutting.get()) {
+            while (!GlobalUtil.SHUTTING.get()) {
                 try {
                     try {
                         tick.waitNext();

@@ -51,7 +51,7 @@ public class Tick extends ObjectBase {
     /** 同步等待 */
     public void waitNext() {
         try {
-            while (!GlobalUtil.Shutting.get() && !need()) {
+            while (!GlobalUtil.SHUTTING.get() && !need()) {
                 Thread.sleep(heart);
             }
         } catch (InterruptedException e) {

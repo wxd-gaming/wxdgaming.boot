@@ -1,7 +1,10 @@
 package org.wxd.boot.starter;
 
+import com.google.inject.Singleton;
 import org.wxd.agent.exception.Throw;
 import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.net.controller.ann.ProtoController;
+import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.starter.action.ActionConfig;
 import org.wxd.boot.starter.config.Config;
 import org.wxd.boot.starter.i.IConfigInit;
@@ -35,6 +38,11 @@ class StarterModule extends SystemModule {
                 throw Throw.as(throwable);
             }
         });
+
+        reflectContext.classWithAnnotated(Singleton.class).forEach(this::bindSingleton);
+        reflectContext.classWithAnnotated(TextController.class).forEach(this::bindSingleton);
+        reflectContext.classWithAnnotated(ProtoController.class).forEach(this::bindSingleton);
+
     }
 
 }

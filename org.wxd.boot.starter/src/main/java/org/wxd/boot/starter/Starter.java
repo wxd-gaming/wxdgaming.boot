@@ -96,7 +96,7 @@ public class Starter {
             final Logger log = LoggerFactory.getLogger(Starter.class);
             JvmUtil.addShutdownHook(() -> {
                 log.info("------------------------------停服信号处理------------------------------");
-                GlobalUtil.Shutting.set(true);
+                GlobalUtil.SHUTTING.set(true);
                 {
                     STVFunction1<Object, IShutdownBefore> shutdownBefore = IShutdownBefore::shutdownBefore;
                     curIocInjector().beanStream(IShutdownBefore.class, shutdownBefore).forEach(object -> {

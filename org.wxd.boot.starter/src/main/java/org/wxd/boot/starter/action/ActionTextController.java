@@ -76,10 +76,15 @@ public class ActionTextController {
             String url = parentUrl;
             if (StringUtil.emptyOrNull(url)) {
                 url = instance.getClass().getSimpleName().toLowerCase();
-                url = url.replace("controller", "")
-                        .replace("handler", "")
-                        .replace("service", "")
-                        .replace("server", "");
+                if (url.endsWith("controller")) {
+                    url = url.replace("controller", "");
+                } else if (url.endsWith("handler")) {
+                    url = url.replace("handler", "");
+                } else if (url.endsWith("service")) {
+                    url = url.replace("service", "");
+                } else if (url.endsWith("server")) {
+                    url = url.replace("server", "");
+                }
             } else if ("*".equals(url) || "/".equals(url)) {
                 url = "";
             } else {
@@ -96,8 +101,9 @@ public class ActionTextController {
             stringBuilder
                     .append("\n")
                     .append("===========================================Cmd Controller==================================================")
-                    .append("\n").append("class   = ").append(instance.getClass().getSimpleName())
-                    .append("\n").append("url     = ").append(url)
+                    .append("\n").append("serviceName = ").append(serviceName)
+                    .append("\n").append("class       = ").append(instance.getClass())
+                    .append("\n").append("url         = ").append(url)
                     .append("\n")
                     .append("\n");
 
@@ -124,14 +130,16 @@ public class ActionTextController {
                     } else {
                         cmdUrl += mappingName.toLowerCase().trim();
                     }
+                    cmdUrl = "/" + cmdUrl;
 
-                    MappingFactory.putText(serviceName, cmdUrl, instance, method);
+                    String remarks = mapping.remarks();
+                    if (StringUtil.emptyOrNull(remarks)) {
+                        remarks = cmdUrl;
+                    }
+
+                    MappingFactory.putText(serviceName, remarks, cmdUrl, instance, method);
 
                     if (log.isDebugEnabled()) {
-                        String remarks = mapping.remarks();
-                        if (StringUtil.emptyOrNull(remarks)) {
-                            remarks = cmdUrl;
-                        }
                         stringBuilder.append(StringUtil.padRight(remarks, 50, ' ')).append("\t, ").append(cmdUrl).append("\n");
                     }
                 }
