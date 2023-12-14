@@ -6,6 +6,7 @@ import com.google.inject.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.agent.function.STVFunction1;
 import org.wxd.boot.agent.io.FileWriteUtil;
@@ -74,6 +75,13 @@ public class Starter {
                 } catch (Throwable t0) {}
             }
         });
+
+        GlobalUtil.exceptionCall = new Consumer2<Object, Throwable>() {
+            @Override public void accept(Object o, Throwable throwable) {
+                FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
+            }
+        };
+
         try {
             ReflectContext reflectContext = builder.build();
 

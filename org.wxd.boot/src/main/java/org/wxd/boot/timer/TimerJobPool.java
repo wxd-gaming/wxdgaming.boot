@@ -31,12 +31,12 @@ public class TimerJobPool implements Serializable, ICheckTimerRunnable {
     @Accessors(chain = true)
     protected List<ScheduledInfo> jobList = new ArrayList<>();
 
-    public void start() {
+    public void open() {
         job = Executors.getDefaultExecutor().scheduleAtFixedDelay("scheduled-timer", this, 10, 10, TimeUnit.MILLISECONDS);
-        JvmUtil.addShutdownHook(this::shutdownBefore);
+        JvmUtil.addShutdownHook(this::close);
     }
 
-    void shutdownBefore() {
+    void close() {
         log.info("------------------------------关闭定时任务调度器------------------------------");
         if (job != null) {
             job.cancel();

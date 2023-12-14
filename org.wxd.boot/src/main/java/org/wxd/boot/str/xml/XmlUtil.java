@@ -46,6 +46,7 @@ public class XmlUtil {
      */
     public static <T> T fromXml4File(String path, Class<T> type) {
         final InputStream inputStream = FileUtil.findInputStream(path);
+        if (inputStream == null) throw new RuntimeException("找不到文件：" + path);
         return fromXml(inputStream, type);
     }
 

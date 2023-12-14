@@ -1,5 +1,8 @@
 package org.wxd.boot.system;
 
+import org.slf4j.LoggerFactory;
+import org.wxd.boot.agent.function.Consumer2;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -13,8 +16,14 @@ public class GlobalUtil {
     public static final AtomicBoolean DEBUG = new AtomicBoolean();
     public static final AtomicBoolean SHUTTING = new AtomicBoolean();
 
-    public static void exception(Object msg, Throwable throwable) {
+    public static Consumer2<Object, Throwable> exceptionCall = null;
 
+    public static void exception(Object msg, Throwable throwable) {
+        if (exceptionCall != null) {
+            exceptionCall.accept(msg, throwable);
+        } else {
+            LoggerFactory.getLogger(GlobalUtil.class).error("{}", msg, throwable);
+        }
     }
 
 }
