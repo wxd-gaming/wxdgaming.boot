@@ -1,7 +1,7 @@
 package org.wxd.boot.str;
 
 
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.lang.RandomUtils;
 
 import java.io.BufferedReader;

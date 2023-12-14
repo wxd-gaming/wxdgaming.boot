@@ -8,7 +8,7 @@ import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.str.StringUtil;
 
 import java.io.IOException;

@@ -2,7 +2,7 @@ package org.wxd.boot.starter;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.function.ConsumerE1;
+import org.wxd.boot.agent.function.ConsumerE1;
 import org.wxd.boot.collection.concurrent.ConcurrentTable;
 
 import java.io.Serializable;

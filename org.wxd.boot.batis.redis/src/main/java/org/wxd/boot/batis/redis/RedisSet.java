@@ -1,6 +1,6 @@
 package org.wxd.boot.batis.redis;
 
-import org.wxd.agent.function.ConsumerE1;
+import org.wxd.boot.agent.function.ConsumerE1;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;

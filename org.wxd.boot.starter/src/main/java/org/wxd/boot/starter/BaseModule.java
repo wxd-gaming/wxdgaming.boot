@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.system.ReflectContext;
 
 /**
  * 基础模块

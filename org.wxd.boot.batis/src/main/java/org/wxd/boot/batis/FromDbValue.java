@@ -1,7 +1,7 @@
 package org.wxd.boot.batis;
 
 import com.google.protobuf.Message;
-import org.wxd.agent.zip.GzipUtil;
+import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.lang.ConvertUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.str.json.ProtobufSerializer;

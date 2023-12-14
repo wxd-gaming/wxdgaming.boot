@@ -2,7 +2,7 @@ package org.wxd.boot.batis.sql;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.struct.DataChecked;
 import org.wxd.boot.collection.ObjMap;

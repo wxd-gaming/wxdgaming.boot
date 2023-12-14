@@ -1,8 +1,8 @@
 package org.wxd.boot.batis.sql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.io.FileUtil;
-import org.wxd.agent.io.FileWriteUtil;
+import org.wxd.boot.agent.io.FileUtil;
+import org.wxd.boot.agent.io.FileWriteUtil;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.batis.DataBuilder;
 import org.wxd.boot.batis.DataWrapper;

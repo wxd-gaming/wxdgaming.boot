@@ -8,7 +8,7 @@ import org.bson.BsonInt32;
 import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.wxd.agent.function.ConsumerE1;
+import org.wxd.boot.agent.function.ConsumerE1;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

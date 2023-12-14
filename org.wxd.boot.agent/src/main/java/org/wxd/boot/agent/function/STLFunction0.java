@@ -1,4 +1,4 @@
-package org.wxd.agent.function;
+package org.wxd.boot.agent.function;
 
 /**
  * 使用方式 带返回值

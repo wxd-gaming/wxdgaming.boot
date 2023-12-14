@@ -1,7 +1,7 @@
 package org.wxd.boot.net.controller.cmd;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.wxd.agent.system.Base64Util;
+import org.wxd.boot.agent.system.Base64Util;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.IAuth;

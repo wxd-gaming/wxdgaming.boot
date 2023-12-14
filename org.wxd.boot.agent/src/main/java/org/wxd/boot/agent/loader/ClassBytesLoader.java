@@ -1,8 +1,8 @@
-package org.wxd.agent.loader;
+package org.wxd.boot.agent.loader;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.JDKVersion;
+import org.wxd.boot.agent.JDKVersion;
 
 import javax.tools.JavaFileObject;
 import java.io.File;

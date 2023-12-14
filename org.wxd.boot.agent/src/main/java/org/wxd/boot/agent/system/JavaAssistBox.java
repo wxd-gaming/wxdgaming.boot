@@ -1,8 +1,8 @@
-package org.wxd.agent.system;
+package org.wxd.boot.agent.system;
 
 import javassist.*;
 import lombok.Getter;
-import org.wxd.agent.function.ConsumerE1;
+import org.wxd.boot.agent.function.ConsumerE1;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.zip.GzipUtil;
+import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.net.handler.CmdService;

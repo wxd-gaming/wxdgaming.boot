@@ -1,10 +1,10 @@
 package org.wxd.boot.batis.sql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.io.FileUtil;
-import org.wxd.agent.zip.OutZipFile;
-import org.wxd.agent.zip.ReadZipFile;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.io.FileUtil;
+import org.wxd.boot.agent.zip.OutZipFile;
+import org.wxd.boot.agent.zip.ReadZipFile;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.batis.DataBuilder;
 import org.wxd.boot.batis.DataHelper;

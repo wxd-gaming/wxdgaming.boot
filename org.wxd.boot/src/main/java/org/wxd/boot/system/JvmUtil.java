@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.agent.io.FileUtil;
+import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.str.StringUtil;
 
 import java.io.File;

@@ -1,11 +1,11 @@
-package org.wxd.agent.zip;
+package org.wxd.boot.agent.zip;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.io.FileUtil;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.io.FileUtil;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

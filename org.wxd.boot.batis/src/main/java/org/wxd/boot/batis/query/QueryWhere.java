@@ -1,8 +1,8 @@
 package org.wxd.boot.batis.query;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.function.SLFunction0;
-import org.wxd.agent.function.SLFunction1;
+import org.wxd.boot.agent.function.SLFunction0;
+import org.wxd.boot.agent.function.SLFunction1;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.lang.Tuple4;
 

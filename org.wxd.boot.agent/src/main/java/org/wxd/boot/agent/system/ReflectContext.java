@@ -1,11 +1,11 @@
-package org.wxd.agent.system;
+package org.wxd.boot.agent.system;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.slf4j.LoggerFactory;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.loader.ClassDirLoader;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.loader.ClassDirLoader;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -221,7 +221,7 @@ public class ReflectContext {
                             if (type.equals("file")) {
                                 String dir = url.getPath().substring(0, url.getPath().lastIndexOf(packagePath));
                                 findClassByFile(dir, url.getPath(), consumer);
-                            } else if (type.equals("jar")) {
+                            } else if (type.equals("jar") || type.equals("zip")) {
                                 findClassByJar(url.getPath(), consumer);
                             }
                         } else {

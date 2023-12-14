@@ -3,7 +3,7 @@ package org.wxd.boot.batis;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.wxd.agent.io.FileUtil;
+import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.lang.ObjectBase;
 import org.wxd.boot.str.xml.XmlUtil;
 

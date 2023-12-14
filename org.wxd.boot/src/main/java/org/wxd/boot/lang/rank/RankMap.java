@@ -2,8 +2,8 @@ package org.wxd.boot.lang.rank;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Getter;
-import org.wxd.agent.function.Consumer2;
-import org.wxd.agent.function.Predicate2;
+import org.wxd.boot.agent.function.Consumer2;
+import org.wxd.boot.agent.function.Predicate2;
 import org.wxd.boot.lang.Tuple2;
 
 import java.util.*;

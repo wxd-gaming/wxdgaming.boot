@@ -1,4 +1,4 @@
-package org.wxd.agent.function;
+package org.wxd.boot.agent.function;
 
 /**
  * 没有返回值，没有参数的方法

@@ -1,6 +1,6 @@
 package org.wxd.boot.batis.code;
 
-import org.wxd.agent.io.TemplatePack;
+import org.wxd.boot.agent.io.TemplatePack;
 import org.wxd.boot.batis.EntityTable;
 
 import java.io.Serializable;

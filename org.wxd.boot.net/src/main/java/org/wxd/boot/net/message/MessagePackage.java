@@ -2,8 +2,8 @@ package org.wxd.boot.net.message;
 
 import com.google.protobuf.GeneratedMessageV3;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.str.StringUtil;
 
 import java.lang.reflect.Method;

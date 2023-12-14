@@ -5,7 +5,7 @@ package org.wxd.boot.batis.sql.mysql;// package org.wxd.boot.batis.sql.mysql;
 // import com.mchange.v2.log.MLevel;
 // import com.mchange.v2.log.jdk14logging.Jdk14MLog;
 // import lombok.extern.slf4j.Slf4j;
-// import org.wxd.agent.exception.Throw;
+// import org.wxd.boot.agent.exception.Throw;
 //
 // import java.io.Serializable;
 // import java.sql.Connection;

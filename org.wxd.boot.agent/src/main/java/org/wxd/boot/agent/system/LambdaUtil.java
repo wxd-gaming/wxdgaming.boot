@@ -1,8 +1,9 @@
-package org.wxd.agent.system;
+package org.wxd.boot.agent.system;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.function.*;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.function.*;
 
 import java.io.Serializable;
 import java.lang.invoke.*;

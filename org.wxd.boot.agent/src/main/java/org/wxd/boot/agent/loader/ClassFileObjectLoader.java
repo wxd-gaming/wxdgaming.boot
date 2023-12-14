@@ -1,4 +1,4 @@
-package org.wxd.agent.loader;
+package org.wxd.boot.agent.loader;
 
 
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package org.wxd.boot.batis.struct;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;

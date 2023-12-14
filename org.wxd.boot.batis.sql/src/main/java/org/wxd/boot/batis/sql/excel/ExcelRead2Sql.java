@@ -2,8 +2,8 @@ package org.wxd.boot.batis.sql.excel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.io.TemplatePack;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.io.TemplatePack;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.code.CodeLan;

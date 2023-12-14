@@ -1,7 +1,7 @@
 package org.wxd.boot.batis.sql;
 
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.function.PredicateE;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.function.PredicateE;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.ConvertUtil;
 import org.wxd.boot.lang.Tuple2;

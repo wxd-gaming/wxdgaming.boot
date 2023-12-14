@@ -1,6 +1,6 @@
 package org.wxd.boot.format.data;
 
-import org.wxd.agent.io.Objects;
+import org.wxd.boot.agent.io.Objects;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.str.xml.XmlUtil;
 

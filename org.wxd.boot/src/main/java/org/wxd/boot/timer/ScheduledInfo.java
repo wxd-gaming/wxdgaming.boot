@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.system.AnnUtil;
+import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;

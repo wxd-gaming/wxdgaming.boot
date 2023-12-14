@@ -3,7 +3,7 @@ package org.wxd.boot.batis.sql;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.batis.BatchPool;
 import org.wxd.boot.batis.DataBuilder;
 import org.wxd.boot.batis.DataWrapper;

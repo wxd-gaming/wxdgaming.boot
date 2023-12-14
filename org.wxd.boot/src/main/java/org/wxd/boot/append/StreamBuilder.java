@@ -1,7 +1,7 @@
 package org.wxd.boot.append;
 
 
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.str.StringUtil;
 
 import java.io.ByteArrayOutputStream;

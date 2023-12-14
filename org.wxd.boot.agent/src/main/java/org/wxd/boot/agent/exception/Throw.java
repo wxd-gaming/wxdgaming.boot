@@ -1,4 +1,4 @@
-package org.wxd.agent.exception;
+package org.wxd.boot.agent.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

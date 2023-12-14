@@ -1,6 +1,6 @@
-package org.wxd.agent.loader;
+package org.wxd.boot.agent.loader;
 
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 
 import javax.tools.SimpleJavaFileObject;
 import java.io.BufferedReader;

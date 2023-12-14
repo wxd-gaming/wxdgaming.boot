@@ -1,10 +1,10 @@
 package org.wxd.boot.batis;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.function.SLFunction0;
-import org.wxd.agent.function.SLFunction1;
-import org.wxd.agent.system.AnnUtil;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.function.SLFunction0;
+import org.wxd.boot.agent.function.SLFunction1;
+import org.wxd.boot.agent.system.AnnUtil;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.batis.enums.ColumnType;
 import org.wxd.boot.batis.struct.DbColumn;

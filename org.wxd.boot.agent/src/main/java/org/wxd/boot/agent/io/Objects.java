@@ -1,6 +1,7 @@
-package org.wxd.agent.io;
+package org.wxd.boot.agent.io;
 
-import org.wxd.agent.exception.Throw;
+
+import org.wxd.boot.agent.exception.Throw;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

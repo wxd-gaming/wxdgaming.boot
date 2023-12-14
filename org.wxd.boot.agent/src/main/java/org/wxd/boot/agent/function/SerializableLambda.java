@@ -1,7 +1,8 @@
-package org.wxd.agent.function;
+package org.wxd.boot.agent.function;
 
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.system.MethodUtil;
+
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.system.MethodUtil;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;

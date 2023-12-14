@@ -1,8 +1,8 @@
-package org.wxd.agent.io;
+package org.wxd.boot.agent.io;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.function.ConsumerE1;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.function.ConsumerE1;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -19,9 +19,6 @@ import java.util.Map;
  **/
 @Slf4j
 public class FileWriteUtil implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
 
     /**
      * 覆盖 写入文件

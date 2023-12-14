@@ -1,4 +1,4 @@
-package org.wxd.agent.loader;
+package org.wxd.boot.agent.loader;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

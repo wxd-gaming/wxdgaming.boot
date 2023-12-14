@@ -1,7 +1,7 @@
 package org.wxd.boot.starter;
 
-import org.wxd.agent.function.ConsumerE2;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.function.ConsumerE2;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DbConfig;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.starter.batis.*;

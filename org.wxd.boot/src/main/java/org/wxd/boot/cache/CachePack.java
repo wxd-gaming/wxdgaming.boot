@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.agent.function.ConsumerE2;
+import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.collection.concurrent.ConcurrentList;
 import org.wxd.boot.threading.Executors;
 import org.wxd.boot.threading.ICheckTimerRunnable;

@@ -1,4 +1,4 @@
-package org.wxd.agent.loader;
+package org.wxd.boot.agent.loader;
 
 import javax.tools.SimpleJavaFileObject;
 import java.io.ByteArrayOutputStream;

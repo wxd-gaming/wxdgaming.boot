@@ -1,4 +1,4 @@
-package org.wxd.agent.function;
+package org.wxd.boot.agent.function;
 
 import java.io.Serializable;
 

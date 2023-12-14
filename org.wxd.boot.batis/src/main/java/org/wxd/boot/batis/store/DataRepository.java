@@ -1,8 +1,8 @@
 package org.wxd.boot.batis.store;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.batis.struct.DbBean;

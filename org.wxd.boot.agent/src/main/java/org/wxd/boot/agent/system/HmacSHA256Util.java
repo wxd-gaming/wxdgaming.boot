@@ -1,7 +1,7 @@
-package org.wxd.agent.system;
+package org.wxd.boot.agent.system;
 
 
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

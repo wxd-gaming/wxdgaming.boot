@@ -1,8 +1,8 @@
 package org.wxd.boot.io;
 
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.function.ConsumerE1;
-import org.wxd.agent.function.FunctionE;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.function.ConsumerE1;
+import org.wxd.boot.agent.function.FunctionE;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;

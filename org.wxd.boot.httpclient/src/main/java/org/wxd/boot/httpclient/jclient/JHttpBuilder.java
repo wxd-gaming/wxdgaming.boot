@@ -2,7 +2,7 @@ package org.wxd.boot.httpclient.jclient;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;

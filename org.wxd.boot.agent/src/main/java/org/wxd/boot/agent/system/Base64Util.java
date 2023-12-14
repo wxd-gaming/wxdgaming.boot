@@ -1,4 +1,4 @@
-package org.wxd.agent.system;
+package org.wxd.boot.agent.system;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

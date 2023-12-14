@@ -4,7 +4,7 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.junit.Test;
-import org.wxd.agent.io.FileReadUtil;
+import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.jscript.JScript;
 
 import java.nio.charset.StandardCharsets;

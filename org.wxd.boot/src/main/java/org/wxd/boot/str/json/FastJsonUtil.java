@@ -8,8 +8,8 @@ import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.wxd.agent.function.SLFunction1;
-import org.wxd.agent.io.Objects;
+import org.wxd.boot.agent.function.SLFunction1;
+import org.wxd.boot.agent.io.Objects;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.bit.BitFlag;
 

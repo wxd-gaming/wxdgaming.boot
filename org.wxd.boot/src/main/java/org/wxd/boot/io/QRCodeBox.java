@@ -8,8 +8,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.wxd.agent.exception.Throw;
-import org.wxd.agent.io.FileUtil;
+import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.str.StringUtil;
 
 import javax.imageio.ImageIO;

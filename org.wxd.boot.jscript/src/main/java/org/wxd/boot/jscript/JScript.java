@@ -2,8 +2,8 @@ package org.wxd.boot.jscript;
 
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
-import org.wxd.agent.io.FileReadUtil;
-import org.wxd.agent.io.FileUtil;
+import org.wxd.boot.agent.io.FileReadUtil;
+import org.wxd.boot.agent.io.FileUtil;
 
 import java.io.File;
 

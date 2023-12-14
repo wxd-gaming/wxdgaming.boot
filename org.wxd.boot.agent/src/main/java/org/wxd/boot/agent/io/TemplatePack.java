@@ -1,9 +1,9 @@
-package org.wxd.agent.io;
+package org.wxd.boot.agent.io;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

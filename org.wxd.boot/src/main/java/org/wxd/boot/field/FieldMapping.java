@@ -1,7 +1,7 @@
 package org.wxd.boot.field;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.field.extend.FieldAnn;
 import org.wxd.boot.lang.ConvertUtil;
 import org.wxd.boot.str.json.ParameterizedTypeImpl;

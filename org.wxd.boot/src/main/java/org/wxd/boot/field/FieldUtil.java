@@ -1,7 +1,7 @@
 package org.wxd.boot.field;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.field.extend.FieldType;
 import org.wxd.boot.lang.ConvertUtil;
 

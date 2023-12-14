@@ -1,4 +1,4 @@
-package org.wxd.agent.system;
+package org.wxd.boot.agent.system;
 
 
 import java.lang.annotation.Annotation;

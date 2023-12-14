@@ -1,7 +1,7 @@
 package org.wxd.boot.batis.text.json;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.exception.Throw;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.struct.DataChecked;
 import org.wxd.boot.batis.text.TextEntityTable;

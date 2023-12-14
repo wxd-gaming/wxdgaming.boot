@@ -1,10 +1,10 @@
-package org.wxd.agent.loader;
+package org.wxd.boot.agent.loader;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.agent.JDKVersion;
-import org.wxd.agent.io.FileUtil;
-import org.wxd.agent.io.FileWriteUtil;
+import org.wxd.boot.agent.JDKVersion;
+import org.wxd.boot.agent.io.FileUtil;
+import org.wxd.boot.agent.io.FileWriteUtil;
 
 import javax.tools.*;
 import java.io.File;

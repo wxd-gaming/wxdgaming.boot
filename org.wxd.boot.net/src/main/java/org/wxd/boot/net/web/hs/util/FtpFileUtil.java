@@ -3,7 +3,7 @@ package org.wxd.boot.net.web.hs.util;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import org.wxd.agent.io.TemplatePack;
+import org.wxd.boot.agent.io.TemplatePack;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.collection.OfList;
 import org.wxd.boot.format.ByteFormat;

@@ -1,6 +1,6 @@
 package org.wxd.boot.batis.sql;
 
-import org.wxd.agent.system.ReflectContext;
+import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.struct.DbTable;
