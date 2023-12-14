@@ -1,4 +1,4 @@
-package org.wxd.agent;
+package org.wxd.boot.agent;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
