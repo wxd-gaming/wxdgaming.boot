@@ -162,6 +162,20 @@ public class HttpSession extends Session implements Serializable {
         return showLogStringBuilder;
     }
 
+    /** 如果请求的是物理文件 */
+    public StringBuilder showLogFile() {
+        if (showLogStringBuilder == null) {
+            showLogStringBuilder = new StringBuilder();
+            if (request != null) {
+                showLogStringBuilder
+                        .append("\n")
+                        .append("\n=============================================请求================================================")
+                        .append("\n").append(request.method()).append(" ").append(this.getDomainName()).append(this.getUriPath());
+            }
+        }
+        return showLogStringBuilder;
+    }
+
     public String header(CharSequence key) {
         return this.request.headers().get(key);
     }
@@ -215,7 +229,7 @@ public class HttpSession extends Session implements Serializable {
         }
 
         if (StringUtil.emptyOrNull(uriPathString) || "/".equalsIgnoreCase(uriPathString)) {
-            uriPathString = "index.html";
+            uriPathString = "/index.html";
         }
 
         this.uri = uriPath;

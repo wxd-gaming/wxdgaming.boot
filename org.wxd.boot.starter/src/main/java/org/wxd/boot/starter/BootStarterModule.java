@@ -16,15 +16,13 @@ import org.wxd.boot.system.JvmUtil;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-09-15 10:12
  **/
-class BootStarterModule extends SystemModule {
+class BootStarterModule extends BaseModule {
 
-    final ReflectContext reflectContext;
-
-    public BootStarterModule(ReflectContext reflectContext) {
-        this.reflectContext = reflectContext;
+    public BootStarterModule(ReflectContext reflectContext, Class... classes) {
+        super(reflectContext, classes);
     }
 
-    protected void bind() throws Exception {
+    protected BootStarterModule bind() throws Exception {
         BootConfig bootConfig = XmlUtil.fromXml4File("boot.xml", BootConfig.class);
 
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
@@ -89,8 +87,9 @@ class BootStarterModule extends SystemModule {
             dbAction.accept(RedisService2.class, bootConfig.getRedis2());
             dbAction.accept(RedisService3.class, bootConfig.getRedis3());
         }
-        bindSingleton(InjectorContext.class);
+        bindSingleton(IocMainContext.class);
         bindSingleton(ScheduledService.class);
+        return this;
     }
 
 

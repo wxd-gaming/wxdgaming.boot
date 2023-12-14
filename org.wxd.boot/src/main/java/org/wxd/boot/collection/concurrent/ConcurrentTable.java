@@ -61,6 +61,10 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
         return nodes.computeIfAbsent(k1, k -> new ConcurrentHashMap<>());
     }
 
+    public Map<K2, V> computeIfAbsent(K1 k1, Function<? super K1, ? extends ConcurrentHashMap<K2, V>> mappingFunction) {
+        return nodes.computeIfAbsent(k1, mappingFunction);
+    }
+
     public V computeIfAbsent(K1 k1, K2 k2, Function<? super K2, ? extends V> mappingFunction) {
         return row(k1).computeIfAbsent(k2, mappingFunction);
     }

@@ -2,6 +2,9 @@ package org.wxd.boot.starter;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.wxd.agent.system.ReflectContext;
 
 /**
  * 基础模块
@@ -9,18 +12,39 @@ import com.google.inject.Singleton;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-09-15 10:12
  **/
+@Slf4j
+@Getter
 abstract class BaseModule extends AbstractModule {
 
-    public void bindSingleton(Class<?> clazz) {
+    protected final ReflectContext reflectContext;
+    protected final Class[] classes;
+
+    public BaseModule(ReflectContext reflectContext) {
+        this.reflectContext = reflectContext;
+        this.classes = new Class[0];
+    }
+
+    public BaseModule(ReflectContext reflectContext, Class... classes) {
+        this.reflectContext = reflectContext;
+        this.classes = classes;
+    }
+
+    public BaseModule bindSingleton(Class<?> clazz) {
+        log.debug("bind {} clazz={}", this.hashCode(), clazz);
         bind(clazz).in(Singleton.class);
+        return this;
     }
 
-    public <T> void bindSingleton(Class<T> father, Class<? extends T> son) {
+    public <T> BaseModule bindSingleton(Class<T> father, Class<? extends T> son) {
+        log.debug("bind {} father={} bind son={}", this.hashCode(), father, son);
         bind(father).to(son).in(Singleton.class);
+        return this;
     }
 
-    public <B> void bindSingleton(Class<B> clazz, B instance) {
+    public <B> BaseModule bindSingleton(Class<B> clazz, B instance) {
+        log.debug("bind {} clazz={} bind instance={}", this.hashCode(), clazz, instance.getClass());
         bind(clazz).toInstance(instance);
+        return this;
     }
 
     @Override
@@ -30,12 +54,15 @@ abstract class BaseModule extends AbstractModule {
         binder().disableCircularProxies();
 
         try {
+            for (Class aClass : classes) {
+                bindSingleton(aClass);
+            }
             bind();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected abstract void bind() throws Exception;
+    protected abstract BaseModule bind() throws Exception;
 
 }

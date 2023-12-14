@@ -1,5 +1,7 @@
 package org.wxd.boot.starter;
 
+import org.wxd.agent.system.ReflectContext;
+
 /**
  * 自定义模块
  *
@@ -8,8 +10,13 @@ package org.wxd.boot.starter;
  **/
 public class MyModule extends UserModule {
 
-    @Override protected void bind() throws Exception {
+    public MyModule(ReflectContext reflectContext) {
+        super(reflectContext);
+    }
 
+    @Override protected MyModule bind() throws Exception {
+
+        return this;
     }
 
 }

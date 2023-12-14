@@ -3,7 +3,7 @@ package org.wxd.boot.starter.service;
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.net.web.ws.WebSession;
 import org.wxd.boot.net.web.ws.WebSocketServer;
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.starter.WebConfig;
 import org.wxd.boot.starter.i.IShutdown;
 import org.wxd.boot.starter.i.IStart;
@@ -33,7 +33,7 @@ public class WsService extends WebSocketServer<WebSession> implements IStart, IS
     }
 
     @Sort(999999)
-    @Override public void start(InjectorContext iocInjector) throws Exception {
+    @Override public void start(IocContext iocInjector) throws Exception {
         open();
     }
 

@@ -163,7 +163,7 @@ public class FtpFileUtil implements Serializable {
                 httpSession.getReqParams().put("pageSize", pageSize);
                 httpSession.getReqParams().put("pageNumber", pageNumber);
                 String httpData = HttpDataAction.httpDataEncoder(httpSession.getReqParams());
-                httpSession.getResHeaderMap().put(HttpHeaderNames.LOCATION.toString(), "/" + uriPath + "?" + httpData);
+                httpSession.getResHeaderMap().put(HttpHeaderNames.LOCATION.toString(), uriPath + "?" + httpData);
                 httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.TEMPORARY_REDIRECT, HttpContentType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));
             } else {
                 httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpContentType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));

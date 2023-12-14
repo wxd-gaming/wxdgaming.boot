@@ -118,7 +118,7 @@ public class JavaAssistBox extends ClassLoader {
         }
 
         /** 通过 classloader 加载类 */
-        public Class<?> loadClass() {
+        public Class loadClass() {
             try {
                 return javaAssistBox.loadClass(ctClass.getName());
             } catch (ClassNotFoundException e) {

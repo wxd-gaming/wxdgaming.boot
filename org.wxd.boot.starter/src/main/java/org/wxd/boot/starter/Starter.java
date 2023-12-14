@@ -36,13 +36,13 @@ import java.util.stream.Stream;
  **/
 public class Starter {
 
-    private static volatile InjectorContext mainIocInjector = null;
-    private static volatile InjectorContext childIocInjector = null;
+    private static volatile IocContext mainIocInjector = null;
+    private static volatile IocContext childIocInjector = null;
 
     /** 服务器启动成功 */
     private static File OKFile = new File("ok.txt");
 
-    public static InjectorContext curIocInjector() {
+    public static IocContext curIocInjector() {
         if (childIocInjector == null) return mainIocInjector;
         return childIocInjector;
     }
@@ -75,13 +75,13 @@ public class Starter {
             }
         });
         try {
-            ReflectContext build = builder.build();
+            ReflectContext reflectContext = builder.build();
 
             List<BaseModule> list = Stream.concat(
-                            Stream.of(new BootStarterModule(build), new StarterModule(build)),
-                            build.classWithSuper(UserModule.class).map(v -> {
+                            Stream.of(new BootStarterModule(reflectContext), new StarterModule(reflectContext)),
+                            reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
-                                    return v.getDeclaredConstructor().newInstance();
+                                    return v.getDeclaredConstructor(ReflectContext.class).newInstance(reflectContext);
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
@@ -91,8 +91,8 @@ public class Starter {
                     .toList();
 
             Injector injector = Guice.createInjector(Stage.PRODUCTION, list);
-            mainIocInjector = injector.getInstance(InjectorContext.class);
-            iocInitBean(mainIocInjector, build);
+            mainIocInjector = injector.getInstance(IocMainContext.class);
+            iocInitBean(mainIocInjector, reflectContext);
             final Logger log = LoggerFactory.getLogger(Starter.class);
             JvmUtil.addShutdownHook(() -> {
                 log.info("------------------------------停服信号处理------------------------------");
@@ -145,18 +145,19 @@ public class Starter {
         }
     }
 
-    public static InjectorContext createChildInjector(ReflectContext reflectContext) {
+    public static IocContext createChildInjector(ReflectContext reflectContext) {
         return childIocInjector = createChildInjector(mainIocInjector, reflectContext);
     }
 
-    public static InjectorContext createChildInjector(InjectorContext parentInjector, ReflectContext reflectContext) {
+    public static IocContext createChildInjector(IocContext parentContext, ReflectContext reflectContext) {
         final Logger log = LoggerFactory.getLogger(Starter.class);
         try {
+
             List<BaseModule> modules = Stream.concat(
-                            Stream.of(new StarterModule(reflectContext)),
+                            Stream.of(new StarterModule(reflectContext, IocSubContext.class)),
                             reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
-                                    return v.getDeclaredConstructor().newInstance();
+                                    return v.getDeclaredConstructor(ReflectContext.class).newInstance(reflectContext);
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
@@ -165,9 +166,8 @@ public class Starter {
                     .map(v -> (BaseModule) v)
                     .toList();
 
-            Injector injector = parentInjector.getInjector();
-            injector.createChildInjector(modules);
-            InjectorContext iocInjector = injector.getInstance(InjectorContext.class);
+            Injector injector = parentContext.getInjector().createChildInjector(modules);
+            IocContext iocInjector = injector.getInstance(IocSubContext.class);
             iocInitBean(iocInjector, reflectContext);
             log.info("子容器初始化完成：{}", iocInjector.hashCode());
             return iocInjector;
@@ -176,7 +176,7 @@ public class Starter {
         }
     }
 
-    static void iocInitBean(InjectorContext injector, ReflectContext reflectContext) throws Exception {
+    static void iocInitBean(IocContext context, ReflectContext reflectContext) throws Exception {
         final Logger log = LoggerFactory.getLogger(Starter.class);
         if (log.isDebugEnabled()) {
             long count = reflectContext.getClasses().size();
@@ -187,18 +187,18 @@ public class Starter {
         reflectContext.classStream().forEach(ProtobufMessageSerializerFastJson::action);
 
         /*处理定时器资源*/
-        ActionTimer.action(injector, reflectContext);
+        ActionTimer.action(context, reflectContext);
         /*处理 ProtoController 资源*/
-        ActionProtoController.action(injector, reflectContext);
+        ActionProtoController.action(context, reflectContext);
         /*http 处理器加载*/
-        ActionTextController.action(injector, reflectContext);
+        ActionTextController.action(context, reflectContext);
 
         /*todo 调用 init 方法 father */
-        ConsumerE2<IBeanInit, InjectorContext> startFun = IBeanInit::beanInit;
-        injector.beanStream(IBeanInit.class, startFun).forEach(iBeanInit -> {
+        ConsumerE2<IBeanInit, IocContext> startFun = IBeanInit::beanInit;
+        context.beanStream(IBeanInit.class, startFun).forEach(iBeanInit -> {
             if (reflectContext.classStream().anyMatch(v -> v.equals(iBeanInit.getClass()))) {
                 try {
-                    iBeanInit.beanInit(injector);
+                    iBeanInit.beanInit(context);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -209,11 +209,11 @@ public class Starter {
 
     public static void start(boolean debug, int serverId, String serverName, String... extInfos) {
         {
-            ConsumerE2<IStart, InjectorContext> startFun = IStart::start;
+            ConsumerE2<IStart, IocContext> startFun = IStart::start;
             curIocInjector().forEachBean(IStart.class, startFun, curIocInjector());
         }
         {
-            ConsumerE2<IStartEnd, InjectorContext> startEndFun = IStartEnd::startEnd;
+            ConsumerE2<IStartEnd, IocContext> startEndFun = IStartEnd::startEnd;
             curIocInjector().forEachBean(IStartEnd.class, startEndFun, curIocInjector());
         }
         print(debug, serverId, serverName, extInfos);

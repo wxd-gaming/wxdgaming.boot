@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.i;
 
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 
 /**
  * bean初始化调用的，即便是热更新也会调用
@@ -11,6 +11,6 @@ import org.wxd.boot.starter.InjectorContext;
 public interface IBeanInit {
 
     /** bean初始化调用的，即便是热更新也会调用，会优先处理ioc注入 */
-    void beanInit(InjectorContext iocInjector) throws Exception;
+    void beanInit(IocContext iocContext) throws Exception;
 
 }

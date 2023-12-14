@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.i;
 
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 
 /**
  * bean初始化调用的，特别注意热更新是不调用
@@ -11,6 +11,6 @@ import org.wxd.boot.starter.InjectorContext;
 public interface IStartEnd {
 
     /** 初始化自己 ,是在自动注入之后调用的 */
-    void startEnd(InjectorContext iocInjector) throws Exception;
+    void startEnd(IocContext iocInjector) throws Exception;
 
 }

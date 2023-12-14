@@ -1,8 +1,6 @@
 package org.wxd.boot.starter.config;
 
 
-import org.wxd.boot.starter.InjectorContext;
-
 import java.lang.annotation.*;
 
 /**

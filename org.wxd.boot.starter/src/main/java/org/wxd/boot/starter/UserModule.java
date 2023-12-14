@@ -1,5 +1,7 @@
 package org.wxd.boot.starter;
 
+import org.wxd.agent.system.ReflectContext;
+
 /**
  * 用户自定义
  *
@@ -7,4 +9,9 @@ package org.wxd.boot.starter;
  * @version: 2023-12-13 09:30
  **/
 public abstract class UserModule extends BaseModule {
+
+    public UserModule(ReflectContext reflectContext) {
+        super(reflectContext);
+    }
+
 }

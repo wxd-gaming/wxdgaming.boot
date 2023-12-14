@@ -9,7 +9,7 @@ import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.ann.ProtoController;
 import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.str.StringUtil;
 
 import java.lang.reflect.Method;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class ActionTextController {
 
-    public static void action(InjectorContext iocInjector, ReflectContext reflectContext) {
+    public static void action(IocContext iocInjector, ReflectContext reflectContext) {
         Stream<Method> methodStream = reflectContext.methodsWithAnnotated(TextMapping.class);
         Map<? extends Class<?>, List<Method>> collect = methodStream.collect(Collectors.groupingBy(Method::getDeclaringClass));
         for (Map.Entry<? extends Class<?>, List<Method>> listEntry : collect.entrySet()) {

@@ -1,4 +1,4 @@
-package org.wxd.boot.net.web.hs.util;
+package org.wxd.boot.starter.net.controller;
 
 import lombok.extern.slf4j.Slf4j;
 

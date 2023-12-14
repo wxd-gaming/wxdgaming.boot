@@ -1,4 +1,4 @@
-package org.wxd.boot.net.web.hs.util;
+package org.wxd.boot.starter.net.controller;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;

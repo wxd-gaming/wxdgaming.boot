@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.wxd.agent.system.AnnUtil;
 import org.wxd.agent.system.ReflectContext;
 import org.wxd.boot.append.StreamBuilder;
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.starter.service.ScheduledService;
 import org.wxd.boot.timer.ScheduledInfo;
 import org.wxd.boot.timer.ann.Scheduled;
@@ -23,9 +23,9 @@ import java.util.stream.Stream;
  **/
 public class ActionTimer {
 
-    public static void action(InjectorContext iocInjector, ReflectContext reflectContext) {
+    public static void action(IocContext context, ReflectContext reflectContext) {
         Stream<Method> methodStream = reflectContext.methodsWithAnnotated(Scheduled.class);
-        ScheduledService scheduledService = iocInjector.getInstance(ScheduledService.class);
+        ScheduledService scheduledService = context.getInstance(ScheduledService.class);
         if (scheduledService == null) {
             if (methodStream.count() > 0) {
                 throw new RuntimeException("无法找到定时器任务 TimerJobRepository ");
@@ -34,12 +34,12 @@ public class ActionTimer {
         }
         List<ScheduledInfo> jobList = new ArrayList<>();
         jobList.addAll(scheduledService.getJobList());
-        action(iocInjector, jobList, methodStream);
+        action(context, jobList, methodStream);
         jobList.sort(null);
         scheduledService.setJobList(jobList);
     }
 
-    public static void action(InjectorContext iocInjector, List<ScheduledInfo> jobList, Stream<Method> stream) {
+    public static void action(IocContext context, List<ScheduledInfo> jobList, Stream<Method> stream) {
         Logger log = LoggerFactory.getLogger(ActionTimer.class);
 
         List<Method> list = stream.toList();
@@ -48,7 +48,7 @@ public class ActionTimer {
                 streamBuilder.appendLn();
                 streamBuilder.append("===============================================timer job=========================================================").appendLn()
                         .append("class = ").append(method.getDeclaringClass().getName()).appendLn();
-                Object instance = iocInjector.getInstance(method.getDeclaringClass());
+                Object instance = context.getInstance(method.getDeclaringClass());
                 Scheduled scheduled = AnnUtil.ann(method, Scheduled.class);
                 if (scheduled != null) {
                     if (method.getParameterCount() > 0) {

@@ -239,11 +239,10 @@ public class HttpServer extends NioServer<HttpSession> {
                                     session.getResHeaderMap().put(HttpHeaderNames.CACHE_CONTROL.toString(), "max-age=36000");
                                 }
                                 if (log.isDebugEnabled()) {
-                                    StringBuilder stringBuilder = session.showLog();
+                                    StringBuilder stringBuilder = session.showLogFile();
                                     stringBuilder
                                             .append(";\n=============================================输出================================================")
-                                            .append("\nHttpContentType = ").append(hct)
-                                            .append("\nlen = ").append(readFileToBytes.length)
+                                            .append("\nHttpContentType = ").append(hct).append(", len = ").append(readFileToBytes.length)
                                             .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
                                             .append("\n=============================================结束================================================")
                                             .append("\n");

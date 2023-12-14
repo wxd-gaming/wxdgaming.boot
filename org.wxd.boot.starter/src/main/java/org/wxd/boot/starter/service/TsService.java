@@ -3,7 +3,7 @@ package org.wxd.boot.starter.service;
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.net.ts.TcpServer;
 import org.wxd.boot.net.ts.TcpSession;
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.starter.ServerConfig;
 import org.wxd.boot.starter.i.IShutdown;
 import org.wxd.boot.starter.i.IStart;
@@ -27,7 +27,7 @@ public class TsService extends TcpServer<TcpSession> implements IStart, IShutdow
     }
 
     @Sort(999999)
-    @Override public void start(InjectorContext iocInjector) throws Exception {
+    @Override public void start(IocContext iocInjector) throws Exception {
         open();
     }
 

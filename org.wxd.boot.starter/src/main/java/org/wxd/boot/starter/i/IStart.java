@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.i;
 
-import org.wxd.boot.starter.InjectorContext;
+import org.wxd.boot.starter.IocContext;
 
 /**
  * 通过 {@link org.wxd.boot.starter.Starter#start(boolean, int, String, String...)}，特别注意热更新是不调用
@@ -11,8 +11,8 @@ import org.wxd.boot.starter.InjectorContext;
 public interface IStart {
 
     /**
-     * bean初始化调用的，特别注意热更新是不调用，优先调用的是{@link IBeanInit#beanInit(InjectorContext)}
+     * bean初始化调用的，特别注意热更新是不调用，优先调用的是{@link IBeanInit#beanInit(IocContext)}
      */
-    void start(InjectorContext iocInjector) throws Exception;
+    void start(IocContext iocInjector) throws Exception;
 
 }

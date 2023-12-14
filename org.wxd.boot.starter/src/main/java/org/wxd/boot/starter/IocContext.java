@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.wxd.agent.exception.Throw;
 import org.wxd.agent.function.*;
@@ -27,10 +28,16 @@ import java.util.stream.Stream;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-12-12 19:28
  **/
+@Slf4j
 @Getter
-public class InjectorContext {
+public abstract class IocContext {
 
-    @Inject Injector injector;
+    @Inject protected Injector injector;
+
+    public <R> R getInstance(Class<R> bean) {
+        log.debug("{} {}", injector.hashCode(), bean.getName());
+        return injector.getInstance(bean);
+    }
 
     /** 字段 添加 实例化 */
     public void autoField(Object instance) {
@@ -56,7 +63,7 @@ public class InjectorContext {
      * @return
      */
     public <R> Stream<R> beanStream(Class<R> filter) {
-        return beanStream(filter);
+        return beanStream(filter, (String) null);
     }
 
     /**
@@ -191,10 +198,6 @@ public class InjectorContext {
                     }
                     return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
                 });
-    }
-
-    public <R> R getInstance(Class<R> bean) {
-        return injector.getInstance(bean);
     }
 
 }
