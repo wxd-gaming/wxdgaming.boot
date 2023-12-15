@@ -489,8 +489,8 @@ public class HttpServer extends NioServer<HttpSession> {
         return idleTime;
     }
 
-    public HttpServer initExecutor(int threadSize) {
-        executorVirtualServices = ExecutorVirtualServices.newExecutorServices("http-" + this.getName(), threadSize, threadSize);
+    public HttpServer initExecutor(int coreSize, int maxSize) {
+        executorVirtualServices = ExecutorVirtualServices.newExecutorServices("http-" + this.getName(), coreSize, maxSize);
         return this;
     }
 

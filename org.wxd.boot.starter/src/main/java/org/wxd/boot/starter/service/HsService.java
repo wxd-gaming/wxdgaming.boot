@@ -23,7 +23,7 @@ public class HsService extends HttpServer implements IStart, IShutdown {
                 .setSslType(webConfig.sslProtocolType())
                 .setSslContext(webConfig.sslContext())
                 .setResourcesPath(webConfig.getResourcesPath())
-                .initExecutor(webConfig.getThreadCoreSize())
+                .initExecutor(webConfig.getThreadCoreSize(), webConfig.getThreadMaxSize())
                 .initBootstrap();
 
         if (webConfig.getHeaders() != null && !webConfig.getHeaders().isEmpty()) {

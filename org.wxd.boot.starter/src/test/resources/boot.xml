@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- @author: Troy.Chen(無心道, 15388152619) -->
 <bootConfig>
+    <defaultExecutor coreSize="2" maxSize="4"/>
+    <logicExecutor coreSize="4" maxSize="8"/>
     <server>
         <name>default</name>
         <host>*</host>
