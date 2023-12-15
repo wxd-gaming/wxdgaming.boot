@@ -1,6 +1,9 @@
 package org.wxd.boot.net;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -25,6 +28,7 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
         SessionRepository<S>,
         SocketCoderHandler<S> {
 
+    protected final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     protected final ChannelQueue<S> allSessionQueue = new ChannelQueue<>();
     protected final ConcurrentMap<Long, S> allSessionMap = new ConcurrentHashMap<>();
 

@@ -249,8 +249,7 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
          */
         @Override
         protected void channelRead0(S session, Object msg) {
-            if (msg instanceof FullHttpResponse) {
-                FullHttpResponse response = (FullHttpResponse) msg;
+            if (msg instanceof FullHttpResponse response) {
                 if (!this.webSocketClientHandshaker.isHandshakeComplete()) {
                     try {
                         // 握手协议返回，设置结束握手
@@ -264,23 +263,24 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
                     }
                 }
             } else {
-                if (msg instanceof WebSocketFrame) {
+                if (msg instanceof WebSocketFrame frame) {
                     try {
-                        WebSocketFrame frame = (WebSocketFrame) msg;
-                        if (frame instanceof TextWebSocketFrame) {
-                            session.checkReadTime();
-                            TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
-                            if (WebSocketClient.this.onStringMessage != null) {
-                                WebSocketClient.this.onStringMessage.accept(session, textFrame.text());
-                            } else {
-                                log.debug("当前不接受文本消息：{}, {}", session, textFrame.text());
+                        switch (frame) {
+                            case TextWebSocketFrame textFrame -> {
+                                session.checkReadTime();
+                                if (WebSocketClient.this.onStringMessage != null) {
+                                    WebSocketClient.this.onStringMessage.accept(session, textFrame.text());
+                                } else {
+                                    log.debug("当前不接受文本消息：{}, {}", session, textFrame.text());
+                                }
                             }
-                        } else if (frame instanceof BinaryWebSocketFrame) {
-                            BinaryWebSocketFrame binaryFrame = (BinaryWebSocketFrame) frame;
-                            ByteBuf byteBuf = Unpooled.wrappedBuffer(binaryFrame.content());
-                            session.read(WebSocketClient.this, WebSocketClient.this, byteBuf);
-                        } else if (frame instanceof CloseWebSocketFrame) {
-                            session.disConnect("CloseWebSocketFrame");
+                            case BinaryWebSocketFrame binaryFrame -> {
+                                ByteBuf byteBuf = Unpooled.wrappedBuffer(binaryFrame.content());
+                                read(WebSocketClient.this, session, byteBuf);
+                            }
+                            case CloseWebSocketFrame closeWebSocketFrame -> session.disConnect("CloseWebSocketFrame");
+                            default -> {
+                            }
                         }
                     } catch (Throwable e) {
                         log.warn("处理消息异常", e);

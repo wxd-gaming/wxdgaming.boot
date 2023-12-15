@@ -42,11 +42,10 @@ import java.util.function.Predicate;
 @Accessors(chain = true)
 public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
 
+    /** 收到 string 消息回调 */
     private ConsumerE2<S, String> onStringMessage;
 
-    /**
-     * 资源缓存，比如js css等
-     */
+    /** 资源缓存，比如js css等 */
     private Map<String, String> headerMap = new LinkedHashMap<>();
 
     protected WebSocketServer() {
@@ -82,7 +81,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
         return (S) new WebSession(name, ctx);
     }
 
-    public WebSocketServer<S> write(String msg) {
+    public WebSocketServer<S> writeAll(String msg) {
         for (S value : getAllSessionMap().values()) {
             value.write(msg);
         }
@@ -241,28 +240,32 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
 
         protected void handlerWebSocketFrame(S session, WebSocketFrame frame) {
             try {
-                if (frame instanceof CloseWebSocketFrame) {
-                    /*判断是否关闭链路的指令*/
-                    handshaker.close(session.getChannelContext().channel(), ((CloseWebSocketFrame) frame.retain()));
-                } else if (frame instanceof PingWebSocketFrame) {
-                    /*判断是否ping消息*/
-                    session.getChannelContext().channel().write(new PongWebSocketFrame(frame.content().retain()));
-                } else if (frame instanceof BinaryWebSocketFrame) {
-                    /*二进制数据*/
-                    BinaryWebSocketFrame bin = (BinaryWebSocketFrame) frame;
-                    ByteBuf byteBuf = Unpooled.wrappedBuffer(bin.content());
-                    session.read(WebSocketServer.this, WebSocketServer.this, byteBuf);
-                    session.checkReadCount(WebSocketServer.this.maxReadCount);
-                } else if (frame instanceof TextWebSocketFrame) {
-                    /*文本数据*/
-                    String request = ((TextWebSocketFrame) frame).text();
-                    session.checkReadTime();
-                    session.addReadCount();
-                    session.checkReadCount(WebSocketServer.this.maxReadCount);
-                    if (WebSocketServer.this.onStringMessage != null) {
-                        WebSocketServer.this.onStringMessage.accept(session, request);
-                    } else {
-                        log.debug("当前不接受文本消息：{}, {}", session, request);
+                switch (frame) {
+                    case CloseWebSocketFrame closeWebSocketFrame ->
+                        /*判断是否关闭链路的指令*/
+                            handshaker.close(session.getChannelContext().channel(), closeWebSocketFrame.retain());
+                    case PingWebSocketFrame pingWebSocketFrame ->
+                        /*判断是否ping消息*/
+                            session.getChannelContext().channel().write(new PongWebSocketFrame(frame.content().retain()));
+                    case BinaryWebSocketFrame binaryWebSocketFrame -> {
+                        /*二进制数据*/
+                        ByteBuf byteBuf = Unpooled.wrappedBuffer(binaryWebSocketFrame.content());
+                        read(WebSocketServer.this, session, byteBuf);
+                        session.checkReadCount(WebSocketServer.this.maxReadCount);
+                    }
+                    case TextWebSocketFrame textWebSocketFrame -> {
+                        /*文本数据*/
+                        String request = textWebSocketFrame.text();
+                        session.checkReadTime();
+                        session.addReadCount();
+                        session.checkReadCount(WebSocketServer.this.maxReadCount);
+                        if (WebSocketServer.this.onStringMessage != null) {
+                            WebSocketServer.this.onStringMessage.accept(session, request);
+                        } else {
+                            log.debug("当前不接受文本消息：{}, {}", session, request);
+                        }
+                    }
+                    case null, default -> {
                     }
                 }
             } catch (Throwable e) {

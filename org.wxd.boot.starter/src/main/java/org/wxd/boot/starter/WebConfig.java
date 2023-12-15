@@ -5,10 +5,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.wxd.boot.lang.ObjectBase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -25,7 +27,7 @@ public class WebConfig extends ServerConfig implements Serializable {
     private int threadCoreSize = 100;
     @Element(required = false)
     private int threadMaxSize = 200;
-    @Element(required = false)
+    @ElementList(required = false)
     private ArrayList<Header> headers = new ArrayList<>();
 
     public WebConfig() {

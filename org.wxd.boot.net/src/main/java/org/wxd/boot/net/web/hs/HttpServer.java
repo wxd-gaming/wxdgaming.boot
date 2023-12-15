@@ -43,6 +43,7 @@ import org.wxd.boot.system.BytesUnit;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.JvmUtil;
 import org.wxd.boot.threading.ExecutorVirtualServices;
+import org.wxd.boot.threading.ICheckTimerRunnable;
 import org.wxd.boot.threading.IExecutorServices;
 import org.wxd.boot.threading.Job;
 import org.wxd.boot.timer.MyClock;
@@ -197,97 +198,111 @@ public class HttpServer extends NioServer<HttpSession> {
                 }
 
                 session.setLastReadTime(MyClock.millis());
+                ICheckTimerRunnable iCheckTimerRunnable = new ICheckTimerRunnable() {
 
-                executorVirtualServices.submit(() -> {
-                    try {
-                        session.actionGetData();
+                    @Override public long logTime() {
+                        return 150;
+                    }
 
-                        if (reqMethod.equals(HttpMethod.POST)) {
-                            session.actionPostData();
-                        }
+                    @Override public long warningTime() {
+                        return ICheckTimerRunnable.super.warningTime();
+                    }
+
+                    @Override public String taskInfoString() {
+                        return HttpServer.this.toString() + session.getUriPath();
+                    }
+
+                    @Override public void run() {
+                        try {
+                            session.actionGetData();
+
+                            if (reqMethod.equals(HttpMethod.POST)) {
+                                session.actionPostData();
+                            }
 
 //                final String auth = session.reqCookieValue(HttpHeaderNames.AUTHORIZATION);
 //                if (!NioFactory.checkSignToken(auth)) {
 //                    session.addResCookie(HttpHeaderNames.AUTHORIZATION.toString(), "");
 //                }
 
-                        String htmlPath = resourcesPath() + "/" + session.getUriPath();
-                        try {
-                            byte[] readFileToBytes = null;
-                            InputStream resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
-                            if (resource == null) {
-                                htmlPath = "html/" + session.getUriPath();
-                                resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
-                            }
+                            String htmlPath = resourcesPath() + session.getUriPath();
+                            try {
+                                byte[] readFileToBytes = null;
+                                InputStream resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
+                                if (resource == null) {
+                                    htmlPath = "html" + session.getUriPath();
+                                    resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
+                                }
 
-                            if (resource != null) {
-                                try {
-                                    readFileToBytes = FileReadUtil.readBytes(resource);
-                                } finally {
-                                    resource.close();
-                                }
-                            }
-                            if (readFileToBytes != null) {
-                                String extendName = htmlPath.substring(htmlPath.lastIndexOf(".") + 1).toLowerCase();
-                                HttpContentType hct = httpContentType(extendName);
-                                if (session.getResHeaderMap().containsKey(HttpHeaderNames.EXPIRES.toString())) {
-                                    /*如果是固有资源增加缓存效果*/
-                                    session.getResHeaderMap().put(HttpHeaderNames.PRAGMA.toString(), "private");
-                                    /*过期时间10个小时*/
-                                    session.getResHeaderMap().put(HttpHeaderNames.EXPIRES.toString(), ExpiresFormat.format(new Date(MyClock.addHourOfTime(10))) + " GMT");
-                                    /*过期时间10个小时*/
-                                    session.getResHeaderMap().put(HttpHeaderNames.CACHE_CONTROL.toString(), "max-age=36000");
-                                }
-                                if (log.isDebugEnabled()) {
-                                    StringBuilder stringBuilder = session.showLogFile();
-                                    stringBuilder
-                                            .append(";\n=============================================输出================================================")
-                                            .append("\nHttpContentType = ").append(hct).append(", len = ").append(readFileToBytes.length)
-                                            .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
-                                            .append("\n=============================================结束================================================")
-                                            .append("\n");
-                                    session.setShowLog(true);
-                                }
-                                response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, hct, readFileToBytes);
-                                return;
-                            }
-                        } catch (Exception e) {
-                            final String ofString = Throw.ofString(e);
-                            StringBuilder stringBuilder = session.showLog();
-                            stringBuilder
-                                    .append(";\n=============================================输出================================================")
-                                    .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
-                                    .append("\n")
-                                    .append(ofString)
-                                    .append("\n=============================================结束================================================")
-                                    .append("\n");
-                            log.warn(stringBuilder.toString());
-                            stringBuilder.setLength(0);
-                            response(session,
-                                    HttpVersion.HTTP_1_1,
-                                    HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                                    HttpContentType.Text,
-                                    ofString.getBytes(StandardCharsets.UTF_8)
-                            );
-                            return;
-                        }
-                        final String urlCmd = session.getUriPath();
-                        final StreamBuilder resStringAppend = session.getResponseContent();
-                        final ObjMap putData = session.getReqParams();
-                        final HttpContentType httpContentType = session.getReqContentType().toLowerCase().contains("json") ? HttpContentType.Json : null;
-                        HttpServer.this.runCmd(resStringAppend, urlCmd, httpContentType, putData, session, reqMethod.name(),
-                                (showLog) -> {
-                                    session.setShowLog(showLog);
-                                    if (!session.isResponseOver()) {
-                                        session.response();
+                                if (resource != null) {
+                                    try {
+                                        readFileToBytes = FileReadUtil.readBytes(resource);
+                                    } finally {
+                                        resource.close();
                                     }
                                 }
-                        );
-                    } catch (Throwable e) {
-                        log.error("{} remoteAddress：{}", HttpServer.this, session, e);
-                        response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpContentType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
+                                if (readFileToBytes != null) {
+                                    String extendName = htmlPath.substring(htmlPath.lastIndexOf(".") + 1).toLowerCase();
+                                    HttpContentType hct = httpContentType(extendName);
+                                    if (session.getResHeaderMap().containsKey(HttpHeaderNames.EXPIRES.toString())) {
+                                        /*如果是固有资源增加缓存效果*/
+                                        session.getResHeaderMap().put(HttpHeaderNames.PRAGMA.toString(), "private");
+                                        /*过期时间10个小时*/
+                                        session.getResHeaderMap().put(HttpHeaderNames.EXPIRES.toString(), ExpiresFormat.format(new Date(MyClock.addHourOfTime(10))) + " GMT");
+                                        /*过期时间10个小时*/
+                                        session.getResHeaderMap().put(HttpHeaderNames.CACHE_CONTROL.toString(), "max-age=36000");
+                                    }
+                                    if (log.isDebugEnabled()) {
+                                        StringBuilder stringBuilder = session.showLogFile();
+                                        stringBuilder
+                                                .append(";\n=============================================输出================================================")
+                                                .append("\nHttpContentType = ").append(hct).append(", len = ").append(readFileToBytes.length)
+                                                .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
+                                                .append("\n=============================================结束================================================")
+                                                .append("\n");
+                                        session.setShowLog(true);
+                                    }
+                                    response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, hct, readFileToBytes);
+                                    return;
+                                }
+                            } catch (Exception e) {
+                                final String ofString = Throw.ofString(e);
+                                StringBuilder stringBuilder = session.showLog();
+                                stringBuilder
+                                        .append(";\n=============================================输出================================================")
+                                        .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
+                                        .append("\n")
+                                        .append(ofString)
+                                        .append("\n=============================================结束================================================")
+                                        .append("\n");
+                                log.warn(stringBuilder.toString());
+                                stringBuilder.setLength(0);
+                                response(session,
+                                        HttpVersion.HTTP_1_1,
+                                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                                        HttpContentType.Text,
+                                        ofString.getBytes(StandardCharsets.UTF_8)
+                                );
+                                return;
+                            }
+                            final String urlCmd = session.getUriPath();
+                            final StreamBuilder resStringAppend = session.getResponseContent();
+                            final ObjMap putData = session.getReqParams();
+                            final HttpContentType httpContentType = session.getReqContentType().toLowerCase().contains("json") ? HttpContentType.Json : null;
+                            HttpServer.this.runCmd(resStringAppend, urlCmd, httpContentType, putData, session, reqMethod.name(), (showLog) -> {
+                                        session.setShowLog(showLog);
+                                        if (!session.isResponseOver()) {
+                                            session.response();
+                                        }
+                                    }
+                            );
+                        } catch (Throwable e) {
+                            log.error("{} remoteAddress：{}", HttpServer.this, session, e);
+                            response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpContentType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
+                        }
                     }
-                });
+                };
+                executorVirtualServices.submit(iCheckTimerRunnable);
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
                 response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpContentType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
@@ -602,7 +617,9 @@ public class HttpServer extends NioServer<HttpSession> {
     public static void response(HttpSession session, HttpVersion hv, HttpResponseStatus hrs, HttpContentType contentType, byte[] bytes, Consumer<HttpResponse> before) {
         try {
             session.responseOver();
-
+            if (session.getRequest() == null) {
+                session.disConnect("异常关闭的");
+            }
             boolean accept_gzip = false;
 
             if (bytes.length > 512) {

@@ -163,7 +163,7 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
         @Override
         protected void channelRead0(S session, Object msg) {
             ByteBuf byteBuf = (ByteBuf) msg;
-            session.read(TcpServer.this, TcpServer.this, byteBuf);
+            read(TcpServer.this, session, byteBuf);
             session.checkReadCount(TcpServer.this.maxReadCount);
         }
 

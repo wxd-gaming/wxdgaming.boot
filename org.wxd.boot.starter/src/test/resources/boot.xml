@@ -35,8 +35,8 @@
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <resourcesPath></resourcesPath>
-        <threadCoreSize>100</threadCoreSize>
-        <threadMaxSize>200</threadMaxSize>
+        <threadCoreSize>10</threadCoreSize>
+        <threadMaxSize>20</threadMaxSize>
         <headers>
             <!-- 跨域支持 -->
             <header key="Access-Control-Allow-Origin" value="*"/>

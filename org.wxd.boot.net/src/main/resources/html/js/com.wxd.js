@@ -66,6 +66,7 @@ const wxd = {
                     try {
                         let ret = action();
                         if (ret !== true) {
+                            console.log("用户调用取消 " + ret + ", curExecCount=" + curExecCount)
                             clearInterval(intervalTmp);
                             resolve('');
                             return;
@@ -78,6 +79,7 @@ const wxd = {
                     }
                     curExecCount++;
                     if (curExecCount >= execCount) {
+                        console.log("执行结束取消 " + curExecCount)
                         clearInterval(intervalTmp);
                         resolve('');
                     }
