@@ -209,7 +209,7 @@ public class HttpServer extends NioServer<HttpSession> {
                     }
 
                     @Override public String taskInfoString() {
-                        return HttpServer.this.toString() + session.getUriPath();
+                        return session.getDomainName() + session.getUriPath();
                     }
 
                     @Override public void run() {
@@ -619,6 +619,7 @@ public class HttpServer extends NioServer<HttpSession> {
             session.responseOver();
             if (session.getRequest() == null) {
                 session.disConnect("异常关闭的");
+                return;
             }
             boolean accept_gzip = false;
 
