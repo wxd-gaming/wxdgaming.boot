@@ -67,17 +67,17 @@ public final class Response<T extends HttpBase> {
     }
 
     public Response logDebug() {
-        log.debug("{} {}", this.toString(), bodyString());
+        log.debug("res: {} {}", bodyString(), this.toString());
         return this;
     }
 
     public Response logInfo() {
-        log.info("{} {}", this.toString(), bodyString());
+        log.info("res: {} {}", bodyString(), this.toString());
         return this;
     }
 
     public Response systemOut() {
-        System.out.println(this.toString() + " " + bodyString());
+        System.out.println("res: " + bodyString() + " " + this.toString());
         return this;
     }
 

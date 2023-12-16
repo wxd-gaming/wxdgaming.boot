@@ -65,21 +65,21 @@ public final class Response<H extends HttpBase> {
     }
 
     public Response logDebug() {
-        log.debug("{} {}", this.toString(), bodyString());
+        log.debug("res: {} {}", bodyString(), this.toString());
         return this;
     }
 
     public Response logInfo() {
-        log.info("{} {}", this.toString(), bodyString());
+        log.info("res: {} {}", bodyString(), this.toString());
         return this;
     }
 
     public Response systemOut() {
-        System.out.println(this.toString() + " " + bodyString());
+        System.out.println("res: " + bodyString() + " " + this.toString());
         return this;
     }
 
     @Override public String toString() {
-        return httpBase.getClass().getSimpleName() + " " + httpBase.reqHttpMethod + " url: " + uriPath + Optional.ofNullable(postText).map(v -> ", postText: " + postText).orElse("");
+        return httpBase.getClass().getSimpleName() + " url: " + uriPath + Optional.ofNullable(postText).map(v -> ", postText: " + postText).orElse("");
     }
 }

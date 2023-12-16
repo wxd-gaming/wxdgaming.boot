@@ -80,7 +80,7 @@ public abstract class HttpBase<H extends HttpBase> {
         HttpRequest build = builder.build();
 
         if (log.isDebugEnabled()) {
-            log.debug("Get" + " " + this.response.uriPath);
+            log.debug(this.getClass().getSimpleName() + " " + this.response.uriPath);
             final String collect = headers.entrySet().stream()
                     .map(entry -> entry.getKey() + ":" + String.join("=", entry.getValue()))
                     .collect(Collectors.joining(", "));
