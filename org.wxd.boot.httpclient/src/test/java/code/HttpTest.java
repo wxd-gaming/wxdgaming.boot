@@ -2,6 +2,7 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.httpclient.url.HttpBuilder;
 
 /**
@@ -54,6 +55,15 @@ public class HttpTest {
                 .systemOut();
 
         Thread.sleep(5000);
+    }
+
+    @Test
+    public void t3() throws Exception {
+        HttpBuilder.postText("http://47.108.81.97:18800/sjcq/proxySw")
+                .ssl(SslProtocolType.TLSV12)
+                .paramText("data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .request()
+                .systemOut();
     }
 
 }

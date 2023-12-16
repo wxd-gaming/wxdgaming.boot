@@ -34,6 +34,7 @@
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
         <port>19000</port>
+        <sslProtocolType>TLSv1</sslProtocolType>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <resourcesPath></resourcesPath>

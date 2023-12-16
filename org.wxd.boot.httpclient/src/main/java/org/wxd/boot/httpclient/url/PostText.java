@@ -8,9 +8,6 @@ import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.str.StringUtil;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
 /**
  * 基于 HttpURLConnection 信息请求
  *

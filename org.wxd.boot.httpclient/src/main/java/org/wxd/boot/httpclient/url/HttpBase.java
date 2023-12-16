@@ -139,7 +139,7 @@ public abstract class HttpBase<H extends HttpBase> {
             /*get or post*/
             this.response.urlConnection.setRequestMethod(reqHttpMethod);
             if (log.isDebugEnabled()) {
-                log.debug(reqHttpMethod + " " + this.response.uriPath);
+                log.debug(reqHttpMethod + " " + sslProtocolType.getTypeName() + " " + this.response.uriPath);
                 final String collect = this.response.urlConnection
                         .getRequestProperties()
                         .entrySet()
@@ -252,6 +252,11 @@ public abstract class HttpBase<H extends HttpBase> {
 
     public H readTimeout(int timeout) {
         this.readTimeout = timeout;
+        return (H) this;
+    }
+
+    public H ssl(SslProtocolType sslProtocolType) {
+        this.sslProtocolType = sslProtocolType;
         return (H) this;
     }
 

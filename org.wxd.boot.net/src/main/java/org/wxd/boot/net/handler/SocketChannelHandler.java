@@ -96,10 +96,13 @@ public abstract class SocketChannelHandler<S extends Session> extends ChannelInb
         S session = NioFactory.attr(ctx, NioFactory.Session);
 
         final String message = Optional.ofNullable(cause.getMessage())
-                .map(v -> v.toLowerCase())
-                .orElse("");
+                .map(String::toLowerCase).orElse("");
 
-        if (message.contains("certificate_unknown")) {
+        if (message.contains("sslhandshak") || message.contains("sslexception")) {
+            if (log.isDebugEnabled()) {
+                log.debug("内部处理异常：{}, {}", message, session);
+            }
+        } else if (message.contains("certificate_unknown")) {
             if (log.isDebugEnabled()) {
                 log.debug("内部处理异常：certificate_unknown, " + session);
             }
