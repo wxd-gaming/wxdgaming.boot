@@ -20,15 +20,6 @@
         <jksPwd>wxd2021</jksPwd>
         <headers/>
     </wsserver>
-    <wsserver1>
-        <name>s2s</name>
-        <host>*</host>
-        <wanIp>127.0.0.1</wanIp>
-        <port>18001</port>
-        <jks>org_wxd_pkcs12.keystore</jks>
-        <jksPwd>wxd2021</jksPwd>
-        <headers/>
-    </wsserver1>
     <http>
         <name>default</name>
         <host>*</host>
@@ -38,30 +29,7 @@
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <resourcesPath></resourcesPath>
-        <threadCoreSize>10</threadCoreSize>
-        <threadMaxSize>20</threadMaxSize>
-        <headers>
-            <!-- 跨域支持 -->
-            <header key="Access-Control-Allow-Origin" value="*"/>
-            <header key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
-            <header key="Access-Control-Allow-Credentials" value="true"/>
-            <header key="Access-Control-Allow-Headers"
-                    value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
-            <!-- 添加缓存 -->
-            <header key="pragma" value="private"/>
-            <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>
-            <header key="cache-control" value="max-age=36000"/>
-        </headers>
-    </http>
-    <http1>
-        <name>sdk</name>
-        <host>*</host>
-        <wanIp>127.0.0.1</wanIp>
-        <port>19001</port>
-        <jks>org_wxd_pkcs12.keystore</jks>
-        <jksPwd>wxd2021</jksPwd>
-        <resourcesPath></resourcesPath>
-        <threadCoreSize>100</threadCoreSize>
+        <threadCoreSize>200</threadCoreSize>
         <threadMaxSize>200</threadMaxSize>
         <headers>
             <!-- 跨域支持 -->
@@ -75,7 +43,7 @@
             <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>
             <header key="cache-control" value="max-age=36000"/>
         </headers>
-    </http1>
+    </http>
     <mysql>
         <name>default</name>
         <show_sql>true</show_sql>
@@ -98,27 +66,10 @@
         <dbUser></dbUser>
         <dbPwd></dbPwd>
     </mongodb>
-    <mongodb1>
-        <name>数据源2</name>
-        <show_sql>false</show_sql>
-        <connectionPool>false</connectionPool>
-        <batchSizeThread>2</batchSizeThread>
-        <dbHost>192.168.50.73</dbHost>
-        <dbPort>27017</dbPort>
-        <dbBase>test</dbBase>
-        <dbUser></dbUser>
-        <dbPwd></dbPwd>
-    </mongodb1>
     <redis>
         <name>数据源1</name>
         <dbHost>192.168.50.73</dbHost>
         <dbPort>6379</dbPort>
         <dbPwd>test</dbPwd>
     </redis>
-    <redis2>
-        <name>数据源2</name>
-        <dbHost>192.168.50.73</dbHost>
-        <dbPort>6379</dbPort>
-        <dbPwd>test</dbPwd>
-    </redis2>
 </bootConfig>

@@ -67,9 +67,9 @@ public abstract class HttpBase<H extends HttpBase> {
             try {
                 writer(this.response.urlConnection);
                 /*开始读取内容*/
-                this.response.responseCode();
+                int responseCode = this.response.responseCode();
                 InputStream inputStream;
-                if (this.response.urlConnection.getInputStream() == null && this.response.urlConnection.getErrorStream() != null) {
+                if (this.response.urlConnection.getErrorStream() != null) {
                     inputStream = this.response.urlConnection.getErrorStream();
                 } else {
                     inputStream = this.response.urlConnection.getInputStream();
