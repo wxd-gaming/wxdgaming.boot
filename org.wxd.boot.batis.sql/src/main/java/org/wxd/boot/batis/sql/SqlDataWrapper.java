@@ -3,7 +3,7 @@ package org.wxd.boot.batis.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.DataBuilder;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.EntityField;
@@ -43,58 +43,58 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
      */
     public String saveSqlFile(DM entityTable, String savePath) {
 
-        try (StreamBuilder streamBuilder = new StreamBuilder()) {
-            buildSqlDropTable(streamBuilder, entityTable.getTableName());
-            streamBuilder.appendLn();
-            buildSqlCreateTable(streamBuilder, entityTable, entityTable.getTableName(), entityTable.getTableComment());
-            streamBuilder.appendLn();
-            buildSqlReplaceValues(streamBuilder, entityTable);
+        try (StreamWriter streamWriter = new StreamWriter()) {
+            buildSqlDropTable(streamWriter, entityTable.getTableName());
+            streamWriter.writeLn();
+            buildSqlCreateTable(streamWriter, entityTable, entityTable.getTableName(), entityTable.getTableComment());
+            streamWriter.writeLn();
+            buildSqlReplaceValues(streamWriter, entityTable);
             if (!savePath.endsWith("/")) {
                 savePath += "/";
             }
             File file = new File(savePath + MyClock.formatDate(MyClock.SDF_YYYYMMDDHHMM_3) + "_" + entityTable.getTableComment() + "_" + entityTable.getTableName() + ".sql");
-            FileWriteUtil.writeBytes(file, streamBuilder.toBytes());
+            FileWriteUtil.writeBytes(file, streamWriter.toBytes());
             log.warn("生成sql数据文件：" + entityTable.getLogTableName() + ", " + FileUtil.getCanonicalPath(file));
-            return streamBuilder.toString();
+            return streamWriter.toString();
         }
     }
 
-    public void buildSqlDropTable(StreamBuilder stringAppend, String tableName) {
-        stringAppend.append("DROP TABLE if exists `" + tableName + "`;");
+    public void buildSqlDropTable(StreamWriter stringAppend, String tableName) {
+        stringAppend.write("DROP TABLE if exists `" + tableName + "`;");
     }
 
-    public void buildSqlCreateTable(StreamBuilder stringAppend, DM entityTable, String tableName, String tableComment) {
+    public void buildSqlCreateTable(StreamWriter stringAppend, DM entityTable, String tableName, String tableComment) {
         Collection<EntityField> columns = entityTable.getColumns();
-        stringAppend.appendLn().append("CREATE TABLE `" + tableName + "` (").appendLn();
+        stringAppend.writeLn().write("CREATE TABLE `" + tableName + "` (").writeLn();
         int i = 0;
         for (EntityField entityField : columns) {
             if (i > 0) {
-                stringAppend.append(",").appendLn();
+                stringAppend.write(",").writeLn();
             }
-            stringAppend.append("    ").append(buildColumnSqlString(entityField));
+            stringAppend.write("    ").write(buildColumnSqlString(entityField));
             i++;
         }
 
         if (entityTable.getDataColumnKey() != null) {
-            stringAppend.append(",").appendLn();
-            stringAppend.append("    ")
-                    .append("PRIMARY KEY (`").append(entityTable.getDataColumnKey().getColumnName())
-                    .append("`)");
+            stringAppend.write(",").writeLn();
+            stringAppend.write("    ")
+                    .write("PRIMARY KEY (`").write(entityTable.getDataColumnKey().getColumnName())
+                    .write("`)");
         }
 
         for (EntityField column : columns) {
             if (column.isColumnIndex()) {
-                stringAppend.append(",").appendLn();
-                stringAppend.append("    ")
-                        .append("KEY `index_").append(tableName).append("_").append(column.getColumnName())
-                        .append("` (`").append(column.getColumnName()).append("`) ").append(column.getMysqlIndexType());
+                stringAppend.write(",").writeLn();
+                stringAppend.write("    ")
+                        .write("KEY `index_").write(tableName).write("_").write(column.getColumnName())
+                        .write("` (`").write(column.getColumnName()).write("`) ").write(column.getMysqlIndexType());
             }
         }
 
-        stringAppend.appendLn()
-                .append(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT= '")
-                .append(tableComment)
-                .append("';");
+        stringAppend.writeLn()
+                .write(") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT= '")
+                .write(tableComment)
+                .write("';");
     }
 
     /**
@@ -167,73 +167,73 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
      * @param entityTable
      * @param appendValues true 表示加入 values(?,?,?,?)
      */
-    public void buildSqlReplace(StreamBuilder stringAppend, DM entityTable, boolean appendValues) {
-        stringAppend.append("REPLACE into `").append(entityTable.getTableName()).append("` (");
+    public void buildSqlReplace(StreamWriter stringAppend, DM entityTable, boolean appendValues) {
+        stringAppend.write("REPLACE into `").write(entityTable.getTableName()).write("` (");
         int i = 0;
         Collection<EntityField> columns = entityTable.getColumns();
         for (EntityField column : columns) {
             if (i > 0) {
-                stringAppend.append(", ");
+                stringAppend.write(", ");
             }
-            stringAppend.append("`" + column.getColumnName() + "`");
+            stringAppend.write("`" + column.getColumnName() + "`");
             i++;
         }
-        stringAppend.append(")");
+        stringAppend.write(")");
         if (appendValues) {
-            stringAppend.append(" values(");
+            stringAppend.write(" values(");
             i = 0;
             for (EntityField column : columns) {
                 if (i > 0) {
-                    stringAppend.append(", ");
+                    stringAppend.write(", ");
                 }
-                stringAppend.append("?");
+                stringAppend.write("?");
                 i++;
             }
-            stringAppend.append(")");
+            stringAppend.write(")");
         }
     }
 
     /**
      * 构建完整的插入语句
      *
-     * @param streamBuilder
+     * @param streamWriter
      * @param entityTable
      */
-    public void buildSqlReplaceValues(StreamBuilder streamBuilder, DM entityTable) {
+    public void buildSqlReplaceValues(StreamWriter streamWriter, DM entityTable) {
         LinkedList<LinkedHashMap<EntityField, Object>> rows = entityTable.getRows();
         if (rows.isEmpty()) {
             return;
         }
-        buildSqlReplace(streamBuilder, entityTable, false);
-        streamBuilder.append("VALUES");
+        buildSqlReplace(streamWriter, entityTable, false);
+        streamWriter.write("VALUES");
         int rowLine = 0;
         for (Map<EntityField, Object> row : rows) {
             if (rowLine > 0) {
-                streamBuilder.append(",");
+                streamWriter.write(",");
             }
-            streamBuilder.appendLn();
-            streamBuilder.append("(");
+            streamWriter.writeLn();
+            streamWriter.write("(");
             int columnLine = 0;
             for (Map.Entry<EntityField, Object> valueEntry : row.entrySet()) {
                 EntityField entityField = valueEntry.getKey();
                 Object value = valueEntry.getValue();
                 if (columnLine > 0) {
-                    streamBuilder.append(", ");
+                    streamWriter.write(", ");
                 }
                 String replace = stringValueOf(value).replace("'", "\'");
                 if (String.class.equals(entityField.getFieldType())) {
-                    streamBuilder.append("'");
+                    streamWriter.write("'");
                 }
-                streamBuilder.append(replace);
+                streamWriter.write(replace);
                 if (String.class.equals(entityField.getFieldType())) {
-                    streamBuilder.append("'");
+                    streamWriter.write("'");
                 }
                 columnLine++;
             }
-            streamBuilder.append(")");
+            streamWriter.write(")");
             rowLine++;
         }
-        streamBuilder.append(";");
+        streamWriter.write(";");
     }
 
     public void newReplaceSql(DM entityTable) {

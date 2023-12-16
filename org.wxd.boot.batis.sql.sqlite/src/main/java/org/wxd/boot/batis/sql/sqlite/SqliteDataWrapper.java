@@ -1,7 +1,7 @@
 package org.wxd.boot.batis.sql.sqlite;
 
 
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.sql.SqlDataWrapper;
 import org.wxd.boot.batis.sql.SqlEntityTable;
@@ -18,19 +18,19 @@ public class SqliteDataWrapper extends SqlDataWrapper<SqlEntityTable> implements
     public static SqliteDataWrapper Default = new SqliteDataWrapper();
 
     @Override
-    public void buildSqlCreateTable(StreamBuilder out, SqlEntityTable entityTable, String tableName, String tableComment) {
+    public void buildSqlCreateTable(StreamWriter out, SqlEntityTable entityTable, String tableName, String tableComment) {
         Collection<EntityField> columns = entityTable.getColumns();
-        out.appendLn().append("CREATE TABLE `" + tableName + "` (").appendLn();
+        out.writeLn().write("CREATE TABLE `" + tableName + "` (").writeLn();
 
         int i = 0;
         for (EntityField entityField : columns) {
             if (i > 0) {
-                out.append(",").appendLn();
+                out.write(",").writeLn();
             }
-            out.append("    ").append(buildColumnSqlString(entityField));
+            out.write("    ").write(buildColumnSqlString(entityField));
             i++;
         }
-        out.appendLn().append(");");
+        out.writeLn().write(");");
     }
 
     @Override

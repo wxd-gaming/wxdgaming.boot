@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
 import org.wxd.boot.agent.io.TemplatePack;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.str.StringUtil;
@@ -60,30 +60,30 @@ public class CreateCSharpCode implements Serializable, ICreateCode {
     }
 
     protected byte[] createCodeMapping(EntityTable entityTable, String packageName) {
-        StreamBuilder streamBuilder = new StreamBuilder();
-        streamBuilder
-                .append("using System;\n")
-                .append("using System.Collections.Generic;\n")
-                .append("using System.Linq;\n")
-                .append("using System.Text;\n")
-                .append("using System.Threading.Tasks;\n")
-                .append("\n")
-                .append("namespace ").append(packageName).append(".Bean.Mapping").appendLn()
-                .append("{").appendLn()
-                .appendLn()
-                .append("    /// <summary>").appendLn()
-                .append("    /// ").append(entityTable.getTableComment()).appendLn()
-                .append("    /// </summary>").appendLn()
-                .append("    public class ").append(entityTable.getCodeClassName()).append("Mapping").appendLn()
-                .append("    {").appendLn()
-                .appendLn();
+        StreamWriter streamWriter = new StreamWriter();
+        streamWriter
+                .write("using System;\n")
+                .write("using System.Collections.Generic;\n")
+                .write("using System.Linq;\n")
+                .write("using System.Text;\n")
+                .write("using System.Threading.Tasks;\n")
+                .write("\n")
+                .write("namespace ").write(packageName).write(".Bean.Mapping").writeLn()
+                .write("{").writeLn()
+                .writeLn()
+                .write("    /// <summary>").writeLn()
+                .write("    /// ").write(entityTable.getTableComment()).writeLn()
+                .write("    /// </summary>").writeLn()
+                .write("    public class ").write(entityTable.getCodeClassName()).write("Mapping").writeLn()
+                .write("    {").writeLn()
+                .writeLn();
 
         for (EntityField column : entityTable.getColumnMap().values()) {
-            streamBuilder
-                    .append("        /// <summary>").appendLn()
-                    .append("        /// ").append(column.getColumnComment()).appendLn()
-                    .append("        /// </summary>").appendLn()
-                    .append("        public ");
+            streamWriter
+                    .write("        /// <summary>").writeLn()
+                    .write("        /// ").write(column.getColumnComment()).writeLn()
+                    .write("        /// </summary>").writeLn()
+                    .write("        public ");
 
             String fieldTypeString = column.getFieldTypeString();
 
@@ -92,88 +92,88 @@ public class CreateCSharpCode implements Serializable, ICreateCode {
                 fieldTypeString.replace("boolean", "bool");
             }
 
-            streamBuilder.append(fieldTypeString);
+            streamWriter.write(fieldTypeString);
 
-            streamBuilder
-                    .append(" ").append(StringUtil.upperFirst(column.getFieldName())).append(" { get; set; }").appendLn();
+            streamWriter
+                    .write(" ").write(StringUtil.upperFirst(column.getFieldName())).write(" { get; set; }").writeLn();
         }
 
-        streamBuilder
-                .appendLn()
-                .append("    }\n")
-                .append("}");
-        return streamBuilder.toBytes();
+        streamWriter
+                .writeLn()
+                .write("    }\n")
+                .write("}");
+        return streamWriter.toBytes();
     }
 
     protected byte[] createCodeBean(EntityTable entityTable, String packageName) {
-        StreamBuilder streamBuilder = new StreamBuilder();
-        streamBuilder
-                .append("using System;\n")
-                .append("using System.Collections.Generic;\n")
-                .append("using System.Linq;\n")
-                .append("using System.Text;\n")
-                .append("using System.Threading.Tasks;\n")
-                .append("using ").append(packageName).append(".Bean.Mapping;").appendLn()
-                .append("\n")
-                .append("namespace ").append(packageName).append(".Bean").appendLn()
-                .append("{").appendLn()
-                .appendLn()
-                .append("    /// <summary>").appendLn()
-                .append("    /// ").append(entityTable.getTableComment()).appendLn()
-                .append("    /// </summary>").appendLn()
-                .append("    public class ").append(entityTable.getCodeClassName()).append("Bean : ").append(entityTable.getCodeClassName()).append("Mapping").appendLn()
-                .append("    {").appendLn()
-                .appendLn()
-                .append("    }\n")
-                .append("}");
-        return streamBuilder.toBytes();
+        StreamWriter streamWriter = new StreamWriter();
+        streamWriter
+                .write("using System;\n")
+                .write("using System.Collections.Generic;\n")
+                .write("using System.Linq;\n")
+                .write("using System.Text;\n")
+                .write("using System.Threading.Tasks;\n")
+                .write("using ").write(packageName).write(".Bean.Mapping;").writeLn()
+                .write("\n")
+                .write("namespace ").write(packageName).write(".Bean").writeLn()
+                .write("{").writeLn()
+                .writeLn()
+                .write("    /// <summary>").writeLn()
+                .write("    /// ").write(entityTable.getTableComment()).writeLn()
+                .write("    /// </summary>").writeLn()
+                .write("    public class ").write(entityTable.getCodeClassName()).write("Bean : ").write(entityTable.getCodeClassName()).write("Mapping").writeLn()
+                .write("    {").writeLn()
+                .writeLn()
+                .write("    }\n")
+                .write("}");
+        return streamWriter.toBytes();
     }
 
     protected byte[] createCodeFactory(EntityTable entityTable, String packageName) {
-        StreamBuilder streamBuilder = new StreamBuilder();
+        StreamWriter streamWriter = new StreamWriter();
         final EntityField dataColumnKey = entityTable.getDataColumnKey();
         final String keyFieldName = StringUtil.upperFirst(dataColumnKey.getFieldName());
         final String KeyFieldTypeString = dataColumnKey.getFieldTypeString();
-        streamBuilder
-                .append("using System;\n")
-                .append("using System.Collections.Generic;\n")
-                .append("using System.IO;\n")
-                .append("using System.Linq;\n")
-                .append("using System.Text;\n")
-                .append("using System.Threading.Tasks;\n")
-                .append("using ").append(packageName).append(".Bean;").appendLn()
-                .append("\n")
-                .append("namespace ").append(packageName).append(".Factory").appendLn()
-                .append("{").appendLn()
-                .appendLn()
-                .append("    /// <summary>").appendLn()
-                .append("    /// ").append(entityTable.getTableComment()).appendLn()
-                .append("    /// </summary>").appendLn()
-                .append("    public class ").append(entityTable.getCodeClassName()).append("Factory").appendLn()
-                .append("    {").appendLn()
-                .append("        public ").append(entityTable.getCodeClassName()).append("Factory()").appendLn()
-                .append("        {").appendLn()
-                .append("            string jsonString = File.ReadAllText(\"config_json/").append(entityTable.getTableName()).append(".json\");").appendLn()
-                .append("            Beans = Newtonsoft.Json.JsonConvert.DeserializeObject<List<").append(entityTable.getCodeClassName()).append("Bean>>(jsonString);").appendLn()
-                .append("            foreach (var bean in Beans)").appendLn()
-                .append("            {").appendLn()
-                .append("                beanMap[bean.").append(keyFieldName).append("] = bean;").appendLn()
-                .append("            }").appendLn()
-                .append("        }").appendLn()
-                .append("").appendLn()
-                .append("        public List<").append(entityTable.getCodeClassName()).append("Bean> Beans { get; set; }").appendLn()
-                .append("").appendLn()
-                .append("").appendLn()
-                .append("        private Dictionary<").append(KeyFieldTypeString).append(", ").append(entityTable.getCodeClassName()).append("Bean> beanMap = new Dictionary<").append(KeyFieldTypeString).append(", ").append(entityTable.getCodeClassName()).append("Bean>();").appendLn()
-                .append("").appendLn()
-                .append("        public Dictionary<").append(KeyFieldTypeString).append(", ").append(entityTable.getCodeClassName()).append("Bean> BeanMap").appendLn()
-                .append("        {").appendLn()
-                .append("            get { return beanMap; }").appendLn()
-                .append("            set { beanMap = value; }").appendLn()
-                .append("        }").appendLn()
-                .append("").appendLn()
-                .append("    }").appendLn()
-                .append("}");
-        return streamBuilder.toBytes();
+        streamWriter
+                .write("using System;\n")
+                .write("using System.Collections.Generic;\n")
+                .write("using System.IO;\n")
+                .write("using System.Linq;\n")
+                .write("using System.Text;\n")
+                .write("using System.Threading.Tasks;\n")
+                .write("using ").write(packageName).write(".Bean;").writeLn()
+                .write("\n")
+                .write("namespace ").write(packageName).write(".Factory").writeLn()
+                .write("{").writeLn()
+                .writeLn()
+                .write("    /// <summary>").writeLn()
+                .write("    /// ").write(entityTable.getTableComment()).writeLn()
+                .write("    /// </summary>").writeLn()
+                .write("    public class ").write(entityTable.getCodeClassName()).write("Factory").writeLn()
+                .write("    {").writeLn()
+                .write("        public ").write(entityTable.getCodeClassName()).write("Factory()").writeLn()
+                .write("        {").writeLn()
+                .write("            string jsonString = File.ReadAllText(\"config_json/").write(entityTable.getTableName()).write(".json\");").writeLn()
+                .write("            Beans = Newtonsoft.Json.JsonConvert.DeserializeObject<List<").write(entityTable.getCodeClassName()).write("Bean>>(jsonString);").writeLn()
+                .write("            foreach (var bean in Beans)").writeLn()
+                .write("            {").writeLn()
+                .write("                beanMap[bean.").write(keyFieldName).write("] = bean;").writeLn()
+                .write("            }").writeLn()
+                .write("        }").writeLn()
+                .write("").writeLn()
+                .write("        public List<").write(entityTable.getCodeClassName()).write("Bean> Beans { get; set; }").writeLn()
+                .write("").writeLn()
+                .write("").writeLn()
+                .write("        private Dictionary<").write(KeyFieldTypeString).write(", ").write(entityTable.getCodeClassName()).write("Bean> beanMap = new Dictionary<").write(KeyFieldTypeString).write(", ").write(entityTable.getCodeClassName()).write("Bean>();").writeLn()
+                .write("").writeLn()
+                .write("        public Dictionary<").write(KeyFieldTypeString).write(", ").write(entityTable.getCodeClassName()).write("Bean> BeanMap").writeLn()
+                .write("        {").writeLn()
+                .write("            get { return beanMap; }").writeLn()
+                .write("            set { beanMap = value; }").writeLn()
+                .write("        }").writeLn()
+                .write("").writeLn()
+                .write("    }").writeLn()
+                .write("}");
+        return streamWriter.toBytes();
     }
 }

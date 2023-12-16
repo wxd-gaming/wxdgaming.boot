@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.starter.service.ScheduledService;
 import org.wxd.boot.timer.ScheduledInfo;
@@ -43,11 +43,11 @@ public class ActionTimer {
         Logger log = LoggerFactory.getLogger(ActionTimer.class);
 
         List<Method> list = stream.toList();
-        try (StreamBuilder streamBuilder = new StreamBuilder()) {
+        try (StreamWriter streamWriter = new StreamWriter()) {
             for (Method method : list) {
-                streamBuilder.appendLn();
-                streamBuilder.append("===============================================timer job=========================================================").appendLn()
-                        .append("class = ").append(method.getDeclaringClass().getName()).appendLn();
+                streamWriter.writeLn();
+                streamWriter.write("===============================================timer job=========================================================").writeLn()
+                        .write("class = ").write(method.getDeclaringClass().getName()).writeLn();
                 Object instance = context.getInstance(method.getDeclaringClass());
                 Scheduled scheduled = AnnUtil.ann(method, Scheduled.class);
                 if (scheduled != null) {
@@ -57,11 +57,11 @@ public class ActionTimer {
                     ScheduledInfo scheduledInfo = new ScheduledInfo(instance, method, scheduled);
                     jobList.removeIf(v -> v.toString().equals(scheduledInfo.toString()));
                     jobList.add(scheduledInfo);
-                    streamBuilder.append(scheduledInfo.toString()).appendLn();
+                    streamWriter.write(scheduledInfo.toString()).writeLn();
                 }
-                streamBuilder.append("===============================================timer job=========================================================").appendLn();
+                streamWriter.write("===============================================timer job=========================================================").writeLn();
             }
-            log.debug(streamBuilder.toString());
+            log.debug(streamWriter.toString());
         }
     }
 

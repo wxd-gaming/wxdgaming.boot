@@ -8,7 +8,7 @@ import org.wxd.boot.agent.function.FunctionE;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.zip.OutZipFile;
 import org.wxd.boot.agent.zip.ReadZipFile;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.DataHelper;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.DbConfig;
@@ -213,9 +213,9 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
      * @param pattenKey  清理键
      */
     public void out2File(String ouDir, int maxDbIndex, String pattenKey) {
-        StreamBuilder streamBuilder = new StreamBuilder(2048);
+        StreamWriter streamWriter = new StreamWriter(2048);
         String zipFileName = MyClock.formatDate(MyClock.SDF_YYYYMMDDHHMMSS_4) + ".zip";
-        streamBuilder.appendLn().append("备份redis：").append(zipFileName).append("\n");
+        streamWriter.writeLn().write("备份redis：").write(zipFileName).write("\n");
         try (OutZipFile outZipFile = new OutZipFile(ouDir + "/redis/" + zipFileName)) {
             for (int dbIndex = 0; dbIndex < maxDbIndex; dbIndex++) {
                 try (Jedis jedis = getJedis(dbIndex)) {
@@ -265,12 +265,12 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                             }
                             count = hgetAll.size();
                         }
-                        streamBuilder.appendLn("数据插槽：" + dbIndex + ", key：" + key + ", type：" + key_type + ", 行：" + count);
+                        streamWriter.writeLn("数据插槽：" + dbIndex + ", key：" + key + ", type：" + key_type + ", 行：" + count);
                     }
                 }
             }
         }
-        log.warn(streamBuilder.toString());
+        log.warn(streamWriter.toString());
     }
 
     public void inDb4File(String zipFile, int batchSize) {

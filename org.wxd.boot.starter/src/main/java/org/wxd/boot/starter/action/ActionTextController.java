@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.system.MethodUtil;
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.ann.ProtoController;
 import org.wxd.boot.net.controller.ann.TextController;
@@ -72,7 +72,7 @@ public class ActionTextController {
      * @param methodList 函数查找
      */
     static void bindCmd(String serviceName, String parentUrl, Object instance, Collection<Method> methodList) {
-        try (StreamBuilder stringBuilder = new StreamBuilder(1024)) {
+        try (StreamWriter stringBuilder = new StreamWriter(1024)) {
             String url = parentUrl;
             if (StringUtil.emptyOrNull(url)) {
                 url = instance.getClass().getSimpleName().toLowerCase();
@@ -99,13 +99,13 @@ public class ActionTextController {
             }
 
             stringBuilder
-                    .append("\n")
-                    .append("===========================================Cmd Controller==================================================")
-                    .append("\n").append("serviceName = ").append(serviceName)
-                    .append("\n").append("class       = ").append(instance.getClass())
-                    .append("\n").append("url         = ").append(url)
-                    .append("\n")
-                    .append("\n");
+                    .write("\n")
+                    .write("===========================================Cmd Controller==================================================")
+                    .write("\n").write("serviceName = ").write(serviceName)
+                    .write("\n").write("class       = ").write(instance.getClass())
+                    .write("\n").write("url         = ").write(url)
+                    .write("\n")
+                    .write("\n");
 
             for (Method method : methodList) {
                 TextMapping mapping = AnnUtil.ann(method, TextMapping.class);
@@ -140,14 +140,14 @@ public class ActionTextController {
                     MappingFactory.putText(serviceName, remarks, cmdUrl, instance, method);
 
                     if (log.isDebugEnabled()) {
-                        stringBuilder.append(StringUtil.padRight(remarks, 50, ' ')).append("\t, ").append(cmdUrl).append("\n");
+                        stringBuilder.write(StringUtil.padRight(remarks, 50, ' ')).write("\t, ").write(cmdUrl).write("\n");
                     }
                 }
             }
 
             if (log.isDebugEnabled()) {
-                stringBuilder.append("\n")
-                        .append("===========================================End Controller==================================================");
+                stringBuilder.write("\n")
+                        .write("===========================================End Controller==================================================");
                 log.debug(stringBuilder.toString());
             }
         }

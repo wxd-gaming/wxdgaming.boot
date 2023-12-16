@@ -1,6 +1,7 @@
-package org.wxd.boot.httpclient.uclient;
+package org.wxd.boot.httpclient.url;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.str.StringUtil;
 
@@ -18,17 +19,18 @@ import java.util.Optional;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-11-15 12:34
  **/
+@Slf4j
 @Getter
-public final class UrlResponse {
+public final class Response<H extends HttpBase> {
 
-    protected final HttpBase httpBase;
-    protected final String uriPath;
-    protected HttpURLConnection urlConnection;
-    protected String postText = null;
-    protected byte[] bodys = null;
+    final H httpBase;
+    final String uriPath;
+    HttpURLConnection urlConnection;
+    String postText = null;
+    StackTraceElement[] threadStackTrace = null;
+    byte[] bodys = null;
 
-
-    protected UrlResponse(HttpBase httpBase, String uriPath) {
+    protected Response(H httpBase, String uriPath) {
         this.httpBase = httpBase;
         this.uriPath = uriPath;
     }
@@ -55,7 +57,26 @@ public final class UrlResponse {
     }
 
     public String bodyString(Charset charsetName) {
-        return StringUtil.unicodeDecode(new String(bodys, charsetName));
+        return new String(bodys, charsetName);
+    }
+
+    public String bodyUnicodeDecodeString() {
+        return StringUtil.unicodeDecode(bodyString());
+    }
+
+    public Response logDebug() {
+        log.debug("{} {}", this.toString(), bodyString());
+        return this;
+    }
+
+    public Response logInfo() {
+        log.info("{} {}", this.toString(), bodyString());
+        return this;
+    }
+
+    public Response systemOut() {
+        System.out.println(this.toString() + " " + bodyString());
+        return this;
     }
 
     @Override public String toString() {

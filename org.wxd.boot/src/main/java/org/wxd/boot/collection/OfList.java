@@ -1,7 +1,7 @@
 package org.wxd.boot.collection;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ public class OfList implements Serializable {
     }
 
     public static String asString(CharSequence delimiter, Collection list) {
-        try (StreamBuilder streamBuilder = new StreamBuilder()) {
+        try (StreamWriter streamWriter = new StreamWriter()) {
             for (Object o : list) {
-                if (!streamBuilder.isEmpty()) streamBuilder.append(delimiter);
-                streamBuilder.append(o);
+                if (!streamWriter.isEmpty()) streamWriter.write(delimiter);
+                streamWriter.write(o);
             }
-            return streamBuilder.toString();
+            return streamWriter.toString();
         }
     }
 

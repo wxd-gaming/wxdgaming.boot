@@ -5,7 +5,7 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.zip.OutZipFile;
 import org.wxd.boot.agent.zip.ReadZipFile;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.DataBuilder;
 import org.wxd.boot.batis.DataHelper;
 import org.wxd.boot.batis.DbConfig;
@@ -216,10 +216,10 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
      * @param fileDir 目录
      */
     public String outDb2File(String fileDir) throws Exception {
-        try (StreamBuilder streamBuilder = new StreamBuilder()) {
-            streamBuilder.append("备份数据库：").append(getDbBase()).appendLn();
+        try (StreamWriter streamWriter = new StreamWriter()) {
+            streamWriter.write("备份数据库：").write(getDbBase()).writeLn();
             String zipFile = MyClock.formatDate(MyClock.SDF_YYYYMMDDHHMMSS_3) + ".zip";
-            streamBuilder.append("备份文件：").append(zipFile).appendLn();
+            streamWriter.write("备份文件：").write(zipFile).writeLn();
             fileDir += "/" + getDbBase() + "/" + getDbBase() + "-" + zipFile;
             AtomicLong atomicLong = new AtomicLong();
             try (OutZipFile outZipFile = new OutZipFile(fileDir)) {
@@ -236,10 +236,10 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                                 return true;
                             }
                     );
-                    streamBuilder.append("数据表：").append(tableName).append(" - 数据行：").append(atomicLong.get()).appendLn();
+                    streamWriter.write("数据表：").write(tableName).write(" - 数据行：").write(atomicLong.get()).writeLn();
                 }
             }
-            String toString = streamBuilder.toString();
+            String toString = streamWriter.toString();
             log.info(toString);
             return toString;
         }

@@ -2,7 +2,7 @@ package org.wxd.boot.batis;
 
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.struct.DbIndex;
 import org.wxd.boot.str.StringUtil;
 
@@ -253,7 +253,7 @@ public class EntityTable implements Serializable, DbIndex {
     }
 
     public String toDataString(int len) {
-        StreamBuilder append = new StreamBuilder();
+        StreamWriter append = new StreamWriter();
         DataWrapper.builderString(append, this, len);
         return append.toString();
     }

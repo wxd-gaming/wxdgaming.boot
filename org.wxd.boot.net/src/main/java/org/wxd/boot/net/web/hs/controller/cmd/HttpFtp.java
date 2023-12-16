@@ -51,7 +51,7 @@ public interface HttpFtp {
         if (file.isFile()) {
             if (show) {
                 httpSession.setResContentType(HttpHeadValueType.Text);
-                httpSession.getResponseContent().append(FileReadUtil.readBytes(file));
+                httpSession.getResponseContent().write(FileReadUtil.readBytes(file));
             } else {
                 HttpServer.downloadFile(httpSession, file);
             }

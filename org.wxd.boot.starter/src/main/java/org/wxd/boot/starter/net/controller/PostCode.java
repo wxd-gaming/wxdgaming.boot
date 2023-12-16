@@ -7,7 +7,7 @@ import org.wxd.boot.agent.loader.JavaCoderCompile;
 import org.wxd.boot.agent.system.Base64Util;
 import org.wxd.boot.agent.zip.ZipUtil;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.jclient.JHttpBuilder;
+import org.wxd.boot.httpclient.url.HttpBuilder;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.SignConfig;
 import org.wxd.boot.str.StringUtil;
@@ -126,11 +126,11 @@ public class PostCode implements PrintConsole {
     protected RunResult post0(String url, Map<Object, Object> objects) {
         String readIp = readIp();
         objects.put(HttpHeaderNames.AUTHORIZATION.toString(), SignConfig.get().getToken());
-        String post = JHttpBuilder.postMulti(readIp + "/" + url)
-                .setTimeout(400000)
+        String post = HttpBuilder.postMulti(readIp + "/" + url)
+                .timeout(400000)
                 .header(HttpHeaderNames.CONTENT_ENCODING.toString(), HttpHeaderValues.GZIP.toString())
                 // .addCookie(HttpHeaderNames.AUTHORIZATION, SignConfig.get().getToken())
-                .addParam(objects)
+                .putParams(objects)
                 .request()
                 .bodyString();
 

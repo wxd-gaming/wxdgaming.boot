@@ -1,9 +1,10 @@
-package org.wxd.boot.httpclient.uclient;
+package org.wxd.boot.httpclient.url;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.str.StringUtil;
 
@@ -20,38 +21,38 @@ import java.io.OutputStreamWriter;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class UrlPostText extends UrlPost {
+public class PostText extends Post<PostText> {
 
-    protected UrlPostText(String uriPath) {
+    protected PostText(String uriPath) {
         super(uriPath);
         this.reqHttpMethod = "POST";
     }
 
     /** 设置提交的参数 */
-    public UrlPostText setParams(String params) {
-        this.urlResponse.postText = params;
+    public PostText paramText(String params) {
+        this.response.postText = params;
         return this;
     }
 
     /** 设置提交的参数 */
-    public UrlPostText setJson(String json) {
-        this.urlResponse.postText = json;
+    public PostText paramJson(String json) {
+        this.response.postText = json;
         this.httpHeadValueType = HttpHeadValueType.Json;
         return this;
     }
 
     /** 设置提交的参数 */
-    public UrlPostText setXJson(String json) {
-        this.urlResponse.postText = json;
+    public PostText paramXJson(String json) {
+        this.response.postText = json;
         this.httpHeadValueType = HttpHeadValueType.XJson;
         return this;
     }
 
-    @Override protected void writeTextParams(OutputStream outputStream, OutputStreamWriter outWriter) throws Exception {
-        if (StringUtil.notEmptyOrNull(this.urlResponse.postText)) {
-            outWriter.write(this.urlResponse.postText);
+    @Override protected void writeTextParams(StreamWriter outWriter) throws Exception {
+        if (StringUtil.notEmptyOrNull(this.response.postText)) {
+            outWriter.write(this.response.postText);
             if (log.isDebugEnabled()) {
-                log.debug("http send：" + this.urlResponse.postText);
+                log.debug("http send：" + this.response.postText);
             }
         }
     }

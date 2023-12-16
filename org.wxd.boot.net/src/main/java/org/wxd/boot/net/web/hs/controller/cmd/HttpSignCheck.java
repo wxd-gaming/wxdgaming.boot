@@ -1,7 +1,7 @@
 package org.wxd.boot.net.web.hs.controller.cmd;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.IAuth;
@@ -35,7 +35,7 @@ public interface HttpSignCheck extends SignCheck<HttpSession> {
     }
 
     @Override
-    default boolean checkSign(StreamBuilder out, ITokenCache tokenCache, Method cmdMethod, HttpSession session, ObjMap putData) throws Exception {
+    default boolean checkSign(StreamWriter out, ITokenCache tokenCache, Method cmdMethod, HttpSession session, ObjMap putData) throws Exception {
         boolean auth = tokenCache.checkToken(out, session, cmdMethod, putData.getString(HttpHeaderNames.AUTHORIZATION.toString()));
         if (auth) {
             return true;
@@ -45,7 +45,7 @@ public interface HttpSignCheck extends SignCheck<HttpSession> {
             return true;
         }
         /*固定key值验证*/
-        out.append(RunResult.error(99, "验签失败"));
+        out.write(RunResult.error(99, "验签失败"));
         return false;
     }
 

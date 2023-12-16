@@ -1,6 +1,6 @@
 package org.wxd.boot.system;
 
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 
 import java.util.List;
 
@@ -47,16 +47,16 @@ public interface PrintConsole {
     }
 
     static public String print(List<List> data, int len) {
-        try (StreamBuilder streamBuilder = new StreamBuilder()) {
-            streamBuilder.appendLn();
+        try (StreamWriter streamWriter = new StreamWriter()) {
+            streamWriter.writeLn();
             for (List datum : data) {
                 List<Object> row = datum;
                 for (Object o : row) {
-                    streamBuilder.append("|").appendRight(o, len, ' ').append("\t");
+                    streamWriter.write("|").appendRight(o, len, ' ').write("\t");
                 }
-                streamBuilder.appendLn();
+                streamWriter.writeLn();
             }
-            return streamBuilder.toString();
+            return streamWriter.toString();
         }
     }
 

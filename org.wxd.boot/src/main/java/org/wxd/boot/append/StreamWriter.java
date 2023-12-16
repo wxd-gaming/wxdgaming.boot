@@ -18,13 +18,13 @@ import java.util.Formatter;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-01-12 15:02
  **/
-public class StreamBuilder implements Closeable, AutoCloseable {
+public class StreamWriter implements Closeable, AutoCloseable {
 
     public static void main(String[] args) {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.reset();
-        StreamBuilder out = new StreamBuilder(byteArrayOutputStream);
-        out.append(1);
+        StreamWriter out = new StreamWriter(byteArrayOutputStream);
+        out.write(1);
         out.appendFmt("%-10s", "int");
         out.appendFmt("%-10s", "ddd");
         System.out.println(out.toString());
@@ -33,15 +33,15 @@ public class StreamBuilder implements Closeable, AutoCloseable {
 
     protected final ByteArrayOutputStream outputStream;
 
-    public StreamBuilder() {
+    public StreamWriter() {
         this(1024);
     }
 
-    public StreamBuilder(int minCapacity) {
+    public StreamWriter(int minCapacity) {
         this(new ByteArrayOutputStream(minCapacity));
     }
 
-    public StreamBuilder(ByteArrayOutputStream outputStream) {
+    public StreamWriter(ByteArrayOutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
@@ -62,9 +62,9 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * @param append
      * @return
      */
-    public StreamBuilder appendLn(Object append) {
-        append(append);
-        appendLn();
+    public StreamWriter writeLn(Object append) {
+        write(append);
+        writeLn();
         return this;
     }
 
@@ -74,8 +74,8 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * @param append
      * @return
      */
-    public StreamBuilder append(Object append) {
-        append(append, StandardCharsets.UTF_8);
+    public StreamWriter write(Object append) {
+        write(append, StandardCharsets.UTF_8);
         return this;
     }
 
@@ -86,9 +86,9 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * @param charsetName
      * @return
      */
-    public StreamBuilder appendLn(Object append, Charset charsetName) {
-        append(append, charsetName);
-        appendLn();
+    public StreamWriter writeLn(Object append, Charset charsetName) {
+        write(append, charsetName);
+        writeLn();
         return this;
     }
 
@@ -97,24 +97,24 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * @param charsetName
      * @return
      */
-    public StreamBuilder append(Object append, Charset charsetName) {
+    public StreamWriter write(Object append, Charset charsetName) {
         if (append == null || StringUtil.nullStr.equals(append)) {
-            append(StringUtil.nullBytes);
+            write(StringUtil.nullBytes);
         } else if (append instanceof byte[]) {
-            append((byte[]) append);
+            write((byte[]) append);
         } else {
-            append(String.valueOf(append).getBytes(charsetName));
+            write(String.valueOf(append).getBytes(charsetName));
         }
         return this;
     }
 
-    public StreamBuilder append(Throwable exception) {
+    public StreamWriter write(Throwable exception) {
         final String s = Throw.ofString(exception);
-        append(s.getBytes(StandardCharsets.UTF_8));
+        write(s.getBytes(StandardCharsets.UTF_8));
         return this;
     }
 
-    public StreamBuilder append(byte[] bytes) {
+    public StreamWriter write(byte[] bytes) {
         try {
             if (outputStream != null) {
                 outputStream.write(bytes);
@@ -125,7 +125,7 @@ public class StreamBuilder implements Closeable, AutoCloseable {
         }
     }
 
-    public StreamBuilder append(byte[] bytes, int off, int len) {
+    public StreamWriter write(byte[] bytes, int off, int len) {
         try {
             if (outputStream != null) {
                 outputStream.write(bytes, off, len);
@@ -141,8 +141,8 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * <p>
      * 性能消耗过大
      */
-    public StreamBuilder appendFmt(String format, Object... args) {
-        append(new Formatter().format(format, args).toString());
+    public StreamWriter appendFmt(String format, Object... args) {
+        write(new Formatter().format(format, args).toString());
         return this;
     }
 
@@ -154,8 +154,8 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * @param ch  补起字符
      * @return
      */
-    public StreamBuilder appendLeft(Object src, int len, char ch) {
-        append(StringUtil.padLeft(String.valueOf(src), len, ch));
+    public StreamWriter appendLeft(Object src, int len, char ch) {
+        write(StringUtil.padLeft(String.valueOf(src), len, ch));
         return this;
     }
 
@@ -167,16 +167,16 @@ public class StreamBuilder implements Closeable, AutoCloseable {
      * @param ch  补起字符
      * @return
      */
-    public StreamBuilder appendRight(Object src, int len, char ch) {
-        append(StringUtil.padRight(String.valueOf(src), len, ch));
+    public StreamWriter appendRight(Object src, int len, char ch) {
+        write(StringUtil.padRight(String.valueOf(src), len, ch));
         return this;
     }
 
     /**
      * 增加换行符
      */
-    public StreamBuilder appendLn() {
-        append(StringUtil.LineBytes);
+    public StreamWriter writeLn() {
+        write(StringUtil.LineBytes);
         return this;
     }
 

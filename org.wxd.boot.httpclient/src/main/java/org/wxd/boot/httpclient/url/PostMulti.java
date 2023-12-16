@@ -1,15 +1,14 @@
-package org.wxd.boot.httpclient.uclient;
+package org.wxd.boot.httpclient.url;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.str.StringUtil;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.Map;
 
 /**
@@ -22,32 +21,32 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class UrlPostMulti extends UrlPost {
+public class PostMulti extends Post<PostMulti> {
 
     protected ObjMap reqMap = new ObjMap();
 
-    protected UrlPostMulti(String uriPath) {
+    protected PostMulti(String uriPath) {
         super(uriPath);
         this.reqHttpMethod = "POST";
     }
 
-    public UrlPostMulti putParams(Object key, Object value) {
+    public PostMulti putParams(Object key, Object value) {
         reqMap.put(key, value);
         return this;
     }
 
-    public UrlPostMulti putParams(Map map) {
+    public PostMulti putParams(Map map) {
         reqMap.putAll(map);
         return this;
     }
 
-    protected void writeTextParams(OutputStream outputStream, OutputStreamWriter outWriter) throws Exception {
+    protected void writeTextParams(StreamWriter outWriter) throws Exception {
         if (reqMap.isEmpty()) return;
-        this.urlResponse.postText = HttpDataAction.httpDataEncoder(reqMap);
-        if (StringUtil.notEmptyOrNull(this.urlResponse.postText)) {
-            outWriter.write(this.urlResponse.postText);
+        this.response.postText = HttpDataAction.httpDataEncoder(reqMap);
+        if (StringUtil.notEmptyOrNull(this.response.postText)) {
+            outWriter.write(this.response.postText);
             if (log.isDebugEnabled()) {
-                log.debug("http send：" + this.urlResponse.postText);
+                log.debug("http send：" + this.response.postText);
             }
         }
     }

@@ -26,7 +26,7 @@ public interface HotLoad {
 
     @TextMapping(remarks = "停止进程")
     default void stop(HttpSession httpSession) throws Exception {
-        httpSession.getResponseContent().append(RunResult.ok().setData("停止进程中 等待 30 秒"));
+        httpSession.getResponseContent().write(RunResult.ok().setData("停止进程中 等待 30 秒"));
         httpSession.response();
         LocalShell.exec(
                 new File(System.getProperty("user.dir")),
@@ -36,7 +36,7 @@ public interface HotLoad {
 
     @TextMapping(remarks = "重启程序")
     default void restart(HttpSession httpSession) throws Exception {
-        httpSession.getResponseContent().append(RunResult.ok().setData("重启成功 等待 30 秒"));
+        httpSession.getResponseContent().write(RunResult.ok().setData("重启成功 等待 30 秒"));
         httpSession.response();
         LocalShell.exec(
                 new File(System.getProperty("user.dir")),

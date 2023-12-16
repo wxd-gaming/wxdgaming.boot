@@ -8,7 +8,7 @@ import org.wxd.boot.agent.LocalShell;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.TemplatePack;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.net.controller.ann.ProtoController;
@@ -215,14 +215,14 @@ public class ProtoBufCreateController {
                         templatePack.ftl2File("proto-controller.ftl", objMap, saveFileName);
 
 
-                        try (StreamBuilder out = new StreamBuilder()) {
-                            out.appendLn("==============================================================================================================");
-                            out.appendLn("消息文件：" + protoFile.getName());
-                            out.appendLn("消息名称：" + messagePackage.get() + "." + message);
-                            out.appendLn("消息ID：" + StringUtil.hashcode(objMap.getString("messageName")));
-                            out.appendLn("文件包名：" + objMap.getString("savePack"));
-                            out.appendLn("处理文件：" + objMap.getString("saveClassName") + ".java");
-                            out.appendLn("==============================================================================================================");
+                        try (StreamWriter out = new StreamWriter()) {
+                            out.writeLn("==============================================================================================================");
+                            out.writeLn("消息文件：" + protoFile.getName());
+                            out.writeLn("消息名称：" + messagePackage.get() + "." + message);
+                            out.writeLn("消息ID：" + StringUtil.hashcode(objMap.getString("messageName")));
+                            out.writeLn("文件包名：" + objMap.getString("savePack"));
+                            out.writeLn("处理文件：" + objMap.getString("saveClassName") + ".java");
+                            out.writeLn("==============================================================================================================");
                             System.out.println(out.toString());
                             System.out.flush();
                         }

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.collection.SplitCollection;
-import org.wxd.boot.httpclient.jclient.JHttpBuilder;
+import org.wxd.boot.httpclient.url.HttpBuilder;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.JvmUtil;
@@ -114,7 +114,7 @@ public class FeishuPack implements ICheckTimerRunnable {
 
                     try {
 
-                        final String bodyString = JHttpBuilder.postText(url)
+                        final String bodyString = HttpBuilder.postText(url)
                                 .paramJson(requestText)
                                 .request()
                                 .bodyString();

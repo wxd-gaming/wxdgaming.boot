@@ -20,7 +20,7 @@ import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
@@ -286,7 +286,7 @@ public class HttpServer extends NioServer<HttpSession> {
                                 return;
                             }
                             final String urlCmd = session.getUriPath();
-                            final StreamBuilder resStringAppend = session.getResponseContent();
+                            final StreamWriter resStringAppend = session.getResponseContent();
                             final ObjMap putData = session.getReqParams();
                             final HttpHeadValueType httpHeadValueType = session.getReqContentType().toLowerCase().contains("json") ? HttpHeadValueType.Json : null;
                             HttpServer.this.runCmd(resStringAppend, urlCmd, httpHeadValueType, putData, session, reqMethod.name(), (showLog) -> {
@@ -310,9 +310,9 @@ public class HttpServer extends NioServer<HttpSession> {
         }
     }
 
-    @Override public void runCmd(StreamBuilder out, String methodName, HttpHeadValueType httpHeadValueType, ObjMap putData, Session session, String postOrGet, Consumer<Boolean> callBack) {
+    @Override public void runCmd(StreamWriter out, String methodName, HttpHeadValueType httpHeadValueType, ObjMap putData, Session session, String postOrGet, Consumer<Boolean> callBack) {
         if (methodName == null) {
-            out.append("命令参数 cmd , 未找到");
+            out.write("命令参数 cmd , 未找到");
             callBack.accept(true);
             return;
         }
@@ -321,9 +321,9 @@ public class HttpServer extends NioServer<HttpSession> {
         TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
         if (mappingRecord == null) {
             if ((httpHeadValueType == HttpHeadValueType.Json || httpHeadValueType == HttpHeadValueType.XJson)) {
-                out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
+                out.write(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
             } else {
-                out.append(" 软件：無心道  \n not found url " + methodNameLowerCase);
+                out.write(" 软件：無心道  \n not found url " + methodNameLowerCase);
             }
             if (session instanceof HttpSession) {
                 ((HttpSession) session).setHttpResponseStatus(HttpResponseStatus.NOT_FOUND);
@@ -339,9 +339,9 @@ public class HttpServer extends NioServer<HttpSession> {
             if (post != null || get != null) {
                 Runnable action = () -> {
                     if ((httpHeadValueType == HttpHeadValueType.Json || httpHeadValueType == HttpHeadValueType.XJson)) {
-                        out.append(RunResult.error(999, " 软件：無心道  \n server 500"));
+                        out.write(RunResult.error(999, " 软件：無心道  \n server 500"));
                     } else {
-                        out.append(" 软件：無心道  \n server 500");
+                        out.write(" 软件：無心道  \n server 500");
                     }
                     if (session instanceof HttpSession) {
                         ((HttpSession) session).setHttpResponseStatus(HttpResponseStatus.HTTP_VERSION_NOT_SUPPORTED);
@@ -390,7 +390,7 @@ public class HttpServer extends NioServer<HttpSession> {
                 try {
                     if (methodNameLowerCase.endsWith("sign")) {
                         RunResult signResult = sign.sign(HttpServer.this, session, putData);
-                        out.append(signResult.toString());
+                        out.write(signResult.toString());
                     } else if (signCheck == null || signCheck.checkSign(out, HttpServer.this, mappingRecord.method(), session, putData)) {
                         Object invoke;
                         if (mappingRecord.method().getParameterCount() == 0) {
@@ -402,7 +402,7 @@ public class HttpServer extends NioServer<HttpSession> {
                                 for (int i = 0; i < params.length; i++) {
                                     Type genericParameterType = genericParameterTypes[i];
                                     if (genericParameterType instanceof Class<?>) {
-                                        if (genericParameterType.equals(StreamBuilder.class)) {
+                                        if (genericParameterType.equals(StreamWriter.class)) {
                                             params[i] = out;
                                         } else if (genericParameterType.equals(ObjMap.class)) {
                                             params[i] = putData;
@@ -416,7 +416,7 @@ public class HttpServer extends NioServer<HttpSession> {
                         }
                         Class<?> returnType = mappingRecord.method().getReturnType();
                         if (!void.class.equals(returnType)) {
-                            out.append(String.valueOf(invoke));
+                            out.write(String.valueOf(invoke));
                         }
                     }
                 } catch (Throwable throwable) {
@@ -431,7 +431,7 @@ public class HttpServer extends NioServer<HttpSession> {
                     log.error(content + " 异常", throwable);
                     GlobalUtil.exception(content, throwable);
                     out.clear();
-                    out.append(RunResult.error(505, Throw.ofString(throwable)));
+                    out.write(RunResult.error(505, Throw.ofString(throwable)));
                 } finally {
                     boolean showLog = false;
                     TextMapping annotation = AnnUtil.ann(mappingRecord.method(), TextMapping.class);

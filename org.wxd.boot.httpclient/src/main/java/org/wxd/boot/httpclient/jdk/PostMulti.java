@@ -1,6 +1,5 @@
-package org.wxd.boot.httpclient.jclient;
+package org.wxd.boot.httpclient.jdk;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
@@ -17,33 +16,32 @@ import java.util.Map;
  * @version: 2023-10-13 12:22
  **/
 @Slf4j
-public class JPostMulti extends JHttpBuilder.JHttpBase<JPostMulti> {
+public class PostMulti extends HttpBase<PostMulti> {
 
-    @Getter private String postText;
     Map<Object, Object> params = new LinkedHashMap<>();
 
-    JPostMulti(HttpClient httpClient, String url) {
+    PostMulti(HttpClient httpClient, String url) {
         super(httpClient, url);
     }
 
-    public JPostMulti addParam(Object key, Object value) {
+    public PostMulti putParams(Object key, Object value) {
         params.put(key, value);
         return this;
     }
 
-    public JPostMulti addParam(Map map) {
+    public PostMulti putParams(Map map) {
         Map<Object, Object> tmp = (Map<Object, Object>) map;
         for (Map.Entry<Object, Object> entry : tmp.entrySet()) {
-            addParam(entry.getKey(), entry.getValue());
+            putParams(entry.getKey(), entry.getValue());
         }
         return this;
     }
 
     @Override protected HttpRequest.Builder builder() {
         HttpRequest.Builder builder = super.builder();
-        postText = ofFormData();
-        if (StringUtil.notEmptyOrNull(postText)) {
-            builder.POST(HttpRequest.BodyPublishers.ofString(postText));
+        response.postText = ofFormData();
+        if (StringUtil.notEmptyOrNull(response.postText)) {
+            builder.POST(HttpRequest.BodyPublishers.ofString(response.postText));
         } else {
             builder.POST(HttpRequest.BodyPublishers.noBody());
         }
@@ -62,10 +60,10 @@ public class JPostMulti extends JHttpBuilder.JHttpBase<JPostMulti> {
     }
 
     @Override protected void actionThrowable(Throwable throwable) {
-        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, postText, throwable);
+        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, response.postText, throwable);
         if (retry > 1)
             GlobalUtil.exception(
-                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + postText,
+                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + response.postText,
                     throwable
             );
     }

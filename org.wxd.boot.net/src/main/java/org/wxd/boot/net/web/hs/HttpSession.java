@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
@@ -79,7 +79,7 @@ public class HttpSession extends Session implements Serializable {
     protected HttpResponseStatus httpResponseStatus = HttpResponseStatus.OK;
     protected HttpHeadValueType resContentType = HttpHeadValueType.Text;
     /** 输出流 */
-    protected StreamBuilder responseContent = new StreamBuilder(512);
+    protected StreamWriter responseContent = new StreamWriter(512);
     protected StringBuilder showLogStringBuilder;
 
     public HttpSession(String name, ChannelHandlerContext ctx) {

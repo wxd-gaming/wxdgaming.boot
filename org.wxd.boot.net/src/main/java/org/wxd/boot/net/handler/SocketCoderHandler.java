@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.net.controller.MappingFactory;
@@ -145,7 +145,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     }
                     default -> {
                         final MarkTimer markTimer = MarkTimer.build();
-                        final StreamBuilder outAppend = new StreamBuilder(1024);
+                        final StreamWriter outAppend = new StreamWriter(1024);
                         cmdService.runCmd(outAppend, cmd, null, jsonObject, session, null, (showLog) -> {
                             if (showLog) {
                                 log.info("\n执行：" + this.toString()

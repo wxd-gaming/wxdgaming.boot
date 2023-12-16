@@ -1,7 +1,7 @@
 package org.wxd.boot.net.controller.cmd;
 
 import org.wxd.boot.agent.system.AnnUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.cache.CachePack;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.IAuth;
@@ -20,7 +20,7 @@ public interface ITokenCache {
 
     CachePack<String, IAuth> getTokenCache();
 
-    default boolean checkToken(StreamBuilder out, Session session, Method cmdMethod, String token) throws Exception {
+    default boolean checkToken(StreamWriter out, Session session, Method cmdMethod, String token) throws Exception {
         if (token != null) {
             TextMapping annotation = AnnUtil.ann(cmdMethod, TextMapping.class);
             // 验证签名
@@ -28,7 +28,7 @@ public interface ITokenCache {
             if (auth != null) {
                 if (annotation != null && annotation.needAuth() > 0) {
                     if (!auth.checkAuth(annotation.needAuth())) {
-                        out.append(RunResult.error(100, annotation.authTips()));
+                        out.write(RunResult.error(100, annotation.authTips()));
                         return false;
                     }
                 }
@@ -46,7 +46,7 @@ public interface ITokenCache {
 
                     if (annotation != null && annotation.needAuth() > 0) {
                         if (!auth.checkAuth(annotation.needAuth())) {
-                            out.append(RunResult.error(100, annotation.authTips()));
+                            out.write(RunResult.error(100, annotation.authTips()));
                             return false;
                         }
                     }

@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.AnnUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.lang.RunResult;
@@ -59,7 +59,7 @@ public interface CmdService extends ITokenCache {
      * @param session    链接对象
      * @param callBack   回调
      */
-    default void runCmd(StreamBuilder out,
+    default void runCmd(StreamWriter out,
                         String methodName,
                         HttpHeadValueType httpHeadValueType,
                         ObjMap putData,
@@ -67,7 +67,7 @@ public interface CmdService extends ITokenCache {
                         String postOrGet,
                         Consumer<Boolean> callBack) {
         if (methodName == null) {
-            out.append("命令参数 cmd , 未找到");
+            out.write("命令参数 cmd , 未找到");
             callBack.accept(true);
             return;
         }
@@ -76,9 +76,9 @@ public interface CmdService extends ITokenCache {
         TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
         if (mappingRecord == null) {
             if ((HttpHeadValueType.Json == httpHeadValueType || HttpHeadValueType.XJson == httpHeadValueType)) {
-                out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
+                out.write(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
             } else {
-                out.append(" 软件：無心道  \n not found url " + methodNameLowerCase);
+                out.write(" 软件：無心道  \n not found url " + methodNameLowerCase);
             }
             if (session instanceof HttpSession) {
                 ((HttpSession) session).setHttpResponseStatus(HttpResponseStatus.NOT_FOUND);
@@ -108,7 +108,7 @@ public interface CmdService extends ITokenCache {
                 try {
                     if (methodNameLowerCase.endsWith("sign")) {
                         RunResult signResult = sign.sign(CmdService.this, session, putData);
-                        out.append(signResult.toString());
+                        out.write(signResult.toString());
                     } else if (signCheck == null || signCheck.checkSign(out, CmdService.this, mappingRecord.method(), session, putData)) {
                         Object invoke;
                         if (mappingRecord.method().getParameterCount() == 0) {
@@ -120,7 +120,7 @@ public interface CmdService extends ITokenCache {
                                 for (int i = 0; i < params.length; i++) {
                                     Type genericParameterType = genericParameterTypes[i];
                                     if (genericParameterType instanceof Class<?>) {
-                                        if (genericParameterType.equals(StreamBuilder.class)) {
+                                        if (genericParameterType.equals(StreamWriter.class)) {
                                             params[i] = out;
                                         } else if (genericParameterType.equals(ObjMap.class)) {
                                             params[i] = putData;
@@ -134,7 +134,7 @@ public interface CmdService extends ITokenCache {
                         }
                         Class<?> returnType = mappingRecord.method().getReturnType();
                         if (!void.class.equals(returnType)) {
-                            out.append(String.valueOf(invoke));
+                            out.write(String.valueOf(invoke));
                         }
                     }
                 } catch (Throwable throwable) {
@@ -149,7 +149,7 @@ public interface CmdService extends ITokenCache {
                     log.error(content + " 异常", throwable);
                     GlobalUtil.exception(content, throwable);
                     out.clear();
-                    out.append(RunResult.error(505, Throw.ofString(throwable)));
+                    out.write(RunResult.error(505, Throw.ofString(throwable)));
                 } finally {
                     boolean showLog = false;
                     TextMapping annotation = AnnUtil.ann(mappingRecord.method(), TextMapping.class);

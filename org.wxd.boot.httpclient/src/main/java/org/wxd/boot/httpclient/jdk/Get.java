@@ -1,4 +1,4 @@
-package org.wxd.boot.httpclient.jclient;
+package org.wxd.boot.httpclient.jdk;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,9 +12,9 @@ import java.net.http.HttpRequest;
  * @version: 2023-10-13 12:22
  **/
 @Slf4j
-public class JGet extends JHttpBuilder.JHttpBase<JGet> {
+public class Get extends HttpBase<Get> {
 
-    JGet(HttpClient httpClient, String url) {
+    Get(HttpClient httpClient, String url) {
         super(httpClient, url);
     }
 

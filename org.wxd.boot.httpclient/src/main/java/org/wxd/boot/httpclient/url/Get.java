@@ -1,4 +1,4 @@
-package org.wxd.boot.httpclient.uclient;
+package org.wxd.boot.httpclient.url;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +13,9 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class UrlGet extends HttpBase<UrlGet> {
+public class Get extends HttpBase<Get> {
 
-    protected UrlGet(String uriPath) {
+    protected Get(String uriPath) {
         super(uriPath);
         this.reqHttpMethod = "GET";
     }

@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.TemplatePack;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.batis.struct.DataChecked;
@@ -84,44 +84,44 @@ public class CreateJavaCode implements Serializable, ICreateCode {
         }
     }
 
-    public void createCodeMapping(StreamBuilder stringAppend, EntityTable entityTable, String packageName) {
-        stringAppend.append("package ").append(packageName).append(".bean.mapping").append(";").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("import ").append(DbColumn.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(DataChecked.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(DbTable.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(Getter.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(Setter.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(Accessors.class.getName()).append(";").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("import java.io.Serializable;").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("/**").append("\n");
-        stringAppend.append(" * excel 构建").append(entityTable.getTableComment()).append("\n");
-        stringAppend.append(" *").append("\n");
-        stringAppend.append(" * @author: Troy.Chen(無心道, 15388152619)").append("\n");
-        stringAppend.append(" * @version: 2021/01/14 09:50").append("\n");
-        stringAppend.append(" **/").append("\n");
-        stringAppend.append("@Getter").append("\n");
-        stringAppend.append("@Setter").append("\n");
-        stringAppend.append("@Accessors(chain = true)").append("\n");
-        stringAppend.append("@").append(DbTable.class.getSimpleName()).append("(mappedSuperclass = true, name = \"").append(entityTable.getTableName()).append("\", comment = \"file = ").append(entityTable.getTableComment()).append("\")").append("\n");
-        stringAppend.append("public abstract class ").append(entityTable.getCodeClassName()).append("Mapping implements ").append(DataChecked.class.getSimpleName()).append(", Serializable {").append("\n");
-        stringAppend.append("\n");
+    public void createCodeMapping(StreamWriter stringAppend, EntityTable entityTable, String packageName) {
+        stringAppend.write("package ").write(packageName).write(".bean.mapping").write(";").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("import ").write(DbColumn.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(DataChecked.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(DbTable.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(Getter.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(Setter.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(Accessors.class.getName()).write(";").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("import java.io.Serializable;").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("/**").write("\n");
+        stringAppend.write(" * excel 构建").write(entityTable.getTableComment()).write("\n");
+        stringAppend.write(" *").write("\n");
+        stringAppend.write(" * @author: Troy.Chen(無心道, 15388152619)").write("\n");
+        stringAppend.write(" * @version: 2021/01/14 09:50").write("\n");
+        stringAppend.write(" **/").write("\n");
+        stringAppend.write("@Getter").write("\n");
+        stringAppend.write("@Setter").write("\n");
+        stringAppend.write("@Accessors(chain = true)").write("\n");
+        stringAppend.write("@").write(DbTable.class.getSimpleName()).write("(mappedSuperclass = true, name = \"").write(entityTable.getTableName()).write("\", comment = \"file = ").write(entityTable.getTableComment()).write("\")").write("\n");
+        stringAppend.write("public abstract class ").write(entityTable.getCodeClassName()).write("Mapping implements ").write(DataChecked.class.getSimpleName()).write(", Serializable {").write("\n");
+        stringAppend.write("\n");
 
         for (EntityField column : entityTable.getColumnMap().values()) {
-            stringAppend.append("    ").append("/**").append(column.getColumnComment()).append(" */").append("\n");
-            stringAppend.append("    ").append("@").append(DbColumn.class.getSimpleName()).append("(name = \"").append(column.getColumnName()).append("\"");
+            stringAppend.write("    ").write("/**").write(column.getColumnComment()).write(" */").write("\n");
+            stringAppend.write("    ").write("@").write(DbColumn.class.getSimpleName()).write("(name = \"").write(column.getColumnName()).write("\"");
             if (column.isColumnKey()) {
-                stringAppend.append(", key = true");
+                stringAppend.write(", key = true");
             }
-            stringAppend.append(")").append("\n");
-            stringAppend.append("    ").append("protected ").append(column.getFieldTypeString()).append(" ").append(column.getFieldName()).append(";").append("\n");
+            stringAppend.write(")").write("\n");
+            stringAppend.write("    ").write("protected ").write(column.getFieldTypeString()).write(" ").write(column.getFieldName()).write(";").write("\n");
         }
-        stringAppend.append("\n");
-        stringAppend.append("}").append("\n");
+        stringAppend.write("\n");
+        stringAppend.write("}").write("\n");
     }
 
     /**
@@ -131,30 +131,30 @@ public class CreateJavaCode implements Serializable, ICreateCode {
      * @param entityTable
      * @param packageName
      */
-    public void createCodeBean(StreamBuilder stringAppend, EntityTable entityTable, String packageName) {
-        stringAppend.append("package ").append(packageName).append(".bean;").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("import ").append(packageName).append(".bean.mapping.").append(entityTable.getCodeClassName()).append("Mapping;").append("\n");
-        stringAppend.append("import ").append(DbColumn.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(DbTable.class.getName()).append(";").append("\n");
-        stringAppend.append("import ").append(Getter.class.getName()).append(";").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("import java.io.Serializable;").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("/**").append("\n");
-        stringAppend.append(" * excel 构建").append(entityTable.getTableComment()).append("\n");
-        stringAppend.append(" *").append("\n");
-        stringAppend.append(" * @author: Troy.Chen(無心道, 15388152619)").append("\n");
-        stringAppend.append(" * @version: 2021/01/14 09:50").append("\n");
-        stringAppend.append(" **/").append("\n");
-        stringAppend.append("@Getter").append("\n");
-        stringAppend.append("@").append(DbTable.class.getSimpleName()).append("(name = \"").append(entityTable.getTableName()).append("\", comment = \"file = ").append(entityTable.getTableComment()).append("\")").append("\n");
-        stringAppend.append("public class ").append(entityTable.getCodeClassName()).append("Bean extends ").append(entityTable.getCodeClassName()).append("Mapping implements Serializable {").append("\n");
-        stringAppend.append("\n");
+    public void createCodeBean(StreamWriter stringAppend, EntityTable entityTable, String packageName) {
+        stringAppend.write("package ").write(packageName).write(".bean;").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("import ").write(packageName).write(".bean.mapping.").write(entityTable.getCodeClassName()).write("Mapping;").write("\n");
+        stringAppend.write("import ").write(DbColumn.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(DbTable.class.getName()).write(";").write("\n");
+        stringAppend.write("import ").write(Getter.class.getName()).write(";").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("import java.io.Serializable;").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("/**").write("\n");
+        stringAppend.write(" * excel 构建").write(entityTable.getTableComment()).write("\n");
+        stringAppend.write(" *").write("\n");
+        stringAppend.write(" * @author: Troy.Chen(無心道, 15388152619)").write("\n");
+        stringAppend.write(" * @version: 2021/01/14 09:50").write("\n");
+        stringAppend.write(" **/").write("\n");
+        stringAppend.write("@Getter").write("\n");
+        stringAppend.write("@").write(DbTable.class.getSimpleName()).write("(name = \"").write(entityTable.getTableName()).write("\", comment = \"file = ").write(entityTable.getTableComment()).write("\")").write("\n");
+        stringAppend.write("public class ").write(entityTable.getCodeClassName()).write("Bean extends ").write(entityTable.getCodeClassName()).write("Mapping implements Serializable {").write("\n");
+        stringAppend.write("\n");
 
-        stringAppend.append("}").append("\n");
+        stringAppend.write("}").write("\n");
     }
 
     /**
@@ -164,28 +164,28 @@ public class CreateJavaCode implements Serializable, ICreateCode {
      * @param entityTable
      * @param packageName
      */
-    public void createCodeFactory(StreamBuilder stringAppend, EntityTable entityTable, String packageName) {
-        stringAppend.append("package ").append(packageName).append(".factory").append(";").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("import ").append(packageName).append(".bean.").append(entityTable.getCodeClassName()).append("Bean;").append("\n");
-        stringAppend.append("import ").append(DbBean.class.getName()).append(";").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("import java.io.Serializable;").append("\n");
-        stringAppend.append("import ").append(Getter.class.getName()).append(";").append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("\n");
-        stringAppend.append("/**").append("\n");
-        stringAppend.append(" * excel 构建").append(entityTable.getTableComment()).append("\n");
-        stringAppend.append(" *").append("\n");
-        stringAppend.append(" * @author: Troy.Chen(無心道, 15388152619)").append("\n");
-        stringAppend.append(" * @version: 2021/01/14 09:50").append("\n");
-        stringAppend.append(" **/").append("\n");
-        stringAppend.append("@Getter").append("\n");
-        stringAppend.append("public class ").append(entityTable.getCodeClassName()).append("Factory extends ").append(DbBean.class.getSimpleName()).append("<" + entityTable.getCodeClassName() + "Bean>").append(" implements Serializable {").append("\n");
-        stringAppend.append("\n");
+    public void createCodeFactory(StreamWriter stringAppend, EntityTable entityTable, String packageName) {
+        stringAppend.write("package ").write(packageName).write(".factory").write(";").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("import ").write(packageName).write(".bean.").write(entityTable.getCodeClassName()).write("Bean;").write("\n");
+        stringAppend.write("import ").write(DbBean.class.getName()).write(";").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("import java.io.Serializable;").write("\n");
+        stringAppend.write("import ").write(Getter.class.getName()).write(";").write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("\n");
+        stringAppend.write("/**").write("\n");
+        stringAppend.write(" * excel 构建").write(entityTable.getTableComment()).write("\n");
+        stringAppend.write(" *").write("\n");
+        stringAppend.write(" * @author: Troy.Chen(無心道, 15388152619)").write("\n");
+        stringAppend.write(" * @version: 2021/01/14 09:50").write("\n");
+        stringAppend.write(" **/").write("\n");
+        stringAppend.write("@Getter").write("\n");
+        stringAppend.write("public class ").write(entityTable.getCodeClassName()).write("Factory extends ").write(DbBean.class.getSimpleName()).write("<" + entityTable.getCodeClassName() + "Bean>").write(" implements Serializable {").write("\n");
+        stringAppend.write("\n");
 
-        stringAppend.append("}").append("\n");
+        stringAppend.write("}").write("\n");
     }
 
 }

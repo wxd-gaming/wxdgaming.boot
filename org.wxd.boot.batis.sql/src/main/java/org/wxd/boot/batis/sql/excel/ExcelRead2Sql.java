@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.TemplatePack;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.code.CodeLan;
 import org.wxd.boot.batis.excel.ExcelRead;
@@ -108,14 +108,14 @@ public class ExcelRead2Sql extends ExcelRead<SqlEntityTable, SqlDataWrapper<SqlE
         }
 
         if (sqlDao != null) {
-            StreamBuilder streamBuilder = new StreamBuilder();
+            StreamWriter streamWriter = new StreamWriter();
             try {
-                streamBuilder.clear();
-                getDataWrapper().buildSqlDropTable(streamBuilder, entityTable.getTableName());
-                sqlDao.executeUpdate(streamBuilder.toString());
-                streamBuilder.clear();
-                getDataWrapper().buildSqlCreateTable(streamBuilder, entityTable, entityTable.getTableName(), entityTable.getTableComment());
-                sqlDao.executeUpdate(streamBuilder.toString());
+                streamWriter.clear();
+                getDataWrapper().buildSqlDropTable(streamWriter, entityTable.getTableName());
+                sqlDao.executeUpdate(streamWriter.toString());
+                streamWriter.clear();
+                getDataWrapper().buildSqlCreateTable(streamWriter, entityTable, entityTable.getTableName(), entityTable.getTableComment());
+                sqlDao.executeUpdate(streamWriter.toString());
                 if (!entityTable.getRows().isEmpty()) {
                     String replaceSql = entityTable.getReplaceSql(null);
                     try (Connection connection = sqlDao.getConnection();

@@ -1,7 +1,7 @@
 package org.wxd.boot.batis.sql;
 
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.struct.DbTable;
 import org.wxd.boot.collection.ObjMap;
@@ -126,9 +126,9 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
             }
 
         } else {
-            StreamBuilder streamBuilder = new StreamBuilder();
-            getDataWrapper().buildSqlCreateTable(streamBuilder, entityTable, tableName, tableComment);
-            this.executeUpdate(streamBuilder.toString());
+            StreamWriter streamWriter = new StreamWriter();
+            getDataWrapper().buildSqlCreateTable(streamWriter, entityTable, tableName, tableComment);
+            this.executeUpdate(streamWriter.toString());
         }
     }
 

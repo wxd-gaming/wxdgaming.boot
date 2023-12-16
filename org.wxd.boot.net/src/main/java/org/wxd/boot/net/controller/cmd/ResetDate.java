@@ -1,6 +1,6 @@
 package org.wxd.boot.net.controller.cmd;
 
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.timer.MyClock;
@@ -19,15 +19,15 @@ public interface ResetDate {
      * 重设系统运行当前时间
      */
     @TextMapping
-    default void resetCurrentDate(StreamBuilder out, ObjMap putData) throws Exception {
+    default void resetCurrentDate(StreamWriter out, ObjMap putData) throws Exception {
         String curtime = putData.getString("curtime");
         Date zdt = MyClock.parseDate(MyClock.SDF_YYYYMMDDHHMMSS_2, curtime);
         if (zdt.getTime() < System.currentTimeMillis() || zdt.getTime() < MyClock.millis()) {
-            out.append("只能设置未来时间，不能设置过去时间, 如果要还原请重启程序！ 程序运行当前时间：" + MyClock.nowString());
+            out.write("只能设置未来时间，不能设置过去时间, 如果要还原请重启程序！ 程序运行当前时间：" + MyClock.nowString());
             return;
         }
         MyClock.TimeOffset.set(zdt.getTime() - System.currentTimeMillis());
-        out.append("程序运行当前时间：" + MyClock.nowString());
+        out.write("程序运行当前时间：" + MyClock.nowString());
     }
 
 }

@@ -1,7 +1,7 @@
 package org.wxd.boot.net.controller.cmd;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.Session;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
  **/
 public interface SignCheck<S extends Session> {
 
-    default boolean checkSign(StreamBuilder out, ITokenCache tokenCache, Method cmdMethod, S session, ObjMap putData) throws Exception {
+    default boolean checkSign(StreamWriter out, ITokenCache tokenCache, Method cmdMethod, S session, ObjMap putData) throws Exception {
 
         boolean checkToken = tokenCache.checkToken(out, session, cmdMethod, putData.getString(HttpHeaderNames.AUTHORIZATION.toString()));
         if (checkToken) {
@@ -24,7 +24,7 @@ public interface SignCheck<S extends Session> {
         }
 
         /*固定key值验证*/
-        out.append(RunResult.of().setCode(99).setMsg("验签失败"));
+        out.write(RunResult.of().setCode(99).setMsg("验签失败"));
         return false;
     }
 

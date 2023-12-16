@@ -1,15 +1,21 @@
 package org.wxd.boot.httpclient;
 
+import lombok.Getter;
+
+import java.io.File;
+
 /**
  * http 协议类型
  *
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
+@Getter
 public enum HttpHeadValueType {
     /**  */
     All("*/*; charset=UTF-8"),
     Gzip("gzip"),
+    Close("close"),
     /** octet-stream */
     OctetStream("application/octet-stream; charset=UTF-8"),
 
@@ -56,25 +62,65 @@ public enum HttpHeadValueType {
     PNG("image/png"),
     ;
 
-    String value;
+    final String value;
 
     HttpHeadValueType(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public HttpHeadValueType setValue(String value) {
-        this.value = value;
-        return this;
     }
 
     @Override
     public String toString() {
         return value;
     }
+
+    /**
+     * 获取文件的上传类型，图片格式为image/png,image/jpg等。非图片为application/octet-stream
+     *
+     * @param f
+     * @return
+     * @throws Exception
+     */
+    public static HttpHeadValueType findContentType(File f) {
+        String fileName = f.getName();
+        String extendName = fileName.substring(fileName.indexOf(".") + 1).toLowerCase();
+        return findContentType(extendName);
+    }
+
+    public static HttpHeadValueType findContentType(String extendName) {
+        switch (extendName) {
+            case "htm":
+            case "html":
+            case "jsp":
+            case "asp":
+            case "aspx":
+            case "xhtml":
+                return HttpHeadValueType.Html;
+            case "css":
+                return HttpHeadValueType.CSS;
+            case "js":
+                return HttpHeadValueType.Javascript;
+            case "xml":
+                return HttpHeadValueType.Xml;
+            case "json":
+                return HttpHeadValueType.Json;
+            case "xjson":
+                return HttpHeadValueType.XJson;
+            case "ico":
+                return HttpHeadValueType.ICO;
+            case "icon":
+                return HttpHeadValueType.ICON;
+            case "gif":
+                return HttpHeadValueType.GIF;
+            case "jpg":
+            case "jpe":
+            case "jpeg":
+                return HttpHeadValueType.JPG;
+            case "png":
+                return HttpHeadValueType.PNG;
+        }
+        return HttpHeadValueType.OctetStream;
+    }
+
 
 }
 

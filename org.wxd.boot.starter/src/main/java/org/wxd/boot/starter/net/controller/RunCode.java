@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.loader.ClassBytesLoader;
 import org.wxd.boot.agent.system.Base64Util;
 import org.wxd.boot.agent.zip.ZipUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.controller.ann.TextMapping;
@@ -29,7 +29,7 @@ public interface RunCode {
      * 运行动态代码
      */
     @TextMapping(remarks = "动态执行代码")
-    default void runCode(StreamBuilder out, ObjMap putData) throws Exception {
+    default void runCode(StreamWriter out, ObjMap putData) throws Exception {
         String codebase64 = putData.getString("codebase64");
         byte[] decode = Base64Util.decode2Byte(codebase64);
         String javaClasses = ZipUtil.unzip2String(decode);
@@ -47,7 +47,7 @@ public interface RunCode {
                     PostCodeRun newInstance = (PostCodeRun) aClass.getDeclaredConstructor().newInstance();
                     newInstance.setIocInjector(Starter.curIocInjector());
                     RunResult result = newInstance.run(params);
-                    out.append(result.toJson());
+                    out.write(result.toJson());
                 }
             }
         }

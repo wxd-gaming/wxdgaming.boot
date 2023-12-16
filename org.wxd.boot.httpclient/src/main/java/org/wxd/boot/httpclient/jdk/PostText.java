@@ -1,4 +1,4 @@
-package org.wxd.boot.httpclient.jclient;
+package org.wxd.boot.httpclient.jdk;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,30 +17,27 @@ import java.net.http.HttpRequest;
  **/
 @Slf4j
 @Getter
-public class JPostText extends JHttpBuilder.JHttpBase<JPostText> {
+public class PostText extends HttpBase<PostText> {
 
-    /** 获取 post 上报的文本 */
-    private String postText;
-
-    JPostText(HttpClient httpClient, String url) {
+    PostText(HttpClient httpClient, String url) {
         super(httpClient, url);
     }
 
-    public JPostText paramText(String text) {
-        this.postText = text;
+    public PostText paramText(String text) {
+        response.postText = text;
         return this;
     }
 
-    public JPostText paramJson(String text) {
-        this.postText = text;
+    public PostText paramJson(String text) {
+        response.postText = text;
         header("Content-Type", HttpHeadValueType.Json.getValue());
         return this;
     }
 
     @Override protected HttpRequest.Builder builder() {
         HttpRequest.Builder builder = super.builder();
-        if (StringUtil.notEmptyOrNull(postText)) {
-            builder.POST(HttpRequest.BodyPublishers.ofString(postText));
+        if (StringUtil.notEmptyOrNull(response.postText)) {
+            builder.POST(HttpRequest.BodyPublishers.ofString(response.postText));
         } else {
             builder.POST(HttpRequest.BodyPublishers.noBody());
         }
@@ -48,10 +45,10 @@ public class JPostText extends JHttpBuilder.JHttpBase<JPostText> {
     }
 
     @Override protected void actionThrowable(Throwable throwable) {
-        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, postText, throwable);
+        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, response.postText, throwable);
         if (retry > 1)
             GlobalUtil.exception(
-                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + postText,
+                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + response.postText,
                     throwable
             );
     }

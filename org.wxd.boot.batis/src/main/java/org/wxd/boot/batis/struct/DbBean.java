@@ -3,7 +3,7 @@ package org.wxd.boot.batis.struct;
 import com.alibaba.fastjson.annotation.JSONField;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.field.extend.FieldAnn;
@@ -116,63 +116,63 @@ public abstract class DbBean<T> {
     }
 
     public String toDataString(int len) {
-        StreamBuilder streamBuilder = new StreamBuilder();
-        toDataString(streamBuilder, len);
-        return streamBuilder.toString();
+        StreamWriter streamWriter = new StreamWriter();
+        toDataString(streamWriter, len);
+        return streamWriter.toString();
     }
 
-    public void toDataString(StreamBuilder streamBuilder) {
-        toDataString(streamBuilder, 50);
+    public void toDataString(StreamWriter streamWriter) {
+        toDataString(streamWriter, 50);
     }
 
-    public void toDataString(StreamBuilder streamBuilder, int len) {
-        streamBuilder.append("解析：").append(dataMapping.getLogTableName()).append("\n");
-        streamBuilder.append("表名：").append(dataMapping.getTableName()).append("\n");
+    public void toDataString(StreamWriter streamWriter, int len) {
+        streamWriter.write("解析：").write(dataMapping.getLogTableName()).write("\n");
+        streamWriter.write("表名：").write(dataMapping.getTableName()).write("\n");
         Collection<EntityField> columns = dataMapping.getColumns();
 
 
-        streamBuilder.appendRight("-", len * dataMapping.getColumns().size(), '-').append("\n");
+        streamWriter.appendRight("-", len * dataMapping.getColumns().size(), '-').write("\n");
         for (EntityField entityField : columns) {
-            streamBuilder.append("|").appendRight(entityField.getColumnName(), len, ' ');
+            streamWriter.write("|").appendRight(entityField.getColumnName(), len, ' ');
         }
 
-        streamBuilder.append("\n");
+        streamWriter.write("\n");
 
         for (EntityField entityField : columns) {
-            streamBuilder.append("|")
+            streamWriter.write("|")
                     .appendRight(entityField.typeName(), len, ' ');
         }
 
-        streamBuilder.append("\n");
+        streamWriter.write("\n");
 
         for (EntityField entityField : columns) {
-            streamBuilder.append("|")
+            streamWriter.write("|")
                     .appendRight(entityField.checkColumnType().formatString(entityField.getColumnLength()), len, ' ');
         }
 
-        streamBuilder.append("\n");
+        streamWriter.write("\n");
 
         for (EntityField entityField : columns) {
-            streamBuilder.append("|").appendRight(entityField.getColumnComment(), len, ' ');
+            streamWriter.write("|").appendRight(entityField.getColumnComment(), len, ' ');
         }
 
-        streamBuilder.append("\n");
+        streamWriter.write("\n");
 
-        streamBuilder.appendRight("-", len * columns.size(), '-').append("\n");
+        streamWriter.appendRight("-", len * columns.size(), '-').write("\n");
         for (T row : modelList) {
-            streamBuilder.append("\n");
+            streamWriter.write("\n");
             for (EntityField entityField : columns) {
                 Object value = entityField.getFieldValue(row);
                 if (value == null) {
-                    streamBuilder.append("|").appendRight("-", len, ' ');
+                    streamWriter.write("|").appendRight("-", len, ' ');
                 } else if (ConvertUtil.isBaseType(value.getClass())) {
-                    streamBuilder.append("|").appendRight(String.valueOf(value), len, ' ');
+                    streamWriter.write("|").appendRight(String.valueOf(value), len, ' ');
                 } else {
-                    streamBuilder.append("|").appendRight(FastJsonUtil.toJson(value), len, ' ');
+                    streamWriter.write("|").appendRight(FastJsonUtil.toJson(value), len, ' ');
                 }
             }
         }
-        streamBuilder.append("\n");
+        streamWriter.write("\n");
     }
 
 }

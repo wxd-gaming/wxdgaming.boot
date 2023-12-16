@@ -2,8 +2,7 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.httpclient.jclient.JHttpBuilder;
-import org.wxd.boot.httpclient.jclient.JPostText;
+import org.wxd.boot.httpclient.url.HttpBuilder;
 
 /**
  * 测试
@@ -15,11 +14,46 @@ import org.wxd.boot.httpclient.jclient.JPostText;
 public class HttpTest {
 
     @Test
-    public void t1(){
+    public void t1() throws InterruptedException {
         String url = "https://laosiji.swjoy.com/client/api/5712/qr_code.do";
-        JPostText request = JHttpBuilder.postText(url).paramText("data=eyJn4dWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b").request();
-        String s = request.bodyString();
-        log.debug("{}",s);
+
+        org.wxd.boot.httpclient.jdk.HttpBuilder.postText(url)
+                .paramText("data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .async(body -> body.systemOut());
+
+        org.wxd.boot.httpclient.jdk.HttpBuilder.postText(url)
+                .paramText("data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .request()
+                .systemOut();
+
+        Thread.sleep(5000);
+    }
+
+    @Test
+    public void t2() throws InterruptedException {
+        String url = "https://laosiji.swjoy.com/client/api/5712/qr_code.do";
+
+        // HttpBuilder.postText(url)
+        //         .paramText("data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+        //         .asyncByString(body -> log.debug("{}", body));
+
+        HttpBuilder.get("https://laosiji.swjoy.com/client/api/5712/qr_code.do?data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .request().systemOut();
+
+        HttpBuilder.postText(url)
+                .paramText("data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .request()
+                .systemOut();
+
+        HttpBuilder.get("http://127.0.0.1:18800/sjcq/proxySw?data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .request().systemOut();
+
+        HttpBuilder.postText("http://127.0.0.1:18800/sjcq/proxySw")
+                .paramText("data=eyJndWlkIjoiNTcxMl8xNjg5MjEwNTQ0ODUxXzk2OTk5MjI2Iiwib3JkZXJObyI6IjhhZTYyMjgxZTdjZjQzOTU4ODgxZGU0ODIxZTZjMWE2Iiwicm1iIjoxMiwiaWR4IjoiNzIiLCJ0aW1lIjoxNzAyNjkzNTQ0LCJzd1RhZyI6InN3Iiwicm9sZUlkIjoiMTU4MzYxMzQwMzM0NjIzOTUyNiJ9&sign=7395de180756be1fd5d249e19bf10b5b")
+                .request()
+                .systemOut();
+
+        Thread.sleep(5000);
     }
 
 }

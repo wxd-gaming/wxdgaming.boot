@@ -2,7 +2,7 @@ package org.wxd.boot.batis.sql.sqlite;
 
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
-import org.wxd.boot.append.StreamBuilder;
+import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.DbConfig;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.sql.SqlDataHelper;
@@ -77,9 +77,9 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
     public void createTable(SqlEntityTable entityTable, String tableName, String tableComment) {
         Integer integer = executeScalar(ifexitstable, Integer.class, tableName);
         if (integer == null || integer == 0) {
-            try (StreamBuilder streamBuilder = new StreamBuilder();) {
-                getDataWrapper().buildSqlCreateTable(streamBuilder, entityTable, tableName, tableComment);
-                this.executeUpdate(streamBuilder.toString());
+            try (StreamWriter streamWriter = new StreamWriter();) {
+                getDataWrapper().buildSqlCreateTable(streamWriter, entityTable, tableName, tableComment);
+                this.executeUpdate(streamWriter.toString());
                 final Collection<EntityField> columns = entityTable.getColumns();
                 for (EntityField entityField : columns) {
                     StringBuilder out = new StringBuilder();
