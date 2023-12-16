@@ -26,13 +26,13 @@ public class BootConfig extends ObjectBase {
     private ThreadPool logicExecutor = new ThreadPool(4, 8);
 
     @Element(required = false)
-    private ServerConfig server = new ServerConfig();
+    private TcpConfig server = new TcpConfig();
     @Element(required = false)
-    private ServerConfig server1 = new ServerConfig();
+    private TcpConfig server1 = new TcpConfig();
     @Element(required = false)
-    private ServerConfig server2 = new ServerConfig();
+    private TcpConfig server2 = new TcpConfig();
     @Element(required = false)
-    private ServerConfig server3 = new ServerConfig();
+    private TcpConfig server3 = new TcpConfig();
     @Element(required = false)
     private WebConfig wsserver = new WebConfig();
     @Element(required = false)
@@ -42,13 +42,13 @@ public class BootConfig extends ObjectBase {
     @Element(required = false)
     private WebConfig wsserver3 = new WebConfig();
     @Element(required = false)
-    private WebConfig http = new WebConfig();
+    private HttpConfig http = new HttpConfig();
     @Element(required = false)
-    private WebConfig http1 = new WebConfig();
+    private HttpConfig http1 = new HttpConfig();
     @Element(required = false)
-    private WebConfig http2 = new WebConfig();
+    private HttpConfig http2 = new HttpConfig();
     @Element(required = false)
-    private WebConfig http3 = new WebConfig();
+    private HttpConfig http3 = new HttpConfig();
     @Element(required = false)
     private DbConfig mysql = new DbConfig();
     @Element(required = false)

@@ -1,10 +1,12 @@
 package org.wxd.boot.starter.service;
 
+import io.netty.buffer.ByteBuf;
 import org.wxd.boot.ann.Sort;
+import org.wxd.boot.net.handler.CmdService;
 import org.wxd.boot.net.ts.TcpServer;
 import org.wxd.boot.net.ts.TcpSession;
 import org.wxd.boot.starter.IocContext;
-import org.wxd.boot.starter.ServerConfig;
+import org.wxd.boot.starter.TcpConfig;
 import org.wxd.boot.starter.i.IShutdown;
 import org.wxd.boot.starter.i.IStart;
 
@@ -16,13 +18,13 @@ import org.wxd.boot.starter.i.IStart;
  **/
 public class TsService extends TcpServer<TcpSession> implements IStart, IShutdown {
 
-    public TsService(ServerConfig serverConfig) throws Exception {
-        setName(serverConfig.getName())
-                .setHost(serverConfig.getHost())
-                .setWanIp(serverConfig.getWanIp())
-                .setPort(serverConfig.getPort())
-                .setSslType(serverConfig.sslProtocolType())
-                .setSslContext(serverConfig.sslContext())
+    public TsService(TcpConfig tcpConfig) throws Exception {
+        setName(tcpConfig.getName())
+                .setHost(tcpConfig.getHost())
+                .setWanIp(tcpConfig.getWanIp())
+                .setPort(tcpConfig.getPort())
+                .setSslType(tcpConfig.sslProtocolType())
+                .setSslContext(tcpConfig.sslContext())
                 .initBootstrap();
     }
 
@@ -34,6 +36,10 @@ public class TsService extends TcpServer<TcpSession> implements IStart, IShutdow
     @Sort(1)
     @Override public void shutdown() throws Exception {
         close();
+    }
+
+    @Override public void read(CmdService cmdService, TcpSession session, ByteBuf byteBuf) {
+        super.read(cmdService, session, byteBuf);
     }
 
 }

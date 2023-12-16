@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
 import org.wxd.boot.lang.ObjectBase;
 
 import java.io.Serializable;
@@ -18,48 +17,58 @@ import java.util.ArrayList;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class WebConfig extends TcpConfig implements Serializable {
+public class HttpConfig extends WebConfig implements Serializable {
 
     @Element(required = false)
-    private String resourcesPath = "";
-    @ElementList(required = false)
-    private ArrayList<Header> headers = new ArrayList<>();
+    private int threadCoreSize = 100;
+    @Element(required = false)
+    private int threadMaxSize = 200;
 
-    public WebConfig() {
+    public HttpConfig() {
     }
 
-    @Override public WebConfig setName(String name) {
+    @Override public HttpConfig setName(String name) {
         super.setName(name);
         return this;
     }
 
-    @Override public WebConfig setWanIp(String wanIp) {
+    @Override public HttpConfig setWanIp(String wanIp) {
         super.setWanIp(wanIp);
         return this;
     }
 
-    @Override public WebConfig setPort(int port) {
+    @Override public HttpConfig setPort(int port) {
         super.setPort(port);
         return this;
     }
 
-    @Override public WebConfig setSslProtocolType(String sslProtocolType) {
+    @Override public HttpConfig setSslProtocolType(String sslProtocolType) {
         super.setSslProtocolType(sslProtocolType);
         return this;
     }
 
-    @Override public WebConfig setJksPwd(String jksPwd) {
+    @Override public HttpConfig setJksPwd(String jksPwd) {
         super.setJksPwd(jksPwd);
         return this;
     }
 
-    @Override public WebConfig setJks(String jks) {
+    @Override public HttpConfig setJks(String jks) {
         super.setJks(jks);
         return this;
     }
 
-    @Override public WebConfig setHost(String host) {
+    @Override public HttpConfig setHost(String host) {
         super.setHost(host);
+        return this;
+    }
+
+    @Override public HttpConfig setHeaders(ArrayList<WebConfig.Header> headers) {
+        super.setHeaders(headers);
+        return this;
+    }
+
+    @Override public HttpConfig setResourcesPath(String resourcesPath) {
+        super.setResourcesPath(resourcesPath);
         return this;
     }
 

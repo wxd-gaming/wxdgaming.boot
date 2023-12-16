@@ -2,6 +2,7 @@ package org.wxd.boot.starter.service;
 
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.net.web.hs.HttpServer;
+import org.wxd.boot.starter.HttpConfig;
 import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.starter.WebConfig;
 import org.wxd.boot.starter.i.IShutdown;
@@ -15,7 +16,7 @@ import org.wxd.boot.starter.i.IStart;
  **/
 public class HsService extends HttpServer implements IStart, IShutdown {
 
-    public HsService(WebConfig webConfig) throws Exception {
+    public HsService(HttpConfig webConfig) throws Exception {
         setName(webConfig.getName())
                 .setHost(webConfig.getHost())
                 .setWanIp(webConfig.getWanIp())

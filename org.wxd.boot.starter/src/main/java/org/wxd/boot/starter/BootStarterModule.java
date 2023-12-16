@@ -31,12 +31,16 @@ class BootStarterModule extends BaseModule {
         JvmUtil.setProperty(JvmUtil.Logic_Executor_Core_Size, bootConfig.getLogicExecutor().getCoreSize());
         JvmUtil.setProperty(JvmUtil.Logic_Executor_Max_Size, bootConfig.getLogicExecutor().getMaxSize());
 
-        ConsumerE2<Class, ServerConfig> action = (aClass, o) -> {
-            if (o.getPort() > 0) {
-                if (StringUtil.emptyOrNull(o.getName())) {
-                    o.setName(MappingFactory.FINAL_DEFAULT);
+        ConsumerE2<Class, TcpConfig> action = (aClass, config) -> {
+            if (config.getPort() > 0) {
+                if (StringUtil.emptyOrNull(config.getName())) {
+                    config.setName(MappingFactory.FINAL_DEFAULT);
                 }
-                Object newInstance = aClass.getDeclaredConstructor(o.getClass()).newInstance(o);
+                if (StringUtil.notEmptyOrNull(config.getServiceClassName())) {
+                    /*通过指定的类进行加载*/
+                    aClass = BootStarterModule.class.getClassLoader().loadClass(config.getServiceClassName());
+                }
+                Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
                 bindSingleton(aClass, newInstance);
             }
         };

@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ServerConfig extends ObjectBase implements Serializable {
+public class TcpConfig extends ObjectBase implements Serializable {
 
     @Element(required = false)
     private String name = "";
@@ -35,6 +35,8 @@ public class ServerConfig extends ObjectBase implements Serializable {
     private String jks = "org_wxd_pkcs12.keystore";
     @Element(required = false)
     private String jksPwd = "wxd2021";
+    @Element(required = false)
+    private String serviceClassName = null;
 
     public SslProtocolType sslProtocolType() throws Exception {
         if (StringUtil.notEmptyOrNull(sslProtocolType)) {

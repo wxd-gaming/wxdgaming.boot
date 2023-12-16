@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.service;
 
-import org.wxd.boot.starter.WebConfig;
+import org.wxd.boot.starter.HttpConfig;
 
 /**
  * http 服务
@@ -10,8 +10,8 @@ import org.wxd.boot.starter.WebConfig;
  **/
 public class HsService2 extends HsService {
 
-    public HsService2(WebConfig webConfig) throws Exception {
-        super(webConfig);
+    public HsService2(HttpConfig config) throws Exception {
+        super(config);
     }
 
 }

@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.service;
 
-import org.wxd.boot.starter.ServerConfig;
+import org.wxd.boot.starter.TcpConfig;
 
 /**
  * tcp server
@@ -10,8 +10,8 @@ import org.wxd.boot.starter.ServerConfig;
  **/
 public class TsService2 extends TsService {
 
-    public TsService2(ServerConfig serverConfig) throws Exception {
-        super(serverConfig);
+    public TsService2(TcpConfig tcpConfig) throws Exception {
+        super(tcpConfig);
     }
 
 
