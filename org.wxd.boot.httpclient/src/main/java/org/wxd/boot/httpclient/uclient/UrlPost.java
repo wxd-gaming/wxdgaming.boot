@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -43,7 +43,7 @@ public abstract class UrlPost extends HttpBase {
 
     /** 添加结尾数据 */
     protected void writesEnd(OutputStream outputStream, OutputStreamWriter outWriter) throws Exception {
-        if (httpContentType == HttpContentType.Multipart) {
+        if (httpHeadValueType == HttpHeadValueType.Multipart) {
             outWriter.append("--").append(boundary).append("--").append("\r\n");
             outWriter.append("\r\n");
         }

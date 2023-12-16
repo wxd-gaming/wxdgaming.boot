@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
@@ -77,7 +77,7 @@ public class HttpSession extends Session implements Serializable {
 
     protected AtomicBoolean responseOver = new AtomicBoolean();
     protected HttpResponseStatus httpResponseStatus = HttpResponseStatus.OK;
-    protected HttpContentType resContentType = HttpContentType.Text;
+    protected HttpHeadValueType resContentType = HttpHeadValueType.Text;
     /** 输出流 */
     protected StreamBuilder responseContent = new StreamBuilder(512);
     protected StringBuilder showLogStringBuilder;
@@ -131,8 +131,8 @@ public class HttpSession extends Session implements Serializable {
     }
 
     /** HttpContentType.html 回复 http 请求 */
-    public void response(HttpVersion httpVersion, HttpResponseStatus status, HttpContentType httpContentType, byte[] bytes) {
-        HttpServer.response(this, httpVersion, status, httpContentType, bytes);
+    public void response(HttpVersion httpVersion, HttpResponseStatus status, HttpHeadValueType httpHeadValueType, byte[] bytes) {
+        HttpServer.response(this, httpVersion, status, httpHeadValueType, bytes);
     }
 
     public void responseOver() {
@@ -189,7 +189,7 @@ public class HttpSession extends Session implements Serializable {
 
         reqContentType = this.header(HttpHeaderNames.CONTENT_TYPE);
         if (reqContentType == null) {
-            reqContentType = HttpContentType.Application.getValue();
+            reqContentType = HttpHeadValueType.Application.getValue();
         }
         reqContentType = reqContentType.toLowerCase();
 

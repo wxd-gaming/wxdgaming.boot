@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.ssl.SslContextClient;
 import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.str.StringUtil;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public abstract class HttpBase<H extends HttpBase> {
 
     protected final UrlResponse urlResponse;
-    protected HttpContentType httpContentType = HttpContentType.Application;
+    protected HttpHeadValueType httpHeadValueType = HttpHeadValueType.Application;
     protected SslProtocolType sslProtocolType = SslProtocolType.SSL;
     protected final Map<String, String> reqHeaderMap = new LinkedHashMap<>();
     protected int connTimeout = 3000;
@@ -117,11 +117,11 @@ public abstract class HttpBase<H extends HttpBase> {
             this.urlResponse.urlConnection.setConnectTimeout(connTimeout);
             this.urlResponse.urlConnection.setReadTimeout(readTimeout);
 
-            if (httpContentType == HttpContentType.Multipart) {
+            if (httpHeadValueType == HttpHeadValueType.Multipart) {
                 boundary = StringUtil.getRandomString(15);
-                reqHeaderMap.put("content-type", httpContentType.toString() + "; boundary=" + boundary);
+                reqHeaderMap.put("content-type", httpHeadValueType.toString() + "; boundary=" + boundary);
             } else {
-                reqHeaderMap.put("content-type", httpContentType.toString());
+                reqHeaderMap.put("content-type", httpHeadValueType.toString());
             }
 
             for (Map.Entry<String, String> headerEntry : reqHeaderMap.entrySet()) {
@@ -180,7 +180,7 @@ public abstract class HttpBase<H extends HttpBase> {
      * @return
      * @throws Exception
      */
-    protected HttpContentType getContentType(File f) throws Exception {
+    protected HttpHeadValueType getContentType(File f) throws Exception {
         String fileName = f.getName();
         String extendName = fileName.substring(fileName.indexOf(".") + 1).toLowerCase();
         switch (extendName) {
@@ -190,31 +190,31 @@ public abstract class HttpBase<H extends HttpBase> {
             case "asp":
             case "aspx":
             case "xhtml":
-                return HttpContentType.Html;
+                return HttpHeadValueType.Html;
             case "css":
-                return HttpContentType.CSS;
+                return HttpHeadValueType.CSS;
             case "js":
-                return HttpContentType.Javascript;
+                return HttpHeadValueType.Javascript;
             case "xml":
-                return HttpContentType.Xml;
+                return HttpHeadValueType.Xml;
             case "json":
-                return HttpContentType.Json;
+                return HttpHeadValueType.Json;
             case "xjson":
-                return HttpContentType.XJson;
+                return HttpHeadValueType.XJson;
             case "ico":
-                return HttpContentType.ICO;
+                return HttpHeadValueType.ICO;
             case "icon":
-                return HttpContentType.ICON;
+                return HttpHeadValueType.ICON;
             case "gif":
-                return HttpContentType.GIF;
+                return HttpHeadValueType.GIF;
             case "jpg":
             case "jpe":
             case "jpeg":
-                return HttpContentType.JPG;
+                return HttpHeadValueType.JPG;
             case "png":
-                return HttpContentType.PNG;
+                return HttpHeadValueType.PNG;
         }
-        return HttpContentType.OctetStream;
+        return HttpHeadValueType.OctetStream;
     }
 
     protected static class TrustAnyHostnameVerifier implements HostnameVerifier {

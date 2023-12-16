@@ -2,7 +2,7 @@ package org.wxd.boot.httpclient.jclient;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 
@@ -33,7 +33,7 @@ public class JPostText extends JHttpBuilder.JHttpBase<JPostText> {
 
     public JPostText paramJson(String text) {
         this.postText = text;
-        header("Content-Type", HttpContentType.Json.getValue());
+        header("Content-Type", HttpHeadValueType.Json.getValue());
         return this;
     }
 

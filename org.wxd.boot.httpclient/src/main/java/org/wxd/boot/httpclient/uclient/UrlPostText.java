@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.str.StringUtil;
 
 import java.io.OutputStream;
@@ -36,14 +36,14 @@ public class UrlPostText extends UrlPost {
     /** 设置提交的参数 */
     public UrlPostText setJson(String json) {
         this.urlResponse.postText = json;
-        this.httpContentType = HttpContentType.Json;
+        this.httpHeadValueType = HttpHeadValueType.Json;
         return this;
     }
 
     /** 设置提交的参数 */
     public UrlPostText setXJson(String json) {
         this.urlResponse.postText = json;
-        this.httpContentType = HttpContentType.XJson;
+        this.httpHeadValueType = HttpHeadValueType.XJson;
         return this;
     }
 

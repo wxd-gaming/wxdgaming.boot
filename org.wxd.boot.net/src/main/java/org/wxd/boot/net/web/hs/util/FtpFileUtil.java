@@ -7,7 +7,7 @@ import org.wxd.boot.agent.io.TemplatePack;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.collection.OfList;
 import org.wxd.boot.format.ByteFormat;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.str.StringUtil;
@@ -164,9 +164,9 @@ public class FtpFileUtil implements Serializable {
                 httpSession.getReqParams().put("pageNumber", pageNumber);
                 String httpData = HttpDataAction.httpDataEncoder(httpSession.getReqParams());
                 httpSession.getResHeaderMap().put(HttpHeaderNames.LOCATION.toString(), uriPath + "?" + httpData);
-                httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.TEMPORARY_REDIRECT, HttpContentType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));
+                httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.TEMPORARY_REDIRECT, HttpHeadValueType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));
             } else {
-                httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpContentType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));
+                httpSession.response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.Html, ftphtml.getBytes(StandardCharsets.UTF_8));
             }
         }
 

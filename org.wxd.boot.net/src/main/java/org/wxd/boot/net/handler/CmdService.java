@@ -7,7 +7,7 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.controller.MappingFactory;
@@ -61,7 +61,7 @@ public interface CmdService extends ITokenCache {
      */
     default void runCmd(StreamBuilder out,
                         String methodName,
-                        HttpContentType httpContentType,
+                        HttpHeadValueType httpHeadValueType,
                         ObjMap putData,
                         Session session,
                         String postOrGet,
@@ -75,7 +75,7 @@ public interface CmdService extends ITokenCache {
         final String methodNameLowerCase = methodName.toLowerCase().trim();
         TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
         if (mappingRecord == null) {
-            if ((HttpContentType.Json == httpContentType || HttpContentType.XJson == httpContentType)) {
+            if ((HttpHeadValueType.Json == httpHeadValueType || HttpHeadValueType.XJson == httpHeadValueType)) {
                 out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
             } else {
                 out.append(" 软件：無心道  \n not found url " + methodNameLowerCase);

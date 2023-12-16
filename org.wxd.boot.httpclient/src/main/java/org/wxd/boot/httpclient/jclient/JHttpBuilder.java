@@ -3,6 +3,8 @@ package org.wxd.boot.httpclient.jclient;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.zip.GzipUtil;
+import org.wxd.boot.httpclient.HttpHeadNameType;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
@@ -257,7 +259,11 @@ public class JHttpBuilder {
         }
 
         public byte[] body() {
-            return httpResponse.body();
+            byte[] body = httpResponse.body();
+            if ("gzip".equalsIgnoreCase(httpResponse.headers().firstValue(HttpHeadNameType.Content_Encoding.getValue()).orElse(""))) {
+                return GzipUtil.unGZip(body);
+            }
+            return body;
         }
 
         public String bodyString() {

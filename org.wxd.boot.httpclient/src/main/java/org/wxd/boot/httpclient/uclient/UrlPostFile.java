@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
 
 import java.io.File;
@@ -31,7 +31,7 @@ public class UrlPostFile extends UrlPostMulti {
     protected UrlPostFile(String uriPath) {
         super(uriPath);
         this.reqHttpMethod = "POST";
-        this.httpContentType = HttpContentType.Multipart;
+        this.httpHeadValueType = HttpHeadValueType.Multipart;
     }
 
     protected void writeTextParams(OutputStream outputStream, OutputStreamWriter outWriter) throws Exception {
@@ -44,7 +44,7 @@ public class UrlPostFile extends UrlPostMulti {
      */
     protected void writeFileParams(OutputStream outputStream, OutputStreamWriter outWriter) throws Exception {
         if (this.uploadFiles != null && !this.uploadFiles.isEmpty()) {
-            if (httpContentType != HttpContentType.Multipart) {
+            if (httpHeadValueType != HttpHeadValueType.Multipart) {
                 throw new RuntimeException("需要上传文件 请使用 HttpContentType.Multipart");
             }
 

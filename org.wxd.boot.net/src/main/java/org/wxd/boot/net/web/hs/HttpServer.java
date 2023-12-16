@@ -22,7 +22,7 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.append.StreamBuilder;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.HttpContentType;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.lang.RunResult;
@@ -123,7 +123,7 @@ public class HttpServer extends NioServer<HttpSession> {
                 response(session,
                         HttpVersion.HTTP_1_1,
                         HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                        HttpContentType.Text,
+                        HttpHeadValueType.Text,
                         Throw.ofString(cause).getBytes(StandardCharsets.UTF_8)
                 );
             } else {
@@ -189,7 +189,7 @@ public class HttpServer extends NioServer<HttpSession> {
                         }
                     }
                 } else if (!reqMethod.equals(HttpMethod.GET)) {
-                    response(session, HttpContentType.Html, NioFactory.EmptyBytes);
+                    response(session, HttpHeadValueType.Html, NioFactory.EmptyBytes);
                     return;
                 }
 
@@ -243,7 +243,7 @@ public class HttpServer extends NioServer<HttpSession> {
                                 }
                                 if (readFileToBytes != null) {
                                     String extendName = htmlPath.substring(htmlPath.lastIndexOf(".") + 1).toLowerCase();
-                                    HttpContentType hct = httpContentType(extendName);
+                                    HttpHeadValueType hct = httpContentType(extendName);
                                     if (session.getResHeaderMap().containsKey(HttpHeaderNames.EXPIRES.toString())) {
                                         /*如果是固有资源增加缓存效果*/
                                         session.getResHeaderMap().put(HttpHeaderNames.PRAGMA.toString(), "private");
@@ -280,7 +280,7 @@ public class HttpServer extends NioServer<HttpSession> {
                                 response(session,
                                         HttpVersion.HTTP_1_1,
                                         HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                                        HttpContentType.Text,
+                                        HttpHeadValueType.Text,
                                         ofString.getBytes(StandardCharsets.UTF_8)
                                 );
                                 return;
@@ -288,8 +288,8 @@ public class HttpServer extends NioServer<HttpSession> {
                             final String urlCmd = session.getUriPath();
                             final StreamBuilder resStringAppend = session.getResponseContent();
                             final ObjMap putData = session.getReqParams();
-                            final HttpContentType httpContentType = session.getReqContentType().toLowerCase().contains("json") ? HttpContentType.Json : null;
-                            HttpServer.this.runCmd(resStringAppend, urlCmd, httpContentType, putData, session, reqMethod.name(), (showLog) -> {
+                            final HttpHeadValueType httpHeadValueType = session.getReqContentType().toLowerCase().contains("json") ? HttpHeadValueType.Json : null;
+                            HttpServer.this.runCmd(resStringAppend, urlCmd, httpHeadValueType, putData, session, reqMethod.name(), (showLog) -> {
                                         session.setShowLog(showLog);
                                         if (!session.isResponseOver()) {
                                             session.response();
@@ -298,19 +298,19 @@ public class HttpServer extends NioServer<HttpSession> {
                             );
                         } catch (Throwable e) {
                             log.error("{} remoteAddress：{}", HttpServer.this, session, e);
-                            response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpContentType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
+                            response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
                         }
                     }
                 };
                 executorVirtualServices.submit(iCheckTimerRunnable);
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
-                response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpContentType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
+                response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
             }
         }
     }
 
-    @Override public void runCmd(StreamBuilder out, String methodName, HttpContentType httpContentType, ObjMap putData, Session session, String postOrGet, Consumer<Boolean> callBack) {
+    @Override public void runCmd(StreamBuilder out, String methodName, HttpHeadValueType httpHeadValueType, ObjMap putData, Session session, String postOrGet, Consumer<Boolean> callBack) {
         if (methodName == null) {
             out.append("命令参数 cmd , 未找到");
             callBack.accept(true);
@@ -320,7 +320,7 @@ public class HttpServer extends NioServer<HttpSession> {
         final String methodNameLowerCase = methodName.toLowerCase().trim();
         TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
         if (mappingRecord == null) {
-            if ((httpContentType == HttpContentType.Json || httpContentType == HttpContentType.XJson)) {
+            if ((httpHeadValueType == HttpHeadValueType.Json || httpHeadValueType == HttpHeadValueType.XJson)) {
                 out.append(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
             } else {
                 out.append(" 软件：無心道  \n not found url " + methodNameLowerCase);
@@ -338,7 +338,7 @@ public class HttpServer extends NioServer<HttpSession> {
             final Get get = AnnUtil.ann(mappingRecord.method(), Get.class);
             if (post != null || get != null) {
                 Runnable action = () -> {
-                    if ((httpContentType == HttpContentType.Json || httpContentType == HttpContentType.XJson)) {
+                    if ((httpHeadValueType == HttpHeadValueType.Json || httpHeadValueType == HttpHeadValueType.XJson)) {
                         out.append(RunResult.error(999, " 软件：無心道  \n server 500"));
                     } else {
                         out.append(" 软件：無心道  \n server 500");
@@ -582,7 +582,7 @@ public class HttpServer extends NioServer<HttpSession> {
     /** 提供文件下载功能 */
     public static void downloadFile(HttpSession session, String fileName, byte[] bytes) {
         String extendName = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-        HttpContentType hct = httpContentType(extendName);
+        HttpHeadValueType hct = httpContentType(extendName);
         response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, hct, bytes, response -> {
             response.headers().add(HttpHeaderNames.CONTENT_DISPOSITION, "attachment;filename=" + HttpDataAction.urlEncoder(fileName));
         });
@@ -597,24 +597,24 @@ public class HttpServer extends NioServer<HttpSession> {
     public static void response(HttpSession session, String msg) {
         try {
             log.warn("异常链接：" + msg);
-            response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpContentType.Html, NioFactory.EmptyBytes);
+            response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.Html, NioFactory.EmptyBytes);
         } catch (Throwable ex) {
             log.error("HttpRequestMessage.close 失败", ex);
         }
     }
 
-    public static void response(HttpSession session, HttpContentType contentType, byte[] bytes) {
+    public static void response(HttpSession session, HttpHeadValueType contentType, byte[] bytes) {
         response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, contentType, bytes);
     }
 
     /**
      * 关闭链接
      */
-    public static void response(HttpSession session, HttpVersion hv, HttpResponseStatus hrs, HttpContentType contentType, byte[] bytes) {
+    public static void response(HttpSession session, HttpVersion hv, HttpResponseStatus hrs, HttpHeadValueType contentType, byte[] bytes) {
         response(session, hv, hrs, contentType, bytes, null);
     }
 
-    public static void response(HttpSession session, HttpVersion hv, HttpResponseStatus hrs, HttpContentType contentType, byte[] bytes, Consumer<HttpResponse> before) {
+    public static void response(HttpSession session, HttpVersion hv, HttpResponseStatus hrs, HttpHeadValueType contentType, byte[] bytes, Consumer<HttpResponse> before) {
         try {
             session.responseOver();
             if (session.getRequest() == null) {
@@ -726,7 +726,7 @@ public class HttpServer extends NioServer<HttpSession> {
 
     }
 
-    public static HttpContentType httpContentType(String extendName) {
+    public static HttpHeadValueType httpContentType(String extendName) {
         switch (extendName) {
             case "htm":
             case "html":
@@ -734,35 +734,35 @@ public class HttpServer extends NioServer<HttpSession> {
             case "asp":
             case "aspx":
             case "xhtml":
-                return HttpContentType.Html;
+                return HttpHeadValueType.Html;
             case "css":
             case "less":
             case "sass":
             case "scss":
-                return HttpContentType.CSS;
+                return HttpHeadValueType.CSS;
             case "ts":
             case "js":
-                return HttpContentType.Javascript;
+                return HttpHeadValueType.Javascript;
             case "xml":
-                return HttpContentType.Xml;
+                return HttpHeadValueType.Xml;
             case "json":
-                return HttpContentType.Json;
+                return HttpHeadValueType.Json;
             case "xjson":
-                return HttpContentType.XJson;
+                return HttpHeadValueType.XJson;
             case "ico":
-                return HttpContentType.ICO;
+                return HttpHeadValueType.ICO;
             case "icon":
-                return HttpContentType.ICON;
+                return HttpHeadValueType.ICON;
             case "gif":
-                return HttpContentType.GIF;
+                return HttpHeadValueType.GIF;
             case "jpg":
             case "jpe":
             case "jpeg":
-                return HttpContentType.JPG;
+                return HttpHeadValueType.JPG;
             case "png":
-                return HttpContentType.PNG;
+                return HttpHeadValueType.PNG;
             default:
-                return HttpContentType.OctetStream;
+                return HttpHeadValueType.OctetStream;
         }
     }
 
