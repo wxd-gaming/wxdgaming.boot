@@ -9,10 +9,11 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
+import org.wxd.boot.net.ssl.WxOptionalSslHandler;
 import org.wxd.boot.net.web.CookiePack;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.BytesUnit;
@@ -150,7 +151,7 @@ public class HttpSession extends Session implements Serializable {
                 showLogStringBuilder
                         .append("\n")
                         .append("\n=============================================请求================================================")
-                        .append("\n").append(request.method()).append(" ").append(this.getDomainName()).append(this.getUriPath())
+                        .append("\n").append(request.method()).append(" ").append(this.getCompleteUri())
                         .append("\nSession：").append(NioFactory.getCtxName(this.getChannelContext())).append(" ").append(this.getId()).append("; Remote-Host：").append(this.getRemoteAddress()).append("; Local-Host：").append(this.getLocalAddress())
                         .append(";\nUser-Agent：").append(this.header(HttpHeaderNames.USER_AGENT))
                         .append(";\nContent-type：").append(this.getReqContentType())
@@ -170,7 +171,7 @@ public class HttpSession extends Session implements Serializable {
                 showLogStringBuilder
                         .append("\n")
                         .append("\n=============================================请求================================================")
-                        .append("\n").append(request.method()).append(" ").append(this.getDomainName()).append(this.getUriPath());
+                        .append("\n").append(request.method()).append(" ").append(this.getCompleteUri());
             }
         }
         return showLogStringBuilder;
@@ -233,10 +234,15 @@ public class HttpSession extends Session implements Serializable {
         }
 
         this.uri = uriPath;
-        this.domainName = host;
+        String http = ssl() ? "https" : "http";
         this.uriPath = uriPathString;
-        this.completeUri = host + "/" + uriPathString;
+        this.domainName = http + "://" + host;
+        this.completeUri = this.domainName + uriPathString;
         return this;
+    }
+
+    public boolean ssl() {
+        return Boolean.TRUE.equals(NioFactory.attr(this.getChannelContext(), WxOptionalSslHandler.SSL_KEY));
     }
 
     /**

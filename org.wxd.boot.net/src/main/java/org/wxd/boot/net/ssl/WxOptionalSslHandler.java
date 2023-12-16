@@ -19,6 +19,7 @@ import java.util.List;
  **/
 public class WxOptionalSslHandler extends ByteToMessageDecoder implements Serializable {
 
+    public static final String SSL_KEY = "WX_SSL_KEY";
     /** 应为没有对外 SslUtils，我复制的 */
     static final int SSL_RECORD_HEADER_LENGTH = 5;
     /** ssl处理 */
@@ -35,6 +36,7 @@ public class WxOptionalSslHandler extends ByteToMessageDecoder implements Serial
         }
         if (SslHandler.isEncrypted(in)) {
             handleSsl(ctx);
+            NioFactory.attr(ctx, SSL_KEY, true);
         } else {
             handleNonSsl(ctx);
         }

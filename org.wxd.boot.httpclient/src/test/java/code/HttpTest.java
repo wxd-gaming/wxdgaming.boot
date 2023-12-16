@@ -66,4 +66,18 @@ public class HttpTest {
                 .systemOut();
     }
 
+    @Test
+    public void t4() throws Exception {
+        for (int i = 0; i < 4000; i++) {
+
+            HttpBuilder.postText("http://127.0.0.1:18800/sjcq/crossState")
+                    .ssl(SslProtocolType.TLSV12)
+                    .paramText("")
+                    .request()
+                    .systemOut();
+
+            Thread.sleep(1);
+        }
+    }
+
 }

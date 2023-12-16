@@ -10,8 +10,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.SocketSession;
+import org.wxd.boot.net.ssl.WxOptionalSslHandler;
 import org.wxd.boot.net.web.CookiePack;
 
 import java.io.Serializable;
@@ -27,18 +29,19 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class WebSession extends SocketSession implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private FullHttpRequest request = null;
     private boolean accept_gzip = false;
     private boolean content_gzip = false;
     /*post或者get完整参数*/
     private ObjMap reqParams = new ObjMap();
-
     private CookiePack reqCookies = new CookiePack();
 
     public WebSession(String name, ChannelHandlerContext ctx) {
         super(name, ctx);
+    }
+
+    public boolean ssl() {
+        return Boolean.TRUE.equals(NioFactory.attr(this.getChannelContext(), WxOptionalSslHandler.SSL_KEY));
     }
 
     @Override
@@ -84,4 +87,5 @@ public class WebSession extends SocketSession implements Serializable {
         super.setName(name);
         return this;
     }
+
 }

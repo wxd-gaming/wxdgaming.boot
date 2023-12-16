@@ -485,8 +485,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     @Override protected int idleTime() {
-        int idleTime = JvmUtil.getProperty(JvmUtil.Netty_Idle_Time_Http_Server, 20, Integer::valueOf);
-        return idleTime;
+        return JvmUtil.getProperty(JvmUtil.Netty_Idle_Time_Http_Server, 20, Integer::valueOf);
     }
 
     public HttpServer initExecutor(int coreSize, int maxSize) {
@@ -513,7 +512,8 @@ public class HttpServer extends NioServer<HttpSession> {
                 new ChunkedWriteHandler(),
                 /*顺序必须保证*/
                 new HServerHandler(this.getName()),
-                new HttpResponseEncoder());
+                new HttpResponseEncoder()
+        );
         return this;
     }
 
