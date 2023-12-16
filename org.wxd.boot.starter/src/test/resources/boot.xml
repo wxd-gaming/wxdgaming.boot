@@ -28,7 +28,7 @@
         <sslProtocolType>TLSv1</sslProtocolType>
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
-        <serviceClassName>org.wxd.boot.starter.service.HsService3</serviceClassName>
+        <serviceClassName>org.wxd.boot.starter.service.HsService</serviceClassName>
         <resourcesPath></resourcesPath>
         <threadCoreSize>200</threadCoreSize>
         <threadMaxSize>200</threadMaxSize>
