@@ -40,7 +40,6 @@ public class ActionTimer {
 
     public static void action(IocContext context, List<ScheduledInfo> jobList, Stream<Method> stream) {
         Logger log = LoggerFactory.getLogger(ActionTimer.class);
-
         List<Method> list = stream.toList();
         try (StreamWriter streamWriter = new StreamWriter()) {
             for (Method method : list) {
@@ -60,7 +59,9 @@ public class ActionTimer {
                 }
                 streamWriter.write("===============================================timer job=========================================================").writeLn();
             }
-            log.debug(streamWriter.toString());
+            if (!streamWriter.isEmpty()) {
+                log.debug(streamWriter.toString());
+            }
         }
     }
 

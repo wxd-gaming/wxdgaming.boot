@@ -52,7 +52,7 @@ public interface PrintConsole {
             for (List datum : data) {
                 List<Object> row = datum;
                 for (Object o : row) {
-                    streamWriter.write("|").appendRight(o, len, ' ').write("\t");
+                    streamWriter.write("|").writeRight(o, len, ' ').write("\t");
                 }
                 streamWriter.writeLn();
             }

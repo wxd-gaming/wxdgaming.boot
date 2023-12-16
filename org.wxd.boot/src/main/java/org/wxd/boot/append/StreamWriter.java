@@ -25,8 +25,8 @@ public class StreamWriter implements Closeable, AutoCloseable {
         byteArrayOutputStream.reset();
         StreamWriter out = new StreamWriter(byteArrayOutputStream);
         out.write(1);
-        out.appendFmt("%-10s", "int");
-        out.appendFmt("%-10s", "ddd");
+        out.writeFmt("%-10s", "int");
+        out.writeFmt("%-10s", "ddd");
         System.out.println(out.toString());
         System.out.printf(String.format("%-10s", "int", "rtrtrt"));
     }
@@ -141,7 +141,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * <p>
      * 性能消耗过大
      */
-    public StreamWriter appendFmt(String format, Object... args) {
+    public StreamWriter writeFmt(String format, Object... args) {
         write(new Formatter().format(format, args).toString());
         return this;
     }
@@ -154,7 +154,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * @param ch  补起字符
      * @return
      */
-    public StreamWriter appendLeft(Object src, int len, char ch) {
+    public StreamWriter writeLeft(Object src, int len, char ch) {
         write(StringUtil.padLeft(String.valueOf(src), len, ch));
         return this;
     }
@@ -167,7 +167,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * @param ch  补起字符
      * @return
      */
-    public StreamWriter appendRight(Object src, int len, char ch) {
+    public StreamWriter writeRight(Object src, int len, char ch) {
         write(StringUtil.padRight(String.valueOf(src), len, ch));
         return this;
     }

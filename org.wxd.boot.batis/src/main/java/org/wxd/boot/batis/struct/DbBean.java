@@ -131,44 +131,44 @@ public abstract class DbBean<T> {
         Collection<EntityField> columns = dataMapping.getColumns();
 
 
-        streamWriter.appendRight("-", len * dataMapping.getColumns().size(), '-').write("\n");
+        streamWriter.writeRight("-", len * dataMapping.getColumns().size(), '-').write("\n");
         for (EntityField entityField : columns) {
-            streamWriter.write("|").appendRight(entityField.getColumnName(), len, ' ');
+            streamWriter.write("|").writeRight(entityField.getColumnName(), len, ' ');
         }
 
         streamWriter.write("\n");
 
         for (EntityField entityField : columns) {
             streamWriter.write("|")
-                    .appendRight(entityField.typeName(), len, ' ');
+                    .writeRight(entityField.typeName(), len, ' ');
         }
 
         streamWriter.write("\n");
 
         for (EntityField entityField : columns) {
             streamWriter.write("|")
-                    .appendRight(entityField.checkColumnType().formatString(entityField.getColumnLength()), len, ' ');
+                    .writeRight(entityField.checkColumnType().formatString(entityField.getColumnLength()), len, ' ');
         }
 
         streamWriter.write("\n");
 
         for (EntityField entityField : columns) {
-            streamWriter.write("|").appendRight(entityField.getColumnComment(), len, ' ');
+            streamWriter.write("|").writeRight(entityField.getColumnComment(), len, ' ');
         }
 
         streamWriter.write("\n");
 
-        streamWriter.appendRight("-", len * columns.size(), '-').write("\n");
+        streamWriter.writeRight("-", len * columns.size(), '-').write("\n");
         for (T row : modelList) {
             streamWriter.write("\n");
             for (EntityField entityField : columns) {
                 Object value = entityField.getFieldValue(row);
                 if (value == null) {
-                    streamWriter.write("|").appendRight("-", len, ' ');
+                    streamWriter.write("|").writeRight("-", len, ' ');
                 } else if (ConvertUtil.isBaseType(value.getClass())) {
-                    streamWriter.write("|").appendRight(String.valueOf(value), len, ' ');
+                    streamWriter.write("|").writeRight(String.valueOf(value), len, ' ');
                 } else {
-                    streamWriter.write("|").appendRight(FastJsonUtil.toJson(value), len, ' ');
+                    streamWriter.write("|").writeRight(FastJsonUtil.toJson(value), len, ' ');
                 }
             }
         }
