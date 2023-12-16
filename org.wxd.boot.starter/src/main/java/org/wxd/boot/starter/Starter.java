@@ -5,13 +5,13 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.AAAAA;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.agent.function.STVFunction1;
 import org.wxd.boot.agent.io.FileWriteUtil;
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.AAAAA;
 import org.wxd.boot.collection.OfSet;
 import org.wxd.boot.starter.action.ActionProtoController;
 import org.wxd.boot.starter.action.ActionTextController;
@@ -89,7 +89,9 @@ public class Starter {
                             Stream.of(new BootStarterModule(reflectContext), new StarterModule(reflectContext)),
                             reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
-                                    return v.getDeclaredConstructor(ReflectContext.class).newInstance(reflectContext);
+                                    return v
+                                            .getDeclaredConstructor(ReflectContext.class)
+                                            .newInstance(reflectContext);
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
@@ -165,7 +167,9 @@ public class Starter {
                             Stream.of(new StarterModule(reflectContext, IocSubContext.class)),
                             reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
-                                    return v.getDeclaredConstructor(ReflectContext.class).newInstance(reflectContext);
+                                    return v
+                                            .getDeclaredConstructor(ReflectContext.class)
+                                            .newInstance(reflectContext);
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
@@ -187,12 +191,13 @@ public class Starter {
     static void iocInitBean(IocContext context, ReflectContext reflectContext) throws Exception {
         final Logger log = LoggerFactory.getLogger(Starter.class);
         if (log.isDebugEnabled()) {
-            long count = reflectContext.getClasses().size();
+            long count = reflectContext.getContentList().size();
             log.debug("find class size ：" + count);
         }
 
         /*todo fastjson 注册 protoBuff 处理 处理配置类*/
-        reflectContext.classStream().forEach(ProtobufMessageSerializerFastJson::action);
+        reflectContext.classStream()
+                .forEach(ProtobufMessageSerializerFastJson::action);
 
         /*处理定时器资源*/
         ActionTimer.action(context, reflectContext);

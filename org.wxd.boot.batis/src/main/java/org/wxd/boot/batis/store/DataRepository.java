@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * 数据仓储
@@ -90,9 +91,12 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
      */
     public void load(boolean forceLoad, ClassLoader classLoader, String... packages) {
         StringBuilder stringBuilder = new StringBuilder();
-        List<Class<?>> classes = ReflectContext.Builder.of(classLoader, packages).build()
-                .classWithSuper(DbBean.class).toList();
-        load(stringBuilder, forceLoad, classes);
+
+        List<Class<?>> list = ReflectContext.Builder
+                .of(classLoader, packages).build()
+                .classWithSuper(DbBean.class)
+                .collect(Collectors.toList());
+        load(stringBuilder, forceLoad, list);
         log.info(stringBuilder.toString());
     }
 

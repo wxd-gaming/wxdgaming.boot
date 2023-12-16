@@ -24,17 +24,16 @@ import java.util.stream.Stream;
 public class ActionTimer {
 
     public static void action(IocContext context, ReflectContext reflectContext) {
-        Stream<Method> methodStream = reflectContext.methodsWithAnnotated(Scheduled.class);
-        ScheduledService scheduledService = context.getInstance(ScheduledService.class);
-        if (scheduledService == null) {
-            if (methodStream.count() > 0) {
-                throw new RuntimeException("无法找到定时器任务 TimerJobRepository ");
-            }
-            return;
-        }
+        final ScheduledService scheduledService = context.getInstance(ScheduledService.class);
+
         List<ScheduledInfo> jobList = new ArrayList<>();
         jobList.addAll(scheduledService.getJobList());
-        action(context, jobList, methodStream);
+
+        reflectContext.getContentList().forEach(content -> {
+            Stream<Method> methodStream = content.methodsWithAnnotated(Scheduled.class);
+            action(context, jobList, methodStream);
+        });
+
         jobList.sort(null);
         scheduledService.setJobList(jobList);
     }

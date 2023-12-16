@@ -32,7 +32,8 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
     default void checkDataBase(ClassLoader classLoader, String... packages) {
 
         ReflectContext.Builder.of(classLoader, packages).build()
-                .classWithAnnotated(DbTable.class).forEach(this::createTable);
+                .classWithAnnotated(DbTable.class)
+                .forEach(this::createTable);
 
         getDbTableStructMap().clear();
         final Set<String> strings = getDbTableStructMap().keySet();

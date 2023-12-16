@@ -29,7 +29,7 @@ public class MappingFactory {
     public static void putProto(String serviceName, String remarks, int messageId, Object instance, Method method) {
         final AtomicReference<String> threadName = new AtomicReference<>("");
         final AtomicReference<String> queueName = new AtomicReference<>("");
-        AsyncImpl.threading(threadName, queueName, AnnUtil.ann(method.getClass(), Async.class));
+        AsyncImpl.threading(threadName, queueName, AnnUtil.ann(instance.getClass(), Async.class));
         AsyncImpl.threading(threadName, queueName, AnnUtil.ann(method, Async.class));
         if (StringUtil.emptyOrNull(serviceName)) serviceName = FINAL_DEFAULT;
         PROTO_MAP.put(

@@ -28,13 +28,6 @@ import java.util.stream.Stream;
 @Getter
 public class ReflectContext {
 
-    /** 所有的类 */
-    private final List<Class<?>> classes;
-
-    public ReflectContext(Collection<Class<?>> classes) {
-        this.classes = List.copyOf(classes);
-    }
-
     /** 判定 接口, 枚举, 注解, 抽象类 返回 false */
     public static boolean checked(Class<?> aClass) {
         return checked(null, aClass);
@@ -90,9 +83,42 @@ public class ReflectContext {
         return (Class<?>) params[index];
     }
 
+    /** 所有的类 */
+    private final List<Content> contentList;
+
+    public ReflectContext(Collection<Class<?>> contentList) {
+        this.contentList = contentList.stream().map(Content::new).toList();
+    }
+
+    public Stream<Content> stream() {
+        return contentList.stream();
+    }
+
+    /** 父类或者接口 */
+    public Stream<Content> withSuper(Class<?> cls) {
+        return withSuper(cls, null);
+    }
+
+    /** 父类或者接口 */
+    public Stream<Content> withSuper(Class<?> cls, Predicate<Class<?>> predicate) {
+        Stream<Content> tmp = stream().filter(v -> cls.isAssignableFrom(v.getCls()));
+        if (predicate != null) tmp = tmp.filter(v -> predicate.test(v.getCls()));
+        return tmp;
+    }
+
+    /** 所有添加了这个注解的类 */
+    public Stream<Content> withAnnotated(Class<? extends Annotation> annotation) {
+        return withAnnotated(annotation, null);
+    }
+
+    public Stream<Content> withAnnotated(Class<? extends Annotation> annotation, Predicate<Class<?>> predicate) {
+        Stream<Content> tmp = stream().filter(c -> AnnUtil.ann(c.getCls(), annotation) != null);
+        if (predicate != null) tmp = tmp.filter(v -> predicate.test(v.getCls()));
+        return tmp;
+    }
 
     public Stream<Class<?>> classStream() {
-        return classes.stream();
+        return contentList.stream().map(Content::getCls);
     }
 
     /** 父类或者接口 */
@@ -112,40 +138,49 @@ public class ReflectContext {
         return classWithAnnotated(annotation, null);
     }
 
+    /** 所有添加了这个注解的类 */
     public Stream<Class<?>> classWithAnnotated(Class<? extends Annotation> annotation, Predicate<Class<?>> predicate) {
         Stream<Class<?>> tmp = classStream().filter(c -> AnnUtil.ann(c, annotation) != null);
         if (predicate != null) tmp = tmp.filter(predicate);
         return tmp;
     }
 
-    public Stream<Method> methodStream() {
-        return classStream().flatMap(v -> MethodUtil.readAllMethod(v).values().stream());
-    }
+    @Getter
+    public static class Content {
 
-    public Collection<Method> getMethods() {
-        return methodStream().toList();
-    }
+        private final Class<?> cls;
 
-    /** 所有添加了这个注解的方法 */
-    public Stream<Method> methodsWithAnnotated(Class<? extends Annotation> annotation) {
-        return methodStream()
-                .filter(m -> AnnUtil.ann(m, annotation) != null);
-    }
+        Content(Class<?> cls) {
+            this.cls = cls;
+        }
 
-    /** 所有添加了这个注解的方法 */
-    public Stream<Field> fieldStream() {
-        return classStream()
-                .flatMap(v -> FieldUtil.getFields(false, v).values().stream());
-    }
+        public Collection<Method> getMethods() {
+            return MethodUtil.readAllMethod(cls).values();
+        }
 
-    /** 所有添加了这个注解的字段 */
-    public Stream<Field> fieldWithAnnotated(Class<? extends Annotation> annotation) {
-        return fieldStream()
-                .filter(m -> AnnUtil.ann(m, annotation) != null);
-    }
+        public Stream<Method> methodStream() {
+            return getMethods().stream();
+        }
 
-    public Collection<Field> getFields() {
-        return fieldStream().toList();
+        /** 所有添加了这个注解的方法 */
+        public Stream<Method> methodsWithAnnotated(Class<? extends Annotation> annotation) {
+            return methodStream().filter(m -> AnnUtil.ann(m, annotation) != null);
+        }
+
+        public Collection<Field> getFields() {
+            return FieldUtil.getFields(false, cls).values();
+        }
+
+        /** 所有添加了这个注解的方法 */
+        public Stream<Field> fieldStream() {
+            return getFields().stream();
+        }
+
+        /** 所有添加了这个注解的字段 */
+        public Stream<Field> fieldWithAnnotated(Class<? extends Annotation> annotation) {
+            return fieldStream().filter(f -> AnnUtil.ann(f, annotation) != null);
+        }
+
     }
 
     @Setter

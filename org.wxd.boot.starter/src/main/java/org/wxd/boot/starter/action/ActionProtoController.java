@@ -17,9 +17,7 @@ import org.wxd.boot.str.StringUtil;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 处理通信
@@ -31,10 +29,8 @@ import java.util.stream.Stream;
 public class ActionProtoController {
 
     public static void action(IocContext iocInjector, ReflectContext reflectContext) {
-        Stream<Method> methodStream = reflectContext.methodsWithAnnotated(ProtoMapping.class);
-        Map<? extends Class<?>, List<Method>> collect = methodStream.collect(Collectors.groupingBy(Method::getDeclaringClass));
-        for (Map.Entry<? extends Class<?>, List<Method>> listEntry : collect.entrySet()) {
-            Class<?> aClass = listEntry.getKey();
+        reflectContext.withAnnotated(ProtoController.class).forEach(content -> {
+            Class<?> aClass = content.getCls();
             Collection<ProtoController> controllerList = AnnUtil.annStream(aClass, ProtoController.class).toList();
             if (controllerList.isEmpty()) {
                 log.debug("类：{} 没有标记 {} 已经忽略", aClass.getName(), ProtoController.class);
@@ -45,10 +41,11 @@ public class ActionProtoController {
                         continue;
                     }
                     Object instance = iocInjector.getInstance(aClass);
-                    register(textController.service(), instance, listEntry.getValue());
+                    List<Method> methodList = content.methodsWithAnnotated(ProtoMapping.class).collect(Collectors.toList());
+                    register(textController.service(), instance, methodList);
                 }
             }
-        }
+        });
     }
 
     public static void register(Object instance) {

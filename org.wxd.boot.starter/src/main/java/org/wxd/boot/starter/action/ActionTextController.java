@@ -6,7 +6,6 @@ import org.wxd.boot.agent.system.MethodUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.net.controller.MappingFactory;
-import org.wxd.boot.net.controller.ann.ProtoController;
 import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.starter.IocContext;
@@ -15,9 +14,7 @@ import org.wxd.boot.str.StringUtil;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 处理txt通信
@@ -29,13 +26,11 @@ import java.util.stream.Stream;
 public class ActionTextController {
 
     public static void action(IocContext iocInjector, ReflectContext reflectContext) {
-        Stream<Method> methodStream = reflectContext.methodsWithAnnotated(TextMapping.class);
-        Map<? extends Class<?>, List<Method>> collect = methodStream.collect(Collectors.groupingBy(Method::getDeclaringClass));
-        for (Map.Entry<? extends Class<?>, List<Method>> listEntry : collect.entrySet()) {
-            Class<?> aClass = listEntry.getKey();
+        reflectContext.withAnnotated(TextController.class).forEach(content -> {
+            Class<?> aClass = content.getCls();
             Collection<TextController> controllerList = AnnUtil.annStream(aClass, TextController.class).toList();
             if (controllerList.isEmpty()) {
-                log.debug("类：{} 没有标记 {} 已经忽略", aClass.getName(), ProtoController.class);
+                log.debug("类：{} 没有标记 {} 已经忽略", aClass.getName(), TextController.class);
             } else {
                 for (TextController textController : controllerList) {
                     if (textController.alligatorAutoRegister()) {
@@ -43,10 +38,11 @@ public class ActionTextController {
                         continue;
                     }
                     Object instance = iocInjector.getInstance(aClass);
-                    bindCmd(textController.serviceName(), textController.url(), instance, listEntry.getValue());
+                    List<Method> methodList = content.methodsWithAnnotated(TextMapping.class).collect(Collectors.toList());
+                    bindCmd(textController.serviceName(), textController.url(), instance, methodList);
                 }
             }
-        }
+        });
     }
 
     /**

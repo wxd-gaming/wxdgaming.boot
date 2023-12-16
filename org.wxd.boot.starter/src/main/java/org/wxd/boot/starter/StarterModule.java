@@ -23,9 +23,9 @@ class StarterModule extends BaseModule {
     }
 
     protected StarterModule bind() {
-        reflectContext.classWithAnnotated(Config.class).forEach(aClass -> {
+        reflectContext.withAnnotated(Config.class).forEach(content -> {
             try {
-                Object o = ActionConfig.action(aClass);
+                Object o = ActionConfig.action(content.getCls());
                 if (o != null) {
                     if (o instanceof IConfigInit) {
                         ((IConfigInit) o).configInit();
@@ -38,15 +38,11 @@ class StarterModule extends BaseModule {
             }
         });
 
-        reflectContext
-                .classStream()
-                .filter(
-                        c ->
-                                AnnUtil.ann(c, Singleton.class) != null
-                                        || AnnUtil.ann(c, TextController.class) != null
-                                        || AnnUtil.ann(c, ProtoController.class) != null
-                )
-                .forEach(this::bindSingleton);
+        reflectContext.classStream().filter(c ->
+                AnnUtil.ann(c, Singleton.class) != null
+                        || AnnUtil.ann(c, TextController.class) != null
+                        || AnnUtil.ann(c, ProtoController.class) != null
+        ).forEach(this::bindSingleton);
         return this;
     }
 

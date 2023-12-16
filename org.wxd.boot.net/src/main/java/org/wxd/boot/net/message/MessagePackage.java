@@ -95,9 +95,7 @@ public class MessagePackage {
     }
 
     static public void loadMessageId_HashCode(ClassLoader classLoader, boolean findChild, String... packageNames) {
-        ReflectContext.Builder.of(classLoader, packageNames)
-                .build()
-                .classStream()
+        ReflectContext.Builder.of(classLoader, packageNames).build().classStream()
                 .forEach(aClass -> loadMessageId_HashCode(aClass, true));
     }
 
