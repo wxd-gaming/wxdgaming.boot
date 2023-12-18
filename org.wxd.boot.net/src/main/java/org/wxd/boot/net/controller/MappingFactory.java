@@ -26,7 +26,7 @@ public class MappingFactory {
     /** 路由 -> 映射 */
     public static final ConcurrentTable<String, String, TextMappingRecord> TEXT_MAP = new ConcurrentTable<>();
 
-    public static void putProto(String serviceName, String remarks, int messageId, Object instance, Method method) {
+    public static void putProto(String serviceName, String remarks, int messageId, Object instance, Method method, int logTime, int warningTime) {
         final AtomicReference<String> threadName = new AtomicReference<>("");
         final AtomicReference<String> queueName = new AtomicReference<>("");
         AsyncImpl.threading(threadName, queueName, AnnUtil.ann(instance.getClass(), Async.class));
@@ -35,11 +35,11 @@ public class MappingFactory {
         PROTO_MAP.put(
                 serviceName,
                 messageId,
-                new ProtoMappingRecord(serviceName, remarks, messageId, instance, method, threadName.get(), queueName.get())
+                new ProtoMappingRecord(serviceName, remarks, messageId, instance, method, threadName.get(), queueName.get(), logTime, warningTime)
         );
     }
 
-    public static void putText(String serviceName, String remarks, String path, Object instance, Method method) {
+    public static void putText(String serviceName, String remarks, String path, Object instance, Method method, int logTime, int warningTime) {
         final AtomicReference<String> threadName = new AtomicReference<>("");
         final AtomicReference<String> queueName = new AtomicReference<>("");
         AsyncImpl.threading(threadName, queueName, AnnUtil.ann(instance.getClass(), Async.class));
@@ -48,7 +48,7 @@ public class MappingFactory {
         TEXT_MAP.put(
                 serviceName,
                 path,
-                new TextMappingRecord(serviceName, remarks, path, instance, method, threadName.get(), queueName.get())
+                new TextMappingRecord(serviceName, remarks, path, instance, method, threadName.get(), queueName.get(), logTime, warningTime)
         );
     }
 

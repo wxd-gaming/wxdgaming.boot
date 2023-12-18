@@ -5,11 +5,10 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.system.JvmUtil;
+import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.ICheckTimerRunnable;
 import org.wxd.boot.threading.Job;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  **/
 @Slf4j
 @Getter
-public class TimerJobPool implements Serializable, ICheckTimerRunnable {
+public class TimerJobPool extends EventRunnable {
 
     protected Job job;
 
@@ -30,6 +29,10 @@ public class TimerJobPool implements Serializable, ICheckTimerRunnable {
     @Setter
     @Accessors(chain = true)
     protected List<ScheduledInfo> jobList = new ArrayList<>();
+
+    public TimerJobPool() {
+        super("任务调度器", 33, 500);
+    }
 
     public void open() {
         job = Executors.getDefaultExecutor().scheduleAtFixedDelay("scheduled-timer", this, 10, 10, TimeUnit.MILLISECONDS);
@@ -68,15 +71,4 @@ public class TimerJobPool implements Serializable, ICheckTimerRunnable {
         }
     }
 
-    @Override public long logTime() {
-        return 33;
-    }
-
-    @Override public long warningTime() {
-        return 500;
-    }
-
-    @Override public String taskInfoString() {
-        return null;
-    }
 }

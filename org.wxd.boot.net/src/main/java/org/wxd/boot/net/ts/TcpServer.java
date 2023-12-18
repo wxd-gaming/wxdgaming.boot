@@ -106,12 +106,6 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
         return this;
     }
 
-    @Override
-    public TcpServer<S> setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
-        super.setCmdExecutorBefore(cmdExecutorBefore);
-        return this;
-    }
-
     public class TcpServerSocketChannelHandler extends SocketChannelHandler<S> {
 
         public TcpServerSocketChannelHandler(String name) {

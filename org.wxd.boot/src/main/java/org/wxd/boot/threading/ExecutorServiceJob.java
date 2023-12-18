@@ -28,8 +28,8 @@ class ExecutorServiceJob implements Runnable, Job {
     public ExecutorServiceJob(IExecutorServices iExecutorServices, Runnable task, int stackTrace) {
         this.iExecutorServices = iExecutorServices;
         this.task = task;
-        if (task instanceof ITaskRunnable) {
-            this.runName = ((ITaskRunnable) task).taskInfoString();
+        if (task instanceof EventRunnable eventRunnable) {
+            this.runName = eventRunnable.getTaskInfoString();
         }
         if (StringUtil.emptyOrNull(runName)) {
             StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stackTrace + 1];
@@ -43,8 +43,8 @@ class ExecutorServiceJob implements Runnable, Job {
 
         long warningTime = 5000;
 
-        if (task instanceof ICheckTimerRunnable) {
-            warningTime = ((ICheckTimerRunnable) task).warningTime();
+        if (task instanceof EventRunnable eventRunnable) {
+            warningTime = eventRunnable.getWarningTime();
         }
         float procc = (System.nanoTime() - startExecTime) / 10000 / 100f;
         if (procc > warningTime && procc < 864000000L) {
@@ -103,9 +103,9 @@ class ExecutorServiceJob implements Runnable, Job {
 
                 long warningTime = 1000;
 
-                if (task instanceof ICheckTimerRunnable) {
-                    logTime = ((ICheckTimerRunnable) task).logTime();
-                    warningTime = ((ICheckTimerRunnable) task).warningTime();
+                if (task instanceof EventRunnable eventRunnable) {
+                    logTime = eventRunnable.getLogTime();
+                    warningTime = eventRunnable.getWarningTime();
                 }
 
                 if (v > logTime || v2 > logTime) {

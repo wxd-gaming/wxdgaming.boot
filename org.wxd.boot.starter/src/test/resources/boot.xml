@@ -30,8 +30,8 @@
         <jksPwd>wxd2021</jksPwd>
         <serviceClassName>org.wxd.boot.starter.service.HsService</serviceClassName>
         <resourcesPath></resourcesPath>
-        <threadCoreSize>200</threadCoreSize>
-        <threadMaxSize>200</threadMaxSize>
+        <threadCoreSize>20</threadCoreSize>
+        <threadMaxSize>40</threadMaxSize>
         <headers>
             <!-- 跨域支持 -->
             <header key="Access-Control-Allow-Origin" value="*"/>

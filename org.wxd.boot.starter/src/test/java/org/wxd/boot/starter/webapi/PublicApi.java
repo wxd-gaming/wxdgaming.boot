@@ -6,6 +6,9 @@ import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.threading.Async;
+import org.wxd.boot.threading.EventRunnable;
+import org.wxd.boot.threading.ExecutorVirtualServices;
+import org.wxd.boot.threading.Executors;
 
 /**
  * 公共
@@ -16,22 +19,35 @@ import org.wxd.boot.threading.Async;
 @TextController
 public class PublicApi {
 
+    final ExecutorVirtualServices login_services = Executors.newExecutorVirtualServices("login", 200);
+
     @TextMapping(remarks = "公共接口")
     public String index(HttpSession httpSession, ObjMap objMap) {
         return "holle";
     }
 
     @TextMapping(remarks = "test")
-    public String test0(HttpSession httpSession, ObjMap objMap) throws Exception {
-        int random = RandomUtils.random(30);
-        Thread.sleep(random);
-        return "test";
+    public void test0(HttpSession httpSession, ObjMap objMap) throws Exception {
+        httpSession.responseOver();
+        login_services.submit(new EventRunnable(httpSession.getUriPath(), 150, 400) {
+            @Override public void run() {
+                // int random = RandomUtils.random(6);
+                // try {
+                //     Thread.sleep(random);
+                // } catch (InterruptedException e) {
+                //     throw new RuntimeException(e);
+                // }
+                httpSession.getResponseContent().write("test");
+                httpSession.response();
+            }
+        });
+
     }
 
     @Async(queue = "q1")
     @TextMapping(remarks = "test")
     public String test1(HttpSession httpSession, ObjMap objMap) throws Exception {
-        int random = RandomUtils.random(30);
+        int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";
     }
@@ -39,7 +55,7 @@ public class PublicApi {
     @Async(queue = "q2")
     @TextMapping(remarks = "test")
     public String test2(HttpSession httpSession, ObjMap objMap) throws Exception {
-        int random = RandomUtils.random(30);
+        int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";
     }
@@ -47,7 +63,7 @@ public class PublicApi {
     @Async(queue = "q3")
     @TextMapping(remarks = "test")
     public String test3(HttpSession httpSession, ObjMap objMap) throws Exception {
-        int random = RandomUtils.random(30);
+        int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";
     }

@@ -220,12 +220,6 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     }
 
     @Override
-    public NioClient<S> setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
-        super.setCmdExecutorBefore(cmdExecutorBefore);
-        return this;
-    }
-
-    @Override
     public ChannelQueue<S> getAllSessionQueue() {
         return allSessionQueue;
     }

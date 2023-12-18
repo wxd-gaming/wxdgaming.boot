@@ -150,12 +150,6 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
         return this;
     }
 
-    @Override
-    public WebSocketServer<S> setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
-        super.setCmdExecutorBefore(cmdExecutorBefore);
-        return this;
-    }
-
     public String toString(String host, String url) {
         return "ws://" + host + ":" + port + "/" + url;
     }

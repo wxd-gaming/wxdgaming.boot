@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ScheduledInfo implements ICheckTimerRunnable, Comparable<ScheduledInfo> {
+public class ScheduledInfo extends EventRunnable implements Comparable<ScheduledInfo> {
 
     private String name;
     private int index;
@@ -54,7 +54,7 @@ public class ScheduledInfo implements ICheckTimerRunnable, Comparable<ScheduledI
     protected long startExecTime;
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
-
+        super(scheduled.logTime(), scheduled.warningTime());
         this.instance = instance;
         this.method = method;
         if (StringUtil.notEmptyOrNull(scheduled.name())) {
@@ -73,6 +73,7 @@ public class ScheduledInfo implements ICheckTimerRunnable, Comparable<ScheduledI
         AsyncImpl.threading(threadName, queueName, mAnn);
         this.async = iAnn != null || mAnn != null;
         action(scheduled.value());
+
     }
 
     /**
@@ -383,7 +384,7 @@ public class ScheduledInfo implements ICheckTimerRunnable, Comparable<ScheduledI
         return name != null ? name.hashCode() : 0;
     }
 
-    @Override public String taskInfoString() {
+    @Override public String getTaskInfoString() {
         return name;
     }
 

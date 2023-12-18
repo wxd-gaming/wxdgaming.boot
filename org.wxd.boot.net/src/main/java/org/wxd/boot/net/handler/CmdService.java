@@ -44,12 +44,6 @@ public interface CmdService extends ITokenCache {
         return Executors.getLogicExecutor();
     }
 
-    /** 执行前处理 */
-    Predicate<Runnable> getCmdExecutorBefore();
-
-    /** 执行前处理 */
-    CmdService setCmdExecutorBefore(Predicate<Runnable> predicate);
-
     /**
      * 执行 cmd 命令
      *
@@ -160,15 +154,6 @@ public interface CmdService extends ITokenCache {
                 }
             }
         };
-
-        if (getCmdExecutorBefore() != null) {
-            if (!getCmdExecutorBefore().test(runnable)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(this.getClass().getSimpleName() + " 请求：" + session.toString() + "/" + methodName, new RuntimeException("被过滤掉"));
-                }
-                return;
-            }
-        }
 
         IExecutorServices executorServices;
         if (StringUtil.notEmptyOrNull(mappingRecord.executorName())) {

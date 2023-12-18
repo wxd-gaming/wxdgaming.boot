@@ -132,6 +132,8 @@ public final class Executors implements Serializable {
      * 虚拟线程池 默认队列最大长度2000,单线程
      * <p>
      * 禁止使用 synchronized 同步锁
+     * <p>
+     * 直接线程池，每一个任务都会new Virtual Thread
      *
      * @param name 线程池名称
      * @return
@@ -144,6 +146,8 @@ public final class Executors implements Serializable {
      * 虚拟线程池核心数量和最大数量相等，
      * <p>
      * 禁止使用 synchronized 同步锁
+     * <p>
+     * 直接线程池，每一个任务都会new Virtual Thread
      *
      * @param name     线程池名称
      * @param coreSize 线程核心数量
@@ -157,6 +161,8 @@ public final class Executors implements Serializable {
      * 虚拟线程池
      * <p>
      * 禁止使用 synchronized 同步锁
+     * <p>
+     * 直接线程池，每一个任务都会new Virtual Thread
      *
      * @param name     线程池名称
      * @param coreSize 线程核心数量
@@ -165,52 +171,6 @@ public final class Executors implements Serializable {
      */
     public static ExecutorVirtualServices newExecutorVirtualServices(String name, int coreSize, int maxSize) {
         return new ExecutorVirtualServices(name, coreSize, maxSize);
-    }
-
-
-    /**
-     * 虚拟线程池 默认队列最大长度2000,单线程
-     * <p>
-     * 禁止使用 synchronized 同步锁
-     * <p>
-     * 直接线程池，每一个任务都会new Virtual Thread
-     *
-     * @param name 线程池名称
-     * @return
-     */
-    public static ExecutorVirtualServices2 newExecutorVirtualServices2(String name) {
-        return newExecutorVirtualServices2(name, 1);
-    }
-
-    /**
-     * 虚拟线程池核心数量和最大数量相等，
-     * <p>
-     * 禁止使用 synchronized 同步锁
-     * <p>
-     * 直接线程池，每一个任务都会new Virtual Thread
-     *
-     * @param name     线程池名称
-     * @param coreSize 线程核心数量
-     * @return
-     */
-    public static ExecutorVirtualServices2 newExecutorVirtualServices2(String name, int coreSize) {
-        return newExecutorVirtualServices2(name, coreSize, coreSize);
-    }
-
-    /**
-     * 虚拟线程池
-     * <p>
-     * 禁止使用 synchronized 同步锁
-     * <p>
-     * 直接线程池，每一个任务都会new Virtual Thread
-     *
-     * @param name     线程池名称
-     * @param coreSize 线程核心数量
-     * @param coreSize 线程最大数量
-     * @return
-     */
-    public static ExecutorVirtualServices2 newExecutorVirtualServices2(String name, int coreSize, int maxSize) {
-        return new ExecutorVirtualServices2(name, coreSize, maxSize);
     }
 
     /** 检测当前线程是否是同一线程 */

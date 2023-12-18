@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.collection.concurrent.ConcurrentList;
+import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.ICheckTimerRunnable;
 
 import java.io.Serializable;
 import java.util.*;
@@ -33,19 +33,7 @@ public class CachePack<K, V> implements Serializable {
     private static final ConcurrentList<CachePack> CACHE_PACKS = new ConcurrentList<>();
 
     static {
-        Runnable command = new ICheckTimerRunnable() {
-
-            @Override public long logTime() {
-                return 2000;
-            }
-
-            @Override public long warningTime() {
-                return 20000;
-            }
-
-            @Override public String taskInfoString() {
-                return "缓存定时处理";
-            }
+        Runnable command = new EventRunnable("缓存定时处理", 2000, 20000) {
 
             @Override public void run() {
                 long currentTimeMillis = System.currentTimeMillis();

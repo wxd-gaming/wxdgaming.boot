@@ -10,8 +10,8 @@ import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.JvmUtil;
 import org.wxd.boot.system.LocalHostUtil;
 import org.wxd.boot.system.ThrowableCache;
+import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.ICheckTimerRunnable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version: 2022-12-20 15:38
  **/
 @Slf4j
-public class FeishuPack implements ICheckTimerRunnable {
+public class FeishuPack extends EventRunnable {
 
     public static final FeishuPack Default = new FeishuPack();
     protected final ReentrantLock relock = new ReentrantLock();
@@ -40,6 +40,7 @@ public class FeishuPack implements ICheckTimerRunnable {
     private TreeMap<String, TreeMap<String, SplitCollection<String>>> cache = new TreeMap<>();
 
     public FeishuPack() {
+        super("飞书通知", 4000, 20000);
         Executors.getDefaultExecutor().scheduleAtFixedDelay(this, 10, 10, TimeUnit.SECONDS);
     }
 
@@ -75,18 +76,6 @@ public class FeishuPack implements ICheckTimerRunnable {
         } finally {
             relock.unlock();
         }
-    }
-
-    @Override public long logTime() {
-        return 4000;
-    }
-
-    @Override public long warningTime() {
-        return 20000;
-    }
-
-    @Override public String taskInfoString() {
-        return "飞书通知";
     }
 
     @Override public void run() {

@@ -133,7 +133,15 @@ public class ActionTextController {
                         remarks = cmdUrl;
                     }
 
-                    MappingFactory.putText(serviceName, remarks, cmdUrl, instance, method);
+                    MappingFactory.putText(
+                            serviceName,
+                            remarks,
+                            cmdUrl,
+                            instance,
+                            method,
+                            mapping.logTime(),
+                            mapping.warningTime()
+                    );
 
                     if (log.isDebugEnabled()) {
                         stringBuilder.write(StringUtil.padRight(remarks, 50, ' ')).write("\t, ").write(cmdUrl).write("\n");

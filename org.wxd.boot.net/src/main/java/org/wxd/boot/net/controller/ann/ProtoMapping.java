@@ -18,4 +18,10 @@ public @interface ProtoMapping {
 
     /** 不显示日志，比如心跳太多 */
     boolean showLog() default true;
+
+    /** 输出日志的时间 */
+    int logTime() default 33;
+
+    /** 执行告警时间 */
+    int warningTime() default 1000;
 }

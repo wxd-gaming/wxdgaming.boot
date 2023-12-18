@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.wxd.boot.httpclient.url.HttpBuilder;
 import org.wxd.boot.lang.RandomUtils;
 import org.wxd.boot.threading.ExecutorVirtualServices;
-import org.wxd.boot.threading.ExecutorVirtualServices2;
 import org.wxd.boot.threading.Executors;
 import org.wxd.boot.threading.VirtualThreadExecutors;
 
@@ -93,15 +92,15 @@ public class VTThreadTest {
         do {
 
             String queueName = "";
-            if (RandomUtils.randomBoolean()) {
+            // if (RandomUtils.randomBoolean()) {
                 queueName = String.valueOf(RandomUtils.random(100));
-            }
+            // }
             int index = atomicInteger.get();
             services.submit(queueName, new Runnable() {
 
                 @Override public void run() {
                     try {
-                        int random = RandomUtils.random(0, 3);
+                        int random = RandomUtils.random(0, 0);
                         String bodyString = HttpBuilder.get("http://127.0.0.1:19000/publicapi/test" + random).request().bodyString();
                         // log.info(Thread.currentThread().getName() + " - " + index + " - " + bodyString.hashCode());
                     } catch (Exception e) {
@@ -112,12 +111,6 @@ public class VTThreadTest {
                 }
 
             });
-            try {
-                Thread.sleep(RandomUtils.random(10));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
         } while (atomicInteger.decrementAndGet() > 0);
 
         while (!services.isQueueEmpty()) {}
@@ -129,54 +122,10 @@ public class VTThreadTest {
         services.shutdown();
     }
 
-    /** 共享线程池 */
     @Test
-    public void testExecutorVirtualServices2() throws Exception {
-
-        ExecutorVirtualServices2 services = Executors.newExecutorVirtualServices2("111", 300, 500);
-
-        final int execCount = 10000;
-        AtomicInteger atomicInteger = new AtomicInteger(execCount);
-        AtomicInteger endInteger = new AtomicInteger(0);
-
-        services.setQueueCheckSize(atomicInteger.get());
-        do {
-
-            String queueName = "";
-            if (RandomUtils.randomBoolean()) {
-                queueName = String.valueOf(RandomUtils.random(100));
-            }
-            int index = atomicInteger.get();
-            services.submit(queueName, new Runnable() {
-
-                @Override public void run() {
-                    try {
-                        int random = RandomUtils.random(0, 3);
-                        String bodyString = HttpBuilder.get("http://127.0.0.1:19000/publicapi/test" + random).request().bodyString();
-                        // log.info(Thread.currentThread().getName() + " - " + index + " - " + bodyString.hashCode());
-                    } catch (Exception e) {
-                        e.printStackTrace(System.err);
-                    } finally {
-                        endInteger.incrementAndGet();
-                    }
-                }
-
-            });
-            try {
-                Thread.sleep(RandomUtils.random(10));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-        } while (atomicInteger.decrementAndGet() > 0);
-
-        while (!services.isQueueEmpty()) {}
-        System.out.println("=========================");
-        System.in.read();
-        System.out.println("提交任务：" + execCount);
-        System.out.println("执行任务：" + endInteger.get());
-        System.in.read();
-        services.shutdown();
+    public void t5() {
+        String bodyString = HttpBuilder.get("http://127.0.0.1:19000/publicapi/test0").request().bodyString();
+        log.info(Thread.currentThread().getName() + " - " + bodyString + " - " + bodyString.hashCode());
     }
 
 }

@@ -9,8 +9,8 @@ import org.wxd.boot.collection.ConvertCollection;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.MarkTimer;
+import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.ICheckTimerRunnable;
 import org.wxd.boot.threading.IExecutorServices;
 
 import java.text.DecimalFormat;
@@ -96,7 +96,7 @@ public abstract class BatchPool implements AutoCloseable {
 
     volatile long lastTime = System.currentTimeMillis();
 
-    protected class Batch_Work implements ICheckTimerRunnable, AutoCloseable {
+    protected class Batch_Work extends EventRunnable implements AutoCloseable {
 
         @Getter
         protected IExecutorServices executorServices;
@@ -105,8 +105,13 @@ public abstract class BatchPool implements AutoCloseable {
         protected volatile HashMap<String, ConvertCollection<DataBuilder>> taskQueue = new HashMap<>();
 
         public Batch_Work(String threadName, int i) {
+            super(500, TimeUnit.SECONDS.toMillis(30));
             executorServices = Executors.newExecutorServices(threadName + "-" + (i + 1), 1);
             executorServices.scheduleAtFixedDelay(this, 200, 200, TimeUnit.MILLISECONDS);
+        }
+
+        @Override public String getTaskInfoString() {
+            return executorServices.getName();
         }
 
         public void replace(String tableName, DataBuilder obj) {
@@ -150,18 +155,6 @@ public abstract class BatchPool implements AutoCloseable {
                 log.info("数据库异步处理!!!");
                 run();
             }
-        }
-
-        @Override public long logTime() {
-            return 500;
-        }
-
-        @Override public long warningTime() {
-            return TimeUnit.SECONDS.toMillis(30);
-        }
-
-        @Override public String taskInfoString() {
-            return executorServices.getName();
         }
 
         @Override public void run() {

@@ -5,7 +5,6 @@ import java.lang.annotation.*;
 
 /**
  * 定时器任务
- * <p> 需要配合 {@link Resource} 一起使用，在定时器方法类加注解
  * <p> 默认是 一秒一次
  */
 @Documented
@@ -42,5 +41,11 @@ public @interface Scheduled {
      * <p> 年 1970 - 2199
      */
     String value() default "";
+
+    /** 输出日志的时间 */
+    int logTime() default 33;
+
+    /** 执行告警时间 */
+    int warningTime() default 1000;
 
 }

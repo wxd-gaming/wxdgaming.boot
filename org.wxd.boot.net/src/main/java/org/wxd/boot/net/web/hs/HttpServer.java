@@ -18,44 +18,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
-import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.HttpDataAction;
+import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.ssl.SslProtocolType;
-import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.NioServer;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.controller.MappingFactory;
-import org.wxd.boot.net.controller.TextMappingRecord;
-import org.wxd.boot.net.controller.ann.Get;
-import org.wxd.boot.net.controller.ann.Post;
-import org.wxd.boot.net.controller.ann.TextMapping;
-import org.wxd.boot.net.controller.cmd.Sign;
-import org.wxd.boot.net.controller.cmd.SignCheck;
 import org.wxd.boot.net.handler.SocketChannelHandler;
 import org.wxd.boot.str.StringUtil;
-import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.BytesUnit;
-import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.JvmUtil;
-import org.wxd.boot.threading.*;
+import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.IExecutorServices;
 import org.wxd.boot.timer.MyClock;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -193,113 +181,13 @@ public class HttpServer extends NioServer<HttpSession> {
                 if (!(object instanceof LastHttpContent)) {
                     return;
                 }
-
                 session.setLastReadTime(MyClock.millis());
-                ICheckTimerRunnable iCheckTimerRunnable = new ICheckTimerRunnable() {
-
-                    @Override public long logTime() {
-                        return 150;
-                    }
-
-                    @Override public long warningTime() {
-                        return ICheckTimerRunnable.super.warningTime();
-                    }
-
-                    @Override public String taskInfoString() {
-                        return session.getDomainName() + session.getUriPath();
-                    }
-
-                    @Override public void run() {
-                        try {
-                            session.actionGetData();
-
-                            if (reqMethod.equals(HttpMethod.POST)) {
-                                session.actionPostData();
-                            }
-
-//                final String auth = session.reqCookieValue(HttpHeaderNames.AUTHORIZATION);
-//                if (!NioFactory.checkSignToken(auth)) {
-//                    session.addResCookie(HttpHeaderNames.AUTHORIZATION.toString(), "");
-//                }
-
-                            String htmlPath = resourcesPath() + session.getUriPath();
-                            try {
-                                byte[] readFileToBytes = null;
-                                InputStream resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
-                                if (resource == null) {
-                                    htmlPath = "html" + session.getUriPath();
-                                    resource = FileUtil.findInputStream(htmlPath, resourceClassLoader);
-                                }
-
-                                if (resource != null) {
-                                    try {
-                                        readFileToBytes = FileReadUtil.readBytes(resource);
-                                    } finally {
-                                        resource.close();
-                                    }
-                                }
-                                if (readFileToBytes != null) {
-                                    String extendName = htmlPath.substring(htmlPath.lastIndexOf(".") + 1).toLowerCase();
-                                    HttpHeadValueType hct = httpContentType(extendName);
-                                    if (session.getResHeaderMap().containsKey(HttpHeaderNames.EXPIRES.toString())) {
-                                        /*如果是固有资源增加缓存效果*/
-                                        session.getResHeaderMap().put(HttpHeaderNames.PRAGMA.toString(), "private");
-                                        /*过期时间10个小时*/
-                                        session.getResHeaderMap().put(HttpHeaderNames.EXPIRES.toString(), ExpiresFormat.format(new Date(MyClock.addHourOfTime(10))) + " GMT");
-                                        /*过期时间10个小时*/
-                                        session.getResHeaderMap().put(HttpHeaderNames.CACHE_CONTROL.toString(), "max-age=36000");
-                                    }
-                                    if (log.isDebugEnabled()) {
-                                        StringBuilder stringBuilder = session.showLogFile();
-                                        stringBuilder
-                                                .append(";\n=============================================输出================================================")
-                                                .append("\nHttpContentType = ").append(hct).append(", len = ").append(readFileToBytes.length)
-                                                .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
-                                                .append("\n=============================================结束================================================")
-                                                .append("\n");
-                                        session.setShowLog(true);
-                                    }
-                                    response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, hct, readFileToBytes);
-                                    return;
-                                }
-                            } catch (Exception e) {
-                                final String ofString = Throw.ofString(e);
-                                StringBuilder stringBuilder = session.showLog();
-                                stringBuilder
-                                        .append(";\n=============================================输出================================================")
-                                        .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
-                                        .append("\n")
-                                        .append(ofString)
-                                        .append("\n=============================================结束================================================")
-                                        .append("\n");
-                                log.warn(stringBuilder.toString());
-                                stringBuilder.setLength(0);
-                                response(session,
-                                        HttpVersion.HTTP_1_1,
-                                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                                        HttpHeadValueType.Text,
-                                        ofString.getBytes(StandardCharsets.UTF_8)
-                                );
-                                return;
-                            }
-                            final String urlCmd = session.getUriPath();
-                            final StreamWriter resStringAppend = session.getResponseContent();
-                            final ObjMap putData = session.getReqParams();
-                            final HttpHeadValueType httpHeadValueType = session.getReqContentType().toLowerCase().contains("json") ? HttpHeadValueType.Json : null;
-                            HttpServer.this.runCmd(resStringAppend, urlCmd, httpHeadValueType, putData, session, reqMethod.name(), (showLog) -> {
-                                        session.setShowLog(showLog);
-                                        if (!session.isResponseOver()) {
-                                            session.response();
-                                        }
-                                    }
-                            );
-                        } catch (Throwable e) {
-                            log.error("{} remoteAddress：{}", HttpServer.this, session, e);
-                            response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
-                        }
-                    }
-                };
-                executorServices.submit(iCheckTimerRunnable);
+                session.actionGetData();
+                if (reqMethod.equals(HttpMethod.POST)) {
+                    session.actionPostData();
+                }
+                HttpListenerAction eventRunnable = new HttpListenerAction(HttpServer.this, session);
+                executorServices.submit(eventRunnable);
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
                 response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
@@ -308,160 +196,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     @Override public void runCmd(StreamWriter out, String methodName, HttpHeadValueType httpHeadValueType, ObjMap putData, Session session, String postOrGet, Consumer<Boolean> callBack) {
-        if (methodName == null) {
-            out.write("命令参数 cmd , 未找到");
-            callBack.accept(true);
-            return;
-        }
 
-        final String methodNameLowerCase = methodName.toLowerCase().trim();
-        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
-        if (mappingRecord == null) {
-            if ((httpHeadValueType == HttpHeadValueType.Json || httpHeadValueType == HttpHeadValueType.XJson)) {
-                out.write(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
-            } else {
-                out.write(" 软件：無心道  \n not found url " + methodNameLowerCase);
-            }
-            if (session instanceof HttpSession) {
-                ((HttpSession) session).setHttpResponseStatus(HttpResponseStatus.NOT_FOUND);
-            }
-            callBack.accept(true);
-            return;
-        }
-
-
-        if (null != postOrGet) {
-            final Post post = AnnUtil.ann(mappingRecord.method(), Post.class);
-            final Get get = AnnUtil.ann(mappingRecord.method(), Get.class);
-            if (post != null || get != null) {
-                Runnable action = () -> {
-                    if ((httpHeadValueType == HttpHeadValueType.Json || httpHeadValueType == HttpHeadValueType.XJson)) {
-                        out.write(RunResult.error(999, " 软件：無心道  \n server 500"));
-                    } else {
-                        out.write(" 软件：無心道  \n server 500");
-                    }
-                    if (session instanceof HttpSession) {
-                        ((HttpSession) session).setHttpResponseStatus(HttpResponseStatus.HTTP_VERSION_NOT_SUPPORTED);
-                    }
-                    callBack.accept(true);
-                };
-                if (post != null && get != null) {
-                    if (!"post".equalsIgnoreCase(postOrGet) && !"get".equalsIgnoreCase(postOrGet)) {
-                        log.warn("请求 " + methodNameLowerCase + " 被限制 必须是 get or post");
-                        action.run();
-                        return;
-                    }
-                } else if (post != null) {
-                    if (!"post".equalsIgnoreCase(postOrGet)) {
-                        log.warn("请求 " + methodNameLowerCase + " 被限制 必须是 post");
-                        action.run();
-                        return;
-                    }
-                } else {
-                    if (!"get".equalsIgnoreCase(postOrGet)) {
-                        log.warn("请求 " + methodNameLowerCase + " 被限制 必须是 get");
-                        action.run();
-                        return;
-                    }
-                }
-            }
-        }
-
-        Sign sign;
-        if (mappingRecord.instance() instanceof Sign) {
-            sign = (Sign) mappingRecord.instance();
-        } else {
-            sign = null;
-        }
-        SignCheck signCheck;
-        if (mappingRecord.instance() instanceof SignCheck) {
-            signCheck = (SignCheck) mappingRecord.instance();
-        } else {
-            signCheck = null;
-        }
-
-        final Runnable runnable = new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (methodNameLowerCase.endsWith("sign")) {
-                        RunResult signResult = sign.sign(HttpServer.this, session, putData);
-                        out.write(signResult.toString());
-                    } else if (signCheck == null || signCheck.checkSign(out, HttpServer.this, mappingRecord.method(), session, putData)) {
-                        Object invoke;
-                        if (mappingRecord.method().getParameterCount() == 0) {
-                            invoke = mappingRecord.method().invoke(mappingRecord.instance());
-                        } else {
-                            Object[] params = new Object[mappingRecord.method().getParameterCount()];
-                            if (mappingRecord.method().getParameterCount() > 0) {
-                                Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
-                                for (int i = 0; i < params.length; i++) {
-                                    Type genericParameterType = genericParameterTypes[i];
-                                    if (genericParameterType instanceof Class<?>) {
-                                        if (genericParameterType.equals(StreamWriter.class)) {
-                                            params[i] = out;
-                                        } else if (genericParameterType.equals(ObjMap.class)) {
-                                            params[i] = putData;
-                                        } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
-                                            params[i] = session;
-                                        }
-                                    }
-                                }
-                            }
-                            invoke = mappingRecord.method().invoke(mappingRecord.instance(), params);
-                        }
-                        Class<?> returnType = mappingRecord.method().getReturnType();
-                        if (!void.class.equals(returnType)) {
-                            out.write(String.valueOf(invoke));
-                        }
-                    }
-                } catch (Throwable throwable) {
-                    if (throwable.getCause() != null) {
-                        throwable = throwable.getCause();
-                    }
-                    String content = this.toString();
-                    content += "\n来源：" + session.toString();
-                    content += "\nAuth：" + session.getAuthUser();
-                    content += "\n执行：cmd = " + methodName;
-                    content += "\n参数：" + FastJsonUtil.toJson(putData);
-                    log.error(content + " 异常", throwable);
-                    GlobalUtil.exception(content, throwable);
-                    out.clear();
-                    out.write(RunResult.error(505, Throw.ofString(throwable)));
-                } finally {
-                    boolean showLog = false;
-                    TextMapping annotation = AnnUtil.ann(mappingRecord.method(), TextMapping.class);
-                    if (annotation != null) {
-                        showLog = annotation.showLog();
-                    }
-                    callBack.accept(showLog);
-                }
-            }
-        };
-
-        if (getCmdExecutorBefore() != null) {
-            if (!getCmdExecutorBefore().test(runnable)) {
-                if (log.isDebugEnabled()) {
-                    log.debug(this.getClass().getSimpleName() + " 请求：" + session.toString() + "/" + methodName, new RuntimeException("被过滤掉"));
-                }
-                out.clear();
-                callBack.accept(false);
-                return;
-            }
-        }
-
-        if (StringUtil.notEmptyOrNull(mappingRecord.queueName())) {
-            final Job submit = executorServices.submit(mappingRecord.queueName(), runnable);
-            session.getChannelContext().channel().closeFuture().addListener((f) -> {
-                boolean cancel = submit.cancel();
-                if (cancel) {
-                    log.info("链接断开，主动删除执行队列：{}", session);
-                }
-            });
-        } else {
-            runnable.run();
-        }
     }
 
     /**
@@ -486,7 +221,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     public HttpServer initExecutor(int coreSize, int maxSize) {
-        executorServices = Executors.newExecutorVirtualServices("http-" + this.getName(), coreSize, maxSize);
+        executorServices = Executors.newExecutorServices("http-" + this.getName(), coreSize, maxSize);
         return this;
     }
 
@@ -557,11 +292,6 @@ public class HttpServer extends NioServer<HttpSession> {
 
     @Override public HttpServer setSslContext(SSLContext sslContext) {
         super.setSslContext(sslContext);
-        return this;
-    }
-
-    @Override public HttpServer setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
-        super.setCmdExecutorBefore(cmdExecutorBefore);
         return this;
     }
 

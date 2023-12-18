@@ -96,12 +96,6 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
     }
 
     @Override
-    public SocketServer<S> setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
-        super.setCmdExecutorBefore(cmdExecutorBefore);
-        return this;
-    }
-
-    @Override
     public String toString() {
         return "tcp-server " + this.getName() + " " + getWanIp() + ":" + this.getPort();
     }

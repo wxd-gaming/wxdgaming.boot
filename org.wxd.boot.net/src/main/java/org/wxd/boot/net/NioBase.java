@@ -9,7 +9,6 @@ import org.wxd.boot.cache.CachePack;
 import org.wxd.boot.net.handler.CmdService;
 
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -27,8 +26,6 @@ public abstract class NioBase implements CmdService {
     protected String host = null;
     protected String wanIp = null;
     protected int port;
-    /** 消息执行前，可以添加过滤器 */
-    protected Predicate<Runnable> cmdExecutorBefore;
     /** 秘钥管理器 */
     protected final CachePack<String, IAuth> tokenCache = new CachePack<String, IAuth>()
             .setCacheName("权限秘钥管理器")
@@ -38,17 +35,6 @@ public abstract class NioBase implements CmdService {
     public abstract NioBase initBootstrap();
 
     protected abstract NioBase initChannel(ChannelPipeline pipeline);
-
-    @Override
-    public Predicate<Runnable> getCmdExecutorBefore() {
-        return cmdExecutorBefore;
-    }
-
-    @Override
-    public NioBase setCmdExecutorBefore(Predicate<Runnable> cmdExecutorBefore) {
-        this.cmdExecutorBefore = cmdExecutorBefore;
-        return this;
-    }
 
     @Override
     public CachePack<String, IAuth> getTokenCache() {

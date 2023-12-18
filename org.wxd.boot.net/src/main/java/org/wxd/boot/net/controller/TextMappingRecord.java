@@ -15,6 +15,6 @@ import java.lang.reflect.Method;
  */
 public record TextMappingRecord(String serviceName, String remarks, String path,
         Object instance, Method method,
-        String executorName, String queueName) {
+        String executorName, String queueName, int logTime, int warningTime) {
 
 }

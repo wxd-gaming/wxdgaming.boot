@@ -93,7 +93,15 @@ public class ActionProtoController {
             if (StringUtil.emptyOrNull(remarks)) {
                 remarks = instance.getClass().getName() + "." + method.getName();
             }
-            MappingFactory.putProto(serviceName, remarks, messageId, instance, method);
+            MappingFactory.putProto(
+                    serviceName,
+                    remarks,
+                    messageId,
+                    instance,
+                    method,
+                    protoMapping.logTime(),
+                    protoMapping.warningTime()
+            );
             /**消息的中午注解隐射*/
             MessagePackage.MsgName2RemarkMap.put(messageClass.getName(), remarks);
             if (log.isDebugEnabled()) {

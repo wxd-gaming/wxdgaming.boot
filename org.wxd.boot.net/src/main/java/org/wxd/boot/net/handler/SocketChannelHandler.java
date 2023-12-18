@@ -104,19 +104,19 @@ public abstract class SocketChannelHandler<S extends Session> extends ChannelInb
             }
         } else if (message.contains("certificate_unknown")) {
             if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：certificate_unknown, " + session);
+                log.debug("内部处理异常：{}, {}", message, session);
             }
-        } else if (message.contains("connection reset by peer")) {
+        } else if (message.contains("connection reset")) {
             if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：connection reset by peer, " + session);
+                log.debug("内部处理异常：{}, {}", message, session);
             }
         } else if (message.contains("你的主机中的软件中止了一个已建立的连接")) {
             if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：你的主机中的软件中止了一个已建立的连接, " + session);
+                log.debug("内部处理异常：{}, {}", message, session);
             }
         } else if (message.contains("远程主机强迫关闭了一个现有的连接")) {
             if (log.isDebugEnabled()) {
-                log.debug("远程主机强迫关闭了一个现有的连接, " + session);
+                log.debug("内部处理异常：{}, {}", message, session);
             }
         } else {
             log.warn("内部异常：" + session.toString(), cause);
