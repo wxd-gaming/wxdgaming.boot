@@ -4,6 +4,7 @@ import org.wxd.boot.format.data.Data2Json;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -15,8 +16,7 @@ import java.util.function.Consumer;
  **/
 public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Data2Json {
 
-    private static final long serialVersionUID = 1L;
-
+    protected final ReentrantLock relock = new ReentrantLock();
     private volatile int splitOrg;
     private volatile LinkedList<E> items = new LinkedList<>();
 
@@ -37,16 +37,22 @@ public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Da
     }
 
     public void clear() {
-        synchronized (items) {
+        relock.lock();
+        try {
             items.clear();
+        } finally {
+            relock.unlock();
         }
     }
 
     public boolean add(E e) {
-        synchronized (items) {
+        relock.lock();
+        try {
             boolean remove = items.remove(e);
             boolean add = items.add(e);
             return !remove && add;
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -65,13 +71,16 @@ public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Da
     @Override
     public List<E> next() {
         List<E> es = new ArrayList<>(splitOrg);
-        synchronized (items) {
+        relock.lock();
+        try {
             int tmp = splitOrg;
             for (int i = 0; i < tmp; i++) {
                 if (items.isEmpty()) break;
                 final E e = items.removeFirst();
                 if (e != null) es.add(e);
             }
+        } finally {
+            relock.unlock();
         }
         return es;
     }

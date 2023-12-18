@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 飞书通知容器
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class FeishuPack implements ICheckTimerRunnable {
 
     public static final FeishuPack Default = new FeishuPack();
-
+    protected final ReentrantLock relock = new ReentrantLock();
     /** 飞书默认通知地址 */
     public String DefaultFeishuUrl = null;
 
@@ -66,10 +67,13 @@ public class FeishuPack implements ICheckTimerRunnable {
     /** feiShuN通知 "<at user_id=\"458374gc\">子衣</at><at user_id=\"58bafc6e\">陆仕洋</at>" */
     public void asyncFeiShuNotice(String url, String title, String content) {
         if (StringUtil.emptyOrNull(url) || StringUtil.emptyOrNull(title) || StringUtil.emptyOrNull(content)) return;
-        synchronized (this) {
+        relock.lock();
+        try {
             TreeMap<String, SplitCollection<String>> map = cache.computeIfAbsent(url, l -> new TreeMap<>());
             SplitCollection<String> absent = map.computeIfAbsent(title, l -> new SplitCollection<>(50));
             absent.add(content);
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -87,9 +91,12 @@ public class FeishuPack implements ICheckTimerRunnable {
 
     @Override public void run() {
         TreeMap<String, TreeMap<String, SplitCollection<String>>> tmpCache;
-        synchronized (this) {
+        relock.lock();
+        try {
             tmpCache = cache;
             cache = new TreeMap<>();
+        } finally {
+            relock.unlock();
         }
         for (Map.Entry<String, TreeMap<String, SplitCollection<String>>> entry : tmpCache.entrySet()) {
             String url = entry.getKey();

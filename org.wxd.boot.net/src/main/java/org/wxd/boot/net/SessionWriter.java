@@ -13,6 +13,7 @@ import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.timer.MyClock;
 
 import java.io.File;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -21,6 +22,9 @@ import java.io.File;
 interface SessionWriter extends ByteBufWrapper {
 
     Logger log = LoggerFactory.getLogger(SessionWriter.class);
+
+    /** 获取重入锁 */
+    ReentrantLock getRelock();
 
     /**
      * 远程传输文件
@@ -81,7 +85,8 @@ interface SessionWriter extends ByteBufWrapper {
 
     /** 发送处理 可以直接发 byte[] */
     default ChannelFuture write0(Object obj, boolean flush) {
-        synchronized (this) {
+        getRelock().lock();
+        try {
             if (!((SocketSession) this).isRegistered()) {
                 log.warn("发送消息异常, 链接状态异常, " + this.toString(), new RuntimeException());
                 return null;
@@ -110,6 +115,8 @@ interface SessionWriter extends ByteBufWrapper {
             } else {
                 return ((SocketSession) this).getChannelContext().write(obj);
             }
+        } finally {
+            getRelock().unlock();
         }
     }
 

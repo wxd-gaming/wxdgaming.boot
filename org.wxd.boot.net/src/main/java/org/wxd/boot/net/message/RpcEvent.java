@@ -11,11 +11,11 @@ import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.MarkTimer;
-import org.wxd.boot.threading.Executors;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -40,6 +40,7 @@ public class RpcEvent {
     public static long WaiteMill = 3000;
     public static AtomicLong idFormat = new AtomicLong();
 
+    protected final ReentrantLock relock = new ReentrantLock();
     protected MarkTimer markTime;
     protected final SocketSession session;
     protected final long rpcId;
@@ -59,7 +60,8 @@ public class RpcEvent {
 
     /** 发送出去，不管了 */
     public void send() {
-        synchronized (this) {
+        relock.lock();
+        try {
             if (sendEnd) return;
             Rpc.ReqRemote.Builder builder = Rpc.ReqRemote.newBuilder();
             builder.setRpcId(rpcId);
@@ -73,6 +75,8 @@ public class RpcEvent {
             RPC_REQUEST_CACHE_PACK.addCache(this.getRpcId(), this);
             session.writeFlush(builder.build());
             sendEnd = true;
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -84,7 +88,7 @@ public class RpcEvent {
         return CompletableFuture.supplyAsync(() -> {
             this.get();
             return RpcEvent.this;
-        }, Executors.executorVirtualServices());
+        });
     }
 
     /** 成功才会回调，有异常不会回调 */
@@ -182,7 +186,8 @@ public class RpcEvent {
 
     /** 同步请求，等待结果 */
     public String get(long timeoutMillis) {
-        synchronized (this) {
+        relock.lock();
+        try {
             if (!res) {
                 send();
                 try {
@@ -195,16 +200,21 @@ public class RpcEvent {
                     throw new RuntimeException("get time out");
                 }
             }
+        } finally {
+            relock.unlock();
         }
         return resJson;
     }
 
     /** 回调回来 */
     public void response(String resJson) {
-        synchronized (this) {
+        relock.lock();
+        try {
             this.res = true;
             this.resJson = resJson;
             this.notifyAll();
+        } finally {
+            relock.unlock();
         }
     }
 

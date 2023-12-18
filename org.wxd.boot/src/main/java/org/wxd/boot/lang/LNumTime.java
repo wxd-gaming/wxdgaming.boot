@@ -18,7 +18,6 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class LNumTime extends LNum implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     /** 最后更新时间 */
     private volatile long lUTime;
 
@@ -30,17 +29,23 @@ public class LNumTime extends LNum implements Serializable {
     }
 
     @Override public void clear() {
-        synchronized (this) {
+        relock.lock();
+        try {
             super.clear();
             this.lUTime = 0;
+        } finally {
+            relock.unlock();
         }
     }
 
     @Override public LNumTime setNum(long num) {
-        synchronized (this) {
+        relock.lock();
+        try {
             super.setNum(num);
             this.lUTime = MyClock.millis();
             return this;
+        } finally {
+            relock.unlock();
         }
     }
 

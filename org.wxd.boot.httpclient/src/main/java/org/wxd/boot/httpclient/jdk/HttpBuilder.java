@@ -37,7 +37,7 @@ public class HttpBuilder {
                     .followRedirects(HttpClient.Redirect.NORMAL)
                     .connectTimeout(Duration.ofMillis(3000))
                     .sslContext(tls)
-                    .executor(Executors.executorVirtualServices())
+                    .executor(Executors.getLogicExecutor())
 //                .proxy(ProxySelector.of(new InetSocketAddress("proxy.example.com", 80)))
 //                .authenticator(Authenticator.getDefault())
                     .build();

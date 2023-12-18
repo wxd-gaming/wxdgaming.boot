@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 
 import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 通信安全集合
@@ -15,10 +16,12 @@ import java.util.LinkedList;
  **/
 public class ChannelQueue<E extends SocketSession> {
 
+    private final ReentrantLock relock = new ReentrantLock();
     volatile LinkedList<E> list = new LinkedList<>();
 
     public boolean add(E e) {
-        synchronized (this) {
+        relock.lock();
+        try {
             e.getChannelContext().channel().closeFuture().addListener(new ChannelFutureListener() {
                 @Override public void operationComplete(ChannelFuture future) throws Exception {
                     ChannelQueue.this.remove(e);
@@ -26,24 +29,35 @@ public class ChannelQueue<E extends SocketSession> {
             });
 
             return list.add(e);
+        } finally {
+            relock.unlock();
         }
     }
 
     public E removeFirst() {
-        synchronized (this) {
+        relock.lock();
+        try {
             return list.removeFirst();
+        } finally {
+            relock.unlock();
         }
     }
 
     public boolean remove(E o) {
-        synchronized (this) {
+        relock.lock();
+        try {
             return list.remove(o);
+        } finally {
+            relock.unlock();
         }
     }
 
     public void clear() {
-        synchronized (this) {
+        relock.lock();
+        try {
             list.clear();
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -85,10 +99,13 @@ public class ChannelQueue<E extends SocketSession> {
     }
 
     public void writeFlushAll(Message message) {
-        synchronized (this) {
+        relock.lock();
+        try {
             list.forEach(channel -> {
                 channel.writeFlush(message);
             });
+        } finally {
+            relock.unlock();
         }
     }
 

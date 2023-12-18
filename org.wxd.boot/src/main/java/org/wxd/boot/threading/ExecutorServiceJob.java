@@ -111,7 +111,7 @@ class ExecutorServiceJob implements Runnable, Job {
                 if (v > logTime || v2 > logTime) {
                     log.info(msg);
                     if (v > warningTime || v2 > warningTime) {
-                        GlobalUtil.exception(msg, null);
+                        // GlobalUtil.exception(msg, null);
                     }
                 }
             }

@@ -5,6 +5,7 @@ import org.wxd.boot.agent.exception.Throw;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 大数字管理器
@@ -14,15 +15,10 @@ import java.util.Objects;
  **/
 public class BigintFinal implements Serializable, Cloneable, Comparable<BigintFinal> {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 常量 0
-     */
+    protected final ReentrantLock relock = new ReentrantLock();
+    /** 常量 0 */
     public static final BigintFinal ZERO = new BigintFinal(1);
-    /**
-     * 常量 1
-     */
+    /** 常量 1 */
     public static final BigintFinal ONE = new BigintFinal(1);
 
     protected BigDecimal value;
@@ -44,20 +40,29 @@ public class BigintFinal implements Serializable, Cloneable, Comparable<BigintFi
     }
 
     public void setValue(BigDecimal value) {
-        synchronized (this) {
+        relock.lock();
+        try {
             this.value = value;
+        } finally {
+            relock.unlock();
         }
     }
 
     public void resetValue(double value) {
-        synchronized (this) {
+        relock.lock();
+        try {
             this.value = new BigDecimal(value);
+        } finally {
+            relock.unlock();
         }
     }
 
     public void resetValue(String value) {
-        synchronized (this) {
+        relock.lock();
+        try {
             this.value = new BigDecimal(value);
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -84,16 +89,12 @@ public class BigintFinal implements Serializable, Cloneable, Comparable<BigintFi
         return this.value.longValue() == 0;
     }
 
+    /** 大于等于 */
     public boolean bigThan(long o) {
         return this.value.longValue() >= o;
     }
 
-    /**
-     * 大于等于0
-     *
-     * @param o
-     * @return
-     */
+    /** 大于等于 */
     public boolean bigThan(BigintFinal o) {
         return this.value.compareTo(o.getValue()) >= 0;
     }
@@ -104,16 +105,11 @@ public class BigintFinal implements Serializable, Cloneable, Comparable<BigintFi
         if (o == null || getClass() != o.getClass()) return false;
 
         BigintFinal bigint = (BigintFinal) o;
-
         return Objects.equals(value, bigint.value);
     }
 
 
-    /**
-     * 重写后，根据biginteger.tostring().hashcode()
-     *
-     * @return
-     */
+    /** 重写后，根据biginteger.tostring().hashcode() */
     @Override
     public int hashCode() {
         return value != null ? value.toString().hashCode() : 0;

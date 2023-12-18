@@ -1,5 +1,7 @@
 package org.wxd.boot.format;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * 根据时间线生成id
  * <p>每一秒最少99万个
@@ -9,6 +11,8 @@ package org.wxd.boot.format;
  * @version: 2023-03-13 20:31
  **/
 public class TimeNewId {
+
+    protected ReentrantLock relock = new ReentrantLock();
     private long start;
     private long nextMax;
     private long gen;
@@ -20,11 +24,16 @@ public class TimeNewId {
         this.gen = gen;
     }
 
-    public synchronized long nextId() {
-        checkGenStart();
-        long ret = ++next;
-        if (ret >= nextMax) throw new RuntimeException("超过每一秒生成id的最大数 " + nextMax);
-        return ret;
+    public long nextId() {
+        relock.lock();
+        try {
+            checkGenStart();
+            long ret = ++next;
+            if (ret >= nextMax) throw new RuntimeException("超过每一秒生成id的最大数 " + nextMax);
+            return ret;
+        } finally {
+            relock.unlock();
+        }
     }
 
     private void checkGenStart() {

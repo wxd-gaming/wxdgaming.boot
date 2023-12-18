@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.Comparator;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 排行
@@ -16,6 +17,8 @@ import java.util.Comparator;
 @Setter
 @Accessors(chain = true)
 public class RankScore<K extends Comparable> implements Comparable<RankScore<K>> {
+
+    protected final ReentrantLock relock = new ReentrantLock();
 
     /** 正序 */
     public static final Comparator<RankScore<?>> Sort = (o1, o2) -> {

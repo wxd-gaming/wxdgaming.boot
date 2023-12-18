@@ -30,6 +30,7 @@
  */
 package straightedge.geom.path;
 
+import lombok.Getter;
 import straightedge.geom.KPolygon;
 import straightedge.geom.Vector3;
 import straightedge.geom.util.BinaryHeap;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Finds a path through PathBlockingObstacles.
@@ -52,6 +54,8 @@ import java.util.List;
  */
 public class PathFinder {
 
+    @Getter
+    protected final ReentrantLock relock = new ReentrantLock();
     public KNode startNode;
     public KNode endNode;
     public BinaryHeap<KNode> openList;
@@ -90,7 +94,8 @@ public class PathFinder {
      * @return
      */
     public PathData calc(Vector3 start, Vector3 end, double maxTempNodeConnectionDist, double maxSearchDistStartToEnd, NodeConnector nodeConnector, List obstacles) {
-        synchronized (this) {
+        relock.lock();
+        try {
             if (tempReachableNodesExist(obstacles)) {
                 return null;
             }
@@ -242,11 +247,14 @@ public class PathFinder {
             clearTempReachableNodes();
             tracker.incrementCounter();
             return pathData;
+        } finally {
+            relock.unlock();
         }
     }
 
     public PathData calcNear(Vector3 start, Vector3 end, double maxTempNodeConnectionDist, double maxSearchDistStartToEnd, NodeConnector nodeConnector, List obstacles) {
-        synchronized (this) {
+        relock.lock();
+        try {
             if (tempReachableNodesExist(obstacles)) {
                 return null;
             }
@@ -398,6 +406,8 @@ public class PathFinder {
             clearTempReachableNodes();
             tracker.incrementCounter();
             return pathData;
+        } finally {
+            relock.unlock();
         }
     }
 

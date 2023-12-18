@@ -42,10 +42,7 @@ import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.BytesUnit;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.JvmUtil;
-import org.wxd.boot.threading.ExecutorVirtualServices;
-import org.wxd.boot.threading.ICheckTimerRunnable;
-import org.wxd.boot.threading.IExecutorServices;
-import org.wxd.boot.threading.Job;
+import org.wxd.boot.threading.*;
 import org.wxd.boot.timer.MyClock;
 
 import javax.net.ssl.SSLContext;
@@ -302,7 +299,7 @@ public class HttpServer extends NioServer<HttpSession> {
                         }
                     }
                 };
-                executorVirtualServices.submit(iCheckTimerRunnable);
+                executorServices.submit(iCheckTimerRunnable);
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
                 response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
@@ -455,7 +452,7 @@ public class HttpServer extends NioServer<HttpSession> {
         }
 
         if (StringUtil.notEmptyOrNull(mappingRecord.queueName())) {
-            final Job submit = executorVirtualServices.submit(mappingRecord.queueName(), runnable);
+            final Job submit = executorServices.submit(mappingRecord.queueName(), runnable);
             session.getChannelContext().channel().closeFuture().addListener((f) -> {
                 boolean cancel = submit.cancel();
                 if (cancel) {
@@ -472,7 +469,7 @@ public class HttpServer extends NioServer<HttpSession> {
      */
     protected String resourcesPath;
     protected Map<String, String> headerMap = new LinkedHashMap<>();
-    protected ExecutorVirtualServices executorVirtualServices = null;
+    protected IExecutorServices executorServices = null;
     protected ClassLoader resourceClassLoader = this.getClass().getClassLoader();
 
     @Override public void open() {
@@ -489,7 +486,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     public HttpServer initExecutor(int coreSize, int maxSize) {
-        executorVirtualServices = ExecutorVirtualServices.newExecutorServices("http-" + this.getName(), coreSize, maxSize);
+        executorServices = Executors.newExecutorVirtualServices("http-" + this.getName(), coreSize, maxSize);
         return this;
     }
 
@@ -500,7 +497,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     @Override public IExecutorServices executorServices() {
-        return executorVirtualServices;
+        return executorServices;
     }
 
     @Override

@@ -38,7 +38,8 @@ public class LNumHeart extends LNum implements Serializable {
      * @return
      */
     public boolean heartTimer(long maxValue, long currentTimeMillis, long cd) {
-        synchronized (this) {
+        relock.lock();
+        try {
             if (getNum() < maxValue) {
                 if (lUTime == 0) {
                     lUTime = currentTimeMillis;
@@ -61,13 +62,18 @@ public class LNumHeart extends LNum implements Serializable {
                 return true;
             }
             return false;
+        } finally {
+            relock.unlock();
         }
     }
 
     @Override public void clear() {
-        synchronized (this) {
+        relock.lock();
+        try {
             super.clear();
             this.lUTime = 0;
+        } finally {
+            relock.unlock();
         }
     }
 

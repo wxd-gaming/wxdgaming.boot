@@ -470,8 +470,11 @@ public class NavMap {
 
     public PathData path(Vector3 start, Vector3 end) {
         PathData data;
-        synchronized (pathFinder) {
+        pathFinder.getRelock().lock();
+        try {
             data = pathFinder.calc(start, end, this.maxDistanceBetweenObstacles, getBlockNodeConnector(), getBlockStationaryObstacles());
+        } finally {
+            pathFinder.getRelock().unlock();
         }
         return data;
     }
@@ -484,7 +487,8 @@ public class NavMap {
      */
     public PathData path(Vector3 start, Vector3 end, double stopDistance) {
         PathData data;
-        synchronized (pathFinder) {
+        pathFinder.getRelock().lock();
+        try {
             data = pathFinder.calc(start, end, this.maxDistanceBetweenObstacles, getBlockNodeConnector(), getBlockStationaryObstacles());
             if (data != null && stopDistance > 0) {
                 Vector3 stopEnd = null;
@@ -497,14 +501,19 @@ public class NavMap {
                     data.points.add(stopEnd);
                 }
             }
+        } finally {
+            pathFinder.getRelock().unlock();
         }
         return data;
     }
 
     public PathData pathNear(Vector3 start, Vector3 end) {
         PathData data;
-        synchronized (pathFinder) {
+        pathFinder.getRelock().lock();
+        try {
             data = pathFinder.calcNear(start, end, this.maxDistanceBetweenObstacles, this.maxDistanceBetweenObstacles, getBlockNodeConnector(), getBlockStationaryObstacles());
+        } finally {
+            pathFinder.getRelock().unlock();
         }
         return data;
     }

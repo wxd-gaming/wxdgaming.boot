@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * long 类型 数量
@@ -17,7 +18,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class LNum extends ObjectBase implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    protected final ReentrantLock relock = new ReentrantLock();
 
     private volatile long num = 0;
 
@@ -29,8 +30,11 @@ public class LNum extends ObjectBase implements Serializable {
     }
 
     public void clear() {
-        synchronized (this) {
+        relock.lock();
+        try {
             this.num = 0;
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -42,9 +46,12 @@ public class LNum extends ObjectBase implements Serializable {
     }
 
     public LNum setNum(long num) {
-        synchronized (this) {
+        relock.lock();
+        try {
             this.num = num;
             return this;
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -60,7 +67,8 @@ public class LNum extends ObjectBase implements Serializable {
 
     /** 加法 */
     public long add(long val, Long min, Long max) {
-        synchronized (this) {
+        relock.lock();
+        try {
             setNum(Math.addExact(this.num, val));
             if (min != null) {
                 /*有最小值，实际上就是谁最大取谁*/
@@ -71,6 +79,8 @@ public class LNum extends ObjectBase implements Serializable {
                 min(max);
             }
             return getNum();
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -87,7 +97,8 @@ public class LNum extends ObjectBase implements Serializable {
 
     /** 减法 */
     public long sub(long val, Long min, Long max) {
-        synchronized (this) {
+        relock.lock();
+        try {
             setNum(Math.subtractExact(this.num, val));
             if (min != null) {
                 /*有最小值，实际上就是谁最大取谁*/
@@ -98,24 +109,32 @@ public class LNum extends ObjectBase implements Serializable {
                 min(max);
             }
             return getNum();
+        } finally {
+            relock.unlock();
         }
     }
 
     /** 如果更新成功返回 true */
     public boolean min(long val) {
-        synchronized (this) {
+        relock.lock();
+        try {
             long oldVal = this.num;
             setNum(Math.min(this.num, val));
             return getNum() != oldVal;
+        } finally {
+            relock.unlock();
         }
     }
 
     /** 如果更新成功返回 true */
     public boolean max(long val) {
-        synchronized (this) {
+        relock.lock();
+        try {
             long oldVal = this.num;
             setNum(Math.max(this.num, val));
             return getNum() != oldVal;
+        } finally {
+            relock.unlock();
         }
     }
 

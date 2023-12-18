@@ -11,6 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 线程执行器
+ * <p>
+ * 禁止使用 synchronized 同步锁
  *
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2022-10-31 20:36
@@ -18,37 +20,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Slf4j
 @Getter
 public final class ExecutorVirtualServices implements Executor, IExecutorServices {
-
-    /**
-     * 默认队列最大长度2000,单线程
-     *
-     * @param name 线程池名称
-     * @return
-     */
-    public static ExecutorVirtualServices newExecutorServices(String name) {
-        return newExecutorServices(name, 1);
-    }
-
-    /**
-     * 线程池核心数量和最大数量相等，
-     *
-     * @param name     线程池名称
-     * @param coreSize 线程核心数量
-     * @return
-     */
-    public static ExecutorVirtualServices newExecutorServices(String name, int coreSize) {
-        return newExecutorServices(name, coreSize, coreSize);
-    }
-
-    /**
-     * @param name     线程池名称
-     * @param coreSize 线程核心数量
-     * @param coreSize 线程最大数量
-     * @return
-     */
-    public static ExecutorVirtualServices newExecutorServices(String name, int coreSize, int maxSize) {
-        return new ExecutorVirtualServices(name, coreSize, maxSize);
-    }
 
     /** 执行器 */
     final VirtualThreadPoolExecutors threadPoolExecutor;
@@ -63,7 +34,7 @@ public final class ExecutorVirtualServices implements Executor, IExecutorService
      * @param coreSize 线程最大数量
      * @return
      */
-    private ExecutorVirtualServices(String name, int coreSize, int maxSize) {
+    protected ExecutorVirtualServices(String name, int coreSize, int maxSize) {
         threadPoolExecutor = new VirtualThreadPoolExecutors(
                 name,
                 coreSize,

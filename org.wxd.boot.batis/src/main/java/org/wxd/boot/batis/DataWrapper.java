@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * 数据映射装填器
@@ -40,10 +41,8 @@ public abstract class DataWrapper<DM extends EntityTable>
     /** 过滤最终字段 */
     public static boolean Filter_Transient = false;
 
-    /**
-     * key 数据库表名
-     */
-    private final Map<String, DM> dataTableMap = new LinkedHashMap<>();
+    /** key 数据库表名 */
+    private final ConcurrentSkipListMap<String, DM> dataTableMap = new ConcurrentSkipListMap<>();
 
     public DM dataTable(String tableName) {
         return dataTableMap.get(tableName);
@@ -157,7 +156,7 @@ public abstract class DataWrapper<DM extends EntityTable>
     /**
      * 数据映射类装填
      */
-    public final synchronized <R extends DM> R asEntityTable(String tableName, Class<?> clazz, String tableComment, boolean checkColumnKey) {
+    public final <R extends DM> R asEntityTable(String tableName, Class<?> clazz, String tableComment, boolean checkColumnKey) {
         return (R) dataTableMap.computeIfAbsent(tableName, k -> buildCreateEntityTable(tableName, clazz, tableComment, checkColumnKey));
     }
 

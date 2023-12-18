@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 自定义线程池, 会缓存线程，避免频繁的生成线程
+ * <p>
+ * 禁止使用 synchronized 同步锁
  *
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-04-27 10:34
@@ -19,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Getter
 public final class VirtualThreadPoolExecutors implements Executor {
+
+    final ReentrantLock relock = new ReentrantLock();
 
     final Thread.Builder.OfVirtual ofVirtual;
     final String name;
@@ -39,7 +44,7 @@ public final class VirtualThreadPoolExecutors implements Executor {
     AtomicBoolean terminate = new AtomicBoolean();
 
     public VirtualThreadPoolExecutors(String name, int coreSize) {
-        this(name, coreSize, coreSize, new ArrayBlockingQueue<>(Integer.MAX_VALUE));
+        this(name, coreSize, coreSize, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
     }
 
     public VirtualThreadPoolExecutors(String name, int coreSize, int maxSize, BlockingQueue<Runnable> queue) {
@@ -50,35 +55,40 @@ public final class VirtualThreadPoolExecutors implements Executor {
         this.ofVirtual = Thread.ofVirtual().name("vt-" + this.name + "-", 1);
     }
 
-    synchronized void checkThread() {
-        if (threadActivationCount.get() >= maxSize) return;
-        if (threadActivationCount.get() >= coreThreads.size() && coreThreads.size() < maxSize) {
-            /*判定是否需要创建线程*/
-            VirtualThread wxThread = null;
-            if (coreThreads.size() < coreSize) {
-                wxThread = new VirtualThread(true, threadRun);
-            } else {
-                if (queue.size() > coreThreads.size() * 100) {
-                    wxThread = new VirtualThread(false, threadRun);
+    void checkThread() {
+        relock.lock();
+        try {
+            if (threadActivationCount.get() >= maxSize) return;
+            if (threadActivationCount.get() >= coreThreads.size() && coreThreads.size() < maxSize) {
+                /*判定是否需要创建线程*/
+                VirtualThread wxThread = null;
+                if (coreThreads.size() < coreSize) {
+                    wxThread = new VirtualThread(true, threadRun);
+                } else {
+                    if (queue.size() > coreThreads.size() * 100) {
+                        wxThread = new VirtualThread(false, threadRun);
+                    }
                 }
-            }
-            if (wxThread != null) {
-                threadActivationCount.incrementAndGet();
-                coreThreads.add(wxThread);
-            }
-        } else {
-            if (queue.size() > threadActivationCount.get() * 20) {
-                for (VirtualThread coreThread : coreThreads) {
-                    if (coreThread.waiting.get()) {
-                        synchronized (coreThread.waiting) {
-                            threadActivationCount.incrementAndGet();
-                            coreThread.waiting.set(false);
-                            coreThread.waiting.notify();
-                            break;
+                if (wxThread != null) {
+                    threadActivationCount.incrementAndGet();
+                    coreThreads.add(wxThread);
+                }
+            } else {
+                if (queue.size() > threadActivationCount.get() * 20) {
+                    for (VirtualThread coreThread : coreThreads) {
+                        if (coreThread.waiting.get()) {
+                            coreThread.getRelock().lock();
+                            try {
+                                threadActivationCount.incrementAndGet();
+                                coreThread.waiting.set(false);
+                                break;
+                            } finally {coreThread.getRelock().unlock();}
                         }
                     }
                 }
             }
+        } finally {
+            relock.unlock();
         }
     }
 
@@ -95,18 +105,20 @@ public final class VirtualThreadPoolExecutors implements Executor {
                     try {
                         if (currentThread.isCore()) {
                             /*核心线程如果没有任务就采用等待50秒的方式去获取任务，然后执行*/
-                            runnable = queue.poll(50, TimeUnit.MILLISECONDS);
+                            runnable = queue.poll(20, TimeUnit.MILLISECONDS);
                         } else {
                             /*非核心线程*/
-                            if (shutdowning.get()/*如果是即将关闭状态，那么全力以赴处理*/ || queue.size() > threadActivationCount.get() * 20/*为了避免线程的频繁切换*/) {
-                                runnable = queue.poll(50, TimeUnit.MILLISECONDS);
+                            if (!currentThread.waiting.get()
+                                    && (shutdowning.get()/*如果是即将关闭状态，那么全力以赴处理*/ || queue.size() > threadActivationCount.get() * 20/*为了避免线程的频繁切换*/)) {
+                                runnable = queue.poll(20, TimeUnit.MILLISECONDS);
                             } else {
                                 /*避免cpu的频繁切换，暂停非核心线程*/
-                                synchronized (currentThread.waiting) {
+                                currentThread.getRelock().lock();
+                                try {
                                     threadActivationCount.decrementAndGet();
                                     currentThread.waiting.set(true);
-                                    currentThread.waiting.wait();
-                                }
+                                    Thread.sleep(20);
+                                } finally {currentThread.getRelock().unlock();}
                             }
                         }
                         if (runnable != null) {
@@ -117,8 +129,6 @@ public final class VirtualThreadPoolExecutors implements Executor {
                     }
                 } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
             }
-            shutdown.set(true);
-            terminate.set(true);
             log.info("线程 {} 退出", currentThread);
         }
     };
@@ -134,7 +144,6 @@ public final class VirtualThreadPoolExecutors implements Executor {
     public List<Runnable> terminate() {
         this.shutdowning.set(true);
         this.terminating.set(true);
-        notifyAllThread();
         while (!isTerminated()) {}
         List<Runnable> tasks = new ArrayList<>(queue);
         queue.clear();
@@ -147,13 +156,14 @@ public final class VirtualThreadPoolExecutors implements Executor {
         for (VirtualThread thread : coreThreads) {
             if (thread.getState() != Thread.State.TERMINATED) return false;
         }
+        shutdown.set(true);
+        terminate.set(true);
         return terminate.get();
     }
 
     /** 准备关闭，不再接受新的任务 ,并且会等待当前队列任务全部执行完成 */
     public void shutdown() {
         this.shutdowning.set(true);
-        notifyAllThread();
         while (!isTerminated()) {}
     }
 
@@ -162,17 +172,10 @@ public final class VirtualThreadPoolExecutors implements Executor {
         return this.shutdown.get();
     }
 
-    protected void notifyAllThread() {
-        for (VirtualThread coreThread : coreThreads) {
-            synchronized (coreThread.waiting) {
-                coreThread.waiting.notifyAll();
-            }
-        }
-    }
-
     @Getter
     public class VirtualThread implements Runnable {
 
+        protected final ReentrantLock relock = new ReentrantLock();
         protected final boolean core;
         protected final AtomicBoolean waiting = new AtomicBoolean();
         Thread _thread;

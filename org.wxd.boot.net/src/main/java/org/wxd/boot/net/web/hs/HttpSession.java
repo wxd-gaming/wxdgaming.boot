@@ -103,27 +103,32 @@ public class HttpSession extends Session implements Serializable {
      *
      * @param msg
      */
-    public synchronized void disConnect(String msg) {
-        if (isDisConnect()) return;
-        if (!responseOver.get()) response();
-        log.debug("firstReadTime:{} ms, lastReadTime:{} ms, ResTime:{} ms, OverTime:{} ms {}",
-                (firstReadTime - initTime),
-                (lastReadTime - initTime),
-                (resTime - initTime),
-                (MyClock.millis() - initTime),
-                this.toString()
-        );
-        super.disConnect(msg);
-        if (this.httpDecoder != null) {
-            try {
-                this.httpDecoder.cleanFiles();
-            } catch (Exception e) {}
-            try {
-                this.httpDecoder.destroy();
-            } catch (Exception e) {}
-            this.httpDecoder = null;
+    public void disConnect(String msg) {
+        relock.lock();
+        try {
+            if (isDisConnect()) return;
+            if (!responseOver.get()) response();
+            log.debug("firstReadTime:{} ms, lastReadTime:{} ms, ResTime:{} ms, OverTime:{} ms {}",
+                    (firstReadTime - initTime),
+                    (lastReadTime - initTime),
+                    (resTime - initTime),
+                    (MyClock.millis() - initTime),
+                    this.toString()
+            );
+            super.disConnect(msg);
+            if (this.httpDecoder != null) {
+                try {
+                    this.httpDecoder.cleanFiles();
+                } catch (Exception e) {}
+                try {
+                    this.httpDecoder.destroy();
+                } catch (Exception e) {}
+                this.httpDecoder = null;
+            }
+            releaseBuf();
+        } finally {
+            relock.unlock();
         }
-        releaseBuf();
     }
 
     /** HttpContentType.html 回复 http 请求 */

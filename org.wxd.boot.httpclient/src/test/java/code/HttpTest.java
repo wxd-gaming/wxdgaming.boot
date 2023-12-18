@@ -4,7 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.httpclient.url.HttpBuilder;
-import org.wxd.boot.threading.ExecutorVirtualServices;
+import org.wxd.boot.threading.ExecutorServices;
+import org.wxd.boot.threading.Executors;
 
 /**
  * 测试
@@ -69,7 +70,7 @@ public class HttpTest {
 
     @Test
     public void t4() throws Exception {
-        ExecutorVirtualServices services = ExecutorVirtualServices.newExecutorServices("t", 100, 100);
+        ExecutorServices services = Executors.newExecutorServices("t", 100, 100);
         for (int i = 0; i < 4000; i++) {
             services.submit(() -> {
                 HttpBuilder.postText("http://127.0.0.1:19000/sjcq/crossState")

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 对象池
@@ -16,6 +17,7 @@ import java.util.LinkedList;
 @Getter
 public class ObjectBox<E extends IObjectClear> implements Serializable {
 
+    private final ReentrantLock relock = new ReentrantLock();
     private final LinkedList<E> objectPoolBeans = new LinkedList<>();
     private volatile int initSize;
     /** 核心数量 */
@@ -41,7 +43,8 @@ public class ObjectBox<E extends IObjectClear> implements Serializable {
     }
 
     public void returnObject(E obj) {
-        synchronized (this) {
+        relock.lock();
+        try {
             if (obj.getClass() != beanClass) {
                 return;
             }
@@ -49,17 +52,22 @@ public class ObjectBox<E extends IObjectClear> implements Serializable {
             if (objectPoolBeans.size() < core) {
                 objectPoolBeans.add(obj);
             }
+        } finally {
+            relock.unlock();
         }
     }
 
     public E getObject(Class<E> clazz) {
-        synchronized (this) {
+        relock.lock();
+        try {
             check(clazz);
             E obj = objectPoolBeans.poll();
             if (obj != null) {
                 clearBean(obj);
             }
             return obj;
+        } finally {
+            relock.unlock();
         }
     }
 

@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 默认线程池
@@ -21,9 +22,7 @@ import java.util.concurrent.TimeUnit;
  **/
 public final class Executors implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-
+    static final ReentrantLock REENTRANT_LOCK = new ReentrantLock();
     /** 定时任务线程 */
     public static final TimerThread TIMER_THREAD = new TimerThread();
     /** 守护线程 */
@@ -38,27 +37,18 @@ public final class Executors implements Serializable {
     private static IExecutorServices defaultExecutor = null;
     /** 属于后台线程池，一旦收到停服新号，线程立马关闭了 */
     private static IExecutorServices logicExecutor = null;
-    private static ExecutorVirtualServices executorVirtualServices;
-
-    public static ExecutorVirtualServices executorVirtualServices() {
-        if (executorVirtualServices == null) {
-            synchronized (Executors.class) {
-                if (executorVirtualServices == null) {
-                    executorVirtualServices = ExecutorVirtualServices.newExecutorServices("fork-pool", 200);
-                }
-            }
-        }
-        return executorVirtualServices;
-    }
 
     public static IExecutorServices getDefaultExecutor() {
         if (defaultExecutor == null) {
-            synchronized (Executors.class) {
+            REENTRANT_LOCK.lock();
+            try {
                 if (defaultExecutor == null) {
                     Integer default_executor_core = JvmUtil.getProperty(JvmUtil.Default_Executor_Core_Size, 2, Integer::valueOf);
                     Integer default_executor_max = JvmUtil.getProperty(JvmUtil.Default_Executor_Max_Size, 4, Integer::valueOf);
-                    defaultExecutor = ExecutorServices.newExecutorServices("default-executor", default_executor_core, default_executor_max);
+                    defaultExecutor = newExecutorServices("default-executor", default_executor_core, default_executor_max);
                 }
+            } finally {
+                REENTRANT_LOCK.unlock();
             }
         }
         return defaultExecutor;
@@ -66,15 +56,161 @@ public final class Executors implements Serializable {
 
     public static IExecutorServices getLogicExecutor() {
         if (logicExecutor == null) {
-            synchronized (Executors.class) {
+            REENTRANT_LOCK.lock();
+            try {
                 if (logicExecutor == null) {
                     Integer executor_core = JvmUtil.getProperty(JvmUtil.Logic_Executor_Core_Size, 2, Integer::valueOf);
                     Integer executor_max = JvmUtil.getProperty(JvmUtil.Logic_Executor_Max_Size, 4, Integer::valueOf);
-                    logicExecutor = ExecutorServices.newExecutorServices("logic-executor", executor_core, executor_max);
+                    logicExecutor = newExecutorServices("logic-executor", executor_core, executor_max);
                 }
+            } finally {
+                REENTRANT_LOCK.unlock();
             }
         }
         return logicExecutor;
+    }
+
+    /**
+     * 默认队列最大长度2000,单线程
+     *
+     * @param name 线程池名称
+     * @return
+     */
+    public static ExecutorServices newExecutorServices(String name) {
+        return newExecutorServices(name, false);
+    }
+
+    public static ExecutorServices newExecutorServices(String name, boolean daemon) {
+        return newExecutorServices(name, daemon, 1, 1);
+    }
+
+    /**
+     * 默认队列最大长度 Integer.MAX_VALUE
+     *
+     * @param name     线程池名称
+     * @param coreSize 线程最大数量
+     * @return
+     */
+    public static ExecutorServices newExecutorServices(String name, int coreSize) {
+        return newExecutorServices(name, false, coreSize);
+    }
+
+    /**
+     * @param name     线程池名称
+     * @param coreSize 线程最大数量
+     * @return
+     */
+    public static ExecutorServices newExecutorServices(String name, boolean daemon, int coreSize) {
+        return newExecutorServices(name, daemon, coreSize, coreSize);
+    }
+
+    /**
+     * 线程池核心数量和最大数量相等，
+     *
+     * @param name     线程池名称
+     * @param coreSize 线程核心数量
+     * @param maxSize  线程最大数量
+     * @return
+     */
+    public static ExecutorServices newExecutorServices(String name, int coreSize, int maxSize) {
+        return newExecutorServices(name, false, coreSize, maxSize);
+    }
+
+    /**
+     * @param name     线程池名称
+     * @param daemon   守护线程状态
+     * @param coreSize 线程核心数量
+     * @param maxSize  线程最大数量
+     * @return
+     */
+    public static ExecutorServices newExecutorServices(String name, boolean daemon, int coreSize, int maxSize) {
+        return new ExecutorServices(name, daemon, coreSize, maxSize);
+    }
+
+
+    /**
+     * 虚拟线程池 默认队列最大长度2000,单线程
+     * <p>
+     * 禁止使用 synchronized 同步锁
+     *
+     * @param name 线程池名称
+     * @return
+     */
+    public static ExecutorVirtualServices newExecutorVirtualServices(String name) {
+        return newExecutorVirtualServices(name, 1);
+    }
+
+    /**
+     * 虚拟线程池核心数量和最大数量相等，
+     * <p>
+     * 禁止使用 synchronized 同步锁
+     *
+     * @param name     线程池名称
+     * @param coreSize 线程核心数量
+     * @return
+     */
+    public static ExecutorVirtualServices newExecutorVirtualServices(String name, int coreSize) {
+        return newExecutorVirtualServices(name, coreSize, coreSize);
+    }
+
+    /**
+     * 虚拟线程池
+     * <p>
+     * 禁止使用 synchronized 同步锁
+     *
+     * @param name     线程池名称
+     * @param coreSize 线程核心数量
+     * @param coreSize 线程最大数量
+     * @return
+     */
+    public static ExecutorVirtualServices newExecutorVirtualServices(String name, int coreSize, int maxSize) {
+        return new ExecutorVirtualServices(name, coreSize, maxSize);
+    }
+
+
+    /**
+     * 虚拟线程池 默认队列最大长度2000,单线程
+     * <p>
+     * 禁止使用 synchronized 同步锁
+     * <p>
+     * 直接线程池，每一个任务都会new Virtual Thread
+     *
+     * @param name 线程池名称
+     * @return
+     */
+    public static ExecutorVirtualServices2 newExecutorVirtualServices2(String name) {
+        return newExecutorVirtualServices2(name, 1);
+    }
+
+    /**
+     * 虚拟线程池核心数量和最大数量相等，
+     * <p>
+     * 禁止使用 synchronized 同步锁
+     * <p>
+     * 直接线程池，每一个任务都会new Virtual Thread
+     *
+     * @param name     线程池名称
+     * @param coreSize 线程核心数量
+     * @return
+     */
+    public static ExecutorVirtualServices2 newExecutorVirtualServices2(String name, int coreSize) {
+        return newExecutorVirtualServices2(name, coreSize, coreSize);
+    }
+
+    /**
+     * 虚拟线程池
+     * <p>
+     * 禁止使用 synchronized 同步锁
+     * <p>
+     * 直接线程池，每一个任务都会new Virtual Thread
+     *
+     * @param name     线程池名称
+     * @param coreSize 线程核心数量
+     * @param coreSize 线程最大数量
+     * @return
+     */
+    public static ExecutorVirtualServices2 newExecutorVirtualServices2(String name, int coreSize, int maxSize) {
+        return new ExecutorVirtualServices2(name, coreSize, maxSize);
     }
 
     /** 检测当前线程是否是同一线程 */
@@ -122,6 +258,8 @@ public final class Executors implements Serializable {
     }
 
     protected static class TimerThread extends Thread {
+
+        final ReentrantLock relock = new ReentrantLock();
         private LinkedList<TimerJob> timerJobs = new LinkedList<>();
 
         public TimerThread() {
@@ -131,8 +269,11 @@ public final class Executors implements Serializable {
         }
 
         public void add(TimerJob timerJob) {
-            synchronized (timerJobs) {
+            relock.lock();
+            try {
                 timerJobs.add(timerJob);
+            } finally {
+                relock.unlock();
             }
         }
 
@@ -142,7 +283,8 @@ public final class Executors implements Serializable {
                 try {
                     try {
                         tick.waitNext();
-                        synchronized (timerJobs) {
+                        relock.lock();
+                        try {
                             Iterator<TimerJob> iterator = timerJobs.iterator();
                             while (iterator.hasNext()) {
                                 TimerJob next = iterator.next();
@@ -161,6 +303,8 @@ public final class Executors implements Serializable {
                                     }
                                 }
                             }
+                        } finally {
+                            relock.unlock();
                         }
                     } catch (Throwable throwable) {
                         LoggerFactory.getLogger(this.getClass()).error("定时任务公共处理器", throwable);

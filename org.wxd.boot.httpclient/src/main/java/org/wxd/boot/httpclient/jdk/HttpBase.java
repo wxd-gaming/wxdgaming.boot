@@ -109,7 +109,7 @@ public abstract class HttpBase<H extends HttpBase> {
         return CompletableFuture.supplyAsync(() -> {
             this.request();
             return response;
-        }, Executors.executorVirtualServices());
+        });
     }
 
     public void asyncBySyncJson(Consumer<SyncJson> ok) {

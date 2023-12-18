@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 自定义线程池, 会缓存线程，避免频繁的生成线程
@@ -45,7 +46,7 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
     }
 
     public ThreadPoolExecutors(String name, boolean daemon, int coreSize, int maxSize) {
-        this(name, daemon, coreSize, maxSize, new ArrayBlockingQueue<>(Integer.MAX_VALUE));
+        this(name, daemon, coreSize, maxSize, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
     }
 
     public ThreadPoolExecutors(String name, boolean daemon, int coreSize, int maxSize, BlockingQueue<Runnable> queue) {
@@ -56,7 +57,7 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
         this.queue = queue;
     }
 
-    synchronized void checkThread() {
+    void checkThread() {
         if (threadActivationCount.get() >= maxSize) return;
         if (threadActivationCount.get() >= coreThreads.size() && coreThreads.size() < maxSize) {
             /*判定是否需要创建线程*/
@@ -77,11 +78,13 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
             if (queue.size() > threadActivationCount.get() * 20) {
                 for (WxThread coreThread : coreThreads) {
                     if (coreThread.waiting.get()) {
-                        synchronized (coreThread.waiting) {
+                        coreThread.getRelock().lock();
+                        try {
                             threadActivationCount.incrementAndGet();
                             coreThread.waiting.set(false);
-                            coreThread.waiting.notify();
                             break;
+                        } finally {
+                            coreThread.getRelock().unlock();
                         }
                     }
                 }
@@ -102,17 +105,21 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
                 try {
                     if (currentThread.isCore()) {
                         /*核心线程如果没有任务就采用等待50秒的方式去获取任务，然后执行*/
-                        runnable = queue.poll(50, TimeUnit.MILLISECONDS);
+                        runnable = queue.poll(20, TimeUnit.MILLISECONDS);
                     } else {
                         /*非核心线程*/
-                        if (shutdowning.get()/*如果是即将关闭状态，那么全力以赴处理*/ || queue.size() > threadActivationCount.get() * 20/*为了避免线程的频繁切换*/) {
-                            runnable = queue.poll();
+                        if (!currentThread.waiting.get()
+                                && (shutdowning.get()/*如果是即将关闭状态，那么全力以赴处理*/ || queue.size() > threadActivationCount.get() * 20/*为了避免线程的频繁切换*/)) {
+                            runnable = queue.poll(20, TimeUnit.MILLISECONDS);
                         } else {
                             /*避免cpu的频繁切换，暂停非核心线程*/
-                            synchronized (currentThread.waiting) {
+                            currentThread.getRelock().lock();
+                            try {
                                 threadActivationCount.decrementAndGet();
                                 currentThread.waiting.set(true);
-                                currentThread.waiting.wait();
+                                Thread.sleep(20);
+                            } finally {
+                                currentThread.getRelock().unlock();
                             }
                         }
                     }
@@ -124,8 +131,6 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
                 }
             } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
         }
-        shutdown.set(true);
-        terminate.set(true);
         log.info("线程 {} 退出", currentThread);
     }
 
@@ -140,7 +145,6 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
     public List<Runnable> terminate() {
         this.shutdowning.set(true);
         this.terminating.set(true);
-        notifyAllThread();
         while (!isTerminated()) {}
         List<Runnable> tasks = new ArrayList<>(queue);
         queue.clear();
@@ -153,13 +157,14 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
         for (Thread thread : coreThreads) {
             if (thread.getState() != Thread.State.TERMINATED) return false;
         }
+        shutdown.set(true);
+        terminate.set(true);
         return terminate.get();
     }
 
     /** 准备关闭，不再接受新的任务 ,并且会等待当前队列任务全部执行完成 */
     public void shutdown() {
         this.shutdowning.set(true);
-        notifyAllThread();
         while (!isTerminated()) {}
     }
 
@@ -168,16 +173,10 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
         return this.shutdown.get();
     }
 
-    protected void notifyAllThread() {
-        for (WxThread coreThread : coreThreads) {
-            synchronized (coreThread.waiting) {
-                coreThread.waiting.notifyAll();
-            }
-        }
-    }
-
     @Getter
     public static class WxThread extends Thread {
+
+        protected final ReentrantLock relock = new ReentrantLock();
 
         protected final boolean core;
         protected final AtomicBoolean waiting = new AtomicBoolean();
@@ -189,10 +188,7 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
         }
 
         @Override public String toString() {
-            return new StringBuilder()
-                    .append("Thread[").append(getName()).append(", ")
-                    .append(getPriority())
-                    .append(", core=").append(core).append("]").toString();
+            return "Thread[" + getName() + ", " + getPriority() + ", core=" + core + "]";
         }
     }
 

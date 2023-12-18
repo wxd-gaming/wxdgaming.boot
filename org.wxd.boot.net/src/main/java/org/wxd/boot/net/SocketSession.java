@@ -38,16 +38,21 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
     }
 
     @Override
-    public synchronized void disConnect(String msg) {
-        super.disConnect(msg);
-        if (readByteBuf != null) {
-            ByteBufUtil.release(readByteBuf);
+    public void disConnect(String msg) {
+        relock.lock();
+        try {
+            super.disConnect(msg);
+            if (readByteBuf != null) {
+                ByteBufUtil.release(readByteBuf);
+            }
+            readByteBuf = null;
+            if (tmpOthers != null) {
+                tmpOthers.clear();
+            }
+            tmpOthers = null;
+        } finally {
+            relock.unlock();
         }
-        readByteBuf = null;
-        if (tmpOthers != null) {
-            tmpOthers.clear();
-        }
-        tmpOthers = null;
     }
 
     /**

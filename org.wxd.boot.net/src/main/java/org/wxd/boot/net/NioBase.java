@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.cache.CachePack;
 import org.wxd.boot.net.handler.CmdService;
 
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 /**
@@ -19,6 +20,8 @@ import java.util.function.Predicate;
 @Setter
 @Accessors(chain = true)
 public abstract class NioBase implements CmdService {
+
+    protected final ReentrantLock relock = new ReentrantLock();
 
     protected String name;
     protected String host = null;

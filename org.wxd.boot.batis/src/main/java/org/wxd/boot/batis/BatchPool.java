@@ -9,7 +9,7 @@ import org.wxd.boot.collection.ConvertCollection;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.MarkTimer;
-import org.wxd.boot.threading.ExecutorServices;
+import org.wxd.boot.threading.Executors;
 import org.wxd.boot.threading.ICheckTimerRunnable;
 import org.wxd.boot.threading.IExecutorServices;
 
@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 批量操作
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BatchPool implements AutoCloseable {
 
     protected final DecimalFormat decimalFormat = new DecimalFormat("#0.0000");
+    protected final ReentrantLock relock = new ReentrantLock();
 
     /*总运行耗时*/
     protected volatile long allOperTimes = 0;
@@ -42,7 +44,6 @@ public abstract class BatchPool implements AutoCloseable {
     protected volatile int batchSize = 2000;
     protected volatile int cacheSize = 0;
     protected volatile int maxCacheSize = 30000;
-    protected final Object syncObject = new Object();
     protected volatile long showLogCd = 30 * 60 * 1000;
     protected volatile boolean runing = true;
     protected Batch_Work[] threads;
@@ -97,24 +98,28 @@ public abstract class BatchPool implements AutoCloseable {
 
     protected class Batch_Work implements ICheckTimerRunnable, AutoCloseable {
 
+        @Getter
         protected IExecutorServices executorServices;
 
+        @Getter
         protected volatile HashMap<String, ConvertCollection<DataBuilder>> taskQueue = new HashMap<>();
 
         public Batch_Work(String threadName, int i) {
-            executorServices = ExecutorServices.newExecutorServices(threadName + "-" + (i + 1), 1);
+            executorServices = Executors.newExecutorServices(threadName + "-" + (i + 1), 1);
             executorServices.scheduleAtFixedDelay(this, 200, 200, TimeUnit.MILLISECONDS);
         }
 
         public void replace(String tableName, DataBuilder obj) {
-            synchronized (BatchPool.this.syncObject) {
+            relock.lock();
+            try {
 
                 boolean add = taskQueue.computeIfAbsent(tableName, k -> new ConvertCollection<>(batchSize))
                         .add(obj);
                 if (add) {
                     BatchPool.this.cacheSize++;
                 }
-
+            } finally {
+                relock.unlock();
             }
             if (BatchPool.this.cacheSize > BatchPool.this.maxCacheSize) {
                 log.error("当前待处理的数据缓存超过：" + BatchPool.this.cacheSize + ", tableName = " + tableName, new RuntimeException("数据缓存"));
@@ -122,7 +127,8 @@ public abstract class BatchPool implements AutoCloseable {
         }
 
         protected Map.Entry<String, ConvertCollection<DataBuilder>> copy() {
-            synchronized (BatchPool.this.syncObject) {
+            relock.lock();
+            try {
                 Iterator<Map.Entry<String, ConvertCollection<DataBuilder>>> iterator = taskQueue.entrySet().iterator();
                 Map.Entry<String, ConvertCollection<DataBuilder>> next = null;
                 if (iterator.hasNext()) {
@@ -131,11 +137,9 @@ public abstract class BatchPool implements AutoCloseable {
                     BatchPool.this.cacheSize -= next.getValue().size();
                 }
                 return next;
+            } finally {
+                relock.unlock();
             }
-        }
-
-        public HashMap<String, ConvertCollection<DataBuilder>> getTaskQueue() {
-            return taskQueue;
         }
 
         @Override
@@ -186,7 +190,8 @@ public abstract class BatchPool implements AutoCloseable {
                 float dqjunzhi = (execTime / i);
                 float dqsecjunzhi = 1000 / dqjunzhi;
 
-                synchronized (BatchPool.this) {
+                relock.lock();
+                try {
                     if (Long.MAX_VALUE - allOperTimes < execTime) {
                         /*=统计超过最大值做清理操作*/
                         allOperTimes = 0;
@@ -195,7 +200,10 @@ public abstract class BatchPool implements AutoCloseable {
 
                     allOperTimes += execTime;
                     allOperSize += i;
+                } finally {
+                    relock.unlock();
                 }
+
                 float junzhi = (allOperTimes * 1f / allOperSize);
                 float secjunzhi = 1000 / junzhi;
                 if (!isRuning()
