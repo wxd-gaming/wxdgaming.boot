@@ -7,21 +7,16 @@ import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.lang.RunResult;
 import org.wxd.boot.net.SocketSession;
-import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.TextMappingRecord;
 import org.wxd.boot.net.controller.cmd.ITokenCache;
 import org.wxd.boot.net.controller.cmd.Sign;
 import org.wxd.boot.net.controller.cmd.SignCheck;
-import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.GlobalUtil;
-import org.wxd.boot.threading.Async;
 import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.threading.ExecutorLog;
-import org.wxd.boot.threading.QueueRunnable;
 
 import java.lang.reflect.Type;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -31,8 +26,9 @@ import java.util.function.Consumer;
  * @version: 2023-12-19 15:38
  **/
 @Slf4j
-class CmdListenerAction extends EventRunnable implements QueueRunnable {
+class CmdListenerAction extends EventRunnable {
 
+    private final TextMappingRecord mappingRecord;
     private final ITokenCache tokenCache;
     private final SocketSession session;
     private final String listener;
@@ -40,7 +36,9 @@ class CmdListenerAction extends EventRunnable implements QueueRunnable {
     private final StreamWriter out;
     private final Consumer<Boolean> callBack;
 
-    public CmdListenerAction(ITokenCache tokenCache, SocketSession session, String listener, ObjMap putData, StreamWriter out, Consumer<Boolean> callBack) {
+    public CmdListenerAction(TextMappingRecord mappingRecord, ITokenCache tokenCache, SocketSession session, String listener, ObjMap putData, StreamWriter out, Consumer<Boolean> callBack) {
+        super(mappingRecord.method());
+        this.mappingRecord = mappingRecord;
         this.tokenCache = tokenCache;
         this.session = session;
         this.listener = listener;
@@ -49,64 +47,11 @@ class CmdListenerAction extends EventRunnable implements QueueRunnable {
         this.callBack = callBack;
     }
 
-    @Override public long getLogTime() {
-        return Optional.ofNullable(listener)
-                .map(v -> MappingFactory.textMappingRecord(tokenCache.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
-                .map(ExecutorLog::logTime)
-                .orElse(33);
-    }
-
-    @Override public long getWarningTime() {
-        return Optional.ofNullable(listener)
-                .map(v -> MappingFactory.textMappingRecord(tokenCache.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
-                .map(ExecutorLog::warningTime)
-                .orElse(33);
-    }
-
-    @Override public boolean vt() {
-        return Optional.ofNullable(listener)
-                .map(v -> MappingFactory.textMappingRecord(tokenCache.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), Async.class))
-                .map(Async::vt)
-                .orElse(false);
-    }
-
-    @Override public String threadName() {
-        return Optional.ofNullable(listener)
-                .map(v -> MappingFactory.textMappingRecord(tokenCache.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), Async.class))
-                .map(Async::threadName)
-                .orElse("");
-    }
-
-    @Override public String queueName() {
-        return Optional.ofNullable(listener)
-                .map(v -> MappingFactory.textMappingRecord(tokenCache.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), Async.class))
-                .map(Async::queueName)
-                .orElse("");
-    }
-
     @Override public String getTaskInfoString() {
         return session.getIp() + listener;
     }
 
-    @Override public void run() {
-        if (StringUtil.emptyOrNull(listener)) {
-            out.write("命令参数 cmd , 未找到");
-            callBack.accept(true);
-            return;
-        }
-
-        final String methodNameLowerCase = listener.toLowerCase().trim();
-        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(tokenCache.getName(), methodNameLowerCase);
-        if (mappingRecord == null) {
-            out.write(RunResult.error(999, " 软件：無心道  \n not found url " + methodNameLowerCase));
-            callBack.accept(true);
-            return;
-        }
+    @Override public void onEvent() {
 
         Sign sign;
         if (mappingRecord.instance() instanceof Sign) {
@@ -122,7 +67,7 @@ class CmdListenerAction extends EventRunnable implements QueueRunnable {
         }
 
         try {
-            if (methodNameLowerCase.endsWith("sign")) {
+            if (mappingRecord.path().endsWith("/sign")) {
                 RunResult signResult = sign.sign(tokenCache, session, putData);
                 out.write(signResult.toString());
             } else if (signCheck == null || signCheck.checkSign(out, tokenCache, mappingRecord.method(), session, putData)) {

@@ -25,7 +25,6 @@ import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.threading.Async;
 import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.threading.ExecutorLog;
-import org.wxd.boot.threading.QueueRunnable;
 import org.wxd.boot.timer.MyClock;
 
 import java.io.File;
@@ -43,7 +42,7 @@ import java.util.Optional;
  * @version: 2023-12-18 19:38
  **/
 @Slf4j
-class HttpListenerAction extends EventRunnable implements QueueRunnable {
+class HttpListenerAction extends EventRunnable {
 
     protected HttpServer httpServer;
     protected HttpSession session;
@@ -58,7 +57,7 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
                 .map(ExecutorLog::logTime)
-                .orElse(33);
+                .orElse(super.getLogTime());
     }
 
     @Override public long getWarningTime() {
@@ -66,10 +65,10 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
                 .map(ExecutorLog::warningTime)
-                .orElse(33);
+                .orElse(super.getWarningTime());
     }
 
-    @Override public boolean vt() {
+    @Override public boolean isVt() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), Async.class))
@@ -77,7 +76,7 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
                 .orElse(false);
     }
 
-    @Override public String threadName() {
+    @Override public String getThreadName() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), Async.class))
@@ -85,7 +84,7 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
                 .orElse("");
     }
 
-    @Override public String queueName() {
+    @Override public String getQueueName() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), Async.class))
@@ -97,7 +96,7 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
         return session.getDomainName() + session.getUriPath();
     }
 
-    @Override public void run() {
+    @Override public void onEvent() {
         try {
             final HttpMethod reqMethod = session.getRequest().method();
             final String urlCmd = session.getUriPath();

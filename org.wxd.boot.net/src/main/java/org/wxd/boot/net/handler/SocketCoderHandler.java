@@ -8,10 +8,12 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.MessageController;
 import org.wxd.boot.net.controller.ProtoMappingRecord;
+import org.wxd.boot.net.controller.TextMappingRecord;
 import org.wxd.boot.net.controller.cmd.ITokenCache;
 import org.wxd.boot.net.message.MessagePackage;
 import org.wxd.boot.net.message.Rpc;
@@ -145,9 +147,26 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                         session.rpcResponse(rpcId, "OK!");
                     }
                     default -> {
+                        if (StringUtil.emptyOrNull(cmd)) {
+                            log.info("{} 命令参数 cmd , 未找到", session.getChannelContext());
+                            if (rpcId > 0) {
+                                session.rpcResponse(rpcId, SyncJson.error("命令参数 cmd , 未找到").toJson());
+                            }
+                            return;
+                        }
+
+                        final String methodNameLowerCase = cmd.toLowerCase().trim();
+                        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(tokenCache.getName(), methodNameLowerCase);
+                        if (mappingRecord == null) {
+                            log.info("{} not found url {}", session.getChannelContext(), cmd);
+                            if (rpcId > 0) {
+                                session.rpcResponse(rpcId, SyncJson.error("not found url " + cmd).toJson());
+                            }
+                            return;
+                        }
                         final MarkTimer markTimer = MarkTimer.build();
                         final StreamWriter outAppend = new StreamWriter(1024);
-                        CmdListenerAction listenerAction = new CmdListenerAction(tokenCache, session, cmd, putData, outAppend, (showLog) -> {
+                        CmdListenerAction listenerAction = new CmdListenerAction(mappingRecord, tokenCache, session, cmd, putData, outAppend, (showLog) -> {
                             if (showLog) {
                                 log.info("\n执行：" + this.toString()
                                         + "\n" + markTimer.execTime2String() +
@@ -159,15 +178,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                                 session.rpcResponse(rpcId, outAppend.toString());
                             }
                         });
-                        IExecutorServices executor;
-                        if (StringUtil.notEmptyOrNull(listenerAction.threadName())) {
-                            executor = Executors.All_THREAD_LOCAL.get(listenerAction.threadName());
-                        } else if (listenerAction.vt()) {
-                            executor = Executors.getVTExecutor();
-                        } else {
-                            executor = Executors.getLogicExecutor();
-                        }
-                        executor.submit(listenerAction.queueName(), listenerAction);
+                        listenerAction.submit();
                     }
                 }
                 return;

@@ -157,7 +157,7 @@ public abstract class BatchPool implements AutoCloseable {
             }
         }
 
-        @Override public void run() {
+        @Override public void onEvent() {
             final Thread currentThread = Thread.currentThread();
             Map.Entry<String, ConvertCollection<DataBuilder>> copy = copy();
             if (copy == null) {

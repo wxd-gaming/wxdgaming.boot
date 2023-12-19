@@ -8,7 +8,7 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
-import org.wxd.boot.threading.*;
+import org.wxd.boot.threading.EventRunnable;
 import org.wxd.boot.timer.ann.Scheduled;
 
 import java.lang.reflect.Method;
@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * cron 表达式时间触发器
@@ -34,13 +33,6 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
     private int index;
     private Object instance = null;
     private Method method = null;
-    private boolean async = false;
-    private int logTime = 33;
-    private int waringTime = 500;
-    /** 虚拟线程 */
-    private AtomicBoolean vt = new AtomicBoolean();
-    private AtomicReference<String> threadName = new AtomicReference<>();
-    private AtomicReference<String> queueName = new AtomicReference<>();
     /** 和method是互斥的 */
     private Runnable scheduledTask;
     private TreeSet<Integer> secondSet = new TreeSet<>();
@@ -59,7 +51,7 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
     protected long startExecTime;
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
-        super();
+        super(method);
         this.instance = instance;
         this.method = method;
         if (StringUtil.notEmptyOrNull(scheduled.name())) {
@@ -71,25 +63,11 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
         final Sort sortAnn = AnnUtil.ann(method, Sort.class);
         this.index = sortAnn == null ? 999999 : sortAnn.value();
         this.scheduleAtFixedRate = scheduled.scheduleAtFixedRate();
-        this.async = AsyncImpl.asyncAction(vt, threadName, queueName, method);
-        ExecutorLog executorLog = AnnUtil.ann(Method.class, ExecutorLog.class);
-        if (executorLog != null) {
-            logTime = executorLog.logTime();
-            waringTime = executorLog.warningTime();
-        }
         action(scheduled.value());
     }
 
     @Override public String getTaskInfoString() {
         return name;
-    }
-
-    @Override public long getLogTime() {
-        return super.getLogTime();
-    }
-
-    @Override public long getWarningTime() {
-        return super.getWarningTime();
     }
 
     /**
@@ -337,23 +315,14 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
         /*标记为正在执行*/
         runEnd.set(false);
 
-        if (this.async) {
+        if (this.isAsync()) {
             /*异步执行*/
-            IExecutorServices services;
-            if (StringUtil.notEmptyOrNull(this.threadName.get())) {
-                services = Executors.All_THREAD_LOCAL.get(this.threadName.get());
-            } else if (this.getVt().get()) {
-                services = Executors.getVTExecutor();
-            } else {
-                services = Executors.getDefaultExecutor();
-            }
-            services.submit(this.queueName.get(), this);
+            this.submit();
         } else {
             /*同步执行*/
             startExecTime = System.nanoTime();
             this.run();
             float v = (System.nanoTime() - startExecTime) / 10000 / 100f;
-            long logTime = 30;
             if (v > logTime) {
                 String msg = "执行：" + name + ", 耗时：" + v + " ms";
                 log.info(msg);
@@ -361,7 +330,7 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
         }
     }
 
-    @Override public void run() {
+    @Override public void onEvent() {
         try {
             if (method != null) {
                 method.invoke(instance);

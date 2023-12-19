@@ -30,8 +30,6 @@ import org.wxd.boot.net.handler.SocketChannelHandler;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.BytesUnit;
 import org.wxd.boot.system.JvmUtil;
-import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.IExecutorServices;
 import org.wxd.boot.timer.MyClock;
 
 import javax.net.ssl.SSLContext;
@@ -184,16 +182,8 @@ public class HttpServer extends NioServer<HttpSession> {
                 if (reqMethod.equals(HttpMethod.POST)) {
                     session.actionPostData();
                 }
-                HttpListenerAction eventRunnable = new HttpListenerAction(HttpServer.this, session);
-                IExecutorServices executor;
-                if (StringUtil.notEmptyOrNull(eventRunnable.threadName())) {
-                    executor = Executors.All_THREAD_LOCAL.get(eventRunnable.threadName());
-                } else if (eventRunnable.vt()) {
-                    executor = Executors.getVTExecutor();
-                } else {
-                    executor = Executors.getLogicExecutor();
-                }
-                executor.submit(eventRunnable.queueName(), eventRunnable);
+                new HttpListenerAction(HttpServer.this, session)
+                        .submit();
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
                 response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));

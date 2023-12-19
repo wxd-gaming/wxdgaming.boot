@@ -52,8 +52,8 @@ public interface IExecutorServices extends Executor {
     /** 普通任务 */
     @Override default void execute(Runnable runnable) {
         String queueName = null;
-        if (runnable instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) runnable).queueName();
+        if (runnable instanceof EventRunnable eventRunnable) {
+            queueName = eventRunnable.getQueueName();
         }
         submit(queueName, runnable, 3);
     }
@@ -61,8 +61,8 @@ public interface IExecutorServices extends Executor {
     /** 普通任务 */
     default Job submit(Runnable runnable) {
         String queueName = null;
-        if (runnable instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) runnable).queueName();
+        if (runnable instanceof EventRunnable eventRunnable) {
+            queueName = eventRunnable.getQueueName();
         }
         return submit(queueName, runnable, 3);
     }
@@ -185,8 +185,8 @@ public interface IExecutorServices extends Executor {
     /** 执行一次的延时任务 */
     default TimerJob schedule(Runnable command, long delay, TimeUnit unit, int stackTrace) {
         String queueName = null;
-        if (command instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) command).queueName();
+        if (command instanceof EventRunnable eventRunnable) {
+            queueName = eventRunnable.getQueueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, stackTrace);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, delay, delay, unit, 1);
@@ -205,8 +205,8 @@ public interface IExecutorServices extends Executor {
     /** 定时运行可取消的周期性任务 上一次没有执行，不会执行第二次，等待上一次执行完成 */
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
         String queueName = null;
-        if (command instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) command).queueName();
+        if (command instanceof EventRunnable eventRunnable) {
+            queueName = eventRunnable.getQueueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, 2);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, initialDelay, delay, unit, -1);
@@ -221,8 +221,8 @@ public interface IExecutorServices extends Executor {
 
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit, int execCount, int stackTrace) {
         String queueName = null;
-        if (command instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) command).queueName();
+        if (command instanceof EventRunnable eventRunnable) {
+            queueName = eventRunnable.getQueueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, stackTrace);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, initialDelay, delay, unit, execCount);

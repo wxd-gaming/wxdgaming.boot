@@ -35,7 +35,7 @@ public class CachePack<K, V> implements Serializable {
     static {
         Runnable command = new EventRunnable("缓存定时处理", 2000, 20000) {
 
-            @Override public void run() {
+            @Override public void onEvent() {
                 long currentTimeMillis = System.currentTimeMillis();
                 Iterator<CachePack> cachePackIterator = CACHE_PACKS.iterator();
 

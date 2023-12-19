@@ -78,7 +78,7 @@ public class FeishuPack extends EventRunnable {
         }
     }
 
-    @Override public void run() {
+    @Override public void onEvent() {
         TreeMap<String, TreeMap<String, SplitCollection<String>>> tmpCache;
         relock.lock();
         try {

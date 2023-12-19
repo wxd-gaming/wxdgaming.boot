@@ -49,7 +49,7 @@ public class TimerJobPool extends EventRunnable {
 
     int curSecond = -1;
 
-    @Override public void run() {
+    @Override public void onEvent() {
         int second = MyClock.getSecond();
         if (curSecond == second) {
             return;

@@ -11,6 +11,7 @@ import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.MarkTimer;
+import org.wxd.boot.threading.Executors;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -88,7 +89,7 @@ public class RpcEvent {
         return CompletableFuture.supplyAsync(() -> {
             this.get();
             return RpcEvent.this;
-        });
+        }, Executors.getVTExecutor());
     }
 
     /** 成功才会回调，有异常不会回调 */

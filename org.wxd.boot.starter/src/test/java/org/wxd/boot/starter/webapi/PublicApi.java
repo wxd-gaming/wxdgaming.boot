@@ -6,9 +6,8 @@ import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.threading.Async;
-import org.wxd.boot.threading.EventRunnable;
-import org.wxd.boot.threading.ExecutorVirtualServices;
-import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.ExecutorLog;
+import org.wxd.boot.timer.ann.Scheduled;
 
 /**
  * 公共
@@ -19,8 +18,6 @@ import org.wxd.boot.threading.Executors;
 @TextController
 public class PublicApi {
 
-    final ExecutorVirtualServices login_services = Executors.newExecutorVirtualServices("login", 200);
-
     @TextMapping(remarks = "公共接口")
     public String index(HttpSession httpSession, ObjMap objMap) {
         return "holle";
@@ -29,19 +26,8 @@ public class PublicApi {
     @TextMapping(remarks = "test")
     public void test0(HttpSession httpSession, ObjMap objMap) throws Exception {
         httpSession.responseOver();
-        login_services.submit(new EventRunnable(httpSession.getUriPath(), 150, 400) {
-            @Override public void run() {
-                // int random = RandomUtils.random(6);
-                // try {
-                //     Thread.sleep(random);
-                // } catch (InterruptedException e) {
-                //     throw new RuntimeException(e);
-                // }
-                httpSession.getResponseContent().write("test");
-                httpSession.response();
-            }
-        });
-
+        httpSession.getResponseContent().write("test");
+        httpSession.response();
     }
 
     @TextMapping(remarks = "test")
@@ -64,6 +50,12 @@ public class PublicApi {
         int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";
+    }
+
+    @Async(vt = true)
+    @Scheduled
+    @ExecutorLog(logTime = 33)
+    public void s1() throws Exception {
     }
 
 }

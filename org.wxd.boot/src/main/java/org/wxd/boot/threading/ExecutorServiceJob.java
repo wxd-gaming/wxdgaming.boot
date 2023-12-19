@@ -46,7 +46,7 @@ class ExecutorServiceJob implements Runnable, Job {
         if (task instanceof EventRunnable eventRunnable) {
             warningTime = eventRunnable.getWarningTime();
         }
-        float procc = (System.nanoTime() - startExecTime) / 10000 / 100f;
+        long procc = (System.nanoTime() - startExecTime) / 10000 / 100;
         if (procc > warningTime && procc < 864000000L) {
             /*小于10天//因为多线程操作时间可能不准确*/
             /*如果线程卡住，锁住，暂停，*/

@@ -17,9 +17,9 @@ public @interface ExecutorLog {
     boolean showLog() default false;
 
     /** 执行日志记录时间 */
-    int logTime() default 33;
+    long logTime() default 33;
 
     /** 执行报警时间 */
-    int warningTime() default 1000;
+    long warningTime() default 1000;
 
 }
