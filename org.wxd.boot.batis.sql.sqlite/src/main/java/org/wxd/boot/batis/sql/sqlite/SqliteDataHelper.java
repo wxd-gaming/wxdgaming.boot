@@ -9,6 +9,8 @@ import org.wxd.boot.batis.sql.SqlDataHelper;
 import org.wxd.boot.batis.sql.SqlDataWrapper;
 import org.wxd.boot.batis.sql.SqlEntityTable;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -23,6 +25,7 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
     private static final String ifexitstable = "select sum(1) `TABLE_NAME` from sqlite_master where type ='table' and `name`= ? ;";
 
     private boolean startEnd = false;
+    private Connection connection;
 
     protected SqliteDataHelper() {
     }
@@ -54,6 +57,17 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
         if (dbConfig.getBatchSizeThread() > 0) {
             initBatchPool(dbConfig.getBatchSizeThread());
         }
+        log.info("{} 启动 Sqlite host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
+    }
+
+    @Override public void close() {
+        super.close();
+        try {
+            this.connection.close();
+        } catch (SQLException e) {
+            log.error("关闭", e);
+        }
+        log.info("{} 关闭 Sqlite host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
 
     @Override
@@ -71,6 +85,17 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
     @Override
     public String getConnectionString(String dbFilePath) {
         return String.format("jdbc:sqlite:%s", dbFilePath);
+    }
+
+    @Override public Connection getConnection() {
+        // if (connection == null) {
+        //     connection = super.getConnection();
+        // }
+        return super.getConnection();
+    }
+
+    @Override public Connection getConnection(String dbnameString) {
+        return super.getConnection(dbnameString);
     }
 
     @Override

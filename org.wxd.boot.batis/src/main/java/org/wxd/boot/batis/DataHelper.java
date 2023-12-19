@@ -14,7 +14,7 @@ public abstract class DataHelper<DM extends EntityTable, DW extends DataWrapper<
      */
     public static String DAOCHARACTER = "utf8mb4";
 
-    DbConfig dbConfig = null;
+    protected DbConfig dbConfig = null;
     protected DW dataWrapper;
 
     protected DataHelper() {

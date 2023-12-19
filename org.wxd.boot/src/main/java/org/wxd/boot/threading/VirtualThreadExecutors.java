@@ -89,7 +89,7 @@ public final class VirtualThreadExecutors implements Executor {
                 } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
             };
             threadActivationCount.incrementAndGet();
-            ofVirtual.start(threadRun);
+            Thread start = ofVirtual.start(threadRun);
         }
     }
 

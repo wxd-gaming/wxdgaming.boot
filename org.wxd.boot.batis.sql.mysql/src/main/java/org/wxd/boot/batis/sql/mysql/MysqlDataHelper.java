@@ -1,5 +1,6 @@
 package org.wxd.boot.batis.sql.mysql;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.batis.DataHelper;
 import org.wxd.boot.batis.DbConfig;
@@ -16,13 +17,11 @@ import java.sql.Connection;
  * @version: 2020-12-30 20:33
  */
 @Slf4j
+@Getter
 public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapper<SqlEntityTable>> {
 
     private DbSource dbSource = null;
-
-    /**
-     * 初始化完成
-     */
+    /** 初始化完成 */
     private boolean initOver = false;
 
     protected MysqlDataHelper() {
@@ -77,14 +76,6 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         log.info("{} 启动 mysql host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
 
-    public DbSource getDruidDataSource() {
-        return dbSource;
-    }
-
-    public boolean isInitOver() {
-        return initOver;
-    }
-
     @Override
     public MysqlDataHelper initBatchPool(int batchThreadSize) {
         super.initBatchPool(batchThreadSize);
@@ -123,12 +114,13 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
     @Override
     public void close() {
         super.close();
-        if (this.getDruidDataSource() != null) {
+        if (this.getDbSource() != null) {
             try {
-                this.getDruidDataSource().close();
+                this.getDbSource().close();
             } catch (Throwable throwable) {
             }
         }
+        log.info("{} 关闭 mysql host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
 
     /**

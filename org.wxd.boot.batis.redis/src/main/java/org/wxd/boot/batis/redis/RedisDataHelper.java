@@ -1,6 +1,7 @@
 package org.wxd.boot.batis.redis;
 
 import com.alibaba.fastjson.TypeReference;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.ConsumerE1;
@@ -35,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version: 2020-12-30 20:33
  */
 @Slf4j
+@Getter
 public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityTable>>
         implements RedisSet, RedisGet, RedisDel, RedisIncr, RedisSort, RedisExist {
 
@@ -82,13 +84,10 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
         );
     }
 
-    public JedisPoolConfig getJedisPoolConfig() {
-        return jedisPoolConfig;
-    }
-
     @Override
     public void close() {
         jedisPool.close();
+        log.info("{} 关闭 redis db host={} serviceName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName());
     }
 
     /**

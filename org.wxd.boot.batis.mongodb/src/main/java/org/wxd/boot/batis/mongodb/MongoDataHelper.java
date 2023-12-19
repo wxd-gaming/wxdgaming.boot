@@ -12,8 +12,9 @@ import com.mongodb.client.model.BulkWriteOptions;
 import com.mongodb.client.model.ReplaceOneModel;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.UpdateResult;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileUtil;
@@ -37,10 +38,11 @@ import java.util.logging.Level;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
+@Slf4j
+@Getter
 public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapper>
         implements MongoTable, MongoSelect, MongoDel {
 
-    private static final Logger log = LoggerFactory.getLogger(MongoDataHelper.class);
 
     /**
      * 表示 存在相同key就是替换更新，不存在就插入 upsert = true;
@@ -50,31 +52,6 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
      * 表示无序队列，批量操作，如果有一个异常可以持续落地其他数据
      */
     public static final BulkWriteOptions Bulk_Write_Options = new BulkWriteOptions().ordered(false);
-
-    static {
-        offLog();
-    }
-
-    /**
-     * 关闭驱动日志打印
-     * <p>
-     * driver判断了如果log4j存在就用log4j的配置，否则用Java自带的日志
-     * <p>
-     * 关闭系统日志 JULLogger
-     */
-    public static void offLog() {
-        java.util.logging.Logger.getLogger("org.mongodb.driver")
-                .setLevel(Level.OFF);
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.mongodb.driver"))
-                .setLevel(ch.qos.logback.classic.Level.OFF);
-    }
-
-    public static void openLog() {
-        java.util.logging.Logger.getLogger("org.mongodb.driver")
-                .setLevel(Level.ALL);
-        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.mongodb.driver"))
-                .setLevel(ch.qos.logback.classic.Level.DEBUG);
-    }
 
     private MongoClient mongoClient;
 
@@ -155,18 +132,6 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
             log.error("已经初始化了 db Batch Pool", new RuntimeException());
         }
         return this;
-    }
-
-    public MongoClient getMongoClient() {
-        return mongoClient;
-    }
-
-    public MongoDatabase getMongoDatabase() {
-        return mongoDatabase;
-    }
-
-    public MongoBatchPool getBatchPool() {
-        return batchPool;
     }
 
     public void close() {

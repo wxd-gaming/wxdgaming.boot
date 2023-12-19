@@ -62,6 +62,7 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
      * @param msg
      */
     public void rpcResponse(long rpcId, String msg) {
+        if (rpcId == 0) return;
         Rpc.ResRemote.Builder builder = Rpc.ResRemote.newBuilder();
         builder.setRpcId(rpcId);
         if (msg.length() > 1024) {

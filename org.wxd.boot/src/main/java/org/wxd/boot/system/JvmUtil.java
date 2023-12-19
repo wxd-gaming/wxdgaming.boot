@@ -106,6 +106,14 @@ public class JvmUtil {
         setProperty("javax.net.ssl.sessionCacheSize", "2");
 
         initProcessID();
+
+
+        // 虚拟线程池的默认值
+        int parallelism, maxPoolSize, minRunnable;
+        String parallelismValue = System.getProperty("jdk.virtualThreadScheduler.parallelism");
+        String maxPoolSizeValue = System.getProperty("jdk.virtualThreadScheduler.maxPoolSize");
+        String minRunnableValue = System.getProperty("jdk.virtualThreadScheduler.minRunnable");
+
     }
 
     public static <R> R getProperty(String key, R defaultValue, Function<String, R> convert) {

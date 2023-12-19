@@ -64,6 +64,7 @@
 
     <logger name="io.netty" level="info" additivity="false"/>
     <logger name="com.zaxxer.hikari" level="info" additivity="false"/>
+    <logger name="org.mongodb.driver" level="info" additivity="false"/>
 
     <!-- 生产环境下，将此级别配置为适合的级别，以免日志文件太多或影响程序性能 -->
     <root level="INFO"> <!-- ERROR, WARN, INFO, DEBUG -->

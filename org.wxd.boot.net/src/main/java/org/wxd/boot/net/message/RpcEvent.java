@@ -13,10 +13,8 @@ import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.MarkTimer;
 import org.wxd.boot.threading.Executors;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -27,7 +25,6 @@ import java.util.function.Consumer;
  **/
 @Slf4j
 @Getter
-@Setter
 @Accessors(chain = true)
 public class RpcEvent {
 
@@ -41,10 +38,10 @@ public class RpcEvent {
     public static long WaiteMill = 3000;
     public static AtomicLong idFormat = new AtomicLong();
 
-    protected final ReentrantLock relock = new ReentrantLock();
+    protected final BlockingQueue<Boolean> queue = new LinkedBlockingQueue<>(1);
     protected MarkTimer markTime;
     protected final SocketSession session;
-    protected final long rpcId;
+    protected long rpcId;
     protected final String cmd;
     protected final String reqJson;
     protected boolean sendEnd;
@@ -53,32 +50,26 @@ public class RpcEvent {
     protected StackTraceElement[] threadStackTrace = null;
 
     public RpcEvent(SocketSession session, String cmd, String reqJson) {
-        this.rpcId = idFormat.incrementAndGet();
         this.session = session;
         this.cmd = cmd;
         this.reqJson = reqJson;
+
     }
 
     /** 发送出去，不管了 */
     public void send() {
-        relock.lock();
-        try {
-            if (sendEnd) return;
-            Rpc.ReqRemote.Builder builder = Rpc.ReqRemote.newBuilder();
-            builder.setRpcId(rpcId);
-            builder.setCmd(cmd);
-            if (reqJson.length() > 1024) {
-                builder.setGzip(1);
-                builder.setParams(GzipUtil.gzip2String(reqJson));
-            } else {
-                builder.setParams(reqJson);
-            }
-            RPC_REQUEST_CACHE_PACK.addCache(this.getRpcId(), this);
-            session.writeFlush(builder.build());
-            sendEnd = true;
-        } finally {
-            relock.unlock();
+        if (sendEnd) return;
+        Rpc.ReqRemote.Builder builder = Rpc.ReqRemote.newBuilder();
+        builder.setRpcId(rpcId);
+        builder.setCmd(cmd);
+        if (reqJson.length() > 1024) {
+            builder.setGzip(1);
+            builder.setParams(GzipUtil.gzip2String(reqJson));
+        } else {
+            builder.setParams(reqJson);
         }
+        session.writeFlush(builder.build());
+        sendEnd = true;
     }
 
     /** 构建异步处理 */
@@ -187,45 +178,37 @@ public class RpcEvent {
 
     /** 同步请求，等待结果 */
     public String get(long timeoutMillis) {
-        relock.lock();
-        try {
-            if (!res) {
-                send();
-                try {
-                    if (timeoutMillis > 0) this.wait(timeoutMillis);
-                    else this.wait();
-                } catch (InterruptedException e) {
-                    throw Throw.as(e);
-                }
-                if (StringUtil.emptyOrNull(this.resJson)) {
-                    throw new RuntimeException("get time out");
-                }
+        if (!res) {
+            this.rpcId = idFormat.incrementAndGet();
+            RPC_REQUEST_CACHE_PACK.addCache(this.getRpcId(), this);
+            send();
+            Boolean poll = null;
+            try {
+                if (timeoutMillis > 0) {
+                    poll = this.queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
+                } else poll = this.queue.take();
+            } catch (InterruptedException e) {
+                throw Throw.as(e);
             }
-        } finally {
-            relock.unlock();
+            if (StringUtil.emptyOrNull(this.resJson)) {
+                throw new RuntimeException("get time out");
+            }
         }
         return resJson;
     }
 
     /** 回调回来 */
     public void response(String resJson) {
-        relock.lock();
-        try {
-            this.res = true;
-            this.resJson = resJson;
-            this.notifyAll();
-        } finally {
-            relock.unlock();
-        }
+        this.res = true;
+        this.resJson = resJson;
+        this.queue.add(true);
     }
 
     @Override public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(this.getClass().getSimpleName()).append("{");
-        sb.append("rpcId=").append(rpcId);
-        sb.append(", cmd='").append(cmd).append('\'');
-        sb.append(", reqJson='").append(reqJson).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return this.getClass().getSimpleName() + "{"
+                + "rpcId=" + rpcId + ", "
+                + "cmd=" + cmd + ", "
+                + "reqJson=" + reqJson
+                + '}';
     }
 }

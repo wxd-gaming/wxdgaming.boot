@@ -2,7 +2,9 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.wxd.boot.httpclient.url.Get;
 import org.wxd.boot.httpclient.url.HttpBuilder;
+import org.wxd.boot.httpclient.url.Response;
 import org.wxd.boot.lang.RandomUtils;
 import org.wxd.boot.threading.ExecutorVirtualServices;
 import org.wxd.boot.threading.Executors;
@@ -10,6 +12,7 @@ import org.wxd.boot.threading.VirtualThreadExecutors;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 /**
  * 测试虚拟锁
@@ -78,6 +81,16 @@ public class VTThreadTest {
         // virtualThreadExecutors.shutdown();
     }
 
+    @Test
+    public void async() throws Exception {
+        HttpBuilder.get("http://127.0.0.1:19000/publicapi/test0").async(new Consumer<Response<Get>>() {
+            @Override public void accept(Response<Get> getResponse) {
+                System.out.println(getResponse.bodyString());
+            }
+        });
+        System.in.read();
+    }
+
     /** 共享线程池 */
     @Test
     public void testExecutorVirtualServices() throws Exception {
@@ -93,7 +106,7 @@ public class VTThreadTest {
 
             String queueName = "";
             // if (RandomUtils.randomBoolean()) {
-                queueName = String.valueOf(RandomUtils.random(100));
+            queueName = String.valueOf(RandomUtils.random(100));
             // }
             int index = atomicInteger.get();
             services.submit(queueName, new Runnable() {

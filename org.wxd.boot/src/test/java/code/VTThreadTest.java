@@ -6,6 +6,10 @@ import org.wxd.boot.lang.RandomUtils;
 import org.wxd.boot.threading.ExecutorVirtualServices;
 import org.wxd.boot.threading.Executors;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -112,4 +116,30 @@ public class VTThreadTest {
         }
 
     }
+
+    @Test
+    public void test8() throws Exception {
+        ExecutorService executor = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor();
+        BlockingQueue<String> queue = new LinkedBlockingQueue<>(1);
+        executor.submit(() -> {
+            try {
+                Thread currentThread = Thread.currentThread();
+                log.debug("1 {}", currentThread.isVirtual());
+                String poll = queue.poll(3000, TimeUnit.SECONDS);
+                log.debug(poll);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        executor.submit(() -> {
+            try {
+                Thread.sleep(3000);
+                queue.add("sss");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        System.in.read();
+    }
+
 }

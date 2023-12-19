@@ -113,6 +113,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         try {
             if (messageId == MessagePackage.getMessageId(Rpc.ReqRemote.class)) {
                 Rpc.ReqRemote reqSyncMessage = Rpc.ReqRemote.parseFrom(messageBytes);
+                log.debug("收到消息：{} {}{}", session, reqSyncMessage.getClass().getSimpleName(), FastJsonUtil.toJson(reqSyncMessage));
                 long rpcId = reqSyncMessage.getRpcId();
                 String params = reqSyncMessage.getParams();
                 if (reqSyncMessage.getGzip() == 1) {
@@ -186,22 +187,25 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
             if (messageId == MessagePackage.getMessageId(Rpc.ResRemote.class)) {
                 Rpc.ResRemote resSyncMessage = Rpc.ResRemote.parseFrom(messageBytes);
-                String params = resSyncMessage.getParams();
-                if (resSyncMessage.getGzip() == 1) {
-                    params = GzipUtil.unGzip2String(params);
-                }
-                RpcEvent syncrequest = RpcEvent.RPC_REQUEST_CACHE_PACK.cache(resSyncMessage.getRpcId());
-                if (syncrequest != null) {
-                    syncrequest.response(resSyncMessage.getParams());
-                } else {
-                    log.info(
-                            "{} 同步消息回来后，找不到同步对象 {}, rpcId={}, params={}",
-                            tokenCache.toString(),
-                            this.toString(),
-                            resSyncMessage.getRpcId(),
-                            params,
-                            new RuntimeException()
-                    );
+                log.debug("收到消息：{} {}{}", session, resSyncMessage.getClass().getSimpleName(), FastJsonUtil.toJson(resSyncMessage));
+                if (resSyncMessage.getRpcId() > 0) {
+                    String params = resSyncMessage.getParams();
+                    if (resSyncMessage.getGzip() == 1) {
+                        params = GzipUtil.unGzip2String(params);
+                    }
+                    RpcEvent syncrequest = RpcEvent.RPC_REQUEST_CACHE_PACK.cache(resSyncMessage.getRpcId());
+                    if (syncrequest != null) {
+                        syncrequest.response(resSyncMessage.getParams());
+                    } else {
+                        log.info(
+                                "{} 同步消息回来后，找不到同步对象 {}, rpcId={}, params={}",
+                                tokenCache.toString(),
+                                this.toString(),
+                                resSyncMessage.getRpcId(),
+                                params,
+                                new RuntimeException()
+                        );
+                    }
                 }
                 return;
             }
