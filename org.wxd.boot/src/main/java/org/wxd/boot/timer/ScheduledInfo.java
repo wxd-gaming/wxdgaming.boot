@@ -8,10 +8,14 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
-import org.wxd.boot.threading.*;
+import org.wxd.boot.threading.AsyncImpl;
+import org.wxd.boot.threading.EventRunnable;
+import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.IExecutorServices;
 import org.wxd.boot.timer.ann.Scheduled;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,6 +38,8 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
     private Object instance = null;
     private Method method = null;
     private boolean async = false;
+    /** 虚拟线程 */
+    private AtomicBoolean vt = new AtomicBoolean();
     private AtomicReference<String> threadName = new AtomicReference<>();
     private AtomicReference<String> queueName = new AtomicReference<>();
     /** 和method是互斥的 */
@@ -67,13 +73,9 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
         this.index = sortAnn == null ? 999999 : sortAnn.value();
         this.scheduleAtFixedRate = scheduled.scheduleAtFixedRate();
 
-        Async iAnn = AnnUtil.ann(instance.getClass(), Async.class);
-        AsyncImpl.threading(threadName, queueName, iAnn);
-        Async mAnn = AnnUtil.ann(method, Async.class);
-        AsyncImpl.threading(threadName, queueName, mAnn);
-        this.async = iAnn != null || mAnn != null;
-        action(scheduled.value());
+        this.async = AsyncImpl.asyncAction(vt, threadName, queueName, method);
 
+        action(scheduled.value());
     }
 
     /**
@@ -133,9 +135,7 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
 
     protected void action(String scheduled) {
         String[] values = new String[7];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = "*";
-        }
+        Arrays.fill(values, "*");
 
         if (StringUtil.notEmptyOrNull(scheduled)) {
             String[] split = scheduled.split(" ");

@@ -73,6 +73,10 @@ public class JvmUtil {
     public static final String Default_Executor_Core_Size = "default.executor.core.size";
     /** 默认线程池的，最大线程数量 */
     public static final String Default_Executor_Max_Size = "default.executor.max.size";
+    /** 虚拟线程池的，初始数量 */
+    public static final String VT_Executor_Core_Size = "vt.executor.core.size";
+    /** 虚拟线程池的，最大线程数量 */
+    public static final String VT_Executor_Max_Size = "vt.executor.max.size";
     /** 业务逻辑 */
     public static final String Logic_Executor_Core_Size = "logic.executor.core.size";
     /** 业务逻辑 */

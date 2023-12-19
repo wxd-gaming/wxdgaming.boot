@@ -98,9 +98,7 @@ public class ActionProtoController {
                     remarks,
                     messageId,
                     instance,
-                    method,
-                    protoMapping.logTime(),
-                    protoMapping.warningTime()
+                    method
             );
             /**消息的中午注解隐射*/
             MessagePackage.MsgName2RemarkMap.put(messageClass.getName(), remarks);

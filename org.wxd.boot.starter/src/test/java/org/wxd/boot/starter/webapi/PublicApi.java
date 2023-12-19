@@ -44,7 +44,6 @@ public class PublicApi {
 
     }
 
-    @Async(queue = "q1")
     @TextMapping(remarks = "test")
     public String test1(HttpSession httpSession, ObjMap objMap) throws Exception {
         int random = RandomUtils.random(6);
@@ -52,7 +51,6 @@ public class PublicApi {
         return "test";
     }
 
-    @Async(queue = "q2")
     @TextMapping(remarks = "test")
     public String test2(HttpSession httpSession, ObjMap objMap) throws Exception {
         int random = RandomUtils.random(6);
@@ -60,7 +58,7 @@ public class PublicApi {
         return "test";
     }
 
-    @Async(queue = "q3")
+    @Async(vt = true)
     @TextMapping(remarks = "test")
     public String test3(HttpSession httpSession, ObjMap objMap) throws Exception {
         int random = RandomUtils.random(6);

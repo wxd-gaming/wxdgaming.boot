@@ -6,6 +6,11 @@ package org.wxd.boot.threading;
  **/
 public interface QueueRunnable extends Runnable {
 
-    String queueKey();
+    default boolean vt() {return false;}
+
+    default String threadName() {return "";}
+
+    /** 队列名称 */
+    String queueName();
 
 }

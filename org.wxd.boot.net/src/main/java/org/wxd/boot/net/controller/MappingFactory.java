@@ -3,12 +3,13 @@ package org.wxd.boot.net.controller;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.collection.concurrent.ConcurrentTable;
 import org.wxd.boot.str.StringUtil;
-import org.wxd.boot.threading.Async;
 import org.wxd.boot.threading.AsyncImpl;
+import org.wxd.boot.threading.ExecutorLog;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -26,29 +27,23 @@ public class MappingFactory {
     /** 路由 -> 映射 */
     public static final ConcurrentTable<String, String, TextMappingRecord> TEXT_MAP = new ConcurrentTable<>();
 
-    public static void putProto(String serviceName, String remarks, int messageId, Object instance, Method method, int logTime, int warningTime) {
-        final AtomicReference<String> threadName = new AtomicReference<>("");
-        final AtomicReference<String> queueName = new AtomicReference<>("");
-        AsyncImpl.threading(threadName, queueName, AnnUtil.ann(instance.getClass(), Async.class));
-        AsyncImpl.threading(threadName, queueName, AnnUtil.ann(method, Async.class));
+    public static void putProto(String serviceName, String remarks, int messageId, Object instance, Method method) {
+        /** 虚拟线程 */
         if (StringUtil.emptyOrNull(serviceName)) serviceName = FINAL_DEFAULT;
         PROTO_MAP.put(
                 serviceName,
                 messageId,
-                new ProtoMappingRecord(serviceName, remarks, messageId, instance, method, threadName.get(), queueName.get(), logTime, warningTime)
+                new ProtoMappingRecord(serviceName, remarks, messageId, instance, method)
         );
     }
 
-    public static void putText(String serviceName, String remarks, String path, Object instance, Method method, int logTime, int warningTime) {
-        final AtomicReference<String> threadName = new AtomicReference<>("");
-        final AtomicReference<String> queueName = new AtomicReference<>("");
-        AsyncImpl.threading(threadName, queueName, AnnUtil.ann(instance.getClass(), Async.class));
-        AsyncImpl.threading(threadName, queueName, AnnUtil.ann(method, Async.class));
+    public static void putText(String serviceName, String remarks, String path, Object instance, Method method) {
+        /** 虚拟线程 */
         if (StringUtil.emptyOrNull(serviceName)) serviceName = FINAL_DEFAULT;
         TEXT_MAP.put(
                 serviceName,
                 path,
-                new TextMappingRecord(serviceName, remarks, path, instance, method, threadName.get(), queueName.get(), logTime, warningTime)
+                new TextMappingRecord(serviceName, remarks, path, instance, method)
         );
     }
 

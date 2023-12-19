@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- @author: Troy.Chen(無心道, 15388152619) -->
 <bootConfig>
+    <!-- 默认线程池 -->
     <defaultExecutor coreSize="2" maxSize="4"/>
-    <logicExecutor coreSize="4" maxSize="8"/>
+    <!-- 虚拟线程池 -->
+    <vtExecutor coreSize="100" maxSize="200"/>
+    <!-- 逻辑线程池 -->
+    <logicExecutor coreSize="8" maxSize="16"/>
     <server>
         <name>default</name>
         <host>*</host>
@@ -30,8 +34,6 @@
         <jksPwd>wxd2021</jksPwd>
         <serviceClassName>org.wxd.boot.starter.service.HsService</serviceClassName>
         <resourcesPath></resourcesPath>
-        <threadCoreSize>20</threadCoreSize>
-        <threadMaxSize>40</threadMaxSize>
         <headers>
             <!-- 跨域支持 -->
             <header key="Access-Control-Allow-Origin" value="*"/>

@@ -28,12 +28,4 @@ public @interface TextMapping {
     /** 权限不足提示 */
     String authTips() default "权限不足";
 
-    /** debug模式下不显示日志，比如心跳太多 */
-    boolean showLog() default false;
-
-    /** 输出日志的时间 */
-    int logTime() default 33;
-
-    /** 执行告警时间 */
-    int warningTime() default 1000;
 }

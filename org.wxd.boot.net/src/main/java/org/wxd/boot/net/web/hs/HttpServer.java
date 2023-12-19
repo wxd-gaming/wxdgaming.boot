@@ -19,14 +19,12 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.NioServer;
-import org.wxd.boot.net.Session;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.handler.SocketChannelHandler;
 import org.wxd.boot.str.StringUtil;
@@ -187,7 +185,15 @@ public class HttpServer extends NioServer<HttpSession> {
                     session.actionPostData();
                 }
                 HttpListenerAction eventRunnable = new HttpListenerAction(HttpServer.this, session);
-                executorServices.submit(eventRunnable);
+                IExecutorServices executor;
+                if (StringUtil.notEmptyOrNull(eventRunnable.threadName())) {
+                    executor = Executors.All_THREAD_LOCAL.get(eventRunnable.threadName());
+                } else if (eventRunnable.vt()) {
+                    executor = Executors.getVTExecutor();
+                } else {
+                    executor = Executors.getLogicExecutor();
+                }
+                executor.submit(eventRunnable.queueName(), eventRunnable);
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
                 response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
@@ -195,16 +201,9 @@ public class HttpServer extends NioServer<HttpSession> {
         }
     }
 
-    @Override public void runCmd(StreamWriter out, String methodName, HttpHeadValueType httpHeadValueType, ObjMap putData, Session session, String postOrGet, Consumer<Boolean> callBack) {
-
-    }
-
-    /**
-     * 资源缓存，比如js css等
-     */
+    /** 资源缓存，比如js css等 */
     protected String resourcesPath;
     protected Map<String, String> headerMap = new LinkedHashMap<>();
-    protected IExecutorServices executorServices = null;
     protected ClassLoader resourceClassLoader = this.getClass().getClassLoader();
 
     @Override public void open() {
@@ -220,19 +219,10 @@ public class HttpServer extends NioServer<HttpSession> {
         return JvmUtil.getProperty(JvmUtil.Netty_Idle_Time_Http_Server, 20, Integer::valueOf);
     }
 
-    public HttpServer initExecutor(int coreSize, int maxSize) {
-        executorServices = Executors.newExecutorServices("http-" + this.getName(), coreSize, maxSize);
-        return this;
-    }
-
     @Override
     public HttpServer initBootstrap() {
         super.initBootstrap();
         return this;
-    }
-
-    @Override public IExecutorServices executorServices() {
-        return executorServices;
     }
 
     @Override

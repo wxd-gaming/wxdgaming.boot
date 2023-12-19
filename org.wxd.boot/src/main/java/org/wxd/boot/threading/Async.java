@@ -13,8 +13,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Async {
 
-    String thread() default "";
+    /** 标记是否虚拟线程 指定thread 后失效 */
+    boolean vt() default false;
 
-    String queue() default "";
+    String threadName() default "";
+
+    /** 执行队列名称 */
+    String queueName() default "";
 
 }

@@ -18,6 +18,8 @@ import java.lang.reflect.Method;
  **/
 public interface ITokenCache {
 
+    String getName();
+
     CachePack<String, IAuth> getTokenCache();
 
     default boolean checkToken(StreamWriter out, Session session, Method cmdMethod, String token) throws Exception {

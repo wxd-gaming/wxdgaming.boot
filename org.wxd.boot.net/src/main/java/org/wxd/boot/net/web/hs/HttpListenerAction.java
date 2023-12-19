@@ -18,12 +18,13 @@ import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.TextMappingRecord;
 import org.wxd.boot.net.controller.ann.Get;
 import org.wxd.boot.net.controller.ann.Post;
-import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.controller.cmd.Sign;
 import org.wxd.boot.net.controller.cmd.SignCheck;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.GlobalUtil;
+import org.wxd.boot.threading.Async;
 import org.wxd.boot.threading.EventRunnable;
+import org.wxd.boot.threading.ExecutorLog;
 import org.wxd.boot.threading.QueueRunnable;
 import org.wxd.boot.timer.MyClock;
 
@@ -55,23 +56,40 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
     @Override public long getLogTime() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), TextMapping.class))
-                .map(TextMapping::logTime)
+                .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
+                .map(ExecutorLog::logTime)
                 .orElse(33);
     }
 
     @Override public long getWarningTime() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), TextMapping.class))
-                .map(TextMapping::warningTime)
+                .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
+                .map(ExecutorLog::warningTime)
                 .orElse(33);
     }
 
-    @Override public String queueKey() {
+    @Override public boolean vt() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
-                .map(TextMappingRecord::queueName)
+                .map(v -> AnnUtil.ann(v.method(), Async.class))
+                .map(Async::vt)
+                .orElse(false);
+    }
+
+    @Override public String threadName() {
+        return Optional.ofNullable(session.getUriPath())
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> AnnUtil.ann(v.method(), Async.class))
+                .map(Async::threadName)
+                .orElse("");
+    }
+
+    @Override public String queueName() {
+        return Optional.ofNullable(session.getUriPath())
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> AnnUtil.ann(v.method(), Async.class))
+                .map(Async::queueName)
                 .orElse("");
     }
 
@@ -209,7 +227,7 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
                 session.getResponseContent().write(RunResult.error(505, Throw.ofString(throwable)));
             } finally {
                 boolean showLog = false;
-                TextMapping annotation = AnnUtil.ann(mappingRecord.method(), TextMapping.class);
+                ExecutorLog annotation = AnnUtil.ann(mappingRecord.method(), ExecutorLog.class);
                 if (annotation != null) {
                     showLog = annotation.showLog();
                 }

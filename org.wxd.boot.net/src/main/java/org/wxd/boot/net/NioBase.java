@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.cache.CachePack;
-import org.wxd.boot.net.handler.CmdService;
+import org.wxd.boot.net.controller.cmd.ITokenCache;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class NioBase implements CmdService {
+public abstract class NioBase implements ITokenCache {
 
     protected final ReentrantLock relock = new ReentrantLock();
 

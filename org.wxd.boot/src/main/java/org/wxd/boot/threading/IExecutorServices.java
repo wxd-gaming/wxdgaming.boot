@@ -53,7 +53,7 @@ public interface IExecutorServices extends Executor {
     @Override default void execute(Runnable runnable) {
         String queueName = null;
         if (runnable instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) runnable).queueKey();
+            queueName = ((QueueRunnable) runnable).queueName();
         }
         submit(queueName, runnable, 3);
     }
@@ -62,7 +62,7 @@ public interface IExecutorServices extends Executor {
     default Job submit(Runnable runnable) {
         String queueName = null;
         if (runnable instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) runnable).queueKey();
+            queueName = ((QueueRunnable) runnable).queueName();
         }
         return submit(queueName, runnable, 3);
     }
@@ -186,7 +186,7 @@ public interface IExecutorServices extends Executor {
     default TimerJob schedule(Runnable command, long delay, TimeUnit unit, int stackTrace) {
         String queueName = null;
         if (command instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) command).queueKey();
+            queueName = ((QueueRunnable) command).queueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, stackTrace);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, delay, delay, unit, 1);
@@ -206,7 +206,7 @@ public interface IExecutorServices extends Executor {
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
         String queueName = null;
         if (command instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) command).queueKey();
+            queueName = ((QueueRunnable) command).queueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, 2);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, initialDelay, delay, unit, -1);
@@ -222,7 +222,7 @@ public interface IExecutorServices extends Executor {
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit, int execCount, int stackTrace) {
         String queueName = null;
         if (command instanceof QueueRunnable) {
-            queueName = ((QueueRunnable) command).queueKey();
+            queueName = ((QueueRunnable) command).queueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, stackTrace);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, initialDelay, delay, unit, execCount);

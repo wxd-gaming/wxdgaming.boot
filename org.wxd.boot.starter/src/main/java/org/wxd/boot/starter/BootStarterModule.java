@@ -28,6 +28,9 @@ class BootStarterModule extends BaseModule {
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
         JvmUtil.setProperty(JvmUtil.Default_Executor_Max_Size, bootConfig.getDefaultExecutor().getMaxSize());
 
+        JvmUtil.setProperty(JvmUtil.VT_Executor_Core_Size, bootConfig.getVtExecutor().getCoreSize());
+        JvmUtil.setProperty(JvmUtil.VT_Executor_Max_Size, bootConfig.getVtExecutor().getMaxSize());
+
         JvmUtil.setProperty(JvmUtil.Logic_Executor_Core_Size, bootConfig.getLogicExecutor().getCoreSize());
         JvmUtil.setProperty(JvmUtil.Logic_Executor_Max_Size, bootConfig.getLogicExecutor().getMaxSize());
 
@@ -91,6 +94,7 @@ class BootStarterModule extends BaseModule {
             dbAction.accept(RedisService2.class, bootConfig.getRedis2());
             dbAction.accept(RedisService3.class, bootConfig.getRedis3());
         }
+        bindSingleton(BootConfig.class, bootConfig);
         bindSingleton(IocMainContext.class);
         bindSingleton(ScheduledService.class);
         return this;

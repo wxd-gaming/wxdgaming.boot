@@ -37,15 +37,17 @@ public final class Executors implements Serializable {
     private static IExecutorServices defaultExecutor = null;
     /** 属于后台线程池，一旦收到停服新号，线程立马关闭了 */
     private static IExecutorServices logicExecutor = null;
+    /** 属于后台线程池, 虚拟线程池，一旦收到停服新号，线程立马关闭了 */
+    private static IExecutorServices vtExecutor = null;
 
     public static IExecutorServices getDefaultExecutor() {
         if (defaultExecutor == null) {
             REENTRANT_LOCK.lock();
             try {
                 if (defaultExecutor == null) {
-                    Integer default_executor_core = JvmUtil.getProperty(JvmUtil.Default_Executor_Core_Size, 2, Integer::valueOf);
-                    Integer default_executor_max = JvmUtil.getProperty(JvmUtil.Default_Executor_Max_Size, 4, Integer::valueOf);
-                    defaultExecutor = newExecutorServices("default-executor", default_executor_core, default_executor_max);
+                    Integer core = JvmUtil.getProperty(JvmUtil.Default_Executor_Core_Size, 2, Integer::valueOf);
+                    Integer max = JvmUtil.getProperty(JvmUtil.Default_Executor_Max_Size, 4, Integer::valueOf);
+                    defaultExecutor = newExecutorServices("default-executor", core, max);
                 }
             } finally {
                 REENTRANT_LOCK.unlock();
@@ -54,14 +56,31 @@ public final class Executors implements Serializable {
         return defaultExecutor;
     }
 
+    /** 虚拟线程池，每一个任务都是一个新的虚拟线程 */
+    public static IExecutorServices getVTExecutor() {
+        if (vtExecutor == null) {
+            REENTRANT_LOCK.lock();
+            try {
+                if (vtExecutor == null) {
+                    Integer core = JvmUtil.getProperty(JvmUtil.VT_Executor_Core_Size, 100, Integer::valueOf);
+                    Integer max = JvmUtil.getProperty(JvmUtil.VT_Executor_Max_Size, 200, Integer::valueOf);
+                    vtExecutor = newExecutorVirtualServices("vt-executor", core, max);
+                }
+            } finally {
+                REENTRANT_LOCK.unlock();
+            }
+        }
+        return vtExecutor;
+    }
+
     public static IExecutorServices getLogicExecutor() {
         if (logicExecutor == null) {
             REENTRANT_LOCK.lock();
             try {
                 if (logicExecutor == null) {
-                    Integer executor_core = JvmUtil.getProperty(JvmUtil.Logic_Executor_Core_Size, 2, Integer::valueOf);
-                    Integer executor_max = JvmUtil.getProperty(JvmUtil.Logic_Executor_Max_Size, 4, Integer::valueOf);
-                    logicExecutor = newExecutorServices("logic-executor", executor_core, executor_max);
+                    Integer core = JvmUtil.getProperty(JvmUtil.Logic_Executor_Core_Size, 2, Integer::valueOf);
+                    Integer max = JvmUtil.getProperty(JvmUtil.Logic_Executor_Max_Size, 4, Integer::valueOf);
+                    logicExecutor = newExecutorServices("logic-executor", core, max);
                 }
             } finally {
                 REENTRANT_LOCK.unlock();

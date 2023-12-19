@@ -34,6 +34,14 @@ public class ReadZipFile implements Serializable, Closeable {
         }
     }
 
+    public ReadZipFile(File zipPath) {
+        try {
+            zip = new ZipFile(zipPath);
+        } catch (Exception e) {
+            throw Throw.as(e);
+        }
+    }
+
     @Override
     public void close() {
         try {

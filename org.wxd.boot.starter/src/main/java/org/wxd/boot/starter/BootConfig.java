@@ -21,7 +21,9 @@ public class BootConfig extends ObjectBase {
 
     @Element(required = false)
     private ThreadPool defaultExecutor = new ThreadPool(2, 4);
-
+    /** 虚拟线程配置 */
+    @Element(required = false)
+    private ThreadPool vtExecutor = new ThreadPool(100, 200);
     @Element(required = false)
     private ThreadPool logicExecutor = new ThreadPool(4, 8);
 

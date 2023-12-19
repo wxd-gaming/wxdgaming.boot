@@ -12,7 +12,7 @@ import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.MessageController;
 import org.wxd.boot.net.controller.ProtoMappingRecord;
-import org.wxd.boot.net.controller.ann.ProtoMapping;
+import org.wxd.boot.net.controller.cmd.ITokenCache;
 import org.wxd.boot.net.message.MessagePackage;
 import org.wxd.boot.net.message.Rpc;
 import org.wxd.boot.net.message.RpcEvent;
@@ -22,6 +22,8 @@ import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.MarkTimer;
+import org.wxd.boot.threading.Async;
+import org.wxd.boot.threading.ExecutorLog;
 import org.wxd.boot.threading.Executors;
 import org.wxd.boot.threading.IExecutorServices;
 
@@ -55,7 +57,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
     SocketCoderHandler<S> msgExecutorBefore(Predicate<MessageController> consumer);
 
     /** 处理网络接受到的消息字节 */
-    default void read(CmdService cmdService, S session, ByteBuf byteBuf) {
+    default void read(ITokenCache tokenCache, S session, ByteBuf byteBuf) {
         session.checkReadTime();
         /*netty底层每一次传递的bytebuf都是最新的所以必须缓存*/
         ByteBuf tmpByteBuf;
@@ -80,7 +82,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 /*读取报文类容*/
                 tmpByteBuf.readBytes(messageBytes);
                 action(
-                        cmdService,
+                        tokenCache,
                         session,
                         messageId,
                         messageBytes
@@ -105,9 +107,8 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         }
     }
 
-    default void action(CmdService cmdService, S session, int messageId, byte[] messageBytes) {
+    default void action(ITokenCache tokenCache, S session, int messageId, byte[] messageBytes) {
         try {
-
             if (messageId == MessagePackage.getMessageId(Rpc.ReqRemote.class)) {
                 Rpc.ReqRemote reqSyncMessage = Rpc.ReqRemote.parseFrom(messageBytes);
                 long rpcId = reqSyncMessage.getRpcId();
@@ -116,7 +117,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     params = GzipUtil.unGzip2String(params);
                 }
                 /*处理消息--理论上是丢出去了的*/
-                final ObjMap jsonObject = FastJsonUtil.parse(params, ObjMap.class);
+                final ObjMap putData = FastJsonUtil.parse(params, ObjMap.class);
                 String cmd = reqSyncMessage.getCmd().toLowerCase();
                 switch (cmd) {
                     case "rpc.heart" -> {
@@ -124,18 +125,18 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     }
                     case "rpc.upload.file.head" -> {
                         /*todo 接收文件头*/
-                        long fileId = jsonObject.getLongValue("fileId");
-                        int bodyCount = jsonObject.getIntValue("bodyCount");
-                        String objectString = jsonObject.getString("params");
+                        long fileId = putData.getLongValue("fileId");
+                        int bodyCount = putData.getIntValue("bodyCount");
+                        String objectString = putData.getString("params");
                         UpFileAccess.readHead(fileId, bodyCount, objectString);
                         session.rpcResponse(rpcId, "OK!");
                     }
                     case "rpc.upload.file.body" -> {
                         /*todo 接收文件内容*/
-                        long fileId = jsonObject.getLongValue("fileId");
-                        int bodyId = jsonObject.getIntValue("bodyId");
-                        int offset = jsonObject.getIntValue("offset");
-                        byte[] datas = jsonObject.getObject("datas");
+                        long fileId = putData.getLongValue("fileId");
+                        int bodyId = putData.getIntValue("bodyId");
+                        int offset = putData.getIntValue("offset");
+                        byte[] datas = putData.getObject("datas");
                         UpFileAccess fileAccess = UpFileAccess.readBody(fileId, bodyId, offset, datas);
                         if (fileAccess.getReadMaxCount() <= bodyId) {
                             /*表示读取完成*/
@@ -146,18 +147,27 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     default -> {
                         final MarkTimer markTimer = MarkTimer.build();
                         final StreamWriter outAppend = new StreamWriter(1024);
-                        cmdService.runCmd(outAppend, cmd, null, jsonObject, session, null, (showLog) -> {
+                        CmdListenerAction listenerAction = new CmdListenerAction(tokenCache, session, cmd, putData, outAppend, (showLog) -> {
                             if (showLog) {
                                 log.info("\n执行：" + this.toString()
                                         + "\n" + markTimer.execTime2String() +
                                         "\nrpcId=" + rpcId +
-                                        "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(jsonObject) +
+                                        "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
                                         "\n结果 = " + outAppend.toString());
                             }
                             if (rpcId > 0) {
                                 session.rpcResponse(rpcId, outAppend.toString());
                             }
                         });
+                        IExecutorServices executor;
+                        if (StringUtil.notEmptyOrNull(listenerAction.threadName())) {
+                            executor = Executors.All_THREAD_LOCAL.get(listenerAction.threadName());
+                        } else if (listenerAction.vt()) {
+                            executor = Executors.getVTExecutor();
+                        } else {
+                            executor = Executors.getLogicExecutor();
+                        }
+                        executor.submit(listenerAction.queueName(), listenerAction);
                     }
                 }
                 return;
@@ -175,7 +185,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 } else {
                     log.info(
                             "{} 同步消息回来后，找不到同步对象 {}, rpcId={}, params={}",
-                            cmdService.toString(),
+                            tokenCache.toString(),
                             this.toString(),
                             resSyncMessage.getRpcId(),
                             params,
@@ -244,21 +254,22 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
             }
         }
 
-        ProtoMapping protoMapping = AnnUtil.ann(mapping.method(), ProtoMapping.class);
+        ExecutorLog protoMapping = AnnUtil.ann(mapping.method(), ExecutorLog.class);
         if (log.isDebugEnabled() || (protoMapping != null && protoMapping.showLog())) {
             log.info("{} 收到消息：" + "\n{}", this.getClass().getSimpleName(), controller.toString());
         }
-//        if (StringUtil.nullOrEmpty(controller.queueKey())) {
-//            /*根据netty线程分配队列，主要是针对客户端*/
-//            controller.setQueueKey(String.valueOf(Thread.currentThread().getId()));
-//        }
-        IExecutorServices executorServices;
-        if (StringUtil.notEmptyOrNull(mapping.threadName())) {
-            executorServices = Executors.All_THREAD_LOCAL.get(mapping.threadName());
-        } else {
-            executorServices = Executors.getLogicExecutor();
+        Async async = AnnUtil.ann(mapping.method(), Async.class);
+        String queueName = "";
+        IExecutorServices executorServices = Executors.getLogicExecutor();
+        if (async != null) {
+            if (StringUtil.notEmptyOrNull(async.threadName())) {
+                executorServices = Executors.All_THREAD_LOCAL.get(async.threadName());
+            } else if (async.vt()) {
+                executorServices = Executors.getVTExecutor();
+            }
+            queueName = async.queueName();
         }
-        executorServices.submit(mapping.queueName(), controller);
+        executorServices.submit(queueName, controller);
     }
 
     /**

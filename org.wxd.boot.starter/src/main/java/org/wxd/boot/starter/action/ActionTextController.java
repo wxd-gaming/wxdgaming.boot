@@ -138,9 +138,7 @@ public class ActionTextController {
                             remarks,
                             cmdUrl,
                             instance,
-                            method,
-                            mapping.logTime(),
-                            mapping.warningTime()
+                            method
                     );
 
                     if (log.isDebugEnabled()) {

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.wxd.boot.lang.ObjectBase;
 
 import java.io.Serializable;
@@ -18,11 +17,6 @@ import java.util.ArrayList;
 @Setter
 @Accessors(chain = true)
 public class HttpConfig extends WebConfig implements Serializable {
-
-    @Element(required = false)
-    private int threadCoreSize = 100;
-    @Element(required = false)
-    private int threadMaxSize = 200;
 
     public HttpConfig() {
     }
