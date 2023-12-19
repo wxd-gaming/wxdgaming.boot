@@ -8,10 +8,7 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.ann.Sort;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
-import org.wxd.boot.threading.AsyncImpl;
-import org.wxd.boot.threading.EventRunnable;
-import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.IExecutorServices;
+import org.wxd.boot.threading.*;
 import org.wxd.boot.timer.ann.Scheduled;
 
 import java.lang.reflect.Method;
@@ -38,6 +35,8 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
     private Object instance = null;
     private Method method = null;
     private boolean async = false;
+    private int logTime = 33;
+    private int waringTime = 500;
     /** 虚拟线程 */
     private AtomicBoolean vt = new AtomicBoolean();
     private AtomicReference<String> threadName = new AtomicReference<>();
@@ -60,7 +59,7 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
     protected long startExecTime;
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
-        super(scheduled.logTime(), scheduled.warningTime());
+        super();
         this.instance = instance;
         this.method = method;
         if (StringUtil.notEmptyOrNull(scheduled.name())) {
@@ -72,10 +71,25 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
         final Sort sortAnn = AnnUtil.ann(method, Sort.class);
         this.index = sortAnn == null ? 999999 : sortAnn.value();
         this.scheduleAtFixedRate = scheduled.scheduleAtFixedRate();
-
         this.async = AsyncImpl.asyncAction(vt, threadName, queueName, method);
-
+        ExecutorLog executorLog = AnnUtil.ann(Method.class, ExecutorLog.class);
+        if (executorLog != null) {
+            logTime = executorLog.logTime();
+            waringTime = executorLog.warningTime();
+        }
         action(scheduled.value());
+    }
+
+    @Override public String getTaskInfoString() {
+        return name;
+    }
+
+    @Override public long getLogTime() {
+        return super.getLogTime();
+    }
+
+    @Override public long getWarningTime() {
+        return super.getWarningTime();
     }
 
     /**
@@ -103,9 +117,7 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
 
         this.index = 999999;
         this.scheduleAtFixedRate = scheduleAtFixedRate;
-
         action(scheduled);
-
     }
 
     /**
@@ -327,13 +339,15 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
 
         if (this.async) {
             /*异步执行*/
-            IExecutorServices IExecutorServices;
+            IExecutorServices services;
             if (StringUtil.notEmptyOrNull(this.threadName.get())) {
-                IExecutorServices = Executors.All_THREAD_LOCAL.get(this.threadName.get());
+                services = Executors.All_THREAD_LOCAL.get(this.threadName.get());
+            } else if (this.getVt().get()) {
+                services = Executors.getVTExecutor();
             } else {
-                IExecutorServices = Executors.getDefaultExecutor();
+                services = Executors.getDefaultExecutor();
             }
-            IExecutorServices.submit(this.queueName.get(), this);
+            services.submit(this.queueName.get(), this);
         } else {
             /*同步执行*/
             startExecTime = System.nanoTime();
@@ -382,10 +396,6 @@ public class ScheduledInfo extends EventRunnable implements Comparable<Scheduled
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
-    }
-
-    @Override public String getTaskInfoString() {
-        return name;
     }
 
     @Override

@@ -18,13 +18,13 @@ import org.wxd.boot.starter.i.IStart;
  **/
 public class TsService extends TcpServer<TcpSession> implements IStart, IShutdown {
 
-    public TsService(TcpConfig tcpConfig) throws Exception {
-        setName(tcpConfig.getName())
-                .setHost(tcpConfig.getHost())
-                .setWanIp(tcpConfig.getWanIp())
-                .setPort(tcpConfig.getPort())
-                .setSslType(tcpConfig.sslProtocolType())
-                .setSslContext(tcpConfig.sslContext())
+    public TsService(TcpConfig config) throws Exception {
+        setName(config.getName())
+                .setHost(config.getHost())
+                .setWanIp(config.getWanIp())
+                .setPort(config.getPort())
+                .setSslType(config.sslProtocolType())
+                .setSslContext(config.sslContext())
                 .initBootstrap();
     }
 

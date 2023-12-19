@@ -202,6 +202,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     /** 资源缓存，比如js css等 */
+    protected boolean needCache = false;
     protected String resourcesPath;
     protected Map<String, String> headerMap = new LinkedHashMap<>();
     protected ClassLoader resourceClassLoader = this.getClass().getClassLoader();

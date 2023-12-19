@@ -16,18 +16,19 @@ import org.wxd.boot.starter.i.IStart;
  **/
 public class HsService extends HttpServer implements IStart, IShutdown {
 
-    public HsService(HttpConfig webConfig) throws Exception {
-        setName(webConfig.getName())
-                .setHost(webConfig.getHost())
-                .setWanIp(webConfig.getWanIp())
-                .setPort(webConfig.getPort())
-                .setSslType(webConfig.sslProtocolType())
-                .setSslContext(webConfig.sslContext())
-                .setResourcesPath(webConfig.getResourcesPath())
+    public HsService(HttpConfig config) throws Exception {
+        setName(config.getName())
+                .setHost(config.getHost())
+                .setWanIp(config.getWanIp())
+                .setPort(config.getPort())
+                .setSslType(config.sslProtocolType())
+                .setSslContext(config.sslContext())
+                .setNeedCache(config.isNeedCache())
+                .setResourcesPath(config.getResourcesPath())
                 .initBootstrap();
 
-        if (webConfig.getHeaders() != null && !webConfig.getHeaders().isEmpty()) {
-            for (WebConfig.Header header : webConfig.getHeaders()) {
+        if (config.getHeaders() != null && !config.getHeaders().isEmpty()) {
+            for (WebConfig.Header header : config.getHeaders()) {
                 getHeaderMap().put(header.getKey(), header.getValue());
             }
         }

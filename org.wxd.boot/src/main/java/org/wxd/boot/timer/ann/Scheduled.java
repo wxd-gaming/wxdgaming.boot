@@ -42,10 +42,4 @@ public @interface Scheduled {
      */
     String value() default "";
 
-    /** 输出日志的时间 */
-    int logTime() default 33;
-
-    /** 执行告警时间 */
-    int warningTime() default 1000;
-
 }

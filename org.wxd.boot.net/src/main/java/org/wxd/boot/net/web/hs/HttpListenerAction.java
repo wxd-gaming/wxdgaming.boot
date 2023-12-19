@@ -267,7 +267,7 @@ class HttpListenerAction extends EventRunnable implements QueueRunnable {
             if (readFileToBytes != null) {
                 String extendName = htmlPath.substring(htmlPath.lastIndexOf(".") + 1).toLowerCase();
                 HttpHeadValueType hct = HttpServer.httpContentType(extendName);
-                if (session.getResHeaderMap().containsKey(HttpHeaderNames.EXPIRES.toString())) {
+                if (httpServer.isNeedCache()) {
                     /*如果是固有资源增加缓存效果*/
                     session.getResHeaderMap().put(HttpHeaderNames.PRAGMA.toString(), "private");
                     /*过期时间10个小时*/

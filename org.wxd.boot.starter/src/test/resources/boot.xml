@@ -33,6 +33,7 @@
         <jks>org_wxd_pkcs12.keystore</jks>
         <jksPwd>wxd2021</jksPwd>
         <serviceClassName>org.wxd.boot.starter.service.HsService</serviceClassName>
+        <needCache>true</needCache>
         <resourcesPath></resourcesPath>
         <headers>
             <!-- 跨域支持 -->
@@ -42,9 +43,9 @@
             <header key="Access-Control-Allow-Headers"
                     value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
             <!-- 添加缓存 -->
-            <header key="pragma" value="private"/>
-            <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>
-            <header key="cache-control" value="max-age=36000"/>
+<!--            <header key="pragma" value="private"/>-->
+<!--            <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>-->
+<!--            <header key="cache-control" value="max-age=36000"/>-->
         </headers>
     </http>
     <mysql>

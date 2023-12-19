@@ -10,8 +10,8 @@ import org.wxd.boot.starter.TcpConfig;
  **/
 public class TsService3 extends TsService {
 
-    public TsService3(TcpConfig tcpConfig) throws Exception {
-        super(tcpConfig);
+    public TsService3(TcpConfig config) throws Exception {
+        super(config);
     }
 
 
