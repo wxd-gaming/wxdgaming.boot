@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -153,7 +154,7 @@ public class FileUtil implements Serializable {
     public static void resourceStream(ClassLoader classLoader, final String path, ConsumerE2<String, InputStream> call) {
         try {
             URL resource = classLoader.getResource(path);
-            String findPath = resource.getPath();
+            String findPath = URLDecoder.decode(resource.getPath());
             if (findPath.contains(".zip!") || findPath.contains(".jar!")) {
                 findPath = findPath.substring(5, findPath.indexOf("!/"));
                 try (ReadZipFile zipFile = new ReadZipFile(findPath)) {

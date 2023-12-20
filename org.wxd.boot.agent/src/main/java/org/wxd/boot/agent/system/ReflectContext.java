@@ -12,6 +12,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -253,11 +254,12 @@ public class ReflectContext {
                         url = resources.nextElement();
                         if (url != null) {
                             String type = url.getProtocol();
+                            String urlPath = URLDecoder.decode(url.getPath());
                             if (type.equals("file")) {
-                                String dir = url.getPath().substring(0, url.getPath().lastIndexOf(packagePath));
-                                findClassByFile(dir, url.getPath(), consumer);
+                                String dir = urlPath.substring(0, urlPath.lastIndexOf(packagePath));
+                                findClassByFile(dir, urlPath, consumer);
                             } else if (type.equals("jar") || type.equals("zip")) {
-                                findClassByJar(url.getPath(), consumer);
+                                findClassByJar(urlPath, consumer);
                             }
                         } else {
                             findClassByJars(
@@ -312,7 +314,7 @@ public class ReflectContext {
 
             if (urls != null) {
                 for (URL url : urls) {
-                    String urlPath = url.getPath();
+                    String urlPath = URLDecoder.decode(url.getPath());
                     // 不必搜索classes文件夹
                     if (urlPath.endsWith("classes/")) {
                         continue;
