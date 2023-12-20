@@ -36,7 +36,10 @@ class CmdListenerAction extends EventRunnable {
     private final StreamWriter out;
     private final Consumer<Boolean> callBack;
 
-    public CmdListenerAction(TextMappingRecord mappingRecord, ITokenCache tokenCache, SocketSession session, String listener, ObjMap putData, StreamWriter out, Consumer<Boolean> callBack) {
+    public CmdListenerAction(TextMappingRecord mappingRecord, ITokenCache tokenCache,
+                             SocketSession session,
+                             String listener, ObjMap putData,
+                             StreamWriter out, Consumer<Boolean> callBack) {
         super(mappingRecord.method());
         this.mappingRecord = mappingRecord;
         this.tokenCache = tokenCache;

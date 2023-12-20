@@ -57,7 +57,7 @@ class HttpListenerAction extends EventRunnable {
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
                 .map(ExecutorLog::logTime)
-                .orElse(super.getLogTime());
+                .orElse(66L);
     }
 
     @Override public long getWarningTime() {
