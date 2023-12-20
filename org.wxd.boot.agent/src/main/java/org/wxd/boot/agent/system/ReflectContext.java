@@ -13,6 +13,7 @@ import java.lang.reflect.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -254,7 +255,7 @@ public class ReflectContext {
                         url = resources.nextElement();
                         if (url != null) {
                             String type = url.getProtocol();
-                            String urlPath = URLDecoder.decode(url.getPath());
+                            String urlPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8);
                             if (type.equals("file")) {
                                 String dir = urlPath.substring(0, urlPath.lastIndexOf(packagePath));
                                 findClassByFile(dir, urlPath, consumer);
@@ -314,7 +315,7 @@ public class ReflectContext {
 
             if (urls != null) {
                 for (URL url : urls) {
-                    String urlPath = URLDecoder.decode(url.getPath());
+                    String urlPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8);
                     // 不必搜索classes文件夹
                     if (urlPath.endsWith("classes/")) {
                         continue;
