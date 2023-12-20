@@ -141,7 +141,7 @@ public class ThreadCode {
             executor.submit(() -> {
                 try {
                     long n = System.nanoTime();
-                    Response<PostMulti> response = HttpBuilder.postMulti(url, ObjMap.build(1, 1)).reTry(2).request();
+                    Response<PostMulti> response = HttpBuilder.postMulti(url, ObjMap.build(1, 1)).retry(2).request();
                     System.out.println(response + " " + response.bodyString());
                     allTime.addAndGet(System.nanoTime() - n);
                     source.incrementAndGet();
