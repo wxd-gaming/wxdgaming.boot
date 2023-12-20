@@ -142,4 +142,9 @@ public class VTThreadTest {
         System.in.read();
     }
 
+    @Test
+    public void test10() {
+        System.out.println(Long.MAX_VALUE/1000000000);
+    }
+
 }

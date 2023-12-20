@@ -1,7 +1,6 @@
 package org.wxd.boot.net.message;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
@@ -77,10 +76,10 @@ public class RpcEvent {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         threadStackTrace = new StackTraceElement[stackTrace.length - 2];
         System.arraycopy(stackTrace, 2, threadStackTrace, 0, threadStackTrace.length);
-        return CompletableFuture.supplyAsync(() -> {
+        return Executors.getVTExecutor().completable(() -> {
             this.get();
             return RpcEvent.this;
-        }, Executors.getVTExecutor());
+        });
     }
 
     /** 成功才会回调，有异常不会回调 */

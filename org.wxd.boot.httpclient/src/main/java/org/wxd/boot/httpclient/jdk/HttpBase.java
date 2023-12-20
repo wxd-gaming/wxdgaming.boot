@@ -106,10 +106,10 @@ public abstract class HttpBase<H extends HttpBase> {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         response.threadStackTrace = new StackTraceElement[stackTrace.length - 1];
         System.arraycopy(stackTrace, 1, response.threadStackTrace, 0, response.threadStackTrace.length);
-        return CompletableFuture.supplyAsync(() -> {
+        return Executors.getVTExecutor().completable(() -> {
             this.request();
             return response;
-        }, Executors.getVTExecutor());
+        });
     }
 
     public void asyncBySyncJson(Consumer<SyncJson> ok) {

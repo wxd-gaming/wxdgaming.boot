@@ -7,6 +7,7 @@ import org.wxd.boot.system.GlobalUtil;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 public interface IExecutorServices extends Executor {
 
@@ -55,7 +56,10 @@ public interface IExecutorServices extends Executor {
         if (runnable instanceof EventRunnable eventRunnable) {
             queueName = eventRunnable.getQueueName();
         }
-        submit(queueName, runnable, 3);
+        int stackTrace = 3;
+        if (runnable instanceof ForkJoinTask)
+            stackTrace = 6;
+        submit(queueName, runnable, stackTrace);
     }
 
     /** 普通任务 */
@@ -175,6 +179,16 @@ public interface IExecutorServices extends Executor {
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, task, stackTrace);
         executeJob(queueName, executorServiceJob);
         return task;
+    }
+
+    /** 提交带回调的执行 */
+    default <V> CompletableFuture<V> completable(Supplier<V> supplier) {
+        return CompletableFuture.supplyAsync(supplier, this);
+    }
+
+    /** 提交带回调的执行 */
+    default CompletableFuture<Void> completable(Runnable runnable) {
+        return CompletableFuture.runAsync(runnable, this);
     }
 
     /** 执行一次的延时任务 */
