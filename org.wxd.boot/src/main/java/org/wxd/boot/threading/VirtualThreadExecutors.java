@@ -50,11 +50,13 @@ public final class VirtualThreadExecutors implements Executor {
     }
 
     public VirtualThreadExecutors(String name, int coreSize, int maxSize, BlockingQueue<Runnable> queue) {
+        if (!name.startsWith("vt-"))
+            name = "vt-" + name;
         this.name = name;
         this.coreSize = coreSize;
         this.maxSize = maxSize;
         this.queue = queue;
-        this.ofVirtual = Thread.ofVirtual().name("vt-" + this.name + "-", 1);
+        this.ofVirtual = Thread.ofVirtual().name(this.name + "-", 1);
     }
 
     @Override public void execute(Runnable command) {

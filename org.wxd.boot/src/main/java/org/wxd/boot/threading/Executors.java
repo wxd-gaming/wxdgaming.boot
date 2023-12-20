@@ -64,7 +64,7 @@ public final class Executors implements Serializable {
                 if (vtExecutor == null) {
                     Integer core = JvmUtil.getProperty(JvmUtil.VT_Executor_Core_Size, 100, Integer::valueOf);
                     Integer max = JvmUtil.getProperty(JvmUtil.VT_Executor_Max_Size, 200, Integer::valueOf);
-                    vtExecutor = newExecutorVirtualServices("vt-executor", core, max);
+                    vtExecutor = newExecutorVirtualServices("default-executor", core, max);
                 }
             } finally {
                 REENTRANT_LOCK.unlock();

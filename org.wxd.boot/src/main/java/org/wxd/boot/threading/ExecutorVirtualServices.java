@@ -37,6 +37,12 @@ public final class ExecutorVirtualServices implements Executor, IExecutorService
      * @return
      */
     protected ExecutorVirtualServices(String name, int coreSize, int maxSize) {
+        if (!name.startsWith("vt-"))
+            name = "vt-" + name;
+        if (Executors.All_THREAD_LOCAL.containsKey(name)) {
+            throw new RuntimeException("已经存在线程池：" + name);
+        }
+        Executors.All_THREAD_LOCAL.put(name, this);
         executors = new VirtualThreadExecutors(
                 name,
                 coreSize,
