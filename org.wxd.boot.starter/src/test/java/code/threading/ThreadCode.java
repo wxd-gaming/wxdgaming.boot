@@ -2,7 +2,7 @@ package code.threading;
 
 import org.junit.Test;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.jdk.HttpBuilder;
+import org.wxd.boot.httpclient.url.HttpBuilder;
 import org.wxd.boot.threading.Executors;
 import org.wxd.boot.threading.IExecutorServices;
 import org.wxd.boot.timer.MyClock;
@@ -119,8 +119,8 @@ public class ThreadCode {
         // url = "http://47.108.150.14:18800/sjcq/wanIp";
         // url = "http://192.168.50.73:18800/test/ok";
         // url = "http://47.108.150.14:18801/test/ok";
-        // url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
-        url = "http://center.xiaw.net:18800/sjcq/wanIp";
+        url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
+        // url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "https://www.baidu.com";
         IExecutorServices services = Executors.newExecutorVirtualServices("" + MyClock.millis(), 100).setQueueCheckSize(10000);
         tv1(url, 1, services);
