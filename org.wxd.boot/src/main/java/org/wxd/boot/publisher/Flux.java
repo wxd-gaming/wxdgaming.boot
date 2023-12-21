@@ -1,6 +1,7 @@
 package org.wxd.boot.publisher;
 
 import lombok.Getter;
+import org.wxd.boot.threading.Executors;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -25,8 +26,9 @@ public class Flux<T> {
         this.completableFuture = completableFuture;
     }
 
+    /** 创建异步获取数据 */
     public static <U> Flux<U> create(Supplier<Collection<U>> supplier) {
-        return new Flux<>(CompletableFuture.supplyAsync(supplier));
+        return new Flux<>(Executors.getVTExecutor().completableFuture(supplier));
     }
 
     /** 数据过滤 */
