@@ -29,51 +29,43 @@ public class Mono<T> {
         return new Mono<>(Executors.getVTExecutor().completableFuture(supplier));
     }
 
+    /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
+    public Mono<T> orComplete(Supplier<T> supplier) {
+        return new Mono<>(completableFuture.thenApply((t) -> {
+            if (t != null)
+                return t;
+            else
+                return supplier.get();
+        }));
+    }
+
     /** 数据转换 */
     public <U> Mono<U> map(Function<T, U> function) {
         return new Mono<>(completableFuture.thenApply(t -> {
-            if (t != null)
-                return function.apply(t);
-            return null;
+            if (t != null) return function.apply(t);
+            else return null;
         }));
     }
 
     /** 数据过滤 */
     public Mono<T> filter(Predicate<T> predicate) {
         return new Mono<>(completableFuture.thenApply(t -> {
-            if (predicate.test(t)) {
-                try {
-                    return completableFuture.get();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                return null;
-            }
+            if (predicate.test(t)) return t;
+            else return null;
         }));
     }
 
     /** 消费订阅 */
     public Mono<T> subscribe(Consumer<T> consumer) {
-        completableFuture.thenAccept(v -> {
-            if (v != null) {
-                consumer.accept(v);
-            }
-        });
-        return this;
-    }
-
-    /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
-    public Mono<T> orComplete(T supplier) {
-        return new Mono<>(completableFuture.thenApply((t) -> {
-            if (t == null) return supplier;
-            return null;
+        return new Mono<>(completableFuture.thenApply(v -> {
+            if (v == null) return null;
+            consumer.accept(v);
+            return v;
         }));
     }
 
     public Mono<T> whenComplete(BiConsumer<? super T, ? super Throwable> action) {
-        completableFuture.whenComplete(action);
-        return this;
+        return new Mono<>(completableFuture.whenComplete(action));
     }
 
     /** 增加异常处理 */

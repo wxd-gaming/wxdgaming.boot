@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.wxd.boot.threading.Executors;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,16 @@ public class Flux<T> {
         return new Flux<>(Executors.getVTExecutor().completableFuture(supplier));
     }
 
+    /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
+    public Flux<T> orComplete(Supplier<Collection<T>> supplier) {
+        return new Flux<>(completableFuture.thenApply((t) -> {
+            if (t != null)
+                return t;
+            else
+                return supplier.get();
+        }));
+    }
+
     /** 数据过滤 */
     public Flux<T> filter(Predicate<T> predicate) {
         return new Flux<>(completableFuture.thenApply(ts -> {
@@ -43,7 +54,8 @@ public class Flux<T> {
     public <U> Flux<U> map(Function<T, U> function) {
         return new Flux<>(completableFuture.thenApply(ts -> {
             if (ts == null) return null;
-            return ts.stream().map(function).toList();
+            List<U> list = ts.stream().map(function).toList();
+            return list;
         }));
     }
 
@@ -57,25 +69,16 @@ public class Flux<T> {
 
     /** 消费订阅 */
     public Flux<T> subscribe(Consumer<T> consumer) {
-        completableFuture.thenAccept(ts -> {
+        return new Flux<>(completableFuture.thenApply(ts -> {
             if (ts != null) {
                 ts.forEach(consumer);
             }
-        });
-        return this;
-    }
-
-    /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
-    public Flux<T> orComplete(Collection<T> supplier) {
-        return new Flux<>(completableFuture.thenApply((t) -> {
-            if (t == null) return supplier;
-            return null;
+            return ts;
         }));
     }
 
     public Flux<T> whenComplete(BiConsumer<? super Collection<T>, ? super Throwable> action) {
-        completableFuture.whenComplete(action);
-        return this;
+        return new Flux<>(completableFuture.whenComplete(action));
     }
 
     /** 增加异常处理 */
