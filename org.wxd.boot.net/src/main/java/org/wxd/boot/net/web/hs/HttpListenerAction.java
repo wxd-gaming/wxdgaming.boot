@@ -10,7 +10,6 @@ import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.system.AnnUtil;
-import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.lang.RunResult;
@@ -31,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Optional;
 
@@ -105,11 +103,8 @@ class HttpListenerAction extends EventRunnable {
 
             Consumer2<Object, Boolean> callBack = (string, aBoolean) -> {
                 session.setShowLog(aBoolean);
-                if (string != null) {
-                    session.getResponseContent().write(string);
-                }
                 if (!session.isResponseOver()) {
-                    session.response();
+                    session.responseText(String.valueOf(string));
                 }
             };
 
@@ -124,7 +119,6 @@ class HttpListenerAction extends EventRunnable {
                 if (actionFile()) {
                     return;
                 }
-                session.setHttpResponseStatus(HttpResponseStatus.NOT_FOUND);
                 if ((httpHeadValueType == HttpHeadValueType.Json)) {
                     callBack.accept(RunResult.error(999, " 软件：無心道  \n not found url " + urlPath), true);
                 } else {
@@ -138,7 +132,6 @@ class HttpListenerAction extends EventRunnable {
             final Get get = AnnUtil.ann(mappingRecord.method(), Get.class);
             if (post != null || get != null) {
                 Runnable action = () -> {
-                    session.setHttpResponseStatus(HttpResponseStatus.HTTP_VERSION_NOT_SUPPORTED);
                     if ((httpHeadValueType == HttpHeadValueType.Json)) {
                         callBack.accept(RunResult.error(999, " 软件：無心道  \n server 500"), true);
                     } else {
@@ -192,9 +185,7 @@ class HttpListenerAction extends EventRunnable {
                     for (int i = 0; i < params.length; i++) {
                         Type genericParameterType = genericParameterTypes[i];
                         if (genericParameterType instanceof Class<?>) {
-                            if (genericParameterType.equals(StreamWriter.class)) {
-                                params[i] = session.getResponseContent();
-                            } else if (genericParameterType.equals(ObjMap.class)) {
+                            if (genericParameterType.equals(ObjMap.class)) {
                                 params[i] = putData;
                             } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
                                 params[i] = session;
@@ -203,9 +194,10 @@ class HttpListenerAction extends EventRunnable {
                     }
                     invoke = mappingRecord.method().invoke(mappingRecord.instance(), params);
                 }
+                boolean showLog = AnnUtil.annOpt(mappingRecord.method(), ExecutorLog.class).map(ExecutorLog::showLog).orElse(false);
                 Class<?> returnType = mappingRecord.method().getReturnType();
                 if (!void.class.equals(returnType)) {
-                    session.getResponseContent().write(String.valueOf(invoke));
+                    callBack.accept(invoke, showLog);
                 }
             } catch (Throwable throwable) {
                 if (throwable.getCause() != null) {
@@ -218,26 +210,11 @@ class HttpListenerAction extends EventRunnable {
                 content += "\n参数：" + FastJsonUtil.toJson(putData);
                 log.error(content + " 异常", throwable);
                 GlobalUtil.exception(content, throwable);
-                session.getResponseContent().clear();
-                session.getResponseContent().write(RunResult.error(505, Throw.ofString(throwable)));
-            } finally {
-                boolean showLog = false;
-                ExecutorLog annotation = AnnUtil.ann(mappingRecord.method(), ExecutorLog.class);
-                if (annotation != null) {
-                    showLog = annotation.showLog();
-                }
-                callBack.accept("", showLog);
+                session.response500(Throw.ofString(throwable));
             }
-        } catch (
-                Throwable e) {
+        } catch (Throwable e) {
             log.error("{} remoteAddress：{}", httpServer, session, e);
-            HttpServer.response(
-                    session,
-                    HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                    HttpHeadValueType.Text,
-                    Throw.ofString(e).getBytes(StandardCharsets.UTF_8)
-            );
+            session.response500(Throw.ofString(e));
         }
     }
 
@@ -296,12 +273,7 @@ class HttpListenerAction extends EventRunnable {
                     .append("\n");
             log.warn(stringBuilder.toString());
             stringBuilder.setLength(0);
-            HttpServer.response(session,
-                    HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                    HttpHeadValueType.Text,
-                    ofString.getBytes(StandardCharsets.UTF_8)
-            );
+            HttpServer.response500(session, ofString);
             return true;
         }
     }

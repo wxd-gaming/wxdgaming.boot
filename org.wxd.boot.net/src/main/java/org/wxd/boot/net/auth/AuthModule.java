@@ -49,7 +49,7 @@ public class AuthModule {
             auth = SignConfig.get().optToken(token).orElse(null);
         }
         if (annotation.needAuth() > 0) {
-            if (auth == null || auth.checkAuth(annotation.needAuth())) {
+            if (auth == null || !auth.checkAuth(annotation.needAuth())) {
                 return RunResult.error(100, annotation.authTips()).toJson();
             }
         }

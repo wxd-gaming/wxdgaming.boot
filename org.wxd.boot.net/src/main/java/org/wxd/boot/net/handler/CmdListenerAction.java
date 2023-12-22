@@ -77,18 +77,14 @@ class CmdListenerAction extends EventRunnable {
                 invoke = mappingRecord.method().invoke(mappingRecord.instance());
             } else {
                 Object[] params = new Object[mappingRecord.method().getParameterCount()];
-                if (mappingRecord.method().getParameterCount() > 0) {
-                    Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
-                    for (int i = 0; i < params.length; i++) {
-                        Type genericParameterType = genericParameterTypes[i];
-                        if (genericParameterType instanceof Class<?>) {
-                            if (genericParameterType.equals(StreamWriter.class)) {
-                                params[i] = out;
-                            } else if (genericParameterType.equals(ObjMap.class)) {
-                                params[i] = putData;
-                            } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
-                                params[i] = session;
-                            }
+                Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
+                for (int i = 0; i < params.length; i++) {
+                    Type genericParameterType = genericParameterTypes[i];
+                    if (genericParameterType instanceof Class<?>) {
+                        if (genericParameterType.equals(ObjMap.class)) {
+                            params[i] = putData;
+                        } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
+                            params[i] = session;
                         }
                     }
                 }
