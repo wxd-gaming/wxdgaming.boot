@@ -133,7 +133,43 @@ public class HttpSession extends Session implements Serializable {
 
     /** HttpContentType.html 回复 http 请求 */
     public void response() {
-        response(HttpVersion.HTTP_1_1, httpResponseStatus, getResContentType(), this.getResponseContent().toBytes());
+        response(HttpVersion.HTTP_1_1, getHttpResponseStatus(), getResContentType(), this.getResponseContent().toBytes());
+    }
+
+    public void responseText() {
+        responseText(this.getResponseContent().toBytes());
+    }
+
+    public void responseText(String res) {
+        responseText(res.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void responseText(byte[] res) {
+        response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.Text, res);
+    }
+
+    public void responseJson() {
+        responseJson(this.getResponseContent().toBytes());
+    }
+
+    public void responseJson(String res) {
+        responseJson(res.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void responseJson(byte[] res) {
+        response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.Json, res);
+    }
+
+    public void responseHtml() {
+        responseHtml(this.getResponseContent().toBytes());
+    }
+
+    public void responseHtml(String res) {
+        responseHtml(res.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void responseHtml(byte[] res) {
+        response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.Html, res);
     }
 
     /** HttpContentType.html 回复 http 请求 */
