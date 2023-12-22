@@ -244,7 +244,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
                     case BinaryWebSocketFrame binaryWebSocketFrame -> {
                         /*二进制数据*/
                         ByteBuf byteBuf = Unpooled.wrappedBuffer(binaryWebSocketFrame.content());
-                        read(WebSocketServer.this, session, byteBuf);
+                        read(session, byteBuf);
                         session.checkReadCount(WebSocketServer.this.maxReadCount);
                     }
                     case TextWebSocketFrame textWebSocketFrame -> {

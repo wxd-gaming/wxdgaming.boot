@@ -11,6 +11,7 @@ import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.httpclient.HttpDataAction;
 import org.wxd.boot.httpclient.HttpHeadValueType;
+import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.ssl.WxOptionalSslHandler;
@@ -144,6 +145,10 @@ public class HttpSession extends Session implements Serializable {
         responseText(res.getBytes(StandardCharsets.UTF_8));
     }
 
+    public void responseText(SyncJson res) {
+        responseText(res.toJson().getBytes(StandardCharsets.UTF_8));
+    }
+
     public void responseText(byte[] res) {
         response(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.Text, res);
     }
@@ -154,6 +159,10 @@ public class HttpSession extends Session implements Serializable {
 
     public void responseJson(String res) {
         responseJson(res.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public void responseJson(SyncJson res) {
+        responseJson(res.toJson().getBytes(StandardCharsets.UTF_8));
     }
 
     public void responseJson(byte[] res) {
