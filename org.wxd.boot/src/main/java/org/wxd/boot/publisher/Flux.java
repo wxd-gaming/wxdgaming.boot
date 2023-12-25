@@ -36,7 +36,9 @@ public class Flux<T> {
 
     /** 创建异步获取数据 */
     public static <U> Flux<U> createAsync(Supplier<Collection<U>> supplier) {
-        return new Flux<>(Executors.getVTExecutor().completableFuture(supplier));
+        Flux<U> flux = new Flux<>(new CompletableFuture<>());
+        Executors.getVTExecutor().submit(() -> flux.completableFuture.complete(supplier.get()), 3);
+        return flux;
     }
 
     /** 当未查找到数据，并且无异常的情况下，赋值给定值 */

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.wxd.boot.publisher.Flux;
 import org.wxd.boot.publisher.Mono;
+import org.wxd.boot.threading.Executors;
 
 import java.util.List;
 
@@ -73,10 +74,26 @@ public class TestPublisher {
     }
 
     @Test
-    public void y3() {
+    public void y3() throws InterruptedException {
+
         Mono.create("{}")
                 .map(v -> "我是map：" + v)
-                .subscribe(v -> System.out.println(v));
+                .subscribe(v -> log.info(v));
+
+        Mono.createAsync(() -> {
+                    try {
+                        Thread.sleep(500);
+                        return "{}";
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(v -> "我是 async map：" + v)
+                .subscribe(v -> log.info(v));
+
+        Executors.getDefaultExecutor().completableFuture(() -> {}).thenAccept((v) -> {log.debug("{}", 1);});
+
+        Thread.sleep(3000);
     }
 
 }

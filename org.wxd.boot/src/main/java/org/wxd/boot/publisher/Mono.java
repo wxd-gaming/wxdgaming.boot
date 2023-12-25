@@ -33,7 +33,9 @@ public class Mono<T> {
 
     /** 创建异步获取数据 */
     public static <U> Mono<U> createAsync(Supplier<U> supplier) {
-        return new Mono<>(Executors.getVTExecutor().completableFuture(supplier));
+        Mono<U> uMono = new Mono<>(new CompletableFuture<>());
+        Executors.getVTExecutor().submit(() -> uMono.completableFuture.complete(supplier.get()), 3);
+        return uMono;
     }
 
     /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
