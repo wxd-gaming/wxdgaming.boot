@@ -1,11 +1,6 @@
 package code.threading;
 
 import org.junit.Test;
-import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.jdk.HttpBuilder;
-import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.IExecutorServices;
-import org.wxd.boot.timer.MyClock;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 线程测试
