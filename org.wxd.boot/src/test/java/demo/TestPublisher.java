@@ -18,7 +18,7 @@ public class TestPublisher {
 
     @Test
     public void t1() throws Exception {
-        Mono.create(() -> {
+        Mono.createAsync(() -> {
                     try {Thread.sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
                     return 1;
                 })
@@ -34,7 +34,7 @@ public class TestPublisher {
                 .onError(throwable -> log.debug("onError", throwable))
         ;
 
-        Flux.create(() -> {
+        Flux.createAsync(() -> {
                     try {
                         Thread.sleep(1000);
                         return List.of(1, 2, 3, 4);
@@ -51,7 +51,7 @@ public class TestPublisher {
                 })
         ;
 
-        Flux.create(() -> {return List.of(List.of(1, 2, 3), List.of(7, 8, 9));})
+        Flux.create(List.of(List.of(1, 2, 3), List.of(7, 8, 9)))
                 .subscribe(v -> log.debug("{}", v))
                 .flatMap(v -> v.stream())
                 .map(i -> "我是Flux：" + i)
@@ -70,6 +70,13 @@ public class TestPublisher {
             log.debug("主线程");
         }
 
+    }
+
+    @Test
+    public void y3() {
+        Mono.create("{}")
+                .map(v -> "我是map：" + v)
+                .subscribe(v -> System.out.println(v));
     }
 
 }
