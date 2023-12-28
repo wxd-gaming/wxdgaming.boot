@@ -9,6 +9,7 @@ import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.httpclient.ssl.SslContextClient;
 import org.wxd.boot.httpclient.ssl.SslProtocolType;
 import org.wxd.boot.lang.SyncJson;
+import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.threading.Executors;
@@ -24,7 +25,6 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class HttpBase<H extends HttpBase> {
 
-    protected final Response<H> response;
     protected HttpHeadValueType httpHeadValueType = HttpHeadValueType.Application;
     protected SslProtocolType sslProtocolType = SslProtocolType.SSL;
     protected final Map<String, String> reqHeaderMap = new LinkedHashMap<>();
@@ -47,61 +46,22 @@ public abstract class HttpBase<H extends HttpBase> {
     /** 分段传输协议 */
     protected String boundary = null;
     protected String reqHttpMethod;
+    protected final Response<H> response;
+    protected StackTraceElement[] stackTraceElements;
+    protected final CompletableFuture<Response<H>> responseCompletableFuture;
+    protected final Mono<Response<H>> mono;
 
     protected HttpBase(String uriPath) {
-        response = new Response(this, uriPath);
         header(HttpHeadNameType.Accept_Encoding, HttpHeadValueType.Gzip);
         header("user-agent", "java.org.wxd j21");
+        response = new Response(this, uriPath);
+        responseCompletableFuture = new CompletableFuture<>();
+        mono = new Mono<>(responseCompletableFuture);
     }
 
     /** 处理需要发送的数据 */
     protected void writer(HttpURLConnection urlConnection) throws Exception {
 
-    }
-
-    public Response<H> request() {
-        Throwable throwable = null;
-        int r = 0;
-        for (; r < retry; r++) {
-            openURLConnection();
-            try {
-                writer(this.response.urlConnection);
-                /*开始读取内容*/
-                int responseCode = this.response.responseCode();
-                InputStream inputStream;
-                if (this.response.urlConnection.getErrorStream() != null) {
-                    inputStream = this.response.urlConnection.getErrorStream();
-                } else {
-                    inputStream = this.response.urlConnection.getInputStream();
-                }
-                try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-                    byte[] buffer = new byte[512];
-                    int len = -1;
-                    while ((len = inputStream.read(buffer)) != -1) {
-                        bos.write(buffer, 0, len);
-                    }
-                    byte[] toByteArray = bos.toByteArray();
-                    String encoding = this.response.urlConnection.getContentEncoding();
-                    if (encoding != null
-                            && encoding.toLowerCase().contains("gzip")
-                            && toByteArray.length > 0) {
-                        this.response.bodys = GzipUtil.unGZip(toByteArray);
-                    } else {
-                        this.response.bodys = toByteArray;
-                    }
-                } finally {
-                    inputStream.close();
-                }
-                return this.response;
-            } catch (Throwable e) {
-                throwable = e;
-            } finally {
-                if (this.response.urlConnection != null) {
-                    this.response.urlConnection.disconnect();
-                }
-            }
-        }
-        throw Throw.as(this.response.toString() + ", 重试：" + r, throwable);
     }
 
     protected void openURLConnection() {
@@ -157,80 +117,95 @@ public abstract class HttpBase<H extends HttpBase> {
         }
     }
 
-    protected CompletableFuture<Response<H>> completableFuture() {
+    public Mono<Response<H>> async() {
+        return sendAsync(3);
+    }
+
+    public Mono<String> asyncString() {
+        return sendAsync(3).map(Response::bodyString);
+    }
+
+    public void asyncString(Consumer<String> consumer) {
+        sendAsync(3)
+                .subscribe(httpResponse -> consumer.accept(httpResponse.bodyString()))
+                .onError(this::actionThrowable);
+    }
+
+    public Mono<SyncJson> asyncSyncJson() {
+        return sendAsync(3).map(Response::bodySyncJson);
+    }
+
+    public void asyncSyncJson(Consumer<SyncJson> consumer) {
+        sendAsync(3)
+                .subscribe(httpResponse -> consumer.accept(httpResponse.bodySyncJson()))
+                .onError(this::actionThrowable);
+    }
+
+    Mono<Response<H>> sendAsync(int stackTraceIndex) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        response.threadStackTrace = new StackTraceElement[stackTrace.length - 1];
-        System.arraycopy(stackTrace, 1, response.threadStackTrace, 0, response.threadStackTrace.length);
-        return Executors.getVTExecutor().completableFuture(() -> {
-            this.request();
-            return response;
-        });
+        stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
+        System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
+        Executors.getVTExecutor().submit(() -> {
+            try {
+                action();
+                this.responseCompletableFuture.complete(response);
+            } catch (Throwable throwable) {
+                this.responseCompletableFuture.completeExceptionally(throwable);
+            }
+        }, stackTraceIndex + 1);
+        return mono;
     }
 
-    public void asyncBySyncJson(Consumer<SyncJson> ok) {
-        async(httpBase -> ok.accept(SyncJson.parse(httpBase.bodyUnicodeDecodeString())));
+    public Response<H> request() {
+        action();
+        return this.response;
     }
 
-    public void asyncByString(Consumer<String> ok) {
-        async(jPostText -> ok.accept(jPostText.bodyUnicodeDecodeString()));
-    }
-
-    public void asyncComplete(Consumer<Response<H>> complete) {
-        async(null, complete);
-    }
-
-    public void async(Consumer<Response<H>> ok) {
-        async(ok, null);
-    }
-
-    public void async(Consumer<Response<H>> ok, Consumer<Response<H>> complete) {
-        async(ok, complete, this::actionThrowable);
-    }
-
-    /** 异步完成， */
-    public CompletableFuture<Response<H>> async(Consumer<Response<H>> ok, Consumer<Response<H>> complete, Consumer<Throwable> error) {
-        return completableFuture()
-                .thenApply(r -> {
-                    if (ok != null) {
-                        try {
-                            ok.accept(r);
-                        } catch (Throwable throwable) {
-                            if (error == null) {
-                                this.actionThrowable(throwable);
-                            } else {
-                                error.accept(throwable);
-                            }
-                        }
+    void action() {
+        Throwable throwable = null;
+        openURLConnection();
+        int action = 0;
+        for (; action < retry; action++) {
+            try {
+                writer(this.response.urlConnection);
+                /*开始读取内容*/
+                int responseCode = this.response.responseCode();
+                InputStream inputStream;
+                if (this.response.urlConnection.getErrorStream() != null) {
+                    inputStream = this.response.urlConnection.getErrorStream();
+                } else {
+                    inputStream = this.response.urlConnection.getInputStream();
+                }
+                try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                    byte[] buffer = new byte[512];
+                    int len = -1;
+                    while ((len = inputStream.read(buffer)) != -1) {
+                        bos.write(buffer, 0, len);
                     }
-                    return r;
-                })
-                .whenComplete((response, throwable) -> {
-                    if (complete != null) {
-                        try {
-                            complete.accept(response);
-                        } catch (Throwable t) {
-                            if (error == null) {
-                                this.actionThrowable(t);
-                            } else {
-                                error.accept(t);
-                            }
-                        }
-                    }
-                })
-                .exceptionally(throwable -> {
-                    if (throwable instanceof CompletionException) {
-                        throwable = throwable.getCause();
-                    }
-
-                    if (error == null) {
-                        log.error("异常 {}", response.uriPath, throwable);
+                    byte[] toByteArray = bos.toByteArray();
+                    String encoding = this.response.urlConnection.getContentEncoding();
+                    if (encoding != null
+                            && encoding.toLowerCase().contains("gzip")
+                            && toByteArray.length > 0) {
+                        this.response.bodys = GzipUtil.unGZip(toByteArray);
                     } else {
-                        RuntimeException aThrow = new Throw(throwable.toString());
-                        aThrow.setStackTrace(response.threadStackTrace);
-                        error.accept(aThrow);
+                        this.response.bodys = toByteArray;
                     }
-                    return response;
-                });
+                } finally {
+                    inputStream.close();
+                }
+                return;
+            } catch (Throwable t) {
+                throwable = t;
+            } finally {
+                if (this.response.urlConnection != null) {
+                    this.response.urlConnection.disconnect();
+                }
+            }
+        }
+        RuntimeException runtimeException = Throw.as(HttpBase.this.toString() + ", 重试：" + action, throwable);
+        runtimeException.setStackTrace(stackTraceElements);
+        throw runtimeException;
     }
 
     protected void actionThrowable(Throwable throwable) {
@@ -239,6 +214,7 @@ public abstract class HttpBase<H extends HttpBase> {
             GlobalUtil.exception(this.getClass().getSimpleName() + " url:" + response.uriPath, throwable);
     }
 
+    /** 同时设置连接超时和读取超时时间 */
     public H timeout(int timeout) {
         this.connTimeout = timeout;
         this.readTimeout = timeout;

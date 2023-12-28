@@ -2,7 +2,6 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.httpclient.url.Get;
 import org.wxd.boot.httpclient.url.HttpBuilder;
 import org.wxd.boot.httpclient.url.Response;
 import org.wxd.boot.lang.RandomUtils;
@@ -12,7 +11,6 @@ import org.wxd.boot.threading.VirtualThreadExecutors;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 
 /**
  * 测试虚拟锁
@@ -83,11 +81,12 @@ public class VTThreadTest {
 
     @Test
     public void async() throws Exception {
-        HttpBuilder.get("http://127.0.0.1:19000/publicapi/test0").async(new Consumer<Response<Get>>() {
-            @Override public void accept(Response<Get> getResponse) {
-                System.out.println(getResponse.bodyString());
-            }
-        });
+        String url = "http://127.0.0.1:19000/publicapi/test0";
+        url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
+        HttpBuilder.get(url)
+                .async()
+                .subscribe(Response::systemOut)
+                .onError(throwable -> throwable.printStackTrace(System.out));
         System.in.read();
     }
 

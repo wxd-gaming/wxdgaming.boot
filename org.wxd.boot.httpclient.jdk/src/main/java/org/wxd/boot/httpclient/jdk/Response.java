@@ -1,13 +1,13 @@
-package org.wxd.boot.httpclient.url;
+package org.wxd.boot.httpclient.jdk;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.zip.GzipUtil;
+import org.wxd.boot.httpclient.HttpHeadNameType;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.str.StringUtil;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 基于 HttpURLConnection 信息请求
+ * 基于 java 原生的http 信息请求
  *
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-11-15 12:34
@@ -26,38 +26,40 @@ public final class Response<H extends HttpBase> {
 
     final H httpBase;
     final String uriPath;
-    HttpURLConnection urlConnection;
     String postText = null;
-    byte[] bodys = null;
+    HttpResponse<byte[]> httpResponse;
 
-    protected Response(H httpBase, String uriPath) {
+    Response(H httpBase, String uriPath) {
         this.httpBase = httpBase;
         this.uriPath = uriPath;
     }
 
-
-    public int responseCode() {
-        try {
-            return this.urlConnection.getResponseCode();
-        } catch (IOException e) {
-            throw Throw.as(this.toString(), e);
-        }
-    }
-
     public String getHeader(String header) {
-        return this.urlConnection.getHeaderField(header);
+        return this.httpResponse.headers().firstValue(header).orElse("");
     }
 
     public Map<String, List<String>> getHeaders() {
-        return this.urlConnection.getHeaderFields();
+        return this.httpResponse.headers().map();
+    }
+
+    public int responseCode() {
+        return httpResponse.statusCode();
+    }
+
+    public byte[] body() {
+        byte[] body = httpResponse.body();
+        if ("gzip".equalsIgnoreCase(httpResponse.headers().firstValue(HttpHeadNameType.Content_Encoding.getValue()).orElse(""))) {
+            return GzipUtil.unGZip(body);
+        }
+        return body;
     }
 
     public String bodyString() {
         return bodyString(StandardCharsets.UTF_8);
     }
 
-    public String bodyString(Charset charsetName) {
-        return new String(bodys, charsetName);
+    public String bodyString(Charset charset) {
+        return new String(body(), charset);
     }
 
     public SyncJson bodySyncJson() {

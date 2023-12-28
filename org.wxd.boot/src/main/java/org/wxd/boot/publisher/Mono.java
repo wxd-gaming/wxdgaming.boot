@@ -18,9 +18,9 @@ import java.util.function.*;
 @Getter
 public class Mono<T> {
 
-    protected CompletableFuture<T> completableFuture;
+    protected final CompletableFuture<T> completableFuture;
 
-    protected Mono(CompletableFuture<T> completableFuture) {
+    public Mono(CompletableFuture<T> completableFuture) {
         this.completableFuture = completableFuture;
     }
 
