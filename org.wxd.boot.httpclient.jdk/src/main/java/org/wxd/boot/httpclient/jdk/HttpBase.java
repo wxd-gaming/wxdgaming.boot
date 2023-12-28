@@ -7,7 +7,6 @@ import org.wxd.boot.httpclient.HttpHeadValueType;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
-import org.wxd.boot.threading.Executors;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,8 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -42,9 +41,11 @@ public abstract class HttpBase<H extends HttpBase> {
     protected final URI uri;
     protected final LinkedHashMap<String, String> headers = new LinkedHashMap<>();
     protected long timeout = 3000;
+    protected String postText = null;
     /** 重试状态 */
     protected int retry = 1;
-    protected final Response<H> response;
+    StackTraceElement[] stackTraceElements;
+    CompletableFuture<HttpResponse<byte[]>> async = new CompletableFuture<>();
 
     protected HttpBase(HttpClient httpClient, String url) {
         this.httpClient = httpClient;
@@ -57,7 +58,6 @@ public abstract class HttpBase<H extends HttpBase> {
         header(HttpHeadNameType.Content_Type, HttpHeadValueType.Application);
         header(HttpHeadNameType.Accept_Encoding, HttpHeadValueType.Gzip);
         header("user-agent", "java.org.wxd j21");
-        response = new Response(this, url);
     }
 
     protected HttpRequest.Builder builder() {
@@ -66,7 +66,31 @@ public abstract class HttpBase<H extends HttpBase> {
                 .timeout(Duration.ofMillis(timeout));
     }
 
-    public Response<H> request() {
+    public CompletableFuture<HttpResponse<byte[]>> async() {
+        return sendAsync(3);
+    }
+
+    public CompletableFuture<String> asyncString() {
+        return sendAsync(3).thenApply(httpResponse -> new String(httpResponse.body(), StandardCharsets.UTF_8));
+    }
+
+    public void asyncString(Consumer<String> consumer) {
+        sendAsync(3).thenAccept(httpResponse -> consumer.accept(new String(httpResponse.body(), StandardCharsets.UTF_8)));
+    }
+
+    public CompletableFuture<SyncJson> asyncSyncJson() {
+        return sendAsync(3).thenApply(httpResponse -> SyncJson.parse(new String(httpResponse.body(), StandardCharsets.UTF_8)));
+    }
+
+    public void asyncSyncJson(Consumer<SyncJson> consumer) {
+        sendAsync(3).thenAccept(httpResponse -> consumer.accept(SyncJson.parse(new String(httpResponse.body(), StandardCharsets.UTF_8))));
+    }
+
+    CompletableFuture<HttpResponse<byte[]>> sendAsync(int stackTraceIndex) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
+        System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
+
         HttpRequest.Builder builder = builder();
 
         builder.version(HttpClient.Version.HTTP_1_1);
@@ -77,104 +101,37 @@ public abstract class HttpBase<H extends HttpBase> {
 
         header("connection", "close");
 
-        HttpRequest build = builder.build();
+        HttpRequest httpRequest = builder.build();
 
         if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + " " + this.response.uriPath);
+            log.debug(this.getClass().getSimpleName() + " " + uri);
             final String collect = headers.entrySet().stream()
                     .map(entry -> entry.getKey() + ":" + String.join("=", entry.getValue()))
                     .collect(Collectors.joining(", "));
             log.debug("http head：" + collect);
-            if (log.isDebugEnabled() && StringUtil.notEmptyOrNull(this.response.postText)) {
-                log.debug("http send：" + this.response.postText);
+            if (log.isDebugEnabled() && StringUtil.notEmptyOrNull(this.postText)) {
+                log.debug("http send：" + this.postText);
             }
         }
-
-        Exception exception = null;
-        for (int i = 0; i < retry; i++) {
-            try {
-                response.httpResponse = httpClient.send(build, HttpResponse.BodyHandlers.ofByteArray());
-                return response;
-            } catch (Exception e) {
-                exception = e;
-            }
-        }
-        throw Throw.as(this.getClass().getSimpleName() + " 重试次数：" + retry + ", url:" + url(), exception);
+        action(httpRequest, 1);
+        return this.async;
     }
 
-    protected CompletableFuture<Response<H>> completableFuture() {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        response.threadStackTrace = new StackTraceElement[stackTrace.length - 1];
-        System.arraycopy(stackTrace, 1, response.threadStackTrace, 0, response.threadStackTrace.length);
-        return Executors.getVTExecutor().completableFuture(() -> {
-            this.request();
-            return response;
-        });
-    }
-
-    public void asyncBySyncJson(Consumer<SyncJson> ok) {
-        async(httpBase -> ok.accept(SyncJson.parse(httpBase.bodyUnicodeDecodeString())));
-    }
-
-    public void asyncByString(Consumer<String> ok) {
-        async(jPostText -> ok.accept(jPostText.bodyUnicodeDecodeString()));
-    }
-
-    public void asyncComplete(Consumer<Response<H>> complete) {
-        async(null, complete);
-    }
-
-    public void async(Consumer<Response<H>> ok) {
-        async(ok, null);
-    }
-
-    public void async(Consumer<Response<H>> ok, Consumer<Response<H>> complete) {
-        async(ok, complete, this::actionThrowable);
-    }
-
-    /** 异步完成， */
-    public CompletableFuture<Response<H>> async(Consumer<Response<H>> ok, Consumer<Response<H>> complete, Consumer<Throwable> error) {
-        return completableFuture()
-                .thenApply(r -> {
-                    if (ok != null) {
-                        try {
-                            ok.accept(r);
-                        } catch (Throwable throwable) {
-                            if (error == null) {
-                                this.actionThrowable(throwable);
-                            } else {
-                                error.accept(throwable);
-                            }
+    void action(HttpRequest httpRequest, int action) {
+        httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray())
+                .whenComplete((httpResponse, throwable) -> {
+                    if (throwable != null) {
+                        if (action < retry) {
+                            action(httpRequest, action + 1);
+                        } else {
+                            RuntimeException runtimeException = Throw.as(HttpBase.this.toString() + ", 重试：" + action, throwable);
+                            runtimeException.setStackTrace(stackTraceElements);
+                            actionThrowable(runtimeException);
+                            this.async.completeExceptionally(runtimeException);
                         }
-                    }
-                    return r;
-                })
-                .whenComplete((response, throwable) -> {
-                    if (complete != null) {
-                        try {
-                            complete.accept(response);
-                        } catch (Throwable t) {
-                            if (error == null) {
-                                this.actionThrowable(t);
-                            } else {
-                                error.accept(t);
-                            }
-                        }
-                    }
-                })
-                .exceptionally(throwable -> {
-                    if (throwable instanceof CompletionException) {
-                        throwable = throwable.getCause();
-                    }
-
-                    if (error == null) {
-                        log.error("异常 {}", url(), throwable);
                     } else {
-                        RuntimeException aThrow = new Throw(throwable.toString());
-                        aThrow.setStackTrace(response.threadStackTrace);
-                        error.accept(aThrow);
+                        this.async.complete(httpResponse);
                     }
-                    return response;
                 });
     }
 
@@ -221,4 +178,7 @@ public abstract class HttpBase<H extends HttpBase> {
         return uri.toString();
     }
 
+    @Override public String toString() {
+        return getClass().getSimpleName() + " url: " + url() + Optional.ofNullable(postText).map(v -> ", postText: " + postText).orElse("");
+    }
 }

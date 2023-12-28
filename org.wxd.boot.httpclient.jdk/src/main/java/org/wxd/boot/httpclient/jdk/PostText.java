@@ -24,20 +24,20 @@ public class PostText extends HttpBase<PostText> {
     }
 
     public PostText paramText(String text) {
-        response.postText = text;
+        postText = text;
         return this;
     }
 
     public PostText paramJson(String text) {
-        response.postText = text;
+        postText = text;
         header("Content-Type", HttpHeadValueType.Json.getValue());
         return this;
     }
 
     @Override protected HttpRequest.Builder builder() {
         HttpRequest.Builder builder = super.builder();
-        if (StringUtil.notEmptyOrNull(response.postText)) {
-            builder.POST(HttpRequest.BodyPublishers.ofString(response.postText));
+        if (StringUtil.notEmptyOrNull(postText)) {
+            builder.POST(HttpRequest.BodyPublishers.ofString(postText));
         } else {
             builder.POST(HttpRequest.BodyPublishers.noBody());
         }
@@ -45,10 +45,10 @@ public class PostText extends HttpBase<PostText> {
     }
 
     @Override protected void actionThrowable(Throwable throwable) {
-        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, response.postText, throwable);
+        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, postText, throwable);
         if (retry > 1)
             GlobalUtil.exception(
-                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + response.postText,
+                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + postText,
                     throwable
             );
     }

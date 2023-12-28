@@ -39,9 +39,9 @@ public class PostMulti extends HttpBase<PostMulti> {
 
     @Override protected HttpRequest.Builder builder() {
         HttpRequest.Builder builder = super.builder();
-        response.postText = ofFormData();
-        if (StringUtil.notEmptyOrNull(response.postText)) {
-            builder.POST(HttpRequest.BodyPublishers.ofString(response.postText));
+        this.postText = ofFormData();
+        if (StringUtil.notEmptyOrNull(this.postText)) {
+            builder.POST(HttpRequest.BodyPublishers.ofString(this.postText));
         } else {
             builder.POST(HttpRequest.BodyPublishers.noBody());
         }
@@ -60,10 +60,10 @@ public class PostMulti extends HttpBase<PostMulti> {
     }
 
     @Override protected void actionThrowable(Throwable throwable) {
-        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, response.postText, throwable);
+        log.error("{} url:{}, body：{}", this.getClass().getSimpleName(), uri, this.postText, throwable);
         if (retry > 1)
             GlobalUtil.exception(
-                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + response.postText,
+                    this.getClass().getSimpleName() + " url:" + uri + ", body：" + this.postText,
                     throwable
             );
     }
