@@ -1,7 +1,7 @@
 package org.wxd.boot.httpclient.jdk;
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.httpclient.ssl.SslProtocolType;
+import org.wxd.boot.http.ssl.SslProtocolType;
 import org.wxd.boot.threading.Executors;
 
 import javax.net.ssl.SSLContext;

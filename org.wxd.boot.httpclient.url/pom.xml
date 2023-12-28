@@ -9,7 +9,8 @@
         <version>wxd-j21-01</version>
     </parent>
 
-    <artifactId>org.wxd.boot.httpclient.jdk</artifactId>
+    <artifactId>org.wxd.boot.httpclient.url</artifactId>
+
 
     <dependencies>
         <dependency>
@@ -30,7 +31,7 @@
     </dependencies>
 
     <build>
-        <finalName>httpclient-jdk</finalName>
+        <finalName>httpclient-url</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

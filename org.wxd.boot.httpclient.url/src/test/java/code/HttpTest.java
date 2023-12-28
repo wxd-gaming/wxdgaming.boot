@@ -1,9 +1,9 @@
-package demo;
+package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.httpclient.jdk.HttpBuilder;
+import org.wxd.boot.httpclient.url.HttpBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,11 +27,11 @@ public class HttpTest {
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "https://www.baidu.com";
         tv1(url, 1);
-        tv1(url, 10);
-        tv1(url, 50);
-        tv1(url, 100);
-        tv1(url, 500);
-        tv1(url, 1000);
+        //tv1(url, 10);
+        //tv1(url, 50);
+        //tv1(url, 100);
+        //tv1(url, 500);
+        //tv1(url, 1000);
     }
 
     public void tv1(String url, int testCount) throws Exception {
@@ -55,7 +55,7 @@ public class HttpTest {
         float v1 = (System.nanoTime() - l) / 10000 / 100f;
         float v = allTime.get() / 10000 / 100f;
         System.out.println(
-                "jdk http client - " +
+                "HttpURLConnection - " +
                         "请求 " + source.get() + " 次, " +
                         "耗时：" + v1 + "(累计耗时：" + v + ") ms, " +
                         "平均：" + v / source.get() + " ms, " +

@@ -2,8 +2,8 @@ package org.wxd.boot.httpclient.jdk;
 
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.httpclient.HttpHeadNameType;
-import org.wxd.boot.httpclient.HttpHeadValueType;
+import org.wxd.boot.http.HttpHeadNameType;
+import org.wxd.boot.http.HttpHeadValueType;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
@@ -147,7 +147,7 @@ public abstract class HttpBase<H extends HttpBase> {
     }
 
     /** 读取超时 */
-    public H readTime(long timeout) {
+    public H readTimeout(long timeout) {
         this.timeout = timeout;
         return (H) this;
     }

@@ -3,7 +3,7 @@ package org.wxd.boot.httpclient.jdk;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.httpclient.HttpHeadNameType;
+import org.wxd.boot.http.HttpHeadNameType;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.str.StringUtil;
 
