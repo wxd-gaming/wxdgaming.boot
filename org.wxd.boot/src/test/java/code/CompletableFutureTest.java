@@ -1,5 +1,6 @@
 package code;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.threading.Executors;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+@Slf4j
 public class CompletableFutureTest {
 
     @Test
@@ -38,7 +40,7 @@ public class CompletableFutureTest {
             }
             return "1";
         });
-        mono.subscribe(System.out::println);
+        mono.subscribe(v -> log.info(v));
         System.in.read();
     }
 

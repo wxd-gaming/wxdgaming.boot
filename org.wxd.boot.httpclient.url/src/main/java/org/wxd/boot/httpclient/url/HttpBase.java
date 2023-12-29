@@ -122,6 +122,12 @@ public abstract class HttpBase<H extends HttpBase> {
         return sendAsync(3);
     }
 
+    public void asyncResponse(Consumer<Response<H>> consumer) {
+        sendAsync(3)
+                .subscribe(httpResponse -> consumer.accept(httpResponse))
+                .onError(this::actionThrowable);
+    }
+
     public Mono<String> asyncString() {
         return sendAsync(3).map(Response::bodyString);
     }
@@ -280,6 +286,14 @@ public abstract class HttpBase<H extends HttpBase> {
     public H header(String headerKey, String HeaderValue) {
         this.reqHeaderMap.put(headerKey, HeaderValue);
         return (H) this;
+    }
+
+    public String url() {
+        return response.uriPath.toString();
+    }
+
+    public String getPostText() {
+        return response.getPostText();
     }
 
     protected static class TrustAnyHostnameVerifier implements HostnameVerifier {
