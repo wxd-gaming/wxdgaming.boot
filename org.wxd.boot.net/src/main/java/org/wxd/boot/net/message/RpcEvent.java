@@ -123,7 +123,9 @@ public class RpcEvent {
                     get();
                     RpcEvent.this.responseCompletableFuture.complete(RpcEvent.this);
                 } catch (Throwable throwable) {
-                    RpcEvent.this.responseCompletableFuture.completeExceptionally(throwable);
+                    RuntimeException runtimeException = Throw.as(RpcEvent.this.toString(), throwable);
+                    runtimeException.setStackTrace(stackTraceElements);
+                    RpcEvent.this.responseCompletableFuture.completeExceptionally(runtimeException);
                 }
             }
         }, stackTraceIndex + 2);
