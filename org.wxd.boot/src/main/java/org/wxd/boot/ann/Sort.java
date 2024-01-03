@@ -6,7 +6,7 @@ import java.lang.annotation.*;
  * 用于排序的注解
  */
 @Documented
-@Target({ElementType.FIELD/*字段*/})
+@Target({ElementType.FIELD, ElementType.METHOD/*字段*/})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Sort {
     /** 分组 默认空 */

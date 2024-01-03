@@ -122,9 +122,9 @@ public abstract class HttpBase<H extends HttpBase> {
         return sendAsync(3);
     }
 
-    public void asyncResponse(Consumer<Response<H>> consumer) {
+    public void async(Consumer<Response<H>> consumer) {
         sendAsync(3)
-                .subscribe(httpResponse -> consumer.accept(httpResponse))
+                .subscribe(consumer)
                 .onError(this::actionThrowable);
     }
 

@@ -84,6 +84,10 @@ public class Mono<T> {
         }));
     }
 
+    public boolean isEmpty() {
+        return get() == null;
+    }
+
     public T orElse(T t) {
         T t1 = get();
         if (t1 != null) return t1;
