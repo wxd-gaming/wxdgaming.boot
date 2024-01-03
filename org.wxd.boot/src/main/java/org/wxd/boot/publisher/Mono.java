@@ -4,9 +4,7 @@ import lombok.Getter;
 import org.wxd.boot.threading.Executors;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.*;
 
 /**
@@ -86,12 +84,26 @@ public class Mono<T> {
         }));
     }
 
-    public T get() throws ExecutionException, InterruptedException {
-        return completableFuture.get();
+    public T orElse(T t) {
+        T t1 = get();
+        if (t1 != null) return t1;
+        return t;
     }
 
-    public T get(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-        return completableFuture.get(timeout, unit);
+    public T get() {
+        try {
+            return completableFuture.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public T get(long timeout, TimeUnit unit) {
+        try {
+            return completableFuture.get(timeout, unit);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

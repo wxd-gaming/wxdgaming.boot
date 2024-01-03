@@ -6,9 +6,7 @@ import org.wxd.boot.threading.Executors;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.*;
 import java.util.stream.Stream;
 
@@ -98,11 +96,25 @@ public class Flux<T> {
         }));
     }
 
-    public Collection<T> get() throws ExecutionException, InterruptedException {
-        return completableFuture.get();
+    public Collection<T> orElse(Collection<T> ts) {
+        Collection<T> ts1 = get();
+        if (ts1 != null) return ts1;
+        return ts;
     }
 
-    public Collection<T> get(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-        return completableFuture.get(timeout, unit);
+    public Collection<T> get() {
+        try {
+            return completableFuture.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Collection<T> get(long timeout, TimeUnit unit) {
+        try {
+            return completableFuture.get(timeout, unit);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
