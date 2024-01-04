@@ -217,7 +217,9 @@ public abstract class HttpBase<H extends HttpBase> {
             }
         }
         RuntimeException runtimeException = Throw.as(HttpBase.this.toString() + ", 重试：" + action, throwable);
-        runtimeException.setStackTrace(stackTraceElements);
+        if (stackTraceElements != null) {
+            runtimeException.setStackTrace(stackTraceElements);
+        }
         throw runtimeException;
     }
 

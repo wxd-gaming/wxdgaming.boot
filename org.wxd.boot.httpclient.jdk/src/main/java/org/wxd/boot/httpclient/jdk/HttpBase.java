@@ -136,7 +136,9 @@ public abstract class HttpBase<H extends HttpBase> {
                             action(httpRequest, action + 1);
                         } else {
                             RuntimeException runtimeException = Throw.as(HttpBase.this.toString() + ", 重试：" + action, throwable);
-                            runtimeException.setStackTrace(stackTraceElements);
+                            if (stackTraceElements != null) {
+                                runtimeException.setStackTrace(stackTraceElements);
+                            }
                             this.responseCompletableFuture.completeExceptionally(runtimeException);
                         }
                     } else {
