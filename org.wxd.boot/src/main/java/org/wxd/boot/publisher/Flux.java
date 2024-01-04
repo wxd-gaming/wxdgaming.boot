@@ -1,6 +1,7 @@
 package org.wxd.boot.publisher;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.threading.Executors;
 
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-12-21 09:34
  **/
+@Slf4j
 @Getter
 public class Flux<T> {
 
@@ -74,6 +76,16 @@ public class Flux<T> {
         }));
     }
 
+    /** 循环处理 */
+    public Flux<T> peek(Consumer<T> consumer) {
+        return new Flux<>(completableFuture.thenApply(ts -> {
+            if (ts != null) {
+                ts.forEach(consumer);
+            }
+            return ts;
+        }));
+    }
+
     /** 消费订阅 */
     public Flux<T> subscribe(Consumer<T> consumer) {
         return new Flux<>(completableFuture.thenApply(ts -> {
@@ -92,6 +104,14 @@ public class Flux<T> {
     public Flux<T> onError(Consumer<Throwable> consumer) {
         return new Flux<>(completableFuture.exceptionally((throwable) -> {
             consumer.accept(throwable);
+            return null;
+        }));
+    }
+
+    /** 增加异常处理 */
+    public Flux<T> onError() {
+        return new Flux<>(completableFuture.exceptionally((throwable) -> {
+            log.error("", throwable);
             return null;
         }));
     }

@@ -1,6 +1,7 @@
 package org.wxd.boot.publisher;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.threading.Executors;
 
 import java.util.concurrent.CompletableFuture;
@@ -13,6 +14,7 @@ import java.util.function.*;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-12-21 09:34
  **/
+@Slf4j
 @Getter
 public class Mono<T> {
 
@@ -74,6 +76,14 @@ public class Mono<T> {
     /** 当完成之后 自定判定内容是否 null 异常 */
     public Mono<T> whenComplete(BiConsumer<? super T, ? super Throwable> action) {
         return new Mono<>(completableFuture.whenComplete(action));
+    }
+
+    /** 增加异常处理 */
+    public Mono<T> onError() {
+        return new Mono<>(completableFuture.exceptionally((throwable) -> {
+            log.error("", throwable);
+            return null;
+        }));
     }
 
     /** 增加异常处理 */
