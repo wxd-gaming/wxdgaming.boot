@@ -84,8 +84,7 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
                         stmt.clearParameters();
                     }
                     final int[] ints = stmt.executeBatch();
-                    final long sum = Arrays.stream(ints).mapToLong(v -> v).sum();
-                    return sum;
+                    return Arrays.stream(ints).mapToLong(v -> v).sum();
                 },
                 sqlString
         );
