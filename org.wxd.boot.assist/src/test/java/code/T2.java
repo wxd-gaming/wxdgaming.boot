@@ -5,6 +5,5 @@ import org.wxd.boot.assist.IAssistOutFile;
 
 public class T2 implements IAssistMonitor, IAssistOutFile {
     public void t2() throws InterruptedException {
-        Thread.sleep(10);
     }
 }

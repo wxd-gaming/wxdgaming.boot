@@ -1,4 +1,4 @@
-package code;
+package code.assist;
 
 import javassist.CtClass;
 import javassist.Modifier;
@@ -35,7 +35,7 @@ public class JavaAssistBoxTest {
                 .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
-                .writeFile("target");
+                .writeFile("target/assist-out");
 
         javaAssistBox
                 .editClass(ICheck.class)
@@ -73,7 +73,7 @@ public class JavaAssistBoxTest {
                 .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
-                .writeFile("target");
+                .writeFile("target/assist-out");
 
 
         // createMethod(ICheck.class, CtClass.voidType, "println", new CtClass[]{}, ";", null).writeFile("target");
