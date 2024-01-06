@@ -1,10 +1,9 @@
-package com.test;
+package code;
 
 import javassist.CtClass;
 import javassist.Modifier;
 import org.junit.Test;
-import org.wxd.boot.agent.function.ConsumerE1;
-import org.wxd.boot.agent.system.JavaAssistBox;
+import org.wxd.boot.assist.JavaAssistBox;
 
 /**
  * javassist 测试
@@ -30,10 +29,10 @@ public class JavaAssistBoxTest {
                             }
                         }
                         """)
-                .call((ConsumerE1<Class<?>>) aClass -> {
+                .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
-                .call((ConsumerE1<Class<?>>) aClass -> {
+                .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
                 .writeFile("target");
@@ -50,10 +49,10 @@ public class JavaAssistBoxTest {
                         }
                         """)
 
-                .call((ConsumerE1<Class<?>>) aClass -> {
+                .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
-                .call((ConsumerE1<Class<?>>) aClass -> {
+                .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
                 .writeFile("target")
@@ -68,10 +67,10 @@ public class JavaAssistBoxTest {
                         }
                         """)
 
-                .call((ConsumerE1<Class<?>>) aClass -> {
+                .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
-                .call((ConsumerE1<Class<?>>) aClass -> {
+                .call(aClass -> {
                     System.out.println(aClass + " - " + aClass.hashCode());
                 })
                 .writeFile("target");

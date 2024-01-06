@@ -17,15 +17,19 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class HttpTest {
 
+    public static void main(String[] args) throws Exception {
+        new HttpTest().t1();
+    }
+
     @Test
     public void t1() throws Exception {
         String url;
         // url = "http://47.108.150.14:18800/sjcq/wanIp";
-        url = "http://192.168.50.73:19000/test/ok";
+        //url = "http://192.168.50.73:19000/test/ok";
         // url = "http://47.108.150.14:18801/test/ok";
         //url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
-        // url = "https://www.baidu.com";
+        url = "https://www.baidu.com";
         tv1(url, 1);
         //tv1(url, 10);
         //tv1(url, 50);

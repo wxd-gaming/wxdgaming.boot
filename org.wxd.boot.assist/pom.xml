@@ -9,18 +9,18 @@
         <version>wxd-j21-01</version>
     </parent>
 
-    <artifactId>org.wxd.boot.agent</artifactId>
+    <artifactId>org.wxd.boot.assist</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.31</version>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.29.2-GA</version>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>agent</finalName>
+        <finalName>assist</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -34,11 +34,32 @@
                         </manifest>
                         <manifestEntries>
                             <Manifest-Version>1.0</Manifest-Version>
-                            <Agent-Class>org.wxd.boot.agent.AgentService</Agent-Class>
+                            <Premain-Class>org.wxd.boot.assist.AssistMonitor</Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                         </manifestEntries>
                     </archive>
+                </configuration>
+            </plugin>
+            <!-- 将javassist包打包到Agent中 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>org.javassist:javassist:jar:</include>
+                        </includes>
+                    </artifactSet>
                 </configuration>
             </plugin>
             <plugin>
