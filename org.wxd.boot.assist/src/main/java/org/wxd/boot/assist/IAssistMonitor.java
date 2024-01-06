@@ -9,17 +9,27 @@ package org.wxd.boot.assist;
  **/
 public interface IAssistMonitor {
 
-    InheritableThreadLocal<MonitorLog> THREAD_LOCAL = new InheritableThreadLocal<>();
+    InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
 
-    @AssistAnn(f = true)
-    default long waring() {return 10;}
+    default StackTraceElement[] stacks() {
+        int index = 4;
+        StackTraceElement[] sts = Thread.currentThread().getStackTrace();
+        StackTraceElement[] tmp = new StackTraceElement[sts.length - index];
+        System.arraycopy(sts, index, tmp, 0, tmp.length);
+        return tmp;
+    }
 
-    @AssistAnn(f = true)
+    @MonitorAnn(filter = true)
     default void monitor(String str, float ms) {
-        MonitorLog monitorLog = THREAD_LOCAL.get();
-        if (monitorLog != null) {
-            monitorLog.monitor(str, ms);
+        MonitorRecord monitorRecord = THREAD_LOCAL.get();
+        if (monitorRecord != null) {
+            monitorRecord.monitor(stacks(), str, ms);
         }
+    }
+
+    @MonitorAnn(filter = true)
+    default void print(String msg) {
+        System.out.println(msg);
     }
 
 }

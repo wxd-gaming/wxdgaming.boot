@@ -3,12 +3,15 @@ package org.wxd.boot.assist;
 
 import java.lang.annotation.*;
 
-@Inherited
+/***
+ * 监控初始方法
+ * @author: Troy.Chen(無心道, 15388152619)
+ * @version: 2024-01-06 14:55
+ */
 @Documented
 @Target({ElementType.METHOD/*字段*/})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AssistAnn {
+public @interface MonitorStart {
 
-    boolean f() default false;
 
 }

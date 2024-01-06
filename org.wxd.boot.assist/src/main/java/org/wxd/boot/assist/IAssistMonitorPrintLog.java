@@ -9,10 +9,14 @@ package org.wxd.boot.assist;
  **/
 public interface IAssistMonitorPrintLog extends IAssistMonitor {
 
-    @Override
-    @AssistAnn(f = true)
-    default void monitor(String str, float ms) {
-        System.out.println(Thread.currentThread().toString() + " " + str + " cost:" + ms + " ms");
+    @MonitorAnn(filter = true)
+    @Override default void monitor(String str, float ms) {
+        print(Thread.currentThread().toString() + " " + str + " cost:" + ms + " ms");
+    }
+
+    @MonitorAnn(filter = true)
+    @Override default void print(String msg) {
+        IAssistMonitor.super.print(msg);
     }
 
 }
