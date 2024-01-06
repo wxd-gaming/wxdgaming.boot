@@ -12,7 +12,7 @@ public interface IAssistMonitor {
     InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
 
     static void start() {
-        org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.set(new MonitorRecord(4));
+        org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.set(new MonitorRecord(3));
     }
 
     static void remove() {

@@ -36,7 +36,11 @@ public class MonitorRecord {
         startTime = System.nanoTime();
         execMs = 0;
         startStack = Thread.currentThread().getStackTrace()[stackIndex];
-        head = Thread.currentThread().toString() + " " + startStack.getClassName() + "." + startStack.getMethodName() + ":" + startStack.getLineNumber();
+        head = simpleDateFormat.format(new Date())
+                + " " + Thread.currentThread().toString()
+                + "\n文件：" + startStack.getFileName()
+                + "\n方法：" + startStack.getClassName() + "." + startStack.getMethodName()
+                + "\n堆栈：";
     }
 
     public void monitor(StackTraceElement[] sts, String str, float ms) {
@@ -108,7 +112,7 @@ public class MonitorRecord {
 
     @Override public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(simpleDateFormat.format(new Date())).append(" ").append(head).append("\n");
+        stringBuilder.append(head).append("\n");
         for (StackRecord stackRecord : recordList) {
             int line = 0;
             for (Map.Entry<String, Float> entry : stackRecord.stacks.entrySet()) {
