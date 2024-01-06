@@ -11,12 +11,7 @@ public interface IAssistMonitorPrintLog extends IAssistMonitor {
 
     @MonitorAnn(filter = true)
     @Override default void monitor(String str, float ms) {
-        print(Thread.currentThread().toString() + " " + str + " cost:" + ms + " ms");
-    }
-
-    @MonitorAnn(filter = true)
-    @Override default void print(String msg) {
-        IAssistMonitor.super.print(msg);
+        System.out.println(Thread.currentThread().toString() + " " + str + " cost:" + ms + " ms");
     }
 
 }

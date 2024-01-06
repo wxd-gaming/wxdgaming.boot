@@ -102,15 +102,11 @@ public class AssistClassTransform implements ClassFileTransformer {
             return;
         }
         try {
-            method.insertBefore(String.format("%s.THREAD_LOCAL.set(new %s());", IAssistMonitor.class.getName(), MonitorRecord.class.getName()));
+            method.insertBefore(String.format("%s.start();", IAssistMonitor.class.getName()));
             String str = """                    
-                    java.lang.Object record = %s.THREAD_LOCAL.get();
-                    %s.THREAD_LOCAL.remove();
-                    print(record.toString());
-                    """.formatted(
-                    IAssistMonitor.class.getName(),
-                    IAssistMonitor.class.getName()
-            );
+                    %s.remove();
+                    """
+                    .formatted(IAssistMonitor.class.getName());
             method.insertAfter(str);
         } catch (Exception e) {
             new RuntimeException(className + "." + methodName, e).printStackTrace(printStream);

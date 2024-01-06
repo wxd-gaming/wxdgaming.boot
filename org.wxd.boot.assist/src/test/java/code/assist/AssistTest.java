@@ -21,11 +21,13 @@ public class AssistTest implements IAssistMonitor, IAssistOutFile {
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
         B b = new B();
         b.b1();
-        b.a1();
-        MonitorRecord x = org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.get();
+        b.a1()
+                .a1();
+        MonitorRecord record = org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.get();
+        float execMs = record.execMs();
         org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.remove();
-        System.out.println(x);
-
+        if (execMs > waringTime())
+            System.out.println(record);
     }
 
     @Test

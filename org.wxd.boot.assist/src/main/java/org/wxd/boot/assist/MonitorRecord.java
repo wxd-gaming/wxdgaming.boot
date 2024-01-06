@@ -1,10 +1,7 @@
 package org.wxd.boot.assist;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 监控日志
@@ -19,8 +16,8 @@ public class MonitorRecord {
     long startTime = 0;
     /** 结束时间 */
     float execMs = 0;
-    StringBuilder stringBuilder = new StringBuilder();
     StackTraceElement startStack;
+    List<StackRecord> recordList = new ArrayList<>();
     String head;
 
     public MonitorRecord() {
@@ -44,8 +41,8 @@ public class MonitorRecord {
 
     public void monitor(StackTraceElement[] sts, String str, float ms) {
         //stringBuilder.append("|");
+        List<String> strings = new ArrayList<>();
         if (sts != null && sts.length > 0) {
-            List<String> strings = new ArrayList<>();
             for (StackTraceElement st : sts) {
                 strings.add(st.getClassName() + "." + st.getMethodName() + ":" + st.getLineNumber());
                 //stringBuilder.append("_");
@@ -55,11 +52,42 @@ public class MonitorRecord {
                 }
             }
             Collections.reverse(strings);
-            for (String o : strings) {
-                stringBuilder.append(o).append(" -> ");
+        }
+
+        StackRecord stack = findStack(strings);
+        Iterator<Map.Entry<String, Float>> iterator = stack.stacks.entrySet().iterator();
+        Map.Entry<String, Float> next = null;
+        for (int i = 0; i < strings.size(); i++) {
+            if (iterator.hasNext()) {
+                next = iterator.next();
             }
         }
-        stringBuilder.append(str).append(", cost：").append(ms).append("ms").append("\n");
+        next.setValue(ms);
+        //stringBuilder.append(str).append(", cost：").append(ms).append(" ms").append("\n");
+    }
+
+    public StackRecord findStack(List<String> strings) {
+        for (StackRecord stackRecord : recordList) {
+            ext:
+            {
+                int index = 0;
+                for (String key : stackRecord.stacks.keySet()) {
+                    if (index < strings.size() - 1) {
+                        if (!key.equals(strings.get(index))) {
+                            break ext;
+                        }
+                    }
+                    index++;
+                }
+                return stackRecord;
+            }
+        }
+        StackRecord stackRecord = new StackRecord();
+        for (String string : strings) {
+            stackRecord.stacks.put(string, 0f);
+        }
+        recordList.add(stackRecord);
+        return stackRecord;
     }
 
     public void over() {
@@ -74,9 +102,35 @@ public class MonitorRecord {
         return execMs;
     }
 
+    public void print() {
+        System.out.println(toString());
+    }
+
     @Override public String toString() {
-        monitor(null, startStack.getClassName()+"."+startStack.getMethodName(), execMs());
-        return simpleDateFormat.format(new Date()) + " " + head + "\n" + stringBuilder.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(simpleDateFormat.format(new Date())).append(" ").append(head).append("\n");
+        for (StackRecord stackRecord : recordList) {
+            int line = 0;
+            for (Map.Entry<String, Float> entry : stackRecord.stacks.entrySet()) {
+                stringBuilder.append("|");
+                for (int i = 0; i < line; i++) {
+                    stringBuilder.append("_");
+                }
+                stringBuilder.append(entry.getKey());
+                if (entry.getValue() > 0)
+                    stringBuilder.append(" 耗时：").append(entry.getValue()).append(" ms");
+                stringBuilder.append("\n");
+                line++;
+            }
+        }
+        stringBuilder
+                .append(startStack.getClassName() + "." + startStack.getMethodName())
+                .append("耗时：").append(execMs()).append("ms");
+        return stringBuilder.toString();
+    }
+
+    public static class StackRecord {
+        LinkedHashMap<String, Float> stacks = new LinkedHashMap<>();
     }
 
 }
