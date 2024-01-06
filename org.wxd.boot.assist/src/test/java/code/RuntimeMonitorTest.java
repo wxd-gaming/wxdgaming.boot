@@ -1,6 +1,5 @@
-package code.assist;
+package code;
 
-import code.T2;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.wxd.boot.assist.*;
@@ -12,7 +11,7 @@ import org.wxd.boot.assist.*;
  * @version: 2024-01-06 10:17
  **/
 @Slf4j
-public class AssistTest implements IAssistMonitor, IAssistOutFile {
+public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
 
     @Test
     @MonitorAnn(filter = true)
