@@ -18,7 +18,9 @@ public class AssistMonitor {
     public static void premain(String agentArgs) {
     }
 
-    static final InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
+    public static final String ASSIST_OUT_DIR = "target/assist-out";
+
+    public static final InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
 
     public static boolean start() {
         boolean hasParent = true;
@@ -33,7 +35,7 @@ public class AssistMonitor {
     }
 
     /** 是否有父级状态 */
-    public static void close(boolean hasParent, long waringTime) {
+    public static void close(boolean hasParent, IAssistMonitor iAssistMonitor) {
         MonitorRecord monitorRecord = THREAD_LOCAL.get();
         if (monitorRecord == null) return;
         if (hasParent) {
@@ -41,10 +43,9 @@ public class AssistMonitor {
             monitorRecord.monitor(stacks(3), ms);
             return;
         }
+        monitorRecord.over();
         THREAD_LOCAL.remove();
-        float execMs = monitorRecord.execMs();
-        if (execMs > waringTime)
-            monitorRecord.print();
+        iAssistMonitor.print(monitorRecord);
     }
 
     public static StackTraceElement[] stacks(int index) {

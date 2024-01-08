@@ -9,4 +9,14 @@ package org.wxd.boot.assist;
  **/
 public interface IAssistMonitor {
 
+    /** 时间记录 */
+    @MonitorAnn(filter = true)
+    default long waringTime() {
+        return 5;
+    }
+
+    default void print(MonitorRecord monitorRecord) {
+        System.out.println(monitorRecord.toString());
+    }
+
 }

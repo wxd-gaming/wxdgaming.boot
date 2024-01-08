@@ -19,8 +19,6 @@ import java.util.Set;
  **/
 public class AssistClassTransform implements ClassFileTransformer {
 
-    String outDir = "target/assist-out";
-
     PrintStream printStream = null;
 
     /** 增强类所在包名白名单 */
@@ -35,8 +33,8 @@ public class AssistClassTransform implements ClassFileTransformer {
             }
         }
         try {
-            new File(outDir).mkdirs();
-            FileOutputStream fileOutputStream = new FileOutputStream(outDir + "/assist.error", false);
+            new File(AssistMonitor.ASSIST_OUT_DIR).mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(AssistMonitor.ASSIST_OUT_DIR + "/assist.error", false);
             printStream = new PrintStream(fileOutputStream);
         } catch (Throwable e) {
             printStream = System.out;
@@ -63,12 +61,12 @@ public class AssistClassTransform implements ClassFileTransformer {
             for (CtBehavior m : behaviors) {
                 MonitorAnn monitorAnn = (MonitorAnn) m.getAnnotation(MonitorAnn.class);
                 if (monitorAnn != null && monitorAnn.filter()) continue;
-                enhanceStartMethod(className, m, monitorAnn == null ? 0 : monitorAnn.waringTime());
+                enhanceStartMethod(className, m);
             }
             if (check(javaAssist.getCtClass(), IAssistOutFile.class.getName())) {
                 /* 输出修改后的class文件内容 */
                 //System.out.println(className + " - out");
-                javaAssist.writeFile(outDir);
+                javaAssist.writeFile(AssistMonitor.ASSIST_OUT_DIR);
             }
             return javaAssist.toBytes();
         } catch (Throwable e) {
@@ -100,7 +98,7 @@ public class AssistClassTransform implements ClassFileTransformer {
     }
 
     /** 方法增强，添加方法耗时统计 */
-    private void enhanceStartMethod(String className, CtBehavior method, long waringTime) {
+    private void enhanceStartMethod(String className, CtBehavior method) {
         if (method.isEmpty()) {
             /*空方法，没意义*/
             return;
@@ -114,9 +112,9 @@ public class AssistClassTransform implements ClassFileTransformer {
             method.addLocalVariable("hasParent", CtClass.booleanType);
             method.insertBefore(String.format("hasParent = %s.start();", AssistMonitor.class.getName()));
             String str = """                    
-                    %s.close(hasParent, %sL);
+                    %s.close(hasParent, this);
                     """
-                    .formatted(AssistMonitor.class.getName(), waringTime);
+                    .formatted(AssistMonitor.class.getName());
             method.insertAfter(str);
         } catch (Throwable e) {
             new RuntimeException(className + "." + methodName, e).printStackTrace(printStream);

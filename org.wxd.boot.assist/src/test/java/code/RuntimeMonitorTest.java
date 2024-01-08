@@ -23,7 +23,7 @@ public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
         at2();
         at3();
-        AssistMonitor.close(start, 3);
+        AssistMonitor.close(start, this);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
         new B()
                 .b1()
                 .a1();
-        AssistMonitor.close(start, 3);
+        AssistMonitor.close(start, this);
     }
 
     public void at3() {

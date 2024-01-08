@@ -112,10 +112,6 @@ public class MonitorRecord {
         return execMs;
     }
 
-    public void print() {
-        System.out.println(toString());
-    }
-
     @Override public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(head).append("\n");
