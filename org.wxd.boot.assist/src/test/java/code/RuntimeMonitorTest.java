@@ -2,10 +2,7 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.assist.AssistMonitor;
-import org.wxd.boot.assist.IAssistMonitor;
-import org.wxd.boot.assist.IAssistOutFile;
-import org.wxd.boot.assist.MonitorAlligator;
+import org.wxd.boot.assist.*;
 
 /**
  * assist 字节码测试
@@ -19,22 +16,22 @@ public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
     @Test
     @MonitorAlligator
     public void at1() throws Exception {
-        boolean start = AssistMonitor.start();
+        MonitorRecord.MonitorStack monitorStack = AssistMonitor.start();
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
         at2();
         at3();
-        AssistMonitor.close(start, this);
+        AssistMonitor.close(monitorStack, this);
     }
 
     @Test
     @MonitorAlligator
     public void at2() throws Exception {
-        boolean start = AssistMonitor.start();
+        MonitorRecord.MonitorStack monitorStack = AssistMonitor.start();
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
         new B()
                 .b1()
                 .a1();
-        AssistMonitor.close(start, this);
+        AssistMonitor.close(monitorStack, this);
     }
 
     public void at3() {

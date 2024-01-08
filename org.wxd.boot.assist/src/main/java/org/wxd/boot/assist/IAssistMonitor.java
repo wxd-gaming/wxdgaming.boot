@@ -16,7 +16,7 @@ public interface IAssistMonitor {
     }
 
     default void print(MonitorRecord monitorRecord) {
-        AssistMonitor.Print_Stream.println(monitorRecord.toString());
+        AssistMonitor.printLog(monitorRecord.toString());
     }
 
 }

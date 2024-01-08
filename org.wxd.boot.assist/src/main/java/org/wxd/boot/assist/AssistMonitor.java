@@ -1,11 +1,13 @@
 package org.wxd.boot.assist;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.lang.instrument.Instrumentation;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -22,7 +24,9 @@ public class AssistMonitor {
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
     public static final InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
     public static AssistClassTransform transformer = null;
-    public static PrintStream Print_Stream = null;
+    public static OpenOption[] openOptions;
+    public static Path assist_path_error;
+    public static Path assist_path_log;
 
     public static void premain(String ages, Instrumentation instrumentation) {
         try {
@@ -34,12 +38,18 @@ public class AssistMonitor {
                         .forEach(File::delete);
             }
             file.mkdirs();
-            FileOutputStream fileOutputStream = new FileOutputStream(AssistMonitor.ASSIST_OUT_DIR + "/assist.log", false);
-            Print_Stream = new PrintStream(fileOutputStream);
-            Print_Stream.println("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] 初始化完成 args " + ages);
+            openOptions = new OpenOption[2];
+            /*追加文本,如果文件不存在则创建*/
+            openOptions[0] = StandardOpenOption.CREATE;
+            openOptions[1] = StandardOpenOption.APPEND;
+
+            assist_path_log = new File(AssistMonitor.ASSIST_OUT_DIR + "/assist.log").toPath();
+            assist_path_error = new File(AssistMonitor.ASSIST_OUT_DIR + "/assist.error").toPath();
+            printLog("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] 初始化完成 args " + ages);
+
         } catch (Throwable e) {
             e.printStackTrace(System.err);
-            Print_Stream = System.out;
+            printError("初始化", e);
         }
         transformer = new AssistClassTransform(ages);
         instrumentation.addTransformer(transformer);
@@ -49,25 +59,47 @@ public class AssistMonitor {
     public static void premain(String agentArgs) {
     }
 
-    public static boolean start() {
-        boolean hasParent = true;
+    public static void printLog(String info) {
+        print(assist_path_log, info);
+    }
+
+    public static void printError(String info, Throwable throwable) {
+        printError(info + " - " + ofString(throwable));
+    }
+
+    public static void printError(String info) {
+        print(assist_path_error, info);
+    }
+
+    public static void print(Path path, String info) {
+        try (OutputStream out = Files.newOutputStream(path, openOptions)) {
+            out.write("\n----------------------------------start--------------------------------------\n".getBytes(StandardCharsets.UTF_8));
+            out.write(info.getBytes(StandardCharsets.UTF_8));
+            out.write("\n-----------------------------------end-------------------------------------\n".getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static MonitorRecord.MonitorStack start() {
         MonitorRecord monitorRecord = THREAD_LOCAL.get();
         if (monitorRecord == null) {
-            THREAD_LOCAL.set(new MonitorRecord(3));
-            hasParent = false;
+            monitorRecord = new MonitorRecord(3);
+            THREAD_LOCAL.set(monitorRecord);
+            return new MonitorRecord.MonitorStack(monitorRecord.startTime, false);
         } else {
-            THREAD_LOCAL.get().getMarkTimes().add(System.nanoTime());
+            return new MonitorRecord.MonitorStack(true);
         }
-        return hasParent;
     }
 
     /** 是否有父级状态 */
-    public static void close(boolean hasParent, IAssistMonitor iAssistMonitor) {
+    public static void close(MonitorRecord.MonitorStack monitorStack, IAssistMonitor iAssistMonitor) {
         MonitorRecord monitorRecord = THREAD_LOCAL.get();
         if (monitorRecord == null) return;
-        if (hasParent) {
-            float ms = (System.nanoTime() - monitorRecord.getMarkTimes().removeLast()) / 10000 / 100f;
-            monitorRecord.monitor(stacks(3), ms);
+        if (monitorStack.isHasParent()) {
+            float ms = (System.nanoTime() - monitorStack.getStartTime()) / 10000 / 100f;
+            if (ms > 1)
+                monitorRecord.monitor(stacks(3), ms);
             return;
         }
         monitorRecord.over();
@@ -83,5 +115,56 @@ public class AssistMonitor {
         System.arraycopy(sts, index, tmp, 0, tmp.length);
         return tmp;
     }
+
+
+    static String ofString(Throwable throwable) {
+        StringBuilder stringBuilder = new StringBuilder();
+        ofString(stringBuilder, throwable);
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 处理错误日志的堆栈信息
+     *
+     * @param stringBuilder
+     * @param throwable
+     */
+    static void ofString(StringBuilder stringBuilder, Throwable throwable) {
+        if (throwable != null) {
+            ofString(stringBuilder, throwable.getCause());
+            stringBuilder.append("\n");
+            stringBuilder.append(throwable.getClass().getName());
+            stringBuilder.append(": ");
+            if (throwable.getMessage() != null && !throwable.getMessage().isEmpty()) {
+                stringBuilder.append(throwable.getMessage());
+            } else {
+                stringBuilder.append("null");
+            }
+            stringBuilder.append("\n");
+            StackTraceElement[] stackTraces = throwable.getStackTrace();
+            ofString(stringBuilder, stackTraces);
+            stringBuilder.append("-----------------------------------------------------------------------------");
+        }
+    }
+
+    static void ofString(StringBuilder stringBuilder, StackTraceElement[] stackTraces) {
+        for (StackTraceElement e : stackTraces) {
+            stringBuilder.append("    at ");
+            ofString(stringBuilder, e);
+            stringBuilder.append("\n");
+        }
+    }
+
+    static String ofString(StackTraceElement traceElement) {
+        StringBuilder stringBuilder = new StringBuilder();
+        ofString(stringBuilder, traceElement);
+        return stringBuilder.toString();
+    }
+
+    static void ofString(StringBuilder stringBuilder, StackTraceElement traceElement) {
+        stringBuilder.append(traceElement.getClassName()).append(".").append(traceElement.getMethodName())
+                .append("(").append(traceElement.getFileName()).append(":").append(traceElement.getLineNumber()).append(")");
+    }
+
 
 }

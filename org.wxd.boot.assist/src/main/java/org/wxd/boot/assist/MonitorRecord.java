@@ -15,8 +15,6 @@ public class MonitorRecord {
     long startTime = 0;
     /** 结束时间 */
     float execMs = 0;
-    @Getter
-    protected List<Long> markTimes = new LinkedList<>();
     StackTraceElement startStack;
     List<StackRecord> recordList = new ArrayList<>();
     String head;
@@ -134,6 +132,22 @@ public class MonitorRecord {
 
     public static class StackRecord {
         LinkedHashMap<String, Float> stacks = new LinkedHashMap<>();
+    }
+
+    @Getter
+    public static class MonitorStack {
+
+        private long startTime;
+        private boolean hasParent;
+
+        public MonitorStack(boolean hasParent) {
+            this(System.nanoTime(), hasParent);
+        }
+
+        public MonitorStack(long startTime, boolean hasParent) {
+            this.startTime = startTime;
+            this.hasParent = hasParent;
+        }
     }
 
 }

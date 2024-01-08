@@ -42,7 +42,7 @@ public class AssistClassTransform implements ClassFileTransformer {
                     || (!Filter_PACKAGE.isEmpty() && Filter_PACKAGE.stream().noneMatch(finalClassName::startsWith)))
                 return classFileBuffer;
 
-            AssistMonitor.Print_Stream.println("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className);
+            AssistMonitor.printError("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className);
 
             JavaAssistBox.JavaAssist javaAssist = javaAssistBox.editClass(finalClassName);
             if (!check(javaAssist.getCtClass(), IAssistMonitor.class.getName()))
@@ -62,7 +62,7 @@ public class AssistClassTransform implements ClassFileTransformer {
             }
             return javaAssist.toBytes();
         } catch (Throwable e) {
-            new RuntimeException("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className, e).printStackTrace(AssistMonitor.Print_Stream);
+            AssistMonitor.printError("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className, e);
         }
         return classFileBuffer;
     }
@@ -101,15 +101,16 @@ public class AssistClassTransform implements ClassFileTransformer {
                 /*如果这不是构造函数或类初始值设定项（静态初始值设定项）*/
                 return;
             }
-            method.addLocalVariable("hasParent", CtClass.booleanType);
-            method.insertBefore(String.format("hasParent = %s.start();", AssistMonitor.class.getName()));
+            JavaAssistBox.JavaAssist assist = javaAssistBox.editClass(MonitorRecord.MonitorStack.class.getName());
+            method.addLocalVariable("monitorStack", assist.getCtClass());
+            method.insertBefore(String.format("monitorStack = %s.start();", AssistMonitor.class.getName()));
             String str = """                    
-                    %s.close(hasParent, this);
+                    %s.close(monitorStack, this);
                     """
                     .formatted(AssistMonitor.class.getName());
             method.insertAfter(str);
         } catch (Throwable e) {
-            new RuntimeException("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className + "." + methodName, e).printStackTrace(AssistMonitor.Print_Stream);
+            AssistMonitor.printError("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className + "." + methodName, e);
         }
     }
 }
