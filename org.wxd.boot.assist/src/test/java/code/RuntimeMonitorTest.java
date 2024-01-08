@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.wxd.boot.assist.AssistMonitor;
 import org.wxd.boot.assist.IAssistMonitor;
 import org.wxd.boot.assist.IAssistOutFile;
-import org.wxd.boot.assist.MonitorAnn;
+import org.wxd.boot.assist.MonitorAlligator;
 
 /**
  * assist 字节码测试
@@ -17,7 +17,7 @@ import org.wxd.boot.assist.MonitorAnn;
 public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
 
     @Test
-    @MonitorAnn(filter = true)
+    @MonitorAlligator
     public void at1() throws Exception {
         boolean start = AssistMonitor.start();
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
@@ -27,7 +27,7 @@ public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
     }
 
     @Test
-    @MonitorAnn(filter = true)
+    @MonitorAlligator
     public void at2() throws Exception {
         boolean start = AssistMonitor.start();
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */

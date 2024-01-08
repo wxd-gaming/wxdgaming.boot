@@ -2,7 +2,6 @@ package org.wxd.boot.assist;
 
 import lombok.Getter;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -12,8 +11,6 @@ import java.util.*;
  * @version: 2024-01-06 14:16
  **/
 public class MonitorRecord {
-
-    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
 
     long startTime = 0;
     /** 结束时间 */
@@ -40,7 +37,7 @@ public class MonitorRecord {
         startTime = System.nanoTime();
         execMs = 0;
         startStack = Thread.currentThread().getStackTrace()[stackIndex];
-        head = "[" + simpleDateFormat.format(new Date()) + "]"
+        head = "[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "]"
                 + " [" + Thread.currentThread().toString() + "]"
                 + " - 文件：" + startStack.getFileName()
                 + ", 方法：" + startStack.getClassName() + "." + startStack.getMethodName()

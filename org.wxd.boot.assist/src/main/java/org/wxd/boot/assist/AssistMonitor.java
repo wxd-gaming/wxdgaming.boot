@@ -1,6 +1,14 @@
 package org.wxd.boot.assist;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.lang.instrument.Instrumentation;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 
 /**
  * 动态探针初始化类
@@ -10,17 +18,36 @@ import java.lang.instrument.Instrumentation;
  **/
 public class AssistMonitor {
 
+    public static final String ASSIST_OUT_DIR = "target/assist-out";
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+    public static final InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
+    public static AssistClassTransform transformer = null;
+    public static PrintStream Print_Stream = null;
+
     public static void premain(String ages, Instrumentation instrumentation) {
-        instrumentation.addTransformer(new AssistClassTransform(ages));
+        try {
+            File file = new File(AssistMonitor.ASSIST_OUT_DIR);
+            if (Files.exists(file.toPath())) {
+                Files.walk(file.toPath())
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+            file.mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(AssistMonitor.ASSIST_OUT_DIR + "/assist.log", false);
+            Print_Stream = new PrintStream(fileOutputStream);
+            Print_Stream.println("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] 初始化完成 args " + ages);
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+            Print_Stream = System.out;
+        }
+        transformer = new AssistClassTransform(ages);
+        instrumentation.addTransformer(transformer);
     }
 
     //如果没有实现上面的方法，JVM将尝试调用该方法
     public static void premain(String agentArgs) {
     }
-
-    public static final String ASSIST_OUT_DIR = "target/assist-out";
-
-    public static final InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
 
     public static boolean start() {
         boolean hasParent = true;
@@ -45,7 +72,9 @@ public class AssistMonitor {
         }
         monitorRecord.over();
         THREAD_LOCAL.remove();
-        iAssistMonitor.print(monitorRecord);
+        if (monitorRecord.execMs() > iAssistMonitor.waringTime()) {
+            iAssistMonitor.print(monitorRecord);
+        }
     }
 
     public static StackTraceElement[] stacks(int index) {
