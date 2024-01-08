@@ -2,7 +2,10 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.assist.*;
+import org.wxd.boot.assist.AssistMonitor;
+import org.wxd.boot.assist.IAssistMonitor;
+import org.wxd.boot.assist.IAssistOutFile;
+import org.wxd.boot.assist.MonitorAnn;
 
 /**
  * assist 字节码测试
@@ -16,31 +19,29 @@ public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
     @Test
     @MonitorAnn(filter = true)
     public void at1() throws Exception {
-        org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.set(new MonitorRecord());
+        boolean start = AssistMonitor.start();
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
-        B b = new B();
-        b.b1();
-        b.a1()
-                .a1();
-        MonitorRecord record = org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.get();
-        float execMs = record.execMs();
-        org.wxd.boot.assist.IAssistMonitor.THREAD_LOCAL.remove();
-        if (execMs > waringTime())
-            System.out.println(record);
+        at2();
+        at3();
+        AssistMonitor.close(start, 3);
     }
 
     @Test
-    @MonitorStart
+    @MonitorAnn(filter = true)
     public void at2() throws Exception {
+        boolean start = AssistMonitor.start();
         /**如果要使用耗时统计添加启动参数 -javaagent:..\target\libs\assist.jar=需要监控的包名 */
-        new B().b1().a1();
+        new B()
+                .b1()
+                .a1();
+        AssistMonitor.close(start, 3);
     }
 
-    public interface Mylog extends IAssistMonitor {
-
+    public void at3() {
+        System.out.println(1);
     }
 
-    public static class A implements Mylog, IAssistOutFile {
+    public static class A implements IAssistMonitor, IAssistOutFile {
 
         public A a1() throws Exception {
             a2();

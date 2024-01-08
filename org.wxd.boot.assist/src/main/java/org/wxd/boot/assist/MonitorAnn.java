@@ -8,6 +8,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MonitorAnn {
 
+    /** 时间记录 */
+    long waringTime() default 5;
+
     /** 不生成代理的方法 */
     boolean filter() default false;
 

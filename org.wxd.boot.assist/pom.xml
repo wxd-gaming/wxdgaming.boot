@@ -20,7 +20,7 @@
     </dependencies>
 
     <build>
-        <finalName>assist</finalName>
+        <finalName>wxd-j21-assist</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

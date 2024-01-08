@@ -3,10 +3,13 @@ package org.wxd.boot.assist;
 import javassist.CtBehavior;
 import javassist.CtClass;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 包装类，可以通过字节码增加
@@ -21,27 +24,36 @@ public class AssistClassTransform implements ClassFileTransformer {
     PrintStream printStream = null;
 
     /** 增强类所在包名白名单 */
-    private final String BASE_PACKAGE;
+    private final Set<String> Filter_PACKAGE = new HashSet<>();
     private final JavaAssistBox javaAssistBox = JavaAssistBox.of();
 
-    public AssistClassTransform(String basePackage) {
-        this.BASE_PACKAGE = basePackage;
+    public AssistClassTransform(String filterPackage) {
+        if (filterPackage != null && !filterPackage.isEmpty() && !filterPackage.isBlank()) {
+            String[] split = filterPackage.split("\\|");
+            for (String string : split) {
+                Filter_PACKAGE.add(string);
+            }
+        }
         try {
+            new File(outDir).mkdirs();
             FileOutputStream fileOutputStream = new FileOutputStream(outDir + "/assist.error", false);
             printStream = new PrintStream(fileOutputStream);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             printStream = System.out;
         }
     }
 
     @Override
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classFileBuffer) {
+    public byte[] transform(ClassLoader loader, String clazzName, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classFileBuffer) {
         try {
-            if (BASE_PACKAGE == null || BASE_PACKAGE.isEmpty() || BASE_PACKAGE.isBlank()) return classFileBuffer;
-            className = className.replace("/", ".");
-            if (!className.startsWith(BASE_PACKAGE)) {
+            final String className = clazzName.replace("/", ".");
+            if (className.startsWith("com.sun")
+                    || className.startsWith("jdk.")
+                    || className.startsWith("java.")
+                    || className.startsWith("javax.")
+                    || (!Filter_PACKAGE.isEmpty() && Filter_PACKAGE.stream().noneMatch(className::startsWith)))
                 return classFileBuffer;
-            }
+
             JavaAssistBox.JavaAssist javaAssist = javaAssistBox.editClass(className);
             if (!check(javaAssist.getCtClass(), IAssistMonitor.class.getName()))
                 return classFileBuffer;
@@ -51,11 +63,7 @@ public class AssistClassTransform implements ClassFileTransformer {
             for (CtBehavior m : behaviors) {
                 MonitorAnn monitorAnn = (MonitorAnn) m.getAnnotation(MonitorAnn.class);
                 if (monitorAnn != null && monitorAnn.filter()) continue;
-                if (m.getAnnotation(MonitorStart.class) != null) {
-                    enhanceStartMethod(className, m);
-                } else {
-                    enhanceMethod(className, m);
-                }
+                enhanceStartMethod(className, m, monitorAnn == null ? 0 : monitorAnn.waringTime());
             }
             if (check(javaAssist.getCtClass(), IAssistOutFile.class.getName())) {
                 /* 输出修改后的class文件内容 */
@@ -63,8 +71,8 @@ public class AssistClassTransform implements ClassFileTransformer {
                 javaAssist.writeFile(outDir);
             }
             return javaAssist.toBytes();
-        } catch (Exception e) {
-            new RuntimeException(className, e).printStackTrace(printStream);
+        } catch (Throwable e) {
+            new RuntimeException(clazzName, e).printStackTrace(printStream);
         }
         return classFileBuffer;
     }
@@ -92,47 +100,25 @@ public class AssistClassTransform implements ClassFileTransformer {
     }
 
     /** 方法增强，添加方法耗时统计 */
-    private void enhanceStartMethod(String className, CtBehavior method) {
+    private void enhanceStartMethod(String className, CtBehavior method, long waringTime) {
         if (method.isEmpty()) {
+            /*空方法，没意义*/
             return;
         }
         String methodName = method.getName();
-        if (!method.getMethodInfo().isMethod()) {
+        if (method.getMethodInfo().isStaticInitializer()) {
             /*如果这不是构造函数或类初始值设定项（静态初始值设定项）*/
             return;
         }
         try {
-            method.insertBefore(String.format("%s.start();", IAssistMonitor.class.getName()));
+            method.addLocalVariable("hasParent", CtClass.booleanType);
+            method.insertBefore(String.format("hasParent = %s.start();", AssistMonitor.class.getName()));
             String str = """                    
-                    %s.remove();
+                    %s.close(hasParent, %sL);
                     """
-                    .formatted(IAssistMonitor.class.getName());
+                    .formatted(AssistMonitor.class.getName(), waringTime);
             method.insertAfter(str);
-        } catch (Exception e) {
-            new RuntimeException(className + "." + methodName, e).printStackTrace(printStream);
-        }
-    }
-
-    /** 方法增强，添加方法耗时统计 */
-    private void enhanceMethod(String className, CtBehavior method) {
-        if (method.isEmpty()) {
-            return;
-        }
-        String methodName = method.getName();
-        if (!method.getMethodInfo().isMethod()) {
-            /*如果这不是构造函数或类初始值设定项（静态初始值设定项）*/
-            return;
-        }
-        try {
-            method.addLocalVariable("start", CtClass.longType);
-            method.insertBefore("start = System.nanoTime();");
-            String str = """
-                    float ms = ((System.nanoTime() - start) / 10000 / 100f);
-                    monitor("%s", ms);
-                    """
-                    .formatted(className + "." + methodName);
-            method.insertAfter(str);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             new RuntimeException(className + "." + methodName, e).printStackTrace(printStream);
         }
     }

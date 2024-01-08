@@ -1,5 +1,7 @@
 package org.wxd.boot.assist;
 
+import lombok.Getter;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -16,6 +18,8 @@ public class MonitorRecord {
     long startTime = 0;
     /** 结束时间 */
     float execMs = 0;
+    @Getter
+    protected List<Long> markTimes = new LinkedList<>();
     StackTraceElement startStack;
     List<StackRecord> recordList = new ArrayList<>();
     String head;
@@ -36,14 +40,14 @@ public class MonitorRecord {
         startTime = System.nanoTime();
         execMs = 0;
         startStack = Thread.currentThread().getStackTrace()[stackIndex];
-        head = simpleDateFormat.format(new Date())
-                + " " + Thread.currentThread().toString()
-                + "\n文件：" + startStack.getFileName()
-                + "\n方法：" + startStack.getClassName() + "." + startStack.getMethodName()
+        head = "[" + simpleDateFormat.format(new Date()) + "]"
+                + " [" + Thread.currentThread().toString() + "]"
+                + " - 文件：" + startStack.getFileName()
+                + ", 方法：" + startStack.getClassName() + "." + startStack.getMethodName()
                 + "\n堆栈：";
     }
 
-    public void monitor(StackTraceElement[] sts, String str, float ms) {
+    public void monitor(StackTraceElement[] sts, float ms) {
         //stringBuilder.append("|");
         List<String> strings = new ArrayList<>();
         if (sts != null && sts.length > 0) {
@@ -71,7 +75,9 @@ public class MonitorRecord {
     }
 
     public StackRecord findStack(List<String> strings) {
-        for (StackRecord stackRecord : recordList) {
+        int ri = recordList.size() - 1;
+        for (; ri >= 0; ri--) {
+            StackRecord stackRecord = recordList.get(ri);
             ext:
             {
                 int index = 0;
@@ -129,7 +135,7 @@ public class MonitorRecord {
         }
         stringBuilder
                 .append(startStack.getClassName() + "." + startStack.getMethodName())
-                .append("耗时：").append(execMs()).append("ms");
+                .append(" 耗时：").append(execMs()).append("ms");
         return stringBuilder.toString();
     }
 
