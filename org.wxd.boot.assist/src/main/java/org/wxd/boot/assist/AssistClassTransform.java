@@ -35,25 +35,61 @@ public class AssistClassTransform implements ClassFileTransformer {
         try {
             if (className == null || className.isEmpty() || className.isBlank()) return classFileBuffer;
             final String finalClassName = className.replace("/", ".");
-            if (finalClassName.startsWith("com.sun")
-                    || finalClassName.startsWith("jdk.")
-                    || finalClassName.startsWith("java.")
-                    || finalClassName.startsWith("javax.")
-                    || (!Filter_PACKAGE.isEmpty() && Filter_PACKAGE.stream().noneMatch(finalClassName::startsWith)))
+            if (
+                    finalClassName.startsWith("jdk.")
+                            || finalClassName.startsWith("java.")
+                            || finalClassName.startsWith("javassist.")
+                            || finalClassName.startsWith("javax.")
+                            || finalClassName.startsWith("junit.")
+                            || finalClassName.startsWith("sun.")
+                            || finalClassName.startsWith("com.sun.")
+                            || finalClassName.startsWith("ch.qos.")
+                            || finalClassName.startsWith("org.slf4j.")
+                            || finalClassName.startsWith("org.junit.")
+                            || finalClassName.startsWith("com.intellij")
+                            || finalClassName.startsWith("sun.launcher.")
+                            || finalClassName.startsWith("org.hamcrest.")
+                            || finalClassName.startsWith("net.sf.cglib.")
+                            || finalClassName.startsWith("com.google.")
+                            || finalClassName.startsWith("io.netty.")
+                            || finalClassName.startsWith("com.alibaba.")
+                            || finalClassName.startsWith("org.apache.")
+
+                            || finalClassName.startsWith("org.jctools.")
+
+                            || finalClassName.startsWith("redis.")
+
+                            || finalClassName.startsWith("com.zaxxer.")
+                            || finalClassName.startsWith("com.mysql.")
+
+                            || finalClassName.startsWith("com.bson.")
+                            || finalClassName.startsWith("com.mongodb.")
+
+                            || finalClassName.startsWith("org.openjdk.")
+                            || finalClassName.startsWith("org.objectweb.asm.")
+
+                            || finalClassName.startsWith("org.wxd.boot.agent.")
+                            || finalClassName.startsWith("org.wxd.boot.assist.")
+                            || finalClassName.startsWith("org.wxd.boot.starter.")
+                            || (!Filter_PACKAGE.isEmpty() && Filter_PACKAGE.stream().noneMatch(finalClassName::startsWith)))
                 return classFileBuffer;
 
             AssistMonitor.printError("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className);
 
             JavaAssistBox.JavaAssist javaAssist = javaAssistBox.editClass(finalClassName);
-            if (!check(javaAssist.getCtClass(), IAssistMonitor.class.getName()))
-                return classFileBuffer;
+
+            boolean checked = check(javaAssist.getCtClass(), IAssistMonitor.class.getName());
 
             CtBehavior[] behaviors = javaAssist.getCtClass().getDeclaredBehaviors();
             //遍历方法进行增强
             for (CtBehavior m : behaviors) {
                 MonitorAlligator monitorAlligator = (MonitorAlligator) m.getAnnotation(MonitorAlligator.class);
                 if (monitorAlligator != null) continue;
-                enhanceStartMethod(finalClassName, m);
+                if (checked) {
+                    enhanceStartMethod(finalClassName, m);
+                } else {
+                    enhanceStartMethod2(finalClassName, m);
+                }
             }
             if (check(javaAssist.getCtClass(), IAssistOutFile.class.getName())) {
                 /* 输出修改后的class文件内容 */
@@ -113,4 +149,30 @@ public class AssistClassTransform implements ClassFileTransformer {
             AssistMonitor.printError("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className + "." + methodName, e);
         }
     }
+
+    /** 方法增强，添加方法耗时统计 */
+    private void enhanceStartMethod2(String className, CtBehavior method) {
+        if (method.isEmpty()) {
+            /*空方法，没意义*/
+            return;
+        }
+        String methodName = method.getName();
+        try {
+            if (method.getMethodInfo().isStaticInitializer()) {
+                /*如果这不是构造函数或类初始值设定项（静态初始值设定项）*/
+                return;
+            }
+            JavaAssistBox.JavaAssist assist = javaAssistBox.editClass(MonitorRecord.MonitorStack.class.getName());
+            method.addLocalVariable("monitorStack", assist.getCtClass());
+            method.insertBefore(String.format("monitorStack = %s.start();", AssistMonitor.class.getName()));
+            String str = """                    
+                    %s.close(monitorStack);
+                    """
+                    .formatted(AssistMonitor.class.getName());
+            method.insertAfter(str);
+        } catch (Throwable e) {
+            AssistMonitor.printError("[" + AssistMonitor.SIMPLE_DATE_FORMAT.format(new Date()) + "] " + className + "." + methodName, e);
+        }
+    }
+
 }

@@ -40,6 +40,11 @@ public class RuntimeMonitorTest implements IAssistMonitor, IAssistOutFile {
 
     public static class A implements IAssistMonitor, IAssistOutFile {
 
+        @MonitorAlligator
+        @Override public void print(MonitorRecord monitorRecord) {
+            System.out.println(monitorRecord.toString());
+        }
+
         public A a1() throws Exception {
             a2();
             return this;

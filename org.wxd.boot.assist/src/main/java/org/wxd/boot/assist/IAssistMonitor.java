@@ -15,6 +15,7 @@ public interface IAssistMonitor {
         return 5;
     }
 
+    @MonitorAlligator
     default void print(MonitorRecord monitorRecord) {
         AssistMonitor.printLog(monitorRecord.toString());
     }

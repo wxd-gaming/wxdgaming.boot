@@ -109,6 +109,22 @@ public class AssistMonitor {
         }
     }
 
+    public static void close(MonitorRecord.MonitorStack monitorStack) {
+        MonitorRecord monitorRecord = THREAD_LOCAL.get();
+        if (monitorRecord == null) return;
+        if (monitorStack.isHasParent()) {
+            float ms = (System.nanoTime() - monitorStack.getStartTime()) / 10000 / 100f;
+            if (ms > 1)
+                monitorRecord.monitor(stacks(3), ms);
+            return;
+        }
+        monitorRecord.over();
+        THREAD_LOCAL.remove();
+        if (monitorRecord.execMs() > 33) {
+            AssistMonitor.printLog(monitorRecord.toString());
+        }
+    }
+
     public static StackTraceElement[] stacks(int index) {
         StackTraceElement[] sts = Thread.currentThread().getStackTrace();
         StackTraceElement[] tmp = new StackTraceElement[sts.length - index];
