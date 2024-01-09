@@ -3,6 +3,7 @@ package org.wxd.boot.threading;
 import lombok.Getter;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.AnnUtil;
+import org.wxd.boot.assist.IAssistMonitor;
 import org.wxd.boot.str.StringUtil;
 
 import java.lang.reflect.Method;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version: 2022-11-09 10:21
  **/
 @Getter
-public abstract class EventRunnable implements Runnable {
+public abstract class EventRunnable implements Runnable, IAssistMonitor {
 
     protected String taskInfoString = "";
     /** 输出日志的时间 */
