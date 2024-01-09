@@ -11,11 +11,9 @@ import org.wxd.boot.str.StringUtil;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.KeyStore;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -28,20 +26,6 @@ import java.util.Map;
 public class SslContextServer implements Serializable {
 
     private static final ConcurrentTable<SslProtocolType, String, SSLContext> sslContextMap = new ConcurrentTable<>();
-
-    /***
-     *
-     * @param sslProtocolType ssl 类型
-     * @param domain 域名
-     * @return
-     */
-    public static SSLContext sslContext(SslProtocolType sslProtocolType, String domain) {
-        Collection<File> jks = FileUtil.lists("jks");
-        for (File jk : jks) {
-            System.out.println(jk.getName());
-        }
-        return null;
-    }
 
     public static SSLContext sslContext(SslProtocolType sslProtocolType, String jks_path, String jks_pwd_path) {
 
@@ -92,4 +76,25 @@ public class SslContextServer implements Serializable {
         return sslContext;
     }
 
+    public static InputStream[] findJks() {
+        try {
+            InputStream[] streams = new InputStream[2];
+            // 获取当前运行的JAR文件
+            String fname = "jks";
+            FileUtil.resourceStream(SslContextServer.class.getClassLoader(), fname, (entryName, inputStream) -> {
+                // 判断是否为资源文件
+                if (entryName.startsWith(fname)) {
+                    if (entryName.endsWith(".jks")) {
+                        streams[0] = inputStream;
+                        System.out.printf("jks=%s, 文件大小：%s\n", entryName, inputStream.available());
+                    } else if (entryName.endsWith(".pwd")) {
+                        streams[1] = inputStream;
+                    }
+                }
+            });
+            return streams;
+        } catch (Exception e) {
+            throw new RuntimeException("读取jks文件异常", e);
+        }
+    }
 }

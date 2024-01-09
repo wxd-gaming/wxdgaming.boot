@@ -10,7 +10,10 @@ import org.wxd.boot.agent.io.TemplatePack;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,4 +61,39 @@ public class FileUtilTest implements Serializable {
         File file = new File(x);
         System.out.println(file.getName() + " - " + file.length());
     }
+
+    @Test
+    public void walk() throws Exception {
+        String s = "e:\\out";
+        int maxDepth = 20;
+        File file = new File(s);
+        Files.walk(file.toPath(), maxDepth)
+                .map(Path::toFile)
+                .sorted(Comparator.reverseOrder())
+                .forEach(System.out::println);
+    }
+
+    @Test
+    public void findFile() throws Exception {
+        String s = "e:\\out\\1.log";
+        int maxDepth = 2;
+        File file = new File(s);
+        Files.walk(file.toPath(), maxDepth)
+                .map(Path::toFile)
+                .filter(f -> f.isFile())
+                .forEach(System.out::println);
+    }
+
+    @Test
+    public void findDir() throws Exception {
+        String s = "e:/out";
+        int maxDepth = 2;
+        File file = new File(s);
+        Files.walk(file.toPath(), maxDepth)
+                .map(Path::toFile)
+                .filter(f -> f.isDirectory())
+                .forEach(System.out::println);
+    }
+
+
 }

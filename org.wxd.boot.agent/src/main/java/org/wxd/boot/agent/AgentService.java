@@ -97,12 +97,9 @@ public class AgentService implements Serializable {
             if (systemClassLoader instanceof URLClassLoader) {
 
                 /* 注意，是jre的bin目录，不是jdk的bin目录，VirtualMachine need the attach.dll in the jre of the JDK. */
-                File toolsJarPath = FileUtil.findFile(new File(jreHome + File.pathSeparator + ".."), true, file1 -> {
-                    if (file1.getPath().toLowerCase().endsWith("lib/tools.jar")) {
-                        return true;
-                    }
-                    return false;
-                });
+                File toolsJarPath = FileUtil.walkFiles(jreHome + File.pathSeparator + "..", "lib/tools.jar")
+                        .findFirst()
+                        .orElse(null);
 
                 log.info("java_home：" + toolsJarPath);
 

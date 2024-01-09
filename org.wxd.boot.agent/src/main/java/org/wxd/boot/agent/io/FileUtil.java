@@ -3,9 +3,8 @@ package org.wxd.boot.agent.io;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.agent.function.ConsumerE1;
+import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.function.ConsumerE2;
-import org.wxd.boot.agent.function.FunctionE;
 import org.wxd.boot.agent.zip.ReadZipFile;
 
 import java.io.File;
@@ -16,10 +15,10 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * 文件辅助
@@ -33,19 +32,14 @@ public class FileUtil implements Serializable {
         return LoggerFactory.getLogger(FileUtil.class);
     }
 
-    private static final long serialVersionUID = 1L;
     private static final String[] empty = new String[0];
 
-    /**
-     * 返回绝对路径
-     */
+    /** 返回绝对路径 */
     public static String getCanonicalPath(String fileName) {
         return getCanonicalPath(file(fileName));
     }
 
-    /**
-     * 返回绝对路径
-     */
+    /** 返回绝对路径 */
     public static String getCanonicalPath(File fileName) {
         try {
             return fileName.getCanonicalPath();
@@ -148,10 +142,12 @@ public class FileUtil implements Serializable {
         }
     }
 
+    /** InputStream 需要自己关闭 */
     public static void resourceStream(String path, ConsumerE2<String, InputStream> call) {
         resourceStream(Thread.currentThread().getContextClassLoader(), path, call);
     }
 
+    /** InputStream 需要自己关闭 */
     public static void resourceStream(ClassLoader classLoader, final String path, ConsumerE2<String, InputStream> call) {
         try {
             URL resource = classLoader.getResource(path);
@@ -166,17 +162,14 @@ public class FileUtil implements Serializable {
                     });
                 }
             } else {
-                File file = new File(findPath);
-                if (file.exists() && file.isDirectory()) {
-                    File[] files = file.listFiles();
-                    for (File file1 : files) {
-                        if (!file1.isDirectory()) {
-                            try (FileInputStream fileInputStream = new FileInputStream(file1)) {
-                                call.accept(file1.getName(), fileInputStream);
-                            }
-                        }
+                walk(path).forEach(f -> {
+                    try {
+                        FileInputStream fileInputStream = new FileInputStream(f);
+                        call.accept(f.getName(), fileInputStream);
+                    } catch (Exception e) {
+                        throw Throw.as("resources:" + f, e);
                     }
-                }
+                });
             }
         } catch (Exception e) {
             throw Throw.as("resources:" + path, e);
@@ -261,6 +254,13 @@ public class FileUtil implements Serializable {
         return createFile(file, false);
     }
 
+    /**
+     * 创建文件
+     *
+     * @param file  路径
+     * @param fugai 覆盖文件
+     * @return
+     */
     public static File createFile(File file, boolean fugai) {
         try {
             if (!fugai) {
@@ -292,18 +292,10 @@ public class FileUtil implements Serializable {
      * @param file
      */
     public static void del(File file) {
-        if (file.isDirectory()) {
-            final File[] listFiles = file.listFiles();
-            if (listFiles != null && listFiles.length > 0) {
-                for (File listFile : listFiles) {
-                    del(listFile);
-                }
-            }
-        }
-
-        final boolean delete = file.delete();
-
-        log().info("删除{}：{}, {}", file.isFile() ? "文件" : "文件夹", file.getName(), delete);
+        walk(file).forEach(f -> {
+            boolean delete = f.delete();
+            log().info("删除{}：{}, {}", file.isFile() ? "文件" : "文件夹", file.getName(), delete);
+        });
     }
 
     /**
@@ -329,198 +321,95 @@ public class FileUtil implements Serializable {
         }
     }
 
-    /**
-     * 获取所有的目录
-     */
-    public static Collection<File> dirs(String path) {
-        return dirs(file(path));
+    /** 所有的文件夹 */
+    public static Stream<File> walkDirs(String path, String... extendNames) {
+        return walkDirs(path, Integer.MAX_VALUE, extendNames);
+    }
+
+    /** 所有的文件 */
+    public static Stream<File> walkDirs(String path, int maxDepth, String... extendNames) {
+        return walk(path, maxDepth, extendNames).filter(File::isDirectory);
+    }
+
+    /** 所有的文件 */
+    public static Stream<File> walkFiles(String path, String... extendNames) {
+        return walkFiles(path, Integer.MAX_VALUE, extendNames);
+    }
+
+    /** 所有的文件 */
+    public static Stream<File> walkFiles(File path, String... extendNames) {
+        return walkFiles(path, Integer.MAX_VALUE, extendNames);
+    }
+
+    /** 所有的文件 */
+    public static Stream<File> walkFiles(String path, int maxDepth, String... extendNames) {
+        return walk(path, maxDepth, extendNames).filter(File::isFile);
+    }
+
+    public static Stream<File> walkFiles(File path, int maxDepth, String... extendNames) {
+        return walk(path, maxDepth, extendNames).filter(File::isFile);
+    }
+
+    /** 查找所有文件, 文件夹 */
+    public static Stream<File> walk(String path, String... extendNames) {
+        return walk(path, Integer.MAX_VALUE, extendNames);
     }
 
     /**
-     * 获取所有的目录
-     */
-    public static Collection<File> dirs(File path) {
-        List<File> files = new ArrayList<>();
-        dirs(files, path);
-        return files;
-    }
-
-    /**
-     * 获取所有的目录
-     */
-    public static void dirs(List<File> files, File path) {
-        final File[] listFiles = path.listFiles();
-        if (listFiles != null && listFiles.length > 0) {
-            for (File file : listFiles) {
-                if (file.isDirectory()) {
-                    files.add(file);
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取所有的目录，包含子目录
-     */
-    public static Collection<File> loopDirs(String path) {
-        return loopDirs(file(path));
-    }
-
-    /**
-     * 获取所有的目录，包含子目录
-     */
-    public static Collection<File> loopDirs(File path) {
-        List<File> files = new ArrayList<>();
-        final File[] listFiles = path.listFiles();
-        if (listFiles != null && listFiles.length > 0) {
-            for (File file : listFiles) {
-                if (file.isDirectory()) {
-                    files.add(file);
-                    dirs(files, file);
-                }
-            }
-        }
-        return files;
-    }
-
-    /**
-     * 查找当前文件夹,所有文件
+     * 查找文件, 文件夹
      *
-     * @param path    文件或者文件夹
-     * @param suffixs 后缀扩展
+     * @param path     路径
+     * @param maxDepth 深度 当前目录是1
      * @return
-     * @throws Exception
      */
-    public static Collection<File> lists(String path, String... suffixs) {
-        return lists(file(path), suffixs);
+    public static Stream<File> walk(String path, int maxDepth, String... extendNames) {
+        File file = new File(path);
+        return walk(file, maxDepth, extendNames);
+    }
+
+    /** 查找所有文件, 文件夹 */
+    public static Stream<File> walk(File path, String... extendNames) {
+        return walk(path, Integer.MAX_VALUE, extendNames);
     }
 
     /**
-     * 查找当前文件夹,所有文件
+     * 查找文件, 文件夹
      *
-     * @param file    文件或者文件夹
-     * @param suffixs 后缀扩展
+     * @param path     路径
+     * @param maxDepth 深度 当前目录是1
      * @return
-     * @throws Exception
      */
-    public static Collection<File> lists(File file, String... suffixs) {
-        List<File> files = new ArrayList<>();
-        findFile(file, false, files::add, suffixs);
-        return files;
+    public static Stream<File> walk(File path, int maxDepth, String... extendNames) {
+        return walk(path.toPath(), maxDepth, extendNames);
     }
 
     /**
-     * 查找当前文件夹，包含子文件夹,所有文件
+     * 查找文件, 文件夹
      *
-     * @param path    文件或者文件夹
-     * @param suffixs 后缀扩展
-     * @throws Exception
+     * @param path        路径
+     * @param maxDepth    深度 当前目录是1
+     * @param extendNames 查找的扩展名
+     * @return
      */
-    public static Collection<File> loopLists(String path, String... suffixs) {
-        return loopLists(file(path), suffixs);
-    }
-
-    /**
-     * 查找当前文件夹，包含子文件夹,所有文件
-     *
-     * @param file    文件或者文件夹
-     * @param suffixs 后缀扩展
-     */
-    public static Collection<File> loopLists(File file, String... suffixs) {
-        return findFile(file, true, suffixs);
-    }
-
-    /**
-     * 查找当前文件夹，包含子文件夹,所有文件
-     *
-     * @param file    文件或者文件夹
-     * @param loop    是否查找子文件夹
-     * @param suffixs 后缀扩展
-     */
-    public static Collection<File> findFile(File file, boolean loop, String... suffixs) {
-        List<File> files = new ArrayList<>();
-        findFile(file, loop, files::add, suffixs);
-        return files;
-    }
-
-    /**
-     * 查找当前文件夹，包含子文件夹,所有文件
-     *
-     * @param file           文件或者文件夹
-     * @param loop           是否查找子文件夹
-     * @param fileConsumerE1 回调
-     * @param suffixs        后缀扩展
-     */
-    public static void findFile(File file, boolean loop, ConsumerE1<File> fileConsumerE1, String... suffixs) {
+    public static Stream<File> walk(Path path, int maxDepth, String... extendNames) {
         try {
-            if (file.isFile()) {
-                if (suffixs != null && suffixs.length > 0) {
+            Stream<File> walk = Files.walk(path, maxDepth).map(Path::toFile);
+            if (extendNames.length > 0) {
+                walk = walk.filter(f -> {
                     boolean check = false;
-                    for (String suffix : suffixs) {
-                        if (file.getName().endsWith(suffix)) {
+                    for (String extendName : extendNames) {
+                        if (f.getName().endsWith(extendName)) {
                             check = true;
                             break;
                         }
                     }
-                    if (!check) {
-                        return;
-                    }
-                }
-                fileConsumerE1.accept(file);
-            } else if (file.isDirectory()) {
-                final File[] listFiles = file.listFiles();
-                if (listFiles != null && listFiles.length > 0) {
-                    for (File listFile : listFiles) {
-                        if (listFile.isFile()) {
-                            findFile(listFile, loop, fileConsumerE1, suffixs);
-                        }
-                    }
-                    if (loop) {
-                        for (File listFile : listFiles) {
-                            if (listFile.isDirectory()) {
-                                findFile(listFile, loop, fileConsumerE1, suffixs);
-                            }
-                        }
-                    }
-                }
+                    return check;
+                });
             }
+            return walk;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.as(path.toString(), e);
         }
-    }
-
-    public static File findFile(File file, boolean loop, FunctionE<File, Boolean> function) {
-        try {
-            if (file.isFile()) {
-                if (function.apply(file)) {
-                    return file;
-                }
-            } else if (file.isDirectory()) {
-                final File[] listFiles = file.listFiles();
-                if (listFiles != null && listFiles.length > 0) {
-                    for (File listFile : listFiles) {
-                        if (listFile.isFile()) {
-                            if (function.apply(listFile)) {
-                                return listFile;
-                            }
-                        }
-                    }
-                    if (loop) {
-                        for (File listFile : listFiles) {
-                            if (listFile.isDirectory()) {
-                                final File findFile = findFile(listFile, loop, function);
-                                if (findFile != null) {
-                                    return findFile;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw Throw.as(e);
-        }
-        return null;
     }
 
 }

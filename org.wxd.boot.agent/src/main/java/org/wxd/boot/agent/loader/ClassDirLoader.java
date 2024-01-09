@@ -27,9 +27,6 @@ import java.util.TreeMap;
 @Setter
 public class ClassDirLoader extends URLClassLoader implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-
     /**
      * lib文件夹下面所有 jar 包 ClassLoader
      * <p>包附加到 SystemClassLoader 加载器里面
@@ -47,17 +44,16 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
      * @param jarPath jar 路径，可以是jar包也可以是 jar 目录
      */
     public static ClassDirLoader bootLib(ClassLoader parent, String jarPath) {
-        try {
-            final Collection<File> jars = FileUtil.loopLists(jarPath, ".jar");
-            ClassDirLoader classDirLoader = new ClassDirLoader(parent);
-            for (File lib : jars) {
-                classDirLoader.addURL(lib.toURI().toURL());
-            }
-            return classDirLoader;
-        } catch (Exception e) {
-            log.error("ClassLoader 附加 jar 包：" + jarPath, e);
-        }
-        return null;
+        ClassDirLoader classDirLoader = new ClassDirLoader(parent);
+        FileUtil.walkFiles(jarPath, ".jar")
+                .forEach(lib -> {
+                    try {
+                        classDirLoader.addURL(lib.toURI().toURL());
+                    } catch (Exception e) {
+                        log.error("ClassLoader 附加 jar 包：" + jarPath, e);
+                    }
+                });
+        return classDirLoader;
     }
 
     /**

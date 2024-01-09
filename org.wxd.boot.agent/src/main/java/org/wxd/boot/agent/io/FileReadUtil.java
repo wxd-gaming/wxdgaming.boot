@@ -28,12 +28,8 @@ public class FileReadUtil implements Serializable {
      */
     public static Map<String, byte[]> readListBytes(File file, String... suffixs) {
         Map<String, byte[]> bytesMap = new TreeMap<>();
-        FileUtil.findFile(
-                file,
-                false,
-                (tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)),
-                suffixs
-        );
+        FileUtil.walkFiles(file, 1, suffixs)
+                .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
         return bytesMap;
     }
 
@@ -49,12 +45,8 @@ public class FileReadUtil implements Serializable {
      */
     public static Map<String, byte[]> loopReadBytes(File file, String... suffixs) {
         Map<String, byte[]> bytesMap = new TreeMap<>();
-        FileUtil.findFile(
-                file,
-                true,
-                (tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)),
-                suffixs
-        );
+        FileUtil.walkFiles(file, suffixs)
+                .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
         return bytesMap;
     }
 

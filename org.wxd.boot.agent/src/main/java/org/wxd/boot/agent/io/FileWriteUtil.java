@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -117,7 +116,7 @@ public class FileWriteUtil implements Serializable {
         try (OutputStream out = Files.newOutputStream(file.toPath(), openOptions)) {
             call.accept(out);
         } catch (Exception e) {
-             throw Throw.as(e);
+            throw Throw.as(e);
         }
     }
 
@@ -159,9 +158,8 @@ public class FileWriteUtil implements Serializable {
      *
      * @param file
      * @param outPath
-     * @throws Exception
      */
-    public static void copy(String file, String outPath) throws Exception {
+    public static void copy(String file, String outPath) {
         File file1 = FileUtil.findFile(file);
         copy(file1, outPath);
     }
@@ -171,9 +169,8 @@ public class FileWriteUtil implements Serializable {
      *
      * @param file
      * @param outPath
-     * @throws Exception
      */
-    public static void copy(File file, String outPath) throws Exception {
+    public static void copy(File file, String outPath) {
         byte[] bytes = FileReadUtil.readBytes(file);
         writeBytes(outPath + "/" + file.getName(), bytes);
     }
@@ -183,13 +180,11 @@ public class FileWriteUtil implements Serializable {
      *
      * @param dir
      * @param outPath
-     * @throws Exception
      */
-    public static void copyDir(String dir, String outPath) throws Exception {
-        Collection<File> lists = FileUtil.lists(dir);
-        for (File list : lists) {
-            byte[] bytes = FileReadUtil.readBytes(list);
-            writeBytes(outPath + "/" + list.getName(), bytes);
-        }
+    public static void copyDir(String dir, String outPath) {
+        FileUtil.walkFiles(dir, 1).forEach(f -> {
+            byte[] bytes = FileReadUtil.readBytes(f);
+            writeBytes(outPath + "/" + f.getName(), bytes);
+        });
     }
 }
