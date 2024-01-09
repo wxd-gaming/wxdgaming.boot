@@ -10,15 +10,15 @@ public class ResourcesUtil {
 
 
     public static void main(String[] args) {
-        FileUtil.resourceStream(".", (name, inputStream) -> {
+        FileUtil.resource(".", (name, inputStream) -> {
             System.out.println(name);
         });
 
-        FileUtil.resourceStream("META-INF/LICENSE", (name, inputStream) -> {
+        FileUtil.resource("META-INF/LICENSE", (name, inputStream) -> {
             System.out.println(name);
         });
 
-        FileUtil.resourceStream("META-INF/LICENSE", (name, inputStream) -> {
+        FileUtil.resource("META-INF/LICENSE", (name, inputStream) -> {
             System.out.println(name);
         });
     }

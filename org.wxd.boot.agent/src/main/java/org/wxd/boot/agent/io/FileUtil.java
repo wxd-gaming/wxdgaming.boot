@@ -3,8 +3,8 @@ package org.wxd.boot.agent.io;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.function.ConsumerE2;
+import org.wxd.boot.agent.lang.Tuple2;
 import org.wxd.boot.agent.zip.ReadZipFile;
 
 import java.io.File;
@@ -143,34 +143,55 @@ public class FileUtil implements Serializable {
     }
 
     /** InputStream 需要自己关闭 */
-    public static void resourceStream(String path, ConsumerE2<String, InputStream> call) {
-        resourceStream(Thread.currentThread().getContextClassLoader(), path, call);
+    public static void resource(String path, ConsumerE2<String, InputStream> call) {
+        resource(Thread.currentThread().getContextClassLoader(), path, call);
     }
 
     /** InputStream 需要自己关闭 */
-    public static void resourceStream(ClassLoader classLoader, final String path, ConsumerE2<String, InputStream> call) {
+    public static void resource(ClassLoader classLoader, final String path, ConsumerE2<String, InputStream> call) {
+        resourceStreams(classLoader, path).forEach(entry -> {
+            try {
+                call.accept(entry.getLeft(), entry.getRight());
+            } catch (Exception e) {
+                throw Throw.as("resources:" + path, e);
+            }
+        });
+    }
+
+    /** 获取所有资源 */
+    public static Stream<Tuple2<String, InputStream>> resourceStreams(final String path) {
+        return resourceStreams(Thread.currentThread().getContextClassLoader(), path);
+    }
+
+    /** 获取所有资源 */
+    public static Stream<Tuple2<String, InputStream>> resourceStreams(ClassLoader classLoader, final String path) {
         try {
             URL resource = classLoader.getResource(path);
-            String findPath = URLDecoder.decode(resource.getPath(), StandardCharsets.UTF_8);
-            if (findPath.contains(".zip!") || findPath.contains(".jar!")) {
-                findPath = findPath.substring(5, findPath.indexOf("!/"));
-                try (ReadZipFile zipFile = new ReadZipFile(findPath)) {
-                    zipFile.forEachStream((name, inputStream) -> {
-                        if (name.startsWith(path)) {
-                            call.accept(name, inputStream);
-                        }
-                    });
-                }
-            } else {
-                walk(path).forEach(f -> {
-                    try {
-                        FileInputStream fileInputStream = new FileInputStream(f);
-                        call.accept(f.getName(), fileInputStream);
-                    } catch (Exception e) {
-                        throw Throw.as("resources:" + f, e);
-                    }
-                });
+
+            String findPath = path;
+            if (findPath.startsWith("/")) {
+                findPath = findPath.substring(1);
             }
+
+            if (resource != null) {
+                findPath = URLDecoder.decode(resource.getPath(), StandardCharsets.UTF_8);
+                if (findPath.contains(".zip!") || findPath.contains(".jar!")) {
+                    findPath = findPath.substring(5, findPath.indexOf("!/"));
+                    try (ReadZipFile zipFile = new ReadZipFile(findPath)) {
+                        return zipFile.stream()
+                                .filter(z -> !z.isDirectory())
+                                .filter(p -> p.getName().startsWith(path))
+                                .map(z -> new Tuple2<>(z.getName(), zipFile.unzipFileStream(z)));
+                    }
+                }
+            }
+            return walkFiles(findPath).map(file -> {
+                try {
+                    return new Tuple2<>(file.getPath(), new FileInputStream(file));
+                } catch (Exception e) {
+                    throw Throw.as("resources:" + file, e);
+                }
+            });
         } catch (Exception e) {
             throw Throw.as("resources:" + path, e);
         }

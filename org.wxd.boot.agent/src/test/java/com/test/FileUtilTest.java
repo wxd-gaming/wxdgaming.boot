@@ -7,8 +7,10 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
 import org.wxd.boot.agent.io.TemplatePack;
+import org.wxd.boot.agent.lang.Tuple2;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +19,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -80,8 +83,11 @@ public class FileUtilTest implements Serializable {
         File file = new File(s);
         Files.walk(file.toPath(), maxDepth)
                 .map(Path::toFile)
-                .filter(f -> f.isFile())
+                .filter(File::isFile)
                 .forEach(System.out::println);
+
+         FileUtil.resourceStreams(s).forEach(v-> System.out.println(v.getLeft()));
+
     }
 
     @Test
@@ -91,7 +97,7 @@ public class FileUtilTest implements Serializable {
         File file = new File(s);
         Files.walk(file.toPath(), maxDepth)
                 .map(Path::toFile)
-                .filter(f -> f.isDirectory())
+                .filter(File::isDirectory)
                 .forEach(System.out::println);
     }
 

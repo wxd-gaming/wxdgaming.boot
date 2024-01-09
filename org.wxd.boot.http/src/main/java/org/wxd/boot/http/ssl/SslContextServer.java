@@ -2,7 +2,6 @@ package org.wxd.boot.http.ssl;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.collection.concurrent.ConcurrentTable;
@@ -15,6 +14,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.KeyStore;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * https协议证书
@@ -34,26 +34,27 @@ public class SslContextServer implements Serializable {
 
         Map<String, SSLContext> row = sslContextMap.row(sslProtocolType);
         return row.computeIfAbsent(jks_path, l -> {
-            try (InputStream inputStream = FileUtil.findInputStream(jks_path)) {
-                String jks_pwd = FileReadUtil.readString(jks_pwd_path);
-                if (jks_pwd == null) {
-                    jks_pwd = jks_pwd_path;
-                }
-                log.warn("jks文件：" + jks_path + ", 大小：" + inputStream.available());
-                return initSSLContext(
-                        jks_path,
-                        sslProtocolType,
-                        "jks",
-                        inputStream,
-                        jks_pwd,
-                        jks_pwd);
+            try {
+                AtomicReference<InputStream> streams = new AtomicReference<>();
+                AtomicReference<String> pwd = new AtomicReference<>();
+                // 获取当前运行的JAR文件
+                FileUtil.resource(SslContextServer.class.getClassLoader(), jks_path, (entryName, inputStream) -> {
+                    // 判断是否为资源文件
+                    streams.set(inputStream);
+                    System.out.printf("jks=%s, 文件大小：%s\n", entryName, inputStream.available());
+                });
+                FileUtil.resource(SslContextServer.class.getClassLoader(), jks_pwd_path, (entryName, inputStream) -> {
+                    // 判断是否为资源文件
+                    pwd.set(FileReadUtil.readString(inputStream));
+                });
+                return initSSLContext(sslProtocolType, "jks", streams.get(), pwd.get(), pwd.get());
             } catch (Exception e) {
-                throw Throw.as("jks文件：" + jks_path, e);
+                throw new RuntimeException("读取jks文件异常", e);
             }
         });
     }
 
-    public static SSLContext initSSLContext(String jks_path, SslProtocolType sslProtocolType,
+    public static SSLContext initSSLContext(SslProtocolType sslProtocolType,
                                             String keyStoreType,
                                             InputStream keyStoreStream,
                                             String certificatePassword,
@@ -76,25 +77,4 @@ public class SslContextServer implements Serializable {
         return sslContext;
     }
 
-    public static InputStream[] findJks() {
-        try {
-            InputStream[] streams = new InputStream[2];
-            // 获取当前运行的JAR文件
-            String fname = "jks";
-            FileUtil.resourceStream(SslContextServer.class.getClassLoader(), fname, (entryName, inputStream) -> {
-                // 判断是否为资源文件
-                if (entryName.startsWith(fname)) {
-                    if (entryName.endsWith(".jks")) {
-                        streams[0] = inputStream;
-                        System.out.printf("jks=%s, 文件大小：%s\n", entryName, inputStream.available());
-                    } else if (entryName.endsWith(".pwd")) {
-                        streams[1] = inputStream;
-                    }
-                }
-            });
-            return streams;
-        } catch (Exception e) {
-            throw new RuntimeException("读取jks文件异常", e);
-        }
-    }
 }
