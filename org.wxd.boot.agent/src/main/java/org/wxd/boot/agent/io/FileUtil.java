@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.ConsumerE2;
-import org.wxd.boot.agent.lang.Tuple2;
+import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.zip.ReadZipFile;
 
 import java.io.File;
@@ -151,7 +151,7 @@ public class FileUtil implements Serializable {
     public static void resource(ClassLoader classLoader, final String path, ConsumerE2<String, InputStream> call) {
         resourceStreams(classLoader, path).forEach(entry -> {
             try {
-                call.accept(entry.getLeft(), entry.getRight());
+                call.accept(entry.t1(), entry.t2());
             } catch (Exception e) {
                 throw Throw.as("resources:" + path, e);
             }
@@ -159,12 +159,12 @@ public class FileUtil implements Serializable {
     }
 
     /** 获取所有资源 */
-    public static Stream<Tuple2<String, InputStream>> resourceStreams(final String path) {
+    public static Stream<Record2<String, InputStream>> resourceStreams(final String path) {
         return resourceStreams(Thread.currentThread().getContextClassLoader(), path);
     }
 
     /** 获取所有资源 */
-    public static Stream<Tuple2<String, InputStream>> resourceStreams(ClassLoader classLoader, final String path) {
+    public static Stream<Record2<String, InputStream>> resourceStreams(ClassLoader classLoader, final String path) {
         try {
             URL resource = classLoader.getResource(path);
 
@@ -181,13 +181,13 @@ public class FileUtil implements Serializable {
                         return zipFile.stream()
                                 .filter(z -> !z.isDirectory())
                                 .filter(p -> p.getName().startsWith(path))
-                                .map(z -> new Tuple2<>(z.getName(), zipFile.unzipFileStream(z)));
+                                .map(z -> new Record2<>(z.getName(), zipFile.unzipFileStream(z)));
                     }
                 }
             }
             return walkFiles(findPath).map(file -> {
                 try {
-                    return new Tuple2<>(file.getPath(), new FileInputStream(file));
+                    return new Record2<>(file.getPath(), new FileInputStream(file));
                 } catch (Exception e) {
                     throw Throw.as("resources:" + file, e);
                 }
