@@ -7,10 +7,7 @@ import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.zip.ReadZipFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -18,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -145,7 +143,9 @@ public class FileUtil implements Serializable {
                             return zipFile.stream()
                                     .filter(z -> !z.isDirectory())
                                     .filter(p -> p.getName().startsWith(path))
-                                    .map(z -> new Record2<>(z.getName(), zipFile.unzipFileStream(z)));
+                                    .map(z -> new Record2<String, InputStream>(z.getName(), new ByteArrayInputStream(zipFile.unzipFile(z))))
+                                    .collect(Collectors.toList())
+                                    .stream();
                         }
                     }
                 }

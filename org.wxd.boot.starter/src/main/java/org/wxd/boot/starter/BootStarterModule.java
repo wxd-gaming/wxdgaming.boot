@@ -26,10 +26,24 @@ class BootStarterModule extends BaseModule {
     }
 
     protected BootStarterModule bind() throws Exception {
-        InputStream inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "boot.xml");
+        InputStream inputStream = FileUtil.resourceStreams(this.getClass().getClassLoader(), "config/boot.xml")
+                .findFirst()
+                .map(entry -> {
+                    System.out.println(entry.t1());
+                    return entry.t2();
+                })
+                .orElse(null);
+
         if (inputStream == null) {
-            inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "config/boot.xml");
+            inputStream = FileUtil.resourceStreams(this.getClass().getClassLoader(), "boot.xml")
+                    .findFirst()
+                    .map(entry -> {
+                        System.out.println(entry.t1());
+                        return entry.t2();
+                    })
+                    .orElse(null);
         }
+
         BootConfig bootConfig = XmlUtil.fromXml(inputStream, BootConfig.class);
 
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
