@@ -99,47 +99,11 @@ public class FileUtil implements Serializable {
     }
 
     public static InputStream findInputStream(String fileName) {
-        return findInputStream(fileName, Thread.currentThread().getContextClassLoader());
+        return findInputStream(Thread.currentThread().getContextClassLoader(), fileName);
     }
 
-    public static InputStream findInputStream(String fileName, ClassLoader classLoader) {
-        try {
-            fileName = fileName.replace("\\", "/");
-
-            File file = new File(fileName);
-            if (exists(file) && file.isFile()) {
-                return new FileInputStream(file);
-            }
-
-            if (!fileName.startsWith("config")) {
-                file = new File("config/" + fileName);
-                if (exists(file) && file.isFile()) {
-                    return new FileInputStream(file);
-                }
-            }
-
-            {
-                if (fileName.startsWith("/")) {
-                    fileName = fileName.substring(1);
-                }
-                /*todo 获取resource 不能是/开始的*/
-                InputStream resource = classLoader.getResourceAsStream(fileName);
-                if (resource != null) {
-                    return resource;
-                }
-
-                if (!fileName.startsWith("config")) {
-                    resource = classLoader.getResourceAsStream("config/" + fileName);
-                    if (resource != null) {
-                        return resource;
-                    }
-                }
-
-            }
-            return null;
-        } catch (Exception e) {
-            throw Throw.as(e);
-        }
+    public static InputStream findInputStream(ClassLoader classLoader, String fileName) {
+        return resourceStreams(classLoader, fileName).findFirst().map(Record2::t2).orElse(null);
     }
 
     /** InputStream 需要自己关闭 */
@@ -166,22 +130,23 @@ public class FileUtil implements Serializable {
     /** 获取所有资源 */
     public static Stream<Record2<String, InputStream>> resourceStreams(ClassLoader classLoader, final String path) {
         try {
-            URL resource = classLoader.getResource(path);
-
             String findPath = path;
-            if (findPath.startsWith("/")) {
-                findPath = findPath.substring(1);
-            }
+            if (!new File(path).exists()) {/*当本地文件不存在才查找资源文件*/
+                URL resource = classLoader.getResource(path);
+                if (findPath.startsWith("/")) {
+                    findPath = findPath.substring(1);
+                }
 
-            if (resource != null) {
-                findPath = URLDecoder.decode(resource.getPath(), StandardCharsets.UTF_8);
-                if (findPath.contains(".zip!") || findPath.contains(".jar!")) {
-                    findPath = findPath.substring(5, findPath.indexOf("!/"));
-                    try (ReadZipFile zipFile = new ReadZipFile(findPath)) {
-                        return zipFile.stream()
-                                .filter(z -> !z.isDirectory())
-                                .filter(p -> p.getName().startsWith(path))
-                                .map(z -> new Record2<>(z.getName(), zipFile.unzipFileStream(z)));
+                if (resource != null) {
+                    findPath = URLDecoder.decode(resource.getPath(), StandardCharsets.UTF_8);
+                    if (findPath.contains(".zip!") || findPath.contains(".jar!")) {
+                        findPath = findPath.substring(5, findPath.indexOf("!/"));
+                        try (ReadZipFile zipFile = new ReadZipFile(findPath)) {
+                            return zipFile.stream()
+                                    .filter(z -> !z.isDirectory())
+                                    .filter(p -> p.getName().startsWith(path))
+                                    .map(z -> new Record2<>(z.getName(), zipFile.unzipFileStream(z)));
+                        }
                     }
                 }
             }
@@ -401,7 +366,8 @@ public class FileUtil implements Serializable {
      * @return
      */
     public static Stream<File> walk(File path, int maxDepth, String... extendNames) {
-        return walk(path.toPath(), maxDepth, extendNames);
+        if (path.exists()) return walk(path.toPath(), maxDepth, extendNames);
+        return Stream.of();
     }
 
     /**

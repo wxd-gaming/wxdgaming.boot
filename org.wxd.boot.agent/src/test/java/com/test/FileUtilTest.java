@@ -75,7 +75,7 @@ public class FileUtilTest implements Serializable {
 
     @Test
     public void findFile() throws Exception {
-        String s = "e:\\out\\1.log";
+        String s = "e:\\out1\\1.log";
         int maxDepth = 2;
         File file = new File(s);
         Files.walk(file.toPath(), maxDepth)

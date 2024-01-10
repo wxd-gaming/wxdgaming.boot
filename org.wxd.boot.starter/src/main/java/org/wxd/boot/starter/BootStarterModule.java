@@ -1,6 +1,7 @@
 package org.wxd.boot.starter;
 
 import org.wxd.boot.agent.function.ConsumerE2;
+import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DbConfig;
 import org.wxd.boot.net.controller.MappingFactory;
@@ -9,6 +10,8 @@ import org.wxd.boot.starter.service.*;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.xml.XmlUtil;
 import org.wxd.boot.system.JvmUtil;
+
+import java.io.InputStream;
 
 /**
  * 基础模块
@@ -23,7 +26,11 @@ class BootStarterModule extends BaseModule {
     }
 
     protected BootStarterModule bind() throws Exception {
-        BootConfig bootConfig = XmlUtil.fromXml4File("boot.xml", BootConfig.class);
+        InputStream inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "boot.xml");
+        if (inputStream == null) {
+            inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "config/boot.xml");
+        }
+        BootConfig bootConfig = XmlUtil.fromXml(inputStream, BootConfig.class);
 
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
         JvmUtil.setProperty(JvmUtil.Default_Executor_Max_Size, bootConfig.getDefaultExecutor().getMaxSize());

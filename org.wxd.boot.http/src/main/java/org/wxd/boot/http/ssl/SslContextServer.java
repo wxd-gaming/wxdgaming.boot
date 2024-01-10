@@ -43,6 +43,7 @@ public class SslContextServer implements Serializable {
                     streams.set(inputStream);
                     System.out.printf("jks=%s, 文件大小：%s\n", entryName, inputStream.available());
                 });
+                pwd.set(jks_pwd_path);
                 FileUtil.resource(SslContextServer.class.getClassLoader(), jks_pwd_path, (entryName, inputStream) -> {
                     // 判断是否为资源文件
                     pwd.set(FileReadUtil.readString(inputStream));

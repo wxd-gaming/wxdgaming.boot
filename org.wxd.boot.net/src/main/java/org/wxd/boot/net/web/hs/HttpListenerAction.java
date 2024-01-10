@@ -223,10 +223,10 @@ class HttpListenerAction extends EventRunnable {
         String htmlPath = httpServer.resourcesPath() + session.getUriPath();
         try {
             byte[] readFileToBytes = null;
-            InputStream resource = FileUtil.findInputStream(htmlPath, httpServer.getResourceClassLoader());
+            InputStream resource = FileUtil.findInputStream(httpServer.getResourceClassLoader(), htmlPath);
             if (resource == null) {
                 htmlPath = "html" + session.getUriPath();
-                resource = FileUtil.findInputStream(htmlPath, httpServer.getResourceClassLoader());
+                resource = FileUtil.findInputStream(httpServer.getResourceClassLoader(), htmlPath);
             }
 
             if (resource != null) {

@@ -16,36 +16,28 @@ import java.util.*;
  **/
 public class FileReadUtil implements Serializable {
 
-    /**
-     * 文件夹当前下面文件内容
-     */
-    public static Map<String, byte[]> readListBytes(String file, String... suffixs) {
-        return readListBytes(FileUtil.findFile(file), suffixs);
+    /** 文件夹当前下面文件内容 */
+    public static Map<String, byte[]> readListBytes(String file, String... extendNames) {
+        return readListBytes(FileUtil.findFile(file), extendNames);
     }
 
-    /**
-     * 文件夹当前下面文件内容
-     */
-    public static Map<String, byte[]> readListBytes(File file, String... suffixs) {
+    /** 文件夹当前下面文件内容 */
+    public static Map<String, byte[]> readListBytes(File file, String... extendNames) {
         Map<String, byte[]> bytesMap = new TreeMap<>();
-        FileUtil.walkFiles(file, 1, suffixs)
+        FileUtil.walkFiles(file, 1, extendNames)
                 .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
         return bytesMap;
     }
 
-    /**
-     * 递归查找所有文件
-     */
-    public static Map<String, byte[]> loopReadBytes(String file, String... suffixs) {
-        return loopReadBytes(FileUtil.findFile(file), suffixs);
+    /** 递归查找所有文件 */
+    public static Map<String, byte[]> loopReadBytes(String file, String... extendNames) {
+        return loopReadBytes(FileUtil.findFile(file), extendNames);
     }
 
-    /**
-     * 递归查找所有文件
-     */
-    public static Map<String, byte[]> loopReadBytes(File file, String... suffixs) {
+    /** 递归查找所有文件 */
+    public static Map<String, byte[]> loopReadBytes(File file, String... extendNames) {
         Map<String, byte[]> bytesMap = new TreeMap<>();
-        FileUtil.walkFiles(file, suffixs)
+        FileUtil.walkFiles(file, extendNames)
                 .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
         return bytesMap;
     }
@@ -55,17 +47,17 @@ public class FileReadUtil implements Serializable {
     }
 
     /** 获取jar包内资源 需要传入classloader */
-    public static String readString(String fileName, ClassLoader classLoader) {
-        return readString(fileName, StandardCharsets.UTF_8, classLoader);
+    public static String readString(ClassLoader classLoader, String fileName) {
+        return readString(classLoader, fileName, StandardCharsets.UTF_8);
     }
 
     public static String readString(String fileName, Charset charset) {
-        return readString(fileName, charset, Thread.currentThread().getContextClassLoader());
+        return readString(Thread.currentThread().getContextClassLoader(), fileName, charset);
     }
 
     /** 获取jar包内资源 需要传入classloader */
-    public static String readString(String fileName, Charset charset, ClassLoader classLoader) {
-        InputStream inputStream = FileUtil.findInputStream(fileName, classLoader);
+    public static String readString(ClassLoader classLoader, String fileName, Charset charset) {
+        InputStream inputStream = FileUtil.findInputStream(classLoader, fileName);
         if (inputStream == null) {
             System.out.printf("文件 %s 查找失败\n", fileName);
             return null;
