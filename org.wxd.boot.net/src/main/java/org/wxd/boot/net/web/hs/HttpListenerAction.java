@@ -110,7 +110,7 @@ class HttpListenerAction extends EventRunnable {
             };
 
             if (urlCmd == null) {
-                callBack.accept("命令参数 cmd , 未找到", true);
+                callBack.accept("命令参数 cmd , 未找到", false);
                 return;
             }
 
@@ -121,9 +121,9 @@ class HttpListenerAction extends EventRunnable {
                     return;
                 }
                 if ((httpHeadValueType == HttpHeadValueType.Json)) {
-                    callBack.accept(RunResult.error(999, " 软件：無心道  \n not found url " + urlPath), true);
+                    callBack.accept(RunResult.error(999, " 软件：無心道  \n not found url " + urlPath), false);
                 } else {
-                    callBack.accept(" 软件：無心道  \n not found url " + urlPath, true);
+                    callBack.accept(" 软件：無心道  \n not found url " + urlPath, false);
                 }
                 return;
             }
@@ -134,9 +134,9 @@ class HttpListenerAction extends EventRunnable {
             if (post != null || get != null) {
                 Runnable action = () -> {
                     if ((httpHeadValueType == HttpHeadValueType.Json)) {
-                        callBack.accept(RunResult.error(999, " 软件：無心道  \n server 500"), true);
+                        callBack.accept(RunResult.error(999, " 软件：無心道  \n server 500"), false);
                     } else {
-                        callBack.accept(" 软件：無心道  \n server 500", true);
+                        callBack.accept(" 软件：無心道  \n server 500", false);
                     }
                 };
                 if (post != null && get != null) {
@@ -164,13 +164,13 @@ class HttpListenerAction extends EventRunnable {
                 if (mappingRecord.instance() instanceof HttpSignCheck signCheck) {
                     String s = signCheck.checkSign(mappingRecord.method(), session, putData);
                     if (StringUtil.notEmptyOrNull(s)) {
-                        callBack.accept("权限认证失败", true);
+                        callBack.accept("权限认证失败", false);
                         return;
                     }
                 } else if (mappingRecord.textMapping().needAuth() > 0) {
                     String s = HttpSignCheck.checkAuth(mappingRecord.method(), session, putData);
                     if (StringUtil.notEmptyOrNull(s)) {
-                        callBack.accept("权限认证失败", true);
+                        callBack.accept("权限认证失败", false);
                         return;
                     }
                 }
@@ -252,7 +252,8 @@ class HttpListenerAction extends EventRunnable {
                             .append("\nfile path = ").append(new File(htmlPath).getCanonicalPath())
                             .append("\n=============================================结束================================================")
                             .append("\n");
-                    session.setShowLog(true);
+                    session.setShowLog(false);
+                    session.setFile(true);
                 }
                 HttpServer.response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, hct, readFileToBytes);
                 return true;

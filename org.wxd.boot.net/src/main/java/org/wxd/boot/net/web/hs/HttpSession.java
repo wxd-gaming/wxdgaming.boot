@@ -47,6 +47,8 @@ public class HttpSession extends Session implements Serializable {
     private long lastReadTime = 0;
     private long resTime = 0;
     private boolean showLog = false;
+    /** 如果是物理文件 */
+    private boolean file = false;
     /** 多段是提交方案 */
     private InterfaceHttpPostRequestDecoder httpDecoder = null;
 
@@ -186,9 +188,7 @@ public class HttpSession extends Session implements Serializable {
                         .append("\n=============================================请求================================================")
                         .append("\n").append(request.method()).append(" ").append(this.getCompleteUri())
                         .append("\nSession：").append(NioFactory.getCtxName(this.getChannelContext())).append(" ").append(this.getId()).append("; Remote-Host：").append(this.getRemoteAddress()).append("; Local-Host：").append(this.getLocalAddress())
-                        .append(";\nUser-Agent：").append(this.header(HttpHeaderNames.USER_AGENT))
                         .append(";\nContent-type：").append(this.getReqContentType())
-                        .append(";\nAccept-Encoding：").append(this.header(HttpHeaderNames.ACCEPT_ENCODING))
                         .append(";\n").append(HttpHeaderNames.COOKIE).append("：").append(this.header(HttpHeaderNames.COOKIE))
                         .append(";\n参数：").append(this.getReqContent());
             }

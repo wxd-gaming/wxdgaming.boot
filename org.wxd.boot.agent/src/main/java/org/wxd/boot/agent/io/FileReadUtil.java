@@ -10,8 +10,11 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
+ * 文件读取
+ *
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-08-18 14:41
  **/
@@ -41,6 +44,12 @@ public class FileReadUtil implements Serializable {
         FileUtil.walkFiles(file, extendNames)
                 .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
         return bytesMap;
+    }
+
+    /** 递归查找所有文件 */
+    public static Stream<Record2<String, byte[]>> loopReadBytesStream(File file, String... extendNames) {
+        return FileUtil.walkFiles(file, extendNames)
+                .map(f -> new Record2<>(f.getPath(), readBytes(f)));
     }
 
     public static String readString(String fileName) {
@@ -112,7 +121,7 @@ public class FileReadUtil implements Serializable {
 
     public static List<String> readLines(File file, Charset charset) {
         List<String> lines = new ArrayList<>();
-        readLine(file, charset, (line) -> lines.add(line));
+        readLine(file, charset, lines::add);
         return lines;
     }
 

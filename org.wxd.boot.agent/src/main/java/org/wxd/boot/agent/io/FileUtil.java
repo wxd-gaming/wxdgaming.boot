@@ -75,22 +75,11 @@ public class FileUtil implements Serializable {
         }
 
         {
-            /*todo 获取resource 不能是/开始的*/
-            if (fileName.startsWith("/")) {
-                fileName = fileName.substring(1);
-            }
             URL resource = classLoader.getResource(fileName);
             if (resource != null) {
-                return new File(resource.getFile());
+                String decode = URLDecoder.decode(resource.getPath(), StandardCharsets.UTF_8);
+                return new File(decode);
             }
-
-            if (!fileName.startsWith("config")) {
-                resource = classLoader.getResource("config/" + fileName);
-                if (resource != null) {
-                    return new File(resource.getFile());
-                }
-            }
-
         }
         return null;
     }

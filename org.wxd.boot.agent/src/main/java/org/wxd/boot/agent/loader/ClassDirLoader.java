@@ -157,15 +157,12 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
         try {
             File file = new File(url.toURI());
             int pathLen = file.getPath().length() + 1;
-            Map<String, byte[]> stringMap = FileReadUtil.loopReadBytes(file, ".class", ".CLASS");
-            for (Map.Entry<String, byte[]> entry : stringMap.entrySet()) {
-                // 文件名称
-                String className = entry.getKey();
+            FileReadUtil.loopReadBytes(file, ".class", ".CLASS").forEach((className, bytes) -> {
                 className = className.substring(pathLen, className.length() - 6);
                 // 将/替换成. 得到全路径类名
                 className = className.replace(File.separatorChar, '.').replace('/', '.');
-                classFileMap.put(className, entry.getValue());
-            }
+                classFileMap.put(className, bytes);
+            });
         } catch (Exception e) {
             throw Throw.as(e);
         }
