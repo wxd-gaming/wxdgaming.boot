@@ -42,13 +42,13 @@ public class SslContextServer implements Serializable {
                 // 获取当前运行的JAR文件
                 Record2<String, InputStream> jksStream = FileUtil.findInputStream(SslContextServer.class.getClassLoader(), jks_path);
                 streams.set(jksStream.t2());
-                System.out.printf("读取目录 jks=%s, 文件大小：%s\n", jksStream.t1(), jksStream.t2().available());
+                System.out.printf("读取文件目录：jks=%s, 文件大小：%s\n", jksStream.t1(), jksStream.t2().available());
                 pwd.set(jks_pwd_path);
 
                 Record2<String, InputStream> pwdStream = FileUtil.findInputStream(SslContextServer.class.getClassLoader(), jks_pwd_path);
                 if (pwdStream != null) {
                     // 判断是否为资源文件
-                    System.out.printf("读取目录 jkspwd=%s\n", pwdStream.t1());
+                    System.out.printf("读取文件目录：jkspwd=%s\n", pwdStream.t1());
                     pwd.set(FileReadUtil.readString(pwdStream.t2()));
                 }
                 return initSSLContext(sslProtocolType, "jks", streams.get(), pwd.get(), pwd.get());

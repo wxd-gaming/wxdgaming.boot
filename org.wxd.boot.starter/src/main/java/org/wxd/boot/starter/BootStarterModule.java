@@ -28,7 +28,7 @@ class BootStarterModule extends BaseModule {
 
     protected BootStarterModule bind() throws Exception {
         Record2<String, InputStream> inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "boot.xml");
-        System.out.println("读取配置：" + inputStream.t1());
+        System.out.println("读取文件目录：" + inputStream.t1());
         BootConfig bootConfig = XmlUtil.fromXml(inputStream.t2(), BootConfig.class);
 
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());

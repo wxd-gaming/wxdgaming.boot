@@ -59,7 +59,7 @@ public class Post_Run_Config extends ObjectBase implements Serializable {
         if (inputStream == null) {
             return null;
         }
-        System.out.println("读取配置：" + inputStream.t1());
+        System.out.println("读取文件目录：" + inputStream.t1());
         return postRunConfig(inputStream.t2());
     }
 
