@@ -10,17 +10,10 @@ public class ResourcesUtil {
 
 
     public static void main(String[] args) {
-        FileUtil.resource(".", (name, inputStream) -> {
-            System.out.println(name);
-        });
+        FileUtil.resourceStreams(".").forEach(record -> System.out.println(record.t1()));
 
-        FileUtil.resource("META-INF/LICENSE", (name, inputStream) -> {
-            System.out.println(name);
-        });
-
-        FileUtil.resource("META-INF/LICENSE", (name, inputStream) -> {
-            System.out.println(name);
-        });
+        FileUtil.resourceStreams("META-INF/LICENSE").forEach(record -> System.out.println(record.t1()));
+        FileUtil.resourceStreams("META-INF/LICENSE").forEach(record -> System.out.println(record.t1()));
     }
 
 }

@@ -4,6 +4,7 @@ package org.wxd.boot.http.ssl;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
+import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.collection.concurrent.ConcurrentTable;
 import org.wxd.boot.str.StringUtil;
 
@@ -37,17 +38,19 @@ public class SslContextServer implements Serializable {
             try {
                 AtomicReference<InputStream> streams = new AtomicReference<>();
                 AtomicReference<String> pwd = new AtomicReference<>();
+
                 // 获取当前运行的JAR文件
-                FileUtil.resource(SslContextServer.class.getClassLoader(), jks_path, (entryName, inputStream) -> {
-                    // 判断是否为资源文件
-                    streams.set(inputStream);
-                    System.out.printf("jks=%s, 文件大小：%s\n", entryName, inputStream.available());
-                });
+                Record2<String, InputStream> jksStream = FileUtil.findInputStream(SslContextServer.class.getClassLoader(), jks_path);
+                streams.set(jksStream.t2());
+                System.out.printf("读取目录 jks=%s, 文件大小：%s\n", jksStream.t1(), jksStream.t2().available());
                 pwd.set(jks_pwd_path);
-                FileUtil.resource(SslContextServer.class.getClassLoader(), jks_pwd_path, (entryName, inputStream) -> {
+
+                Record2<String, InputStream> pwdStream = FileUtil.findInputStream(SslContextServer.class.getClassLoader(), jks_pwd_path);
+                if (pwdStream != null) {
                     // 判断是否为资源文件
-                    pwd.set(FileReadUtil.readString(inputStream));
-                });
+                    System.out.printf("读取目录 jkspwd=%s\n", pwdStream.t1());
+                    pwd.set(FileReadUtil.readString(pwdStream.t2()));
+                }
                 return initSSLContext(sslProtocolType, "jks", streams.get(), pwd.get(), pwd.get());
             } catch (Exception e) {
                 throw new RuntimeException("读取jks文件异常", e);

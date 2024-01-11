@@ -2,6 +2,7 @@ package org.wxd.boot.starter;
 
 import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.agent.io.FileUtil;
+import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DbConfig;
 import org.wxd.boot.net.controller.MappingFactory;
@@ -26,25 +27,9 @@ class BootStarterModule extends BaseModule {
     }
 
     protected BootStarterModule bind() throws Exception {
-        InputStream inputStream = FileUtil.resourceStreams(this.getClass().getClassLoader(), "config/boot.xml")
-                .findFirst()
-                .map(entry -> {
-                    System.out.println(entry.t1());
-                    return entry.t2();
-                })
-                .orElse(null);
-
-        if (inputStream == null) {
-            inputStream = FileUtil.resourceStreams(this.getClass().getClassLoader(), "boot.xml")
-                    .findFirst()
-                    .map(entry -> {
-                        System.out.println(entry.t1());
-                        return entry.t2();
-                    })
-                    .orElse(null);
-        }
-
-        BootConfig bootConfig = XmlUtil.fromXml(inputStream, BootConfig.class);
+        Record2<String, InputStream> inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "boot.xml");
+        System.out.println("读取配置：" + inputStream.t1());
+        BootConfig bootConfig = XmlUtil.fromXml(inputStream.t2(), BootConfig.class);
 
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
         JvmUtil.setProperty(JvmUtil.Default_Executor_Max_Size, bootConfig.getDefaultExecutor().getMaxSize());

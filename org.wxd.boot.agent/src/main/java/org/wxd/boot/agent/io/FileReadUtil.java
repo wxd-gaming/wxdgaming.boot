@@ -3,6 +3,7 @@ package org.wxd.boot.agent.io;
 
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.ConsumerE1;
+import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.zip.ReadZipFile;
 
 import java.io.*;
@@ -57,12 +58,12 @@ public class FileReadUtil implements Serializable {
 
     /** 获取jar包内资源 需要传入classloader */
     public static String readString(ClassLoader classLoader, String fileName, Charset charset) {
-        InputStream inputStream = FileUtil.findInputStream(classLoader, fileName);
+        Record2<String, InputStream> inputStream = FileUtil.findInputStream(classLoader, fileName);
         if (inputStream == null) {
             System.out.printf("文件 %s 查找失败\n", fileName);
             return null;
         }
-        return readString(inputStream, charset);
+        return readString(inputStream.t2(), charset);
     }
 
     public static String readString(File file) {
@@ -91,12 +92,17 @@ public class FileReadUtil implements Serializable {
     }
 
     public static List<String> readLines(String fileName, Charset charset) {
-        return readLines(FileUtil.findInputStream(fileName), charset);
+        Record2<String, InputStream> inputStream = FileUtil.findInputStream(fileName);
+        if (inputStream == null) {
+            System.out.printf("文件 %s 查找失败\n", fileName);
+            return null;
+        }
+        return readLines(inputStream.t2(), charset);
     }
 
     public static List<String> readLines(InputStream fileInputStream, Charset charset) {
         List<String> lines = new ArrayList<>();
-        readLine(fileInputStream, charset, (line) -> lines.add(line));
+        readLine(fileInputStream, charset, lines::add);
         return lines;
     }
 

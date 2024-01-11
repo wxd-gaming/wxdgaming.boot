@@ -9,6 +9,7 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
+import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.http.HttpHeadValueType;
@@ -223,18 +224,14 @@ class HttpListenerAction extends EventRunnable {
         String htmlPath = httpServer.resourcesPath() + session.getUriPath();
         try {
             byte[] readFileToBytes = null;
-            InputStream resource = FileUtil.findInputStream(httpServer.getResourceClassLoader(), htmlPath);
-            if (resource == null) {
+            Record2<String, InputStream> inputStream = FileUtil.findInputStream(httpServer.getResourceClassLoader(), htmlPath);
+            if (inputStream == null) {
                 htmlPath = "html" + session.getUriPath();
-                resource = FileUtil.findInputStream(httpServer.getResourceClassLoader(), htmlPath);
+                inputStream = FileUtil.findInputStream(httpServer.getResourceClassLoader(), htmlPath);
             }
 
-            if (resource != null) {
-                try {
-                    readFileToBytes = FileReadUtil.readBytes(resource);
-                } finally {
-                    resource.close();
-                }
+            if (inputStream != null) {
+                readFileToBytes = FileReadUtil.readBytes(inputStream.t2());
             }
             if (readFileToBytes != null) {
                 String extendName = htmlPath.substring(htmlPath.lastIndexOf(".") + 1).toLowerCase();

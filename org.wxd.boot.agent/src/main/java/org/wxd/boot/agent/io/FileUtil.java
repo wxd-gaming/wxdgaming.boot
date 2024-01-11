@@ -3,7 +3,6 @@ package org.wxd.boot.agent.io;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.zip.ReadZipFile;
 
@@ -96,40 +95,38 @@ public class FileUtil implements Serializable {
         return null;
     }
 
-    public static InputStream findInputStream(String fileName) {
+    /** 获取资源 <br>如果传入的目录本地文件夹没有，<br>会查找本地目录config目录，<br>如果还没有查找jar包内资源 */
+    public static Record2<String, InputStream> findInputStream(String fileName) {
         return findInputStream(Thread.currentThread().getContextClassLoader(), fileName);
     }
 
-    public static InputStream findInputStream(ClassLoader classLoader, String fileName) {
-        return resourceStreams(classLoader, fileName).findFirst().map(Record2::t2).orElse(null);
+    /** 获取资源 <br>如果传入的目录本地文件夹没有，<br>会查找本地目录config目录，<br>如果还没有查找jar包内资源 */
+    public static Record2<String, InputStream> findInputStream(ClassLoader classLoader, String fileName) {
+        return resourceStreams(classLoader, fileName).findFirst().orElse(null);
     }
 
-    /** InputStream 需要自己关闭 */
-    public static void resource(String path, ConsumerE2<String, InputStream> call) {
-        resource(Thread.currentThread().getContextClassLoader(), path, call);
-    }
-
-    /** InputStream 需要自己关闭 */
-    public static void resource(ClassLoader classLoader, final String path, ConsumerE2<String, InputStream> call) {
-        resourceStreams(classLoader, path).forEach(entry -> {
-            try {
-                call.accept(entry.t1(), entry.t2());
-            } catch (Exception e) {
-                throw Throw.as("resources:" + path, e);
-            }
-        });
-    }
-
-    /** 获取所有资源 */
+    /** 获取所有资源 <br>如果传入的目录本地文件夹没有，<br>会查找本地目录config目录，<br>如果还没有查找jar包内资源 */
     public static Stream<Record2<String, InputStream>> resourceStreams(final String path) {
         return resourceStreams(Thread.currentThread().getContextClassLoader(), path);
     }
 
-    /** 获取所有资源 */
+    /** 获取所有资源 <br>如果传入的目录本地文件夹没有，<br>会查找本地目录config目录，<br>如果还没有查找jar包内资源 */
     public static Stream<Record2<String, InputStream>> resourceStreams(ClassLoader classLoader, final String path) {
         try {
             String findPath = path;
-            if (!new File(path).exists()) {/*当本地文件不存在才查找资源文件*/
+            boolean fileExists = true;
+            if (!new File(path).exists()) {
+                fileExists = false;
+                if (!path.startsWith("/")) {
+                    if (!path.startsWith("config/")) {
+                        if (new File("config/" + path).exists()) {
+                            findPath = "config/" + path;
+                            fileExists = true;
+                        }
+                    }
+                }
+            }
+            if (!fileExists) {/*当本地文件不存在才查找资源文件*/
                 URL resource = classLoader.getResource(path);
                 if (findPath.startsWith("/")) {
                     findPath = findPath.substring(1);
