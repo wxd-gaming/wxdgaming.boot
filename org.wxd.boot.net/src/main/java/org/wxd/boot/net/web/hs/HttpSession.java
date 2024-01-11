@@ -256,6 +256,7 @@ public class HttpSession extends Session implements Serializable {
         String uriString = this.getRequest().uri();
         URI uriPath = new URI(uriString);
         String uriPathString = uriPath.getPath();
+        uriPathString = HttpDataAction.rawUrlDecode(uriPathString);
         if (uriPathString.length() > 1) {
             if (uriPathString.endsWith("/")) {
                 uriPathString = uriPathString.substring(0, uriPathString.length() - 1);

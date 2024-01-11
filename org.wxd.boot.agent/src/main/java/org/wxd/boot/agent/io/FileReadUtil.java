@@ -2,6 +2,7 @@ package org.wxd.boot.agent.io;
 
 
 import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.function.ConsumerE1;
 import org.wxd.boot.agent.lang.Record2;
 import org.wxd.boot.agent.zip.ReadZipFile;
@@ -10,6 +11,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -20,36 +22,27 @@ import java.util.stream.Stream;
  **/
 public class FileReadUtil implements Serializable {
 
-    /** 文件夹当前下面文件内容 */
-    public static Map<String, byte[]> readListBytes(String file, String... extendNames) {
-        return readListBytes(FileUtil.findFile(file), extendNames);
-    }
 
-    /** 文件夹当前下面文件内容 */
-    public static Map<String, byte[]> readListBytes(File file, String... extendNames) {
-        Map<String, byte[]> bytesMap = new TreeMap<>();
-        FileUtil.walkFiles(file, 1, extendNames)
-                .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
-        return bytesMap;
+    /** 递归查找所有文件 */
+    public static Map<String, byte[]> readBytesAll(File file, String... extendNames) {
+        return readBytesStream(file, extendNames).collect(Collectors.toMap(Record2::t1, Record2::t2));
     }
 
     /** 递归查找所有文件 */
-    public static Map<String, byte[]> loopReadBytes(String file, String... extendNames) {
-        return loopReadBytes(FileUtil.findFile(file), extendNames);
-    }
-
-    /** 递归查找所有文件 */
-    public static Map<String, byte[]> loopReadBytes(File file, String... extendNames) {
-        Map<String, byte[]> bytesMap = new TreeMap<>();
-        FileUtil.walkFiles(file, extendNames)
-                .forEach((tmpFile) -> bytesMap.put(tmpFile.getPath(), readBytes(tmpFile)));
-        return bytesMap;
-    }
-
-    /** 递归查找所有文件 */
-    public static Stream<Record2<String, byte[]>> loopReadBytesStream(File file, String... extendNames) {
-        return FileUtil.walkFiles(file, extendNames)
+    public static Stream<Record2<String, byte[]>> readBytesStream(File file, String... extendNames) {
+        return FileUtil.walkFiles(file.getPath(), extendNames)
                 .map(f -> new Record2<>(f.getPath(), readBytes(f)));
+    }
+
+    /** 递归查找所有文件 */
+    public static Map<String, byte[]> readBytesAll(String file, String... extendNames) {
+        return readBytesAll(FileUtil.findFile(file), extendNames);
+    }
+
+    /** 递归查找所有文件 */
+    public static void readBytesAll(File file, String[] extendNames, Consumer2<String, byte[]> call) {
+        FileUtil.walkFiles(file, extendNames)
+                .forEach(f -> call.accept(f.getPath(), readBytes(f)));
     }
 
     public static String readString(String fileName) {
