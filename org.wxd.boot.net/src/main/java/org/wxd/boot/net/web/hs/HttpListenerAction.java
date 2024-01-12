@@ -23,7 +23,7 @@ import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.threading.Async;
-import org.wxd.boot.threading.EventRunnable;
+import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.ExecutorLog;
 import org.wxd.boot.timer.MyClock;
 
@@ -41,7 +41,7 @@ import java.util.Optional;
  * @version: 2023-12-18 19:38
  **/
 @Slf4j
-class HttpListenerAction extends EventRunnable {
+class HttpListenerAction extends Event {
 
     protected HttpServer httpServer;
     protected HttpSession session;

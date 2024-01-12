@@ -54,8 +54,8 @@ public interface IExecutorServices extends Executor {
     /** 普通任务 */
     @Override default void execute(Runnable runnable) {
         String queueName = null;
-        if (runnable instanceof EventRunnable eventRunnable) {
-            queueName = eventRunnable.getQueueName();
+        if (runnable instanceof Event event) {
+            queueName = event.getQueueName();
         }
         int stackTrace = 3;
         if (runnable instanceof ForkJoinTask)
@@ -66,8 +66,8 @@ public interface IExecutorServices extends Executor {
     /** 普通任务 */
     default Job submit(Runnable runnable) {
         String queueName = null;
-        if (runnable instanceof EventRunnable eventRunnable) {
-            queueName = eventRunnable.getQueueName();
+        if (runnable instanceof Event event) {
+            queueName = event.getQueueName();
         }
         return submit(queueName, runnable, 3);
     }
@@ -75,8 +75,8 @@ public interface IExecutorServices extends Executor {
     /** 普通任务 */
     default Job submit(Runnable runnable, int stackTrace) {
         String queueName = null;
-        if (runnable instanceof EventRunnable eventRunnable) {
-            queueName = eventRunnable.getQueueName();
+        if (runnable instanceof Event event) {
+            queueName = event.getQueueName();
         }
         return submit(queueName, runnable, stackTrace);
     }
@@ -227,7 +227,7 @@ public interface IExecutorServices extends Executor {
      */
     default <V> CompletableFuture<V> completableFuture(Supplier<V> supplier, long logTime, int stackTrace) {
         final CompletableFuture<V> completableFuture = new CompletableFuture<>();
-        submit(new EventRunnable(logTime, logTime + 1000) {
+        submit(new Event(logTime, logTime + 1000) {
             @Override public void onEvent() throws Exception {
                 try {
                     completableFuture.complete(supplier.get());
@@ -252,8 +252,8 @@ public interface IExecutorServices extends Executor {
     /** 执行一次的延时任务 */
     default TimerJob schedule(Runnable command, long delay, TimeUnit unit, int stackTrace) {
         String queueName = null;
-        if (command instanceof EventRunnable eventRunnable) {
-            queueName = eventRunnable.getQueueName();
+        if (command instanceof Event event) {
+            queueName = event.getQueueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, stackTrace);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, delay, delay, unit, 1);
@@ -272,8 +272,8 @@ public interface IExecutorServices extends Executor {
     /** 定时运行可取消的周期性任务 上一次没有执行，不会执行第二次，等待上一次执行完成 */
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
         String queueName = null;
-        if (command instanceof EventRunnable eventRunnable) {
-            queueName = eventRunnable.getQueueName();
+        if (command instanceof Event event) {
+            queueName = event.getQueueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, 2);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, initialDelay, delay, unit, -1);
@@ -288,8 +288,8 @@ public interface IExecutorServices extends Executor {
 
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit, int execCount, int stackTrace) {
         String queueName = null;
-        if (command instanceof EventRunnable eventRunnable) {
-            queueName = eventRunnable.getQueueName();
+        if (command instanceof Event event) {
+            queueName = event.getQueueName();
         }
         ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, command, stackTrace);
         TimerJob timerJob = new TimerJob(this, queueName, executorServiceJob, initialDelay, delay, unit, execCount);

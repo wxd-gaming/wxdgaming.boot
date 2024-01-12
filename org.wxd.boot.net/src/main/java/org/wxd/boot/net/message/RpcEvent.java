@@ -11,7 +11,7 @@ import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.MarkTimer;
-import org.wxd.boot.threading.EventRunnable;
+import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
 
 import java.util.concurrent.BlockingQueue;
@@ -113,7 +113,7 @@ public class RpcEvent {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
         System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
-        Executors.getVTExecutor().submit(new EventRunnable(150, 1500) {
+        Executors.getVTExecutor().submit(new Event(150, 1500) {
             @Override public String getTaskInfoString() {
                 return RpcEvent.this.toString();
             }

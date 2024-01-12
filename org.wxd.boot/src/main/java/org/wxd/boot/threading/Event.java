@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version: 2022-11-09 10:21
  **/
 @Getter
-public abstract class EventRunnable implements Runnable, IAssistMonitor {
+public abstract class Event implements Runnable, IAssistMonitor {
 
     protected String taskInfoString = "";
     /** 输出日志的时间 */
@@ -32,10 +32,10 @@ public abstract class EventRunnable implements Runnable, IAssistMonitor {
     protected String queueName = "";
     protected boolean async = false;
 
-    public EventRunnable() {
+    public Event() {
     }
 
-    public EventRunnable(Method method) {
+    public Event(Method method) {
         /* 虚拟线程 */
         AtomicBoolean vt = new AtomicBoolean();
         AtomicReference<String> threadName = new AtomicReference<>();
@@ -46,19 +46,18 @@ public abstract class EventRunnable implements Runnable, IAssistMonitor {
         this.threadName = threadName.get();
         this.queueName = queueName.get();
 
-        ExecutorLog executorLog = AnnUtil.ann(method, ExecutorLog.class);
-        if (executorLog != null) {
+        AnnUtil.annOpt(method, ExecutorLog.class).ifPresent(executorLog -> {
             logTime = executorLog.logTime();
             warningTime = executorLog.warningTime();
-        }
+        });
     }
 
-    public EventRunnable(long logTime, long warningTime) {
+    public Event(long logTime, long warningTime) {
         this.logTime = logTime;
         this.warningTime = warningTime;
     }
 
-    public EventRunnable(String taskInfoString, long logTime, long warningTime) {
+    public Event(String taskInfoString, long logTime, long warningTime) {
         this.taskInfoString = taskInfoString;
         this.logTime = logTime;
         this.warningTime = warningTime;
