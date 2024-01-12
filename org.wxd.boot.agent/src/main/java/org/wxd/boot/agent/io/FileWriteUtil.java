@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.ConsumerE1;
 
-import java.io.*;
-import java.nio.charset.Charset;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -24,14 +25,13 @@ public class FileWriteUtil implements Serializable {
      *
      * @param fileName 文件
      * @param content  内容
-     * @throws IOException
      */
     public static void writeString(String fileName, String content) {
         writeString(fileName, content, false);
     }
 
     public static void writeString(String fileName, String content, boolean append) {
-        File file = FileUtil.file(fileName);
+        File file = new File(fileName);
         writeString(file, content, append);
     }
 
@@ -40,7 +40,6 @@ public class FileWriteUtil implements Serializable {
      *
      * @param file    文件
      * @param content 内容
-     * @throws IOException
      */
     public static void writeString(File file, String content) {
         writeString(file, content, false);
@@ -55,10 +54,9 @@ public class FileWriteUtil implements Serializable {
      *
      * @param fileName 文件
      * @param bytes    内容
-     * @throws IOException
      */
     public static void writeBytes(String fileName, byte[] bytes) {
-        final File file = FileUtil.file(fileName);
+        final File file = new File(fileName);
         writeBytes(file, bytes);
     }
 
@@ -67,7 +65,6 @@ public class FileWriteUtil implements Serializable {
      *
      * @param file  文件
      * @param bytes 内容
-     * @throws IOException
      */
     public static void writeBytes(File file, byte[] bytes) {
         writeBytes(file, bytes, false);
@@ -79,7 +76,6 @@ public class FileWriteUtil implements Serializable {
      * @param file   文件
      * @param bytes  内容
      * @param append 是否追加
-     * @throws IOException
      */
     public static void writeBytes(File file, byte[] bytes, boolean append) {
         fileOutputStream(
@@ -120,27 +116,11 @@ public class FileWriteUtil implements Serializable {
         }
     }
 
-    public static void fileWriter(File file, boolean append, Charset charset, ConsumerE1<BufferedWriter> call) {
-        FileUtil.mkdirs(file);
-        fileOutputStream(
-                file,
-                append,
-                (outputStream -> {
-                    try (OutputStreamWriter isr = new OutputStreamWriter(outputStream, charset)) {
-                        try (BufferedWriter buffered = new BufferedWriter(isr)) {
-                            call.accept(buffered);
-                        }
-                    }
-                })
-        );
-    }
-
     /**
      * 保存 class 文件
      *
      * @param outPath
      * @param stringMap
-     * @throws IOException
      */
     public static void writeClassFile(String outPath, Map<String, byte[]> stringMap) {
         final File file_dir = new File(outPath);

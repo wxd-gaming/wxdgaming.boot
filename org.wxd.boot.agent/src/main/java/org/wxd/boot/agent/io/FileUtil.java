@@ -33,7 +33,7 @@ public class FileUtil implements Serializable {
 
     /** 返回绝对路径 */
     public static String getCanonicalPath(String fileName) {
-        return getCanonicalPath(file(fileName));
+        return getCanonicalPath(new File(fileName));
     }
 
     /** 返回绝对路径 */
@@ -148,14 +148,6 @@ public class FileUtil implements Serializable {
         }
     }
 
-    public static File file(String fileName) {
-        return new File(fileName);
-    }
-
-    public static File file(URI uri) {
-        return new File(uri);
-    }
-
     /** 获取文件名 */
     public static String fileName(File file) {
         String fileName = file.getName();
@@ -179,7 +171,7 @@ public class FileUtil implements Serializable {
     }
 
     public static boolean exists(String fileName) {
-        return file(fileName).exists();
+        return new File(fileName).exists();
     }
 
     public static boolean exists(File file) {
@@ -219,7 +211,7 @@ public class FileUtil implements Serializable {
     }
 
     public static File createFile(String fileName) {
-        return createFile(file(fileName));
+        return createFile(new File(fileName));
     }
 
     public static File createFile(File file) {
@@ -255,7 +247,7 @@ public class FileUtil implements Serializable {
      * @param fileName
      */
     public static void del(String fileName) {
-        del(file(fileName));
+        del(new File(fileName));
     }
 
     /**
@@ -276,7 +268,7 @@ public class FileUtil implements Serializable {
      * @param fileName 需要创建文件夹的名字
      */
     public static void mkdirs(String fileName) {
-        mkdirs(file(fileName));
+        mkdirs(new File(fileName));
     }
 
     /**
