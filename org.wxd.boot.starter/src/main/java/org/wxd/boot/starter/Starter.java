@@ -227,16 +227,17 @@ public class Starter {
         StringBuilder stringAppend = new StringBuilder(1024);
 
         String printString = FileReadUtil.readString("print.txt");
-        String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+
+        int len = 60;
 
         stringAppend.append("\n\n")
                 .append(printString)
                 .append("\n")
-                .append("-[ " + StringUtil.padRight("debug = " + debug + " | " + JvmUtil.processIDString(), 80, ' ') + " ]-\n")
-                .append("-[ " + StringUtil.padRight(serverId + " | " + serverName, 80, ' ') + " ]-\n")
-                .append("-[ " + StringUtil.padRight(JvmUtil.timeZone(), 80, ' ') + " ]-\n");
+                .append("    -[ " + StringUtil.padRight("debug = " + debug + " | " + JvmUtil.processIDString(), len, ' ') + " ]-\n")
+                .append("    -[ " + StringUtil.padRight(serverId + " | " + serverName, len, ' ') + " ]-\n")
+                .append("    -[ " + StringUtil.padRight(JvmUtil.timeZone(), len, ' ') + " ]-\n");
         for (String extInfo : extInfos) {
-            stringAppend.append("------------->> [ " + StringUtil.padRight(extInfo, 80, ' ') + " ] <<-------------\n");
+            stringAppend.append("------------->> [ " + StringUtil.padRight(extInfo, len, ' ') + " ] <<-------------\n");
         }
         stringAppend.append("\n");
         LoggerFactory.getLogger(Starter.class).warn(stringAppend.toString());
