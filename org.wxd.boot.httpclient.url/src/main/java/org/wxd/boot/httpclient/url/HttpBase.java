@@ -162,7 +162,7 @@ public abstract class HttpBase<H extends HttpBase> {
                     action();
                     HttpBase.this.responseCompletableFuture.complete(response);
                 } catch (Throwable throwable) {
-                    HttpBase.this.responseCompletableFuture.completeExceptionally(throwable);
+                    log.error("构建异步http回调异常 {} ", getTaskInfoString(), throwable);
                 }
             }
         }, stackTraceIndex + 2);

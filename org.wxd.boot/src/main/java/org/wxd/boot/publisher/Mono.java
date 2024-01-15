@@ -33,9 +33,7 @@ public class Mono<T> {
 
     /** 创建异步获取数据 */
     public static <U> Mono<U> createAsync(Supplier<U> supplier) {
-        Mono<U> uMono = new Mono<>(new CompletableFuture<>());
-        Executors.getVTExecutor().submit(() -> uMono.completableFuture.complete(supplier.get()), 3);
-        return uMono;
+        return new Mono<>(CompletableFuture.supplyAsync(supplier, Executors.getVTExecutor()));
     }
 
     /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
@@ -80,10 +78,7 @@ public class Mono<T> {
 
     /** 增加异常处理 */
     public Mono<T> onError() {
-        return new Mono<>(completableFuture.exceptionally((throwable) -> {
-            log.error("", throwable);
-            return null;
-        }));
+        return onError(throwable -> {log.info("", throwable);});
     }
 
     /** 增加异常处理 */

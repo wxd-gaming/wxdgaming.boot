@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.wxd.boot.agent.io.FileWriteUtil;
 
 import java.io.File;
+import java.nio.file.Files;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)

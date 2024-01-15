@@ -57,7 +57,7 @@ class ExecutorServiceJob implements Runnable, Job {
                     || currentThread.getState() == Thread.State.WAITING) {
                 stringBuilder.append("线程[").append(currentThread.toString()).append("] 状态[")
                         .append(currentThread.getState()).append("]").append("\n ")
-                        .append("执行任务：").append(task.toString())
+                        .append("执行任务：").append(this.runName)
                         .append(" 耗时 -> ")
                         .append(procc / 1000f)
                         .append(" 秒    ");

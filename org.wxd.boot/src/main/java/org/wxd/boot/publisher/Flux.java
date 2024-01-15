@@ -36,9 +36,7 @@ public class Flux<T> {
 
     /** 创建异步获取数据 */
     public static <U> Flux<U> createAsync(Supplier<Collection<U>> supplier) {
-        Flux<U> flux = new Flux<>(new CompletableFuture<>());
-        Executors.getVTExecutor().submit(() -> flux.completableFuture.complete(supplier.get()), 3);
-        return flux;
+        return new Flux<>(CompletableFuture.supplyAsync(supplier, Executors.getVTExecutor()));
     }
 
     /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
@@ -101,17 +99,14 @@ public class Flux<T> {
     }
 
     /** 增加异常处理 */
-    public Flux<T> onError(Consumer<Throwable> consumer) {
-        return new Flux<>(completableFuture.exceptionally((throwable) -> {
-            consumer.accept(throwable);
-            return null;
-        }));
+    public Flux<T> onError() {
+        return onError(throwable -> {log.info("", throwable);});
     }
 
     /** 增加异常处理 */
-    public Flux<T> onError() {
+    public Flux<T> onError(Consumer<Throwable> consumer) {
         return new Flux<>(completableFuture.exceptionally((throwable) -> {
-            log.error("", throwable);
+            consumer.accept(throwable);
             return null;
         }));
     }

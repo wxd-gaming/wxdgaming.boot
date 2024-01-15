@@ -2,7 +2,6 @@ package org.wxd.boot.threading;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 
@@ -192,51 +191,8 @@ public interface IExecutorServices extends Executor {
     }
 
     /** 提交带回调的执行 */
-    default <V> Mono<V> mono(Supplier<V> supplier) {
-        return new Mono<>(completableFuture(supplier, 66, 3));
-    }
-
-    /** 提交带回调的执行 */
-    default <V> Mono<V> mono(Supplier<V> supplier, int stackTrace) {
-        return new Mono<>(completableFuture(supplier, 66, stackTrace + 1));
-    }
-
-    /** 提交带回调的执行 */
-    default <V> Mono<V> mono(Supplier<V> supplier, long logTime, int stackTrace) {
-        return new Mono<>(completableFuture(supplier, logTime, stackTrace + 1));
-    }
-
-
-    /** 提交带回调的执行 */
     default <V> CompletableFuture<V> completableFuture(Supplier<V> supplier) {
-        return completableFuture(supplier, 66, 3);
-    }
-
-    /** 提交带回调的执行 */
-    default <V> CompletableFuture<V> completableFuture(Supplier<V> supplier, int stackTrace) {
-        return completableFuture(supplier, 66, stackTrace + 1);
-    }
-
-    /***
-     *
-     * @param supplier
-     * @param logTime 记录日志的时间
-     * @param stackTrace 堆栈层级
-     * @return
-     * @param <V>
-     */
-    default <V> CompletableFuture<V> completableFuture(Supplier<V> supplier, long logTime, int stackTrace) {
-        final CompletableFuture<V> completableFuture = new CompletableFuture<>();
-        submit(new Event(logTime, logTime + 1000) {
-            @Override public void onEvent() throws Exception {
-                try {
-                    completableFuture.complete(supplier.get());
-                } catch (Exception e) {
-                    completableFuture.completeExceptionally(e);
-                }
-            }
-        }, stackTrace + 2);
-        return completableFuture;
+        return CompletableFuture.supplyAsync(supplier, this);
     }
 
     /** 提交带回调的执行 */

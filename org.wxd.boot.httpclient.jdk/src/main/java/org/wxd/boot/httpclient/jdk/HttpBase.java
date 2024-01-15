@@ -139,7 +139,7 @@ public abstract class HttpBase<H extends HttpBase> {
                             if (stackTraceElements != null) {
                                 runtimeException.setStackTrace(stackTraceElements);
                             }
-                            this.responseCompletableFuture.completeExceptionally(runtimeException);
+                            log.error("构建异步http回调异常", runtimeException);
                         }
                     } else {
                         response.httpResponse = httpResponse;

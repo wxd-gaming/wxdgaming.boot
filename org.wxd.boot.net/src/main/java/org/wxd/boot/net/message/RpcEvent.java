@@ -127,7 +127,7 @@ public class RpcEvent {
                     if (stackTraceElements != null) {
                         runtimeException.setStackTrace(stackTraceElements);
                     }
-                    RpcEvent.this.responseCompletableFuture.completeExceptionally(runtimeException);
+                    log.error("构建异步rpc调用异常：{}", getTaskInfoString(), runtimeException);
                 }
             }
         }, stackTraceIndex + 2);
