@@ -45,6 +45,7 @@ public class OptFuture<T> {
     private boolean onComplete = false;
     private AtomicReference<T> data = new AtomicReference<>();
     private AtomicReference<Throwable> exception = new AtomicReference<>();
+    private boolean onRunnable = false;
     private AtomicReference<Runnable> runnable = new AtomicReference<>();
     private OptFuture next = null;
 
@@ -315,7 +316,10 @@ public class OptFuture<T> {
             if (!onComplete) return;
             if (this.runnable.get() != null) {
                 //log.info("{}", this.name);
-                this.runnable.get().run();
+                if (!this.onRunnable) {
+                    this.runnable.get().run();
+                    this.onRunnable = true;
+                }
                 if (this.next != null) {
                     this.next.onComplete = true;
                     this.next.doAction();

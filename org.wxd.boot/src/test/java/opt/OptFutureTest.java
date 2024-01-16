@@ -54,21 +54,47 @@ public class OptFutureTest {
     }
 
     @Test
-    public void o3() {
+    public void o3() throws Exception {
         OptFuture<Integer> optFuture = OptFuture.empty();
         Executors.getVTExecutor().submit(() -> {
+            try {
+                //Thread.sleep(5);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             optFuture.complete(1);
         });
-        optFuture
+        OptFuture<String> map = optFuture
                 //.complete(1)
+                .peek(s -> log.info("{}", s))
                 .peek(s -> log.info("{}", s))
                 .peek(s -> log.info("{}", s))
                 .map(s -> "map-" + s)
                 .filter(s -> s.startsWith("map"))
                 .peek(s -> log.info("{}", s))
-                .onError(throwable -> {log.error("{}", throwable.getMessage());})
-                .get();
+                .map(s -> "map-" + s)
+                .peek(s -> log.info("{}", s))
+                .map(s -> "map-" + s)
+                .peek(s -> log.info("{}", s))
+                .map(s -> "map-" + s)
+                .peek(s -> log.info("{}", s))
+                .map(s -> "map-" + s)
+                .peek(s -> log.info("{}", s))
+                .peek(s -> log.info("{}", s));
+
+        Executors.getVTExecutor().submit(() -> {
+            try {
+                Thread.sleep(5);
+                map
+                        .map(s -> "end")
+                        .peek(s -> log.info("{}", s));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         //optFuture.complete(1);
         //opt.completeExceptionally(new RuntimeException("1"));
+        Thread.sleep(3000);
     }
 }
