@@ -41,6 +41,8 @@ public abstract class HttpBase<H extends HttpBase> {
     protected HttpHeadValueType httpHeadValueType = HttpHeadValueType.Application;
     protected SslProtocolType sslProtocolType = SslProtocolType.SSL;
     protected final Map<String, String> reqHeaderMap = new LinkedHashMap<>();
+    protected long logTime = 200;
+    protected long waringTime = 1200;
     protected int connTimeout = 3000;
     protected int readTimeout = 3000;
     protected int retry = 1;
@@ -152,7 +154,7 @@ public abstract class HttpBase<H extends HttpBase> {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
         System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
-        Executors.getVTExecutor().submit(new Event(150, 1500) {
+        Executors.getVTExecutor().submit(new Event(logTime, waringTime) {
             @Override public String getTaskInfoString() {
                 return Throw.ofString(stackTraceElements[0]) + " " + HttpBase.this.response.toString();
             }
@@ -162,7 +164,8 @@ public abstract class HttpBase<H extends HttpBase> {
                     action();
                     HttpBase.this.responseCompletableFuture.complete(response);
                 } catch (Throwable throwable) {
-                    log.error("构建异步http回调异常 {} ", getTaskInfoString(), throwable);
+                    HttpBase.this.responseCompletableFuture.completeExceptionally(throwable);
+                    //log.error("构建异步http回调异常 {} ", getTaskInfoString(), throwable);
                 }
             }
         }, stackTraceIndex + 2);
@@ -227,6 +230,18 @@ public abstract class HttpBase<H extends HttpBase> {
         log.error("{} url:{}", this.getClass().getSimpleName(), response.toString(), throwable);
         if (retry > 1)
             GlobalUtil.exception(this.getClass().getSimpleName() + " url:" + response.toString(), throwable);
+    }
+
+    /** 同时设置连接超时和读取超时时间 */
+    public H logTime(int time) {
+        this.logTime = time;
+        return (H) this;
+    }
+
+    /** 同时设置连接超时和读取超时时间 */
+    public H waringTime(int time) {
+        this.waringTime = time;
+        return (H) this;
     }
 
     /** 同时设置连接超时和读取超时时间 */
@@ -296,6 +311,10 @@ public abstract class HttpBase<H extends HttpBase> {
 
     public String getPostText() {
         return response.getPostText();
+    }
+
+    @Override public String toString() {
+        return String.valueOf(this.response);
     }
 
     protected static class TrustAnyHostnameVerifier implements HostnameVerifier {
