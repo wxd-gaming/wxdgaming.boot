@@ -29,7 +29,8 @@ public class HttpTest {
         // url = "http://47.108.150.14:18801/test/ok";
         //url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
-        url = "https://www.baidu.com";
+        url = "http://47.108.81.97:18001/index";
+        //url = "https://www.baidu.com";
         tv1(url, 1);
         tv1(url, 10);
         tv1(url, 50);
@@ -47,7 +48,7 @@ public class HttpTest {
         for (int i = 0; i < testCount; i++) {
             long n = System.nanoTime();
             AtomicInteger tmp = new AtomicInteger();
-            HttpBuilder.postMulti(url).putParams(ObjMap.build(1, 1)).timeout(500).logTime(5000).waringTime(5000).retry(1).asyncString()
+            HttpBuilder.postMulti(url).putParams(ObjMap.build(1, 1)).timeout(1200).readTimeout(8000).logTime(5000).waringTime(5000).retry(2).asyncString()
                     .subscribe(s -> {
                         allTime.addAndGet(System.nanoTime() - n);
                         source.incrementAndGet();
@@ -72,6 +73,7 @@ public class HttpTest {
                 exCount.get(),
                 v1, v, v / source.get(), ((testCount / v1 * 1000))
         );
-        Thread.sleep(500);
+        System.gc();
+        Thread.sleep(1500);
     }
 }

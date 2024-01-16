@@ -2,8 +2,6 @@ package org.wxd.boot.threading;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
@@ -45,7 +43,7 @@ public class OptFuture<T> {
 
     private ReentrantLock reentrantLock = null;
     private boolean onComplete = false;
-    private BlockingQueue<T> data = new LinkedBlockingDeque<>(1);
+    private AtomicReference<T> data = new AtomicReference<>();
     private AtomicReference<Throwable> exception = new AtomicReference<>();
     private AtomicReference<Runnable> runnable = new AtomicReference<>();
     private OptFuture next = null;
@@ -66,11 +64,11 @@ public class OptFuture<T> {
     public OptFuture(T t) {
         this.reentrantLock = new ReentrantLock();
         if (t != null) {
-            this.data.add(t);
+            this.data.set(t);
         }
     }
 
-    public OptFuture(ReentrantLock reentrantLock, BlockingQueue<T> data, AtomicReference<Throwable> exception) {
+    public OptFuture(ReentrantLock reentrantLock, AtomicReference<T> data, AtomicReference<Throwable> exception) {
         this.reentrantLock = reentrantLock;
         this.data = data;
         this.exception = exception;
@@ -80,7 +78,7 @@ public class OptFuture<T> {
         this.reentrantLock.lock();
         try {
             if (t != null) {
-                this.data.add(t);
+                this.data.set(t);
             }
             this.onComplete = true;
             doAction();
@@ -108,8 +106,8 @@ public class OptFuture<T> {
         try {
             set(() -> {
                 try {
-                    if (exception.get() == null && data.isEmpty()) {
-                        data.add(supplier.get());
+                    if (exception.get() == null && data.get() == null) {
+                        data.set(supplier.get());
                     }
                 } catch (Throwable throwable) {
                     this.exception.set(throwable);
@@ -131,11 +129,11 @@ public class OptFuture<T> {
             OptFuture<U> uOptFuture = OptFuture.empty();
             set(() -> {
                 try {
-                    T tmp = data.poll();
+                    T tmp = data.getAndSet(null);
                     if (exception.get() != null) {
                         uOptFuture.exception.set(exception.get());
                     } else {
-                        uOptFuture.data.add(function.apply(tmp));
+                        uOptFuture.data.set(function.apply(tmp));
                     }
                 } catch (Throwable throwable) {
                     uOptFuture.exception.set(throwable);
@@ -156,15 +154,14 @@ public class OptFuture<T> {
             OptFuture<T> uOptFuture = OptFuture.empty();
             set(() -> {
                 try {
-                    T tmp = data.poll();
+                    T tmp = data.getAndSet(null);
                     if (exception.get() == null && tmp != null) {
                         if (predicate.test(tmp)) {
-                            uOptFuture.data.add(tmp);
+                            uOptFuture.data.set(tmp);
                         }
-                        uOptFuture.exception.set(null);
                     }
                 } catch (Throwable throwable) {
-                    this.exception.set(throwable);
+                    uOptFuture.exception.set(throwable);
                 }
             });
             this.next = uOptFuture;
@@ -182,7 +179,7 @@ public class OptFuture<T> {
             OptFuture<T> tOptFuture = new OptFuture<>(this.reentrantLock, this.data, this.exception);
             set(() -> {
                 try {
-                    T tmp = data.peek();
+                    T tmp = data.get();
                     if (exception.get() == null && tmp != null) {
                         consumer.accept(tmp);
                     }
@@ -204,7 +201,7 @@ public class OptFuture<T> {
         try {
             set(() -> {
                 try {
-                    T tmp = data.poll();
+                    T tmp = data.getAndSet(null);
                     if (exception.get() == null && tmp != null) {
                         consumer.accept(tmp);
                     }
@@ -227,7 +224,7 @@ public class OptFuture<T> {
         try {
             set(() -> {
                 try {
-                    T tmp = data.poll();
+                    T tmp = data.getAndSet(null);
                     action.accept(tmp, exception.get());
                 } catch (Throwable throwable) {
                     this.exception.set(throwable);
@@ -253,8 +250,7 @@ public class OptFuture<T> {
         try {
             set(() -> {
                 try {
-                    Throwable tmp = exception.get();
-                    exception.set(null);
+                    Throwable tmp = exception.getAndSet(null);
                     if (tmp != null) {
                         consumer.accept(tmp);
                     }
@@ -288,7 +284,7 @@ public class OptFuture<T> {
                 if (throwable != null) {
                     optCall.completeExceptionally(throwable);
                 } else {
-                    optCall.complete(this.data.poll());
+                    optCall.complete(this.data.getAndSet(null));
                 }
             });
             doAction();
