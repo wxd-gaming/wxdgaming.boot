@@ -99,100 +99,14 @@ public interface IExecutorServices extends Executor {
         return executorServiceJob;
     }
 
-    /**
-     * 提交带回调的执行
-     *
-     * @param runnable 需要执行的任务
-     * @param v        给定的返回值
-     * @param <V>
-     * @return
-     */
-    default <V> Future<V> submitCall(Runnable runnable, V v) {
-        return submitCall(runnable, v, 3);
-    }
-
-    /**
-     * 提交带回调的执行
-     *
-     * @param runnable   需要执行的任务
-     * @param v          给定的返回值
-     * @param stackTrace 记录来源堆栈层级
-     * @param <V>
-     * @return
-     */
-    default <V> Future<V> submitCall(Runnable runnable, V v, int stackTrace) {
-        FutureTask<V> task = new FutureTask<>(runnable, v);
-        ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, task, stackTrace);
-        executeJob(null, executorServiceJob);
-        return task;
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(Supplier<V> supplier) {
+        return new OptFuture<V>(supplier, this, 5);
     }
 
     /** 提交带回调的执行 */
-    default <V> Future<V> submitCall(Callable<V> callable) {
-        return submitCall(callable, 3);
-    }
-
-    /**
-     * 提交带回调的执行
-     *
-     * @param callable   执行带回调等待
-     * @param stackTrace 记录来源堆栈层级
-     * @param <V>
-     * @return
-     */
-    default <V> Future<V> submitCall(Callable<V> callable, int stackTrace) {
-        FutureTask<V> task = new FutureTask<>(callable);
-        ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, task, stackTrace);
-        executeJob(null, executorServiceJob);
-        return task;
-    }
-
-    /**
-     * 提交带回调的执行
-     *
-     * @param queueName 队列名称
-     * @param runnable  需要执行的任务
-     * @param v         给定的返回值
-     * @param <V>
-     * @return
-     */
-    default <V> Future<V> submitCall(String queueName, Runnable runnable, V v) {
-        return submitCall(queueName, runnable, v, 3);
-    }
-
-    /**
-     * 提交带回调的执行
-     *
-     * @param queueName  队列名称
-     * @param runnable   需要执行的任务
-     * @param v          给定的返回值
-     * @param stackTrace 堆栈层级
-     * @param <V>
-     * @return
-     */
-    default <V> Future<V> submitCall(String queueName, Runnable runnable, V v, int stackTrace) {
-        FutureTask<V> task = new FutureTask<>(runnable, v);
-        ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, task, stackTrace);
-        executeJob(queueName, executorServiceJob);
-        return task;
-    }
-
-    /** 提交带回调的执行 */
-    default <V> Future<V> submitCall(String queueName, Callable<V> callable) {
-        return submitCall(queueName, callable, 3);
-    }
-
-    /** 提交带回调的执行 */
-    default <V> Future<V> submitCall(String queueName, Callable<V> callable, int stackTrace) {
-        FutureTask<V> task = new FutureTask<>(callable);
-        ExecutorServiceJob executorServiceJob = new ExecutorServiceJob(this, task, stackTrace);
-        executeJob(queueName, executorServiceJob);
-        return task;
-    }
-
-    /** 提交带回调的执行 */
-    default <V> CompletableFuture<V> completableFuture(Supplier<V> supplier) {
-        return CompletableFuture.supplyAsync(supplier, this);
+    default <V> OptFuture<V> optFuture(Supplier<V> supplier, int stackTrace) {
+        return new OptFuture<V>(supplier, this, stackTrace);
     }
 
     /** 提交带回调的执行 */

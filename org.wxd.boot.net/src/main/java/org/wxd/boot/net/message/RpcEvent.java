@@ -8,14 +8,13 @@ import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.cache.CachePack;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.SocketSession;
-import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.MarkTimer;
 import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.OptFuture;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -52,15 +51,11 @@ public class RpcEvent {
     protected boolean res = false;
     protected String resJson = null;
     protected StackTraceElement[] stackTraceElements = null;
-    protected final CompletableFuture<RpcEvent> responseCompletableFuture;
-    protected final Mono<RpcEvent> mono;
 
     public RpcEvent(SocketSession session, String cmd, String reqJson) {
         this.session = session;
         this.cmd = cmd;
         this.reqJson = reqJson;
-        responseCompletableFuture = new CompletableFuture<>();
-        mono = new Mono<>(responseCompletableFuture);
     }
 
     /** 发送出去，不管了 */
@@ -79,7 +74,7 @@ public class RpcEvent {
         sendEnd = true;
     }
 
-    public Mono<RpcEvent> async() {
+    public OptFuture<RpcEvent> async() {
         return sendAsync(3);
     }
 
@@ -89,7 +84,7 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    public Mono<String> asyncString() {
+    public OptFuture<String> asyncString() {
         return sendAsync(3).map(RpcEvent::getResJson);
     }
 
@@ -99,7 +94,7 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    public Mono<SyncJson> asyncSyncJson() {
+    public OptFuture<SyncJson> asyncSyncJson() {
         return sendAsync(3).map(rpcEvent -> SyncJson.parse(rpcEvent.getResJson()));
     }
 
@@ -109,10 +104,11 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    Mono<RpcEvent> sendAsync(int stackTraceIndex) {
+    OptFuture<RpcEvent> sendAsync(int stackTraceIndex) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
         System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
+        OptFuture<RpcEvent> optFuture = OptFuture.empty();
         Executors.getVTExecutor().submit(new Event(150, 1500) {
             @Override public String getTaskInfoString() {
                 return RpcEvent.this.toString();
@@ -121,17 +117,17 @@ public class RpcEvent {
             @Override public void onEvent() throws Exception {
                 try {
                     get();
-                    RpcEvent.this.responseCompletableFuture.complete(RpcEvent.this);
+                    optFuture.complete(RpcEvent.this);
                 } catch (Throwable throwable) {
                     RuntimeException runtimeException = Throw.as(RpcEvent.this.toString(), throwable);
                     if (stackTraceElements != null) {
                         runtimeException.setStackTrace(stackTraceElements);
                     }
-                    log.error("构建异步rpc调用异常：{}", getTaskInfoString(), runtimeException);
+                    optFuture.completeExceptionally(runtimeException);
                 }
             }
         }, stackTraceIndex + 2);
-        return mono;
+        return optFuture;
     }
 
     public void actionThrowable(Throwable throwable) {

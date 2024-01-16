@@ -1,9 +1,9 @@
-package code;
+package opt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.OptFuture;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -26,70 +26,9 @@ public class CompletableFutureTest {
             }
         };
         // CompletableFuture.supplyAsync(supplier, Executors.getVTExecutor());
-        CompletableFuture<Long> completable = Executors.getVTExecutor().completableFuture(supplier);
-        completable.thenAccept(v -> System.out.println(v));
+        OptFuture<Long> completable = Executors.getVTExecutor().optFuture(supplier);
+        completable.peek(v -> System.out.println(v));
         while (true) ;
-    }
-
-    @Test
-    public void c11() throws IOException {
-        Mono<String> mono = Mono.createAsync(() -> {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            return "1";
-        });
-        mono.subscribe(v -> log.info(v));
-        System.in.read();
-    }
-
-    @Test
-    public void c12() throws IOException {
-        Mono<String> mono = Mono.createAsync(() -> {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            return "1";
-        });
-        mono.subscribe(System.out::println);
-        System.in.read();
-    }
-
-    @Test
-    public void tm1() throws InterruptedException {
-
-        Mono.createAsync(() -> {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    throw new RuntimeException("1");
-                })
-                //.onError(throwable -> throwable.printStackTrace())
-                .subscribe(s -> {
-                    System.out.println(s);
-                    throw new RuntimeException("2");
-                })
-                .onError(throwable -> log.info("t", throwable));
-        Thread.sleep(10000);
-    }
-
-    @Test
-    public void tm2() throws InterruptedException {
-
-        Mono.createAsync(() -> {return "1";})
-                //.onError(throwable -> throwable.printStackTrace())
-                .subscribe(s -> {
-                    System.out.println(s);
-                    throw new RuntimeException("2");
-                })
-                .onError(throwable -> log.info("t", throwable));
-        Thread.sleep(100);
     }
 
     @Test
@@ -113,8 +52,16 @@ public class CompletableFutureTest {
     }
 
     @Test
+    public void c12() throws IOException {
+        OptFuture<Void> stringCompletableFuture = OptFuture.empty();
+        stringCompletableFuture.complete(null);
+        stringCompletableFuture.whenComplete((v, throwable) -> log.info("{}", v, throwable));
+        System.in.read();
+    }
+
+    @Test
     public void c13() throws IOException {
-        CompletableFuture<String> stringCompletableFuture = Executors.getVTExecutor().completableFuture(() -> {
+        OptFuture<String> stringCompletableFuture = Executors.getVTExecutor().optFuture(() -> {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -122,13 +69,13 @@ public class CompletableFutureTest {
             }
             return "1";
         });
-        stringCompletableFuture.thenAccept(System.out::println);
+        stringCompletableFuture.peek(System.out::println);
         System.in.read();
     }
 
     @Test
     public void c14() throws IOException {
-        CompletableFuture<String> stringCompletableFuture = Executors.getVTExecutor().completableFuture(() -> {
+        OptFuture<String> stringCompletableFuture = Executors.getVTExecutor().optFuture(() -> {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -136,7 +83,7 @@ public class CompletableFutureTest {
             }
             return "1";
         });
-        stringCompletableFuture.thenAccept(System.out::println);
+        stringCompletableFuture.peek(System.out::println);
         System.in.read();
     }
 

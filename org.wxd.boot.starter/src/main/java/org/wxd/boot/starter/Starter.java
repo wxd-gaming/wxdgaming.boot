@@ -237,7 +237,7 @@ public class Starter {
                 .append("    -[ " + StringUtil.padRight(serverId + " | " + serverName, len, ' ') + " ]-\n")
                 .append("    -[ " + StringUtil.padRight(JvmUtil.timeZone(), len, ' ') + " ]-\n");
         for (String extInfo : extInfos) {
-            stringAppend.append("------------->> [ " + StringUtil.padRight(extInfo, len, ' ') + " ] <<-------------\n");
+            stringAppend.append("    -[ " + StringUtil.padRight(extInfo, len, ' ') + " ]-\n");
         }
         stringAppend.append("\n");
         LoggerFactory.getLogger(Starter.class).warn(stringAppend.toString());

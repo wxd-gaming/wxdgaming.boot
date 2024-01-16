@@ -9,11 +9,11 @@ import org.wxd.boot.http.HttpHeadValueType;
 import org.wxd.boot.http.ssl.SslContextClient;
 import org.wxd.boot.http.ssl.SslProtocolType;
 import org.wxd.boot.lang.SyncJson;
-import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.OptFuture;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -51,15 +50,11 @@ public abstract class HttpBase<H extends HttpBase> {
     protected String reqHttpMethod;
     protected final Response<H> response;
     protected StackTraceElement[] stackTraceElements;
-    protected final CompletableFuture<Response<H>> responseCompletableFuture;
-    protected final Mono<Response<H>> mono;
 
     protected HttpBase(String uriPath) {
         header(HttpHeadNameType.Accept_Encoding, HttpHeadValueType.Gzip);
         header("user-agent", "java.org.wxd j21");
         response = new Response(this, uriPath);
-        responseCompletableFuture = new CompletableFuture<>();
-        mono = new Mono<>(responseCompletableFuture);
     }
 
     /** 处理需要发送的数据 */
@@ -120,7 +115,7 @@ public abstract class HttpBase<H extends HttpBase> {
         }
     }
 
-    public Mono<Response<H>> async() {
+    public OptFuture<Response<H>> async() {
         return sendAsync(3);
     }
 
@@ -130,7 +125,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    public Mono<String> asyncString() {
+    public OptFuture<String> asyncString() {
         return sendAsync(3).map(Response::bodyString);
     }
 
@@ -140,7 +135,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    public Mono<SyncJson> asyncSyncJson() {
+    public OptFuture<SyncJson> asyncSyncJson() {
         return sendAsync(3).map(Response::bodySyncJson);
     }
 
@@ -150,10 +145,11 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    Mono<Response<H>> sendAsync(int stackTraceIndex) {
+    OptFuture<Response<H>> sendAsync(int stackTraceIndex) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
         System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
+        OptFuture<Response<H>> optFuture = OptFuture.empty();
         Executors.getVTExecutor().submit(new Event(logTime, waringTime) {
             @Override public String getTaskInfoString() {
                 return Throw.ofString(stackTraceElements[0]) + " " + HttpBase.this.response.toString();
@@ -162,14 +158,14 @@ public abstract class HttpBase<H extends HttpBase> {
             @Override public void onEvent() throws Exception {
                 try {
                     action();
-                    HttpBase.this.responseCompletableFuture.complete(response);
+                    optFuture.complete(response);
                 } catch (Throwable throwable) {
-                    HttpBase.this.responseCompletableFuture.completeExceptionally(throwable);
+                    optFuture.completeExceptionally(throwable);
                     //log.error("构建异步http回调异常 {} ", getTaskInfoString(), throwable);
                 }
             }
         }, stackTraceIndex + 2);
-        return mono;
+        return optFuture;
     }
 
     public Response<H> request() {
