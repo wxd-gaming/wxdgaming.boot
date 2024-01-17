@@ -16,9 +16,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class OptCall<T> implements Job {
 
-    Job job;
-    CountDownLatch count = new CountDownLatch(1);
-    AtomicReference<Object> tAtomicReference = new AtomicReference<>();
+    final Job job;
+    final CountDownLatch count = new CountDownLatch(1);
+    final AtomicReference<Object> tAtomicReference = new AtomicReference<>();
 
     public OptCall(Job job) {
         this.job = job;

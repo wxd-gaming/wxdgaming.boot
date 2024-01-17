@@ -4,15 +4,11 @@ import java.io.Serializable;
 
 /**
  * 表示朝向，位移量
- * <br>
- * author 失足程序员<br>
- * blog http://www.cnblogs.com/shizuchengxuyuan/<br>
- * mail 492794628@qq.com<br>
- * phone 13882122019<br>
+ *
+ * @author: Troy.Chen(無心道, 15388152619)
+ * @version: 2023-12-04 19:23
  */
 public class Vector implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     /*表示当前朝向修正值 0 - 11 包含*/
     private volatile int dir;

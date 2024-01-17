@@ -41,16 +41,19 @@ public class OptFuture<T> {
         return new OptFuture<>(supplier, executorServices, 5);
     }
 
-    private ReentrantLock reentrantLock = null;
+    private final ReentrantLock reentrantLock;
     private boolean onComplete = false;
-    private AtomicReference<T> data = new AtomicReference<>();
-    private AtomicReference<Throwable> exception = new AtomicReference<>();
-    private AtomicReference<Runnable> runnable = new AtomicReference<>();
+    private final AtomicReference<T> data;
+    private final AtomicReference<Throwable> exception;
+    private boolean onRun = false;
+    private final AtomicReference<Runnable> runnable = new AtomicReference<>();
     private OptFuture next = null;
 
     public OptFuture(Supplier<T> supplier, IExecutorServices executorServices, int stack) {
         this.reentrantLock = new ReentrantLock();
-        executorServices.submit(new Event() {
+        this.data = new AtomicReference<>();
+        this.exception = new AtomicReference<>();
+        executorServices.submit(new Event(500, 3000) {
             @Override public void onEvent() throws Exception {
                 try {
                     complete(supplier.get());
@@ -63,6 +66,8 @@ public class OptFuture<T> {
 
     public OptFuture(T t) {
         this.reentrantLock = new ReentrantLock();
+        this.data = new AtomicReference<>();
+        this.exception = new AtomicReference<>();
         if (t != null) {
             this.data.set(t);
         }
@@ -309,7 +314,7 @@ public class OptFuture<T> {
     }
 
     void set(Runnable runnable) {
-        if (this.runnable.get() != null) throw new RuntimeException("重复调用");
+        if (this.runnable.get() != null || onRun) throw new RuntimeException("重复调用");
         this.runnable.set(runnable);
     }
 
@@ -317,9 +322,12 @@ public class OptFuture<T> {
         this.reentrantLock.lock();
         try {
             if (!onComplete) return;
-            Runnable event = this.runnable.getAndSet(null);
-            if (event != null) {
-                event.run();
+            if (!onRun) {
+                Runnable event = this.runnable.getAndSet(null);
+                if (event != null) {
+                    onRun = true;
+                    event.run();
+                }
             }
             if (this.next != null) {
                 this.next.onComplete = true;
