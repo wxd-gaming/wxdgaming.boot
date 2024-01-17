@@ -48,7 +48,7 @@ public class OptFuture<T> {
     private AtomicReference<Runnable> runnable = new AtomicReference<>();
     private OptFuture next = null;
 
-    protected OptFuture(Supplier<T> supplier, IExecutorServices executorServices, int stack) {
+    public OptFuture(Supplier<T> supplier, IExecutorServices executorServices, int stack) {
         this.reentrantLock = new ReentrantLock();
         executorServices.submit(new Event() {
             @Override public void onEvent() throws Exception {
@@ -77,9 +77,10 @@ public class OptFuture<T> {
     public OptFuture<T> complete(T t) {
         this.reentrantLock.lock();
         try {
-            if (t != null) {
-                this.data.set(t);
+            if (this.onComplete) {
+                throw new RuntimeException("complete over");
             }
+            this.data.set(t);
             this.onComplete = true;
             doAction();
             return this;
@@ -91,6 +92,9 @@ public class OptFuture<T> {
     public OptFuture<T> completeExceptionally(Throwable throwable) {
         this.reentrantLock.lock();
         try {
+            if (this.onComplete) {
+                throw new RuntimeException("complete over");
+            }
             this.exception.set(throwable);
             this.onComplete = true;
             doAction();
