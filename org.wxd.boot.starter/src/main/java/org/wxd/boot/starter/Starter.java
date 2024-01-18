@@ -19,6 +19,7 @@ import org.wxd.boot.starter.action.ActionTimer;
 import org.wxd.boot.starter.i.*;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.ProtobufMessageSerializerFastJson;
+import org.wxd.boot.system.BytesUnit;
 import org.wxd.boot.system.DumpUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.JvmUtil;
@@ -219,7 +220,16 @@ public class Starter {
             ConsumerE2<IStartEnd, IocContext> startEndFun = IStartEnd::startEnd;
             curIocInjector().forEachBean(IStartEnd.class, startEndFun, curIocInjector());
         }
-        Executors.getDefaultExecutor().scheduleAtFixedDelay(() -> logger().info(DumpUtil.dMonitor()), 30, 30, TimeUnit.SECONDS);
+        Executors.getDefaultExecutor().scheduleAtFixedDelay(
+                () -> {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    long freeMemory = DumpUtil.freeMemory(stringBuilder);
+                    if (freeMemory < BytesUnit.Mb.toBytes(300)) {
+                        logger().info(stringBuilder.toString());
+                    }
+                },
+                30, 30, TimeUnit.SECONDS
+        );
         print(debug, serverId, serverName, extInfos);
     }
 
