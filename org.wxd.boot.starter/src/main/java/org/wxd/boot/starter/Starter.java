@@ -19,13 +19,15 @@ import org.wxd.boot.starter.action.ActionTimer;
 import org.wxd.boot.starter.i.*;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.str.json.ProtobufMessageSerializerFastJson;
+import org.wxd.boot.system.DumpUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.JvmUtil;
+import org.wxd.boot.threading.Executors;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -79,14 +81,13 @@ public class Starter {
             Injector injector = Guice.createInjector(Stage.PRODUCTION, list);
             mainIocInjector = injector.getInstance(IocMainContext.class);
             iocInitBean(mainIocInjector, reflectContext);
-            final Logger log = LoggerFactory.getLogger(Starter.class);
             JvmUtil.addShutdownHook(() -> {
-                log.info("------------------------------停服信号处理------------------------------");
+                logger().info("------------------------------停服信号处理------------------------------");
                 {
                     STVFunction1<Object, IShutdownBefore> shutdownBefore = IShutdownBefore::shutdownBefore;
                     curIocInjector().beanStream(IShutdownBefore.class, shutdownBefore).forEach(object -> {
                         try {
-                            log.info("shutdownBefore：{} {}", object.getClass(), object.toString());
+                            logger().info("shutdownBefore：{} {}", object.getClass(), object.toString());
                             object.shutdownBefore();
                         } catch (Throwable e) {
                             throw Throw.as(object.getClass().getName() + ".shutdown()", e);
@@ -97,7 +98,7 @@ public class Starter {
                     STVFunction1<Object, IShutdown> shutdown = IShutdown::shutdown;
                     curIocInjector().beanStream(IShutdown.class, shutdown).forEach(object -> {
                         try {
-                            log.info("shutdown：{} {}", object.getClass(), object.toString());
+                            logger().info("shutdown：{} {}", object.getClass(), object.toString());
                             object.shutdown();
                         } catch (Throwable e) {
                             throw Throw.as(object.getClass().getName() + ".shutdown()", e);
@@ -108,7 +109,7 @@ public class Starter {
                     STVFunction1<Object, IShutdownEnd> shutdown = IShutdownEnd::shutdownEnd;
                     curIocInjector().beanStream(IShutdownEnd.class, shutdown).forEach(object -> {
                         try {
-                            log.info("shutdownEnd：{} {}", object.getClass(), object.toString());
+                            logger().info("shutdownEnd：{} {}", object.getClass(), object.toString());
                             object.shutdownEnd();
                         } catch (Throwable e) {
                             throw Throw.as(object.getClass().getName() + ".shutdown()", e);
@@ -119,10 +120,10 @@ public class Starter {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                 }
-                log.info("------------------------------停服处理结束------------------------------");
+                logger().info("------------------------------停服处理结束------------------------------");
                 JvmUtil.halt(0);
             });
-            log.info("主容器初始化完成：{}", mainIocInjector.hashCode());
+            logger().info("主容器初始化完成：{}", mainIocInjector.hashCode());
 
             Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                 /*全局未捕获线程异常*/
@@ -141,7 +142,7 @@ public class Starter {
             };
 
         } catch (Throwable throwable) {
-            LoggerFactory.getLogger(Starter.class).error("启动失败", throwable);
+            logger().error("启动失败", throwable);
             JvmUtil.halt(-1);
         }
     }
@@ -151,7 +152,6 @@ public class Starter {
     }
 
     public static IocContext createChildInjector(IocContext parentContext, ReflectContext reflectContext) {
-        final Logger log = LoggerFactory.getLogger(Starter.class);
         try {
 
             List<BaseModule> modules = Stream.concat(
@@ -172,7 +172,7 @@ public class Starter {
             Injector injector = parentContext.getInjector().createChildInjector(modules);
             IocContext iocInjector = injector.getInstance(IocSubContext.class);
             iocInitBean(iocInjector, reflectContext);
-            log.info("子容器初始化完成：{}", iocInjector.hashCode());
+            logger().info("子容器初始化完成：{}", iocInjector.hashCode());
             return iocInjector;
         } catch (Throwable throwable) {
             throw Throw.as("子容器初始化失败", throwable);
@@ -180,10 +180,9 @@ public class Starter {
     }
 
     static void iocInitBean(IocContext context, ReflectContext reflectContext) throws Exception {
-        final Logger log = LoggerFactory.getLogger(Starter.class);
-        if (log.isDebugEnabled()) {
+        if (logger().isDebugEnabled()) {
             long count = reflectContext.getContentList().size();
-            log.debug("find class size ：" + count);
+            logger().debug("find class size ：" + count);
         }
 
         /*todo fastjson 注册 protoBuff 处理 处理配置类*/
@@ -206,7 +205,7 @@ public class Starter {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                log.debug("bean init {}", iBeanInit.getClass());
+                logger().debug("bean init {}", iBeanInit.getClass());
             }
         });
     }
@@ -220,6 +219,7 @@ public class Starter {
             ConsumerE2<IStartEnd, IocContext> startEndFun = IStartEnd::startEnd;
             curIocInjector().forEachBean(IStartEnd.class, startEndFun, curIocInjector());
         }
+        Executors.getDefaultExecutor().scheduleAtFixedDelay(() -> logger().info(DumpUtil.dMonitor()), 30, 30, TimeUnit.SECONDS);
         print(debug, serverId, serverName, extInfos);
     }
 
@@ -240,7 +240,11 @@ public class Starter {
             stringAppend.append("    -[ " + StringUtil.padRight(extInfo, len, ' ') + " ]-\n");
         }
         stringAppend.append("\n");
-        LoggerFactory.getLogger(Starter.class).warn(stringAppend.toString());
+        logger().warn(stringAppend.toString());
+    }
+
+    static Logger logger() {
+        return LoggerFactory.getLogger(Starter.class);
     }
 
 }
