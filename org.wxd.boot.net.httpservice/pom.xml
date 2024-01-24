@@ -9,33 +9,24 @@
         <version>wxd-j21-01</version>
     </parent>
 
-    <artifactId>org.wxd.boot.net.http2service</artifactId>
+    <artifactId>org.wxd.boot.net.httpservice</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.wxd</groupId>
+            <artifactId>org.wxd.boot</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wxd</groupId>
+            <artifactId>org.wxd.boot.agent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.wxd</groupId>
             <artifactId>org.wxd.boot.http</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.wxd</groupId>
-            <artifactId>org.wxd.boot.net</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.105.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-tcnative-boringssl-static</artifactId>
-            <version>2.0.62.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.70</version>
-        </dependency>
     </dependencies>
+
 </project>

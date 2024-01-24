@@ -29,7 +29,8 @@ public class HttpTest {
         // url = "http://47.108.150.14:18801/test/ok";
         //url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
-        url = "http://47.108.81.97:18001/index";
+        //url = "http://47.108.81.97:18001/index";
+        url = "http://47.108.81.97:18881/";
         //url = "https://www.baidu.com";
         tv1(url, 1);
         tv1(url, 10);

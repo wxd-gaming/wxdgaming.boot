@@ -11,6 +11,7 @@
     <modules>
         <module>org.wxd.boot</module>
         <module>org.wxd.boot.agent</module>
+        <module>org.wxd.boot.assist</module>
         <module>org.wxd.boot.batis</module>
         <module>org.wxd.boot.batis.mongodb</module>
         <module>org.wxd.boot.batis.redis</module>
@@ -22,9 +23,8 @@
         <module>org.wxd.boot.httpclient.url</module>
         <module>org.wxd.boot.jscript</module>
         <module>org.wxd.boot.net</module>
-        <module>org.wxd.boot.net.http2service</module>
+        <module>org.wxd.boot.net.httpservice</module>
         <module>org.wxd.boot.starter</module>
-        <module>org.wxd.boot.assist</module>
     </modules>
 
     <properties>
