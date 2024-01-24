@@ -3,6 +3,7 @@ package org.wxd.boot.collection;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.format.data.Data2Json;
+import org.wxd.boot.lang.LockBase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.List;
  **/
 @Slf4j
 @Getter
-public class SplitCollection<E> implements Serializable, Data2Json {
+public class SplitCollection<E> extends LockBase implements Serializable, Data2Json {
 
     private final int splitOrg;
     private final boolean linked;

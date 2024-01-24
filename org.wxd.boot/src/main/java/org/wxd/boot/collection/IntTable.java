@@ -17,8 +17,12 @@ public class IntTable<V> {
 
     private final IntObjectHashMap<IntObjectHashMap<V>> maps = new IntObjectHashMap<>();
 
-    public boolean containsRow(int r) {
+    public boolean containsKey(int r) {
         return maps.containsKey(r);
+    }
+
+    public boolean containsKey(int r, int c) {
+        return optional(r).map(v -> v.containsKey(c)).orElse(false);
     }
 
     /** 返回老值 ， 如果原来没有，返回 null */
