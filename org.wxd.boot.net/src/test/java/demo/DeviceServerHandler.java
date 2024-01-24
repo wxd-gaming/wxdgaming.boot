@@ -14,7 +14,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.net.web.hs.HttpContentType;
+import org.wxd.boot.http.HttpHeadValueType;
 
 import java.nio.charset.StandardCharsets;
 
@@ -50,7 +50,7 @@ public class DeviceServerHandler extends ChannelInboundHandlerAdapter {
             int readableBytes = byteBuf.readableBytes();
             HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
 
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpContentType.Html.getValue());
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeadValueType.Html.getValue());
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
             response.headers().set(HttpHeaderNames.CONNECTION, "close");
             ctx

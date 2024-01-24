@@ -56,7 +56,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 /*channel方法用来创建通道实例(NioServerSocketChannel类来实例化一个进来的链接)*/
                 .channel(NioFactory.serverSocketChannelClass())
                 /*方法用于设置监听套接字*/
-                .option(ChannelOption.SO_BACKLOG, 8000)
+                .option(ChannelOption.SO_BACKLOG, 0)
                 /*地址重用，socket链接断开后，立即可以被其他请求使用*/
                 .option(ChannelOption.SO_REUSEADDR, true)
                 /*方法用于设置和客户端链接的套接字*/
@@ -70,35 +70,26 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 /*接收缓冲区，使用内存池*/
                 .childOption(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(512, 2048, (int) BytesUnit.Mb.toBytes(12)))
                 /*为新链接到服务器的handler分配一个新的channel。ChannelInitializer用来配置新生成的channel。(如需其他的处理，继续ch.pipeline().addLast(新匿名handler对象)即可)*/
-                .childHandler(
-                        new ChannelInitializer<SocketChannel>() {
+                .childHandler(new ChannelInitializer<SocketChannel>() {
 
-                            @Override
-                            public void initChannel(SocketChannel socketChannel) throws Exception {
-                                ChannelPipeline pipeline = socketChannel.pipeline();
-                                if (JvmUtil.getProperty(JvmUtil.Netty_Debug_Logger, false, Boolean::parseBoolean)) {
-                                    pipeline.addLast("logging", new LoggingHandler("DEBUG"));// 设置log监听器，并且日志级别为debug，方便观察运行流程
-                                }
-
-                                pipeline.addFirst(new WxOptionalSslHandler(sslContext));
-
-                                int idleTime = idleTime();
-                                if (idleTime > 0) {
-                                    /*设置15秒的读取空闲*/
-                                    pipeline.addLast("idlehandler",
-                                            new IdleStateHandler(
-                                                    idleTime,
-                                                    0,
-                                                    0,
-                                                    TimeUnit.SECONDS
-                                            )
-                                    );
-                                }
-                                NioServer.this.initChannel(pipeline);
-                            }
-
+                    @Override
+                    public void initChannel(SocketChannel socketChannel) throws Exception {
+                        ChannelPipeline pipeline = socketChannel.pipeline();
+                        if (JvmUtil.getProperty(JvmUtil.Netty_Debug_Logger, false, Boolean::parseBoolean)) {
+                            pipeline.addLast("logging", new LoggingHandler("DEBUG"));// 设置log监听器，并且日志级别为debug，方便观察运行流程
                         }
-                );
+
+                        pipeline.addFirst(new WxOptionalSslHandler(sslContext));
+
+                        int idleTime = idleTime();
+                        if (idleTime > 0) {
+                            /*设置15秒的读取空闲*/
+                            pipeline.addLast("idlehandler", new IdleStateHandler(idleTime, 0, 0, TimeUnit.SECONDS));
+                        }
+                        NioServer.this.initChannel(pipeline);
+                    }
+
+                });
         return this;
     }
 

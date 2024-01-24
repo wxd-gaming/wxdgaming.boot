@@ -23,8 +23,9 @@ public abstract class NioBase {
     protected final ReentrantLock relock = new ReentrantLock();
 
     protected String name;
-    protected String host = null;
+    /** 仅仅只是展示用的 */
     protected String wanIp = null;
+    protected String host = null;
     protected int port;
 
     public abstract NioBase initBootstrap();

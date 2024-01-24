@@ -133,10 +133,6 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
         return this;
     }
 
-    public void connect() {
-        this.connect(getHost(), getPort());
-    }
-
     public WebSocketClient<S> write(String msg) {
         for (S value : getAllSessionMap().values()) {
             value.write(msg);
@@ -156,14 +152,15 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
         return this;
     }
 
-    @Override
-    public WebSocketClient<S> setHost(String host) {
-        super.setHost(host);
-        return this;
-    }
 
     @Override public WebSocketClient<S> setWanIp(String wanIp) {
         super.setWanIp(wanIp);
+        return this;
+    }
+
+    @Override
+    public WebSocketClient<S> setHost(String host) {
+        super.setHost(host);
         return this;
     }
 

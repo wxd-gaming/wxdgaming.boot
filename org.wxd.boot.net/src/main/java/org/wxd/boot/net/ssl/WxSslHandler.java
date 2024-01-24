@@ -14,8 +14,6 @@ import java.util.concurrent.Executor;
 @Slf4j
 public class WxSslHandler extends io.netty.handler.ssl.SslHandler implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     public WxSslHandler(SSLEngine engine) {
         super(engine);
     }

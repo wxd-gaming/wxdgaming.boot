@@ -1,40 +1,30 @@
 package code;
 
-import java.lang.annotation.*;
+import org.junit.Test;
+
+import java.net.URI;
 
 public class Code2 {
 
-    //// 定义一个基本注解
-    //@Retention(RetentionPolicy.RUNTIME)
-    //@Target({ElementType.TYPE}) // 只能应用于类、接口等类型
-    //public @interface BaseAnnotation {
-    //    String value();
-    //}
-    //
-    //// 定义一个继承BaseAnnotation的子注解
-    //@Retention(RetentionPolicy.RUNTIME)
-    //@Target({ElementType.TYPE})
-    //@Inherited // 表明这个注解可以被继承
-    //public @interface ChildAnnotation extends BaseAnnotation {
-    //    int count() default 0;
-    //}
-    //
-    //// 测试类
-    //@ChildAnnotation("Hello")
-    //static class MyClass {}
-    //
-    //public class Main {
-    //    public static void main(String[] args) throws NoSuchFieldException {
-    //        Class<MyClass> clazz = MyClass.class;
-    //
-    //        if (clazz.isAnnotationPresent(ChildAnnotation.class)) {
-    //            ChildAnnotation annotation = clazz.getAnnotation(ChildAnnotation.class);
-    //
-    //            System.out.println("Value: " + annotation.value());
-    //            System.out.println("Count: " + annotation.count());
-    //        } else {
-    //            System.out.println("No ChildAnnotation found.");
-    //        }
-    //    }
-    //}
+
+    @Test
+    public void t1() throws Exception {
+        show("wss://localhost:8080/ws?sdg=eg");
+
+        show("http://localhost:8080/ws?sdg=eg");
+        show("https://localhost:8080/ws?sdg=eg");
+    }
+
+    public void show(String url) throws Exception {
+        URI uri = new URI(url);
+        System.out.println(uri.getScheme());
+        System.out.println(uri.getHost());
+        System.out.println(uri.getPort());
+        System.out.println(uri.getPath());
+        System.out.println(uri.getQuery());
+        System.out.println(uri.getRawPath());
+        System.out.println(uri.getRawQuery());
+        System.out.println("========================================");
+    }
+
 }
