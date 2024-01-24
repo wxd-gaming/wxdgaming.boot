@@ -1,11 +1,11 @@
 package org.wxd.boot.threading;
 
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.lang.LockBase;
 import org.wxd.boot.system.GlobalUtil;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 线程任务队列
@@ -14,13 +14,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version: 2023-11-10 22:48
  **/
 @Slf4j
-class ExecutorQueue implements Runnable {
+class ExecutorQueue extends LockBase implements Runnable {
 
     protected IExecutorServices iExecutorServices;
     public String queueName;
     public AtomicBoolean isAppend = new AtomicBoolean();
-
-    public ReentrantLock relock = new ReentrantLock();
     public LinkedList<ExecutorServiceJob> queues = new LinkedList<>();
 
     public ExecutorQueue(IExecutorServices iExecutorServices, String queueName) {
@@ -29,7 +27,7 @@ class ExecutorQueue implements Runnable {
     }
 
     public void add(ExecutorServiceJob job) {
-        relock.lock();
+        lock.lock();
         try {
             this.queues.add(job);
             if (queues.size() > iExecutorServices.getQueueCheckSize()) {
@@ -42,16 +40,16 @@ class ExecutorQueue implements Runnable {
                 iExecutorServices.threadPoolExecutor(this);
             }
         } finally {
-            relock.unlock();
+            lock.unlock();
         }
     }
 
     public boolean remove(ExecutorServiceJob job) {
-        relock.lock();
+        lock.lock();
         try {
             return this.queues.remove(job);
         } finally {
-            relock.unlock();
+            lock.unlock();
         }
     }
 
@@ -63,13 +61,13 @@ class ExecutorQueue implements Runnable {
         try {
             ExecutorServiceJob executorServiceJob = null;
             try {
-                relock.lock();
+                lock.lock();
                 try {
                     if (!this.queues.isEmpty()) {
                         executorServiceJob = this.queues.removeFirst();
                     }
                 } finally {
-                    relock.unlock();
+                    lock.unlock();
                 }
                 if (executorServiceJob != null) {
                     executorServiceJob.run();
@@ -78,7 +76,7 @@ class ExecutorQueue implements Runnable {
                 log.error("执行：{}", executorServiceJob, throwable);
                 GlobalUtil.exception("执行：" + executorServiceJob, throwable);
             } finally {
-                relock.lock();
+                lock.lock();
                 try {
                     if (!this.queues.isEmpty()) {
                         iExecutorServices.threadPoolExecutor(this);
@@ -86,7 +84,7 @@ class ExecutorQueue implements Runnable {
                         this.isAppend.set(false);
                     }
                 } finally {
-                    relock.unlock();
+                    lock.unlock();
                 }
             }
         } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}

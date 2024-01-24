@@ -2,6 +2,7 @@ package org.wxd.boot.system;
 
 import lombok.Getter;
 import org.wxd.boot.collection.concurrent.ConcurrentList;
+import org.wxd.boot.lang.LockBase;
 import org.wxd.boot.timer.MyClock;
 
 import java.io.Serializable;
@@ -9,14 +10,12 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2022-06-21 10:28
  **/
 public class ThrowableCache implements Serializable {
-    static final ReentrantLock relock = new ReentrantLock();
     /** 异常堆栈缓存 */
     public static final ConcurrentSkipListMap<String, ConcurrentList<ExCache>> STATIC_CACHES = new ConcurrentSkipListMap<>();
 
@@ -42,7 +41,7 @@ public class ThrowableCache implements Serializable {
                 }
             }
             if (deepEqual) {
-                t.getRelock().lock();
+                t.lock();
                 try {
                     int andAdd = t.getRight().incrementAndGet();
                     if (millis - t.getCenter().get() > TimeUnit.MINUTES.toMillis(5)) {
@@ -52,7 +51,7 @@ public class ThrowableCache implements Serializable {
                     }
                     return null;
                 } finally {
-                    t.getRelock().unlock();
+                    t.unlock();
                 }
             }
         }
@@ -61,9 +60,8 @@ public class ThrowableCache implements Serializable {
     }
 
     @Getter
-    static class ExCache {
+    static class ExCache extends LockBase {
 
-        final ReentrantLock relock = new ReentrantLock();
         final Throwable left;
         final AtomicLong center;
         final AtomicInteger right;

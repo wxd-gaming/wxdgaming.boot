@@ -18,12 +18,12 @@ public class Tick extends ObjectBase {
     /** 同步等待的时候自循环等待 */
     private final long heart;
     /** 间隔毫秒 */
-    private final long tick;
+    private final long interval;
     /** 上一次执行时间 */
     private long last = 0;
 
-    public Tick(long tick) {
-        this(tick, TimeUnit.MILLISECONDS);
+    public Tick(long interval) {
+        this(interval, TimeUnit.MILLISECONDS);
     }
 
     public Tick(long duration, TimeUnit timeUnit) {
@@ -31,18 +31,27 @@ public class Tick extends ObjectBase {
     }
 
     public Tick(long heart, long duration, TimeUnit timeUnit) {
+        this(50, timeUnit.toMillis(duration), MyClock.millis());
+    }
+
+    public Tick(long heart, long duration, long last) {
         this.heart = heart;
-        this.tick = timeUnit.toMillis(duration);
-        this.last = MyClock.millis();
-        if (heart > this.tick)
-            throw new RuntimeException("自循环心跳 heart=" + heart + " 小于间隔执行 tick=" + this.tick);
+        this.interval = duration;
+        this.last = last;
+        if (heart > this.interval)
+            throw new RuntimeException("自循环心跳 heart=" + heart + " 小于间隔执行 tick=" + this.interval);
     }
 
     /** 判断是否满足条件，如果满足条件自动更新 */
     public boolean need() {
         long millis = MyClock.millis();
-        if (millis - last >= tick) {
-            last = millis;
+        return need(millis);
+    }
+
+    /** 判断是否满足条件，如果满足条件自动更新 */
+    public boolean need(long now) {
+        if (now - last >= interval) {
+            last = now;
             return true;
         }
         return false;

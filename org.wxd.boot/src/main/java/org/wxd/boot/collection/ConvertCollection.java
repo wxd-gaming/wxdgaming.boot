@@ -1,10 +1,10 @@
 package org.wxd.boot.collection;
 
 import org.wxd.boot.format.data.Data2Json;
+import org.wxd.boot.lang.LockBase;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -14,9 +14,8 @@ import java.util.function.Consumer;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2022-02-16 10:46
  **/
-public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Data2Json {
+public class ConvertCollection<E> extends LockBase implements Serializable, Iterator<List<E>>, Data2Json {
 
-    protected final ReentrantLock relock = new ReentrantLock();
     private volatile int splitOrg;
     private volatile LinkedList<E> items = new LinkedList<>();
 
@@ -37,22 +36,22 @@ public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Da
     }
 
     public void clear() {
-        relock.lock();
+        lock();
         try {
             items.clear();
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     public boolean add(E e) {
-        relock.lock();
+        lock();
         try {
             boolean remove = items.remove(e);
             boolean add = items.add(e);
             return !remove && add;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -71,7 +70,7 @@ public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Da
     @Override
     public List<E> next() {
         List<E> es = new ArrayList<>(splitOrg);
-        relock.lock();
+        lock();
         try {
             int tmp = splitOrg;
             for (int i = 0; i < tmp; i++) {
@@ -80,7 +79,7 @@ public class ConvertCollection<E> implements Serializable, Iterator<List<E>>, Da
                 if (e != null) es.add(e);
             }
         } finally {
-            relock.unlock();
+            unlock();
         }
         return es;
     }

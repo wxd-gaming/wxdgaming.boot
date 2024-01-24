@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.collection.ConvertCollection;
+import org.wxd.boot.lang.LockBase;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.system.MarkTimer;
@@ -19,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 批量操作
@@ -31,10 +31,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class BatchPool implements AutoCloseable {
+public abstract class BatchPool extends LockBase implements AutoCloseable {
 
     protected final DecimalFormat decimalFormat = new DecimalFormat("#0.0000");
-    protected final ReentrantLock relock = new ReentrantLock();
 
     /*总运行耗时*/
     protected volatile long allOperTimes = 0;
@@ -115,7 +114,7 @@ public abstract class BatchPool implements AutoCloseable {
         }
 
         public void replace(String tableName, DataBuilder obj) {
-            relock.lock();
+            lock();
             try {
 
                 boolean add = taskQueue.computeIfAbsent(tableName, k -> new ConvertCollection<>(batchSize))
@@ -124,7 +123,7 @@ public abstract class BatchPool implements AutoCloseable {
                     BatchPool.this.cacheSize++;
                 }
             } finally {
-                relock.unlock();
+                unlock();
             }
             if (BatchPool.this.cacheSize > BatchPool.this.maxCacheSize) {
                 log.error("当前待处理的数据缓存超过：" + BatchPool.this.cacheSize + ", tableName = " + tableName, new RuntimeException("数据缓存"));
@@ -132,7 +131,7 @@ public abstract class BatchPool implements AutoCloseable {
         }
 
         protected Map.Entry<String, ConvertCollection<DataBuilder>> copy() {
-            relock.lock();
+            lock();
             try {
                 Iterator<Map.Entry<String, ConvertCollection<DataBuilder>>> iterator = taskQueue.entrySet().iterator();
                 Map.Entry<String, ConvertCollection<DataBuilder>> next = null;
@@ -143,7 +142,7 @@ public abstract class BatchPool implements AutoCloseable {
                 }
                 return next;
             } finally {
-                relock.unlock();
+                unlock();
             }
         }
 
@@ -183,7 +182,7 @@ public abstract class BatchPool implements AutoCloseable {
                 float dqjunzhi = (execTime / i);
                 float dqsecjunzhi = 1000 / dqjunzhi;
 
-                relock.lock();
+                lock();
                 try {
                     if (Long.MAX_VALUE - allOperTimes < execTime) {
                         /*=统计超过最大值做清理操作*/
@@ -194,7 +193,7 @@ public abstract class BatchPool implements AutoCloseable {
                     allOperTimes += execTime;
                     allOperSize += i;
                 } finally {
-                    relock.unlock();
+                    unlock();
                 }
 
                 float junzhi = (allOperTimes * 1f / allOperSize);

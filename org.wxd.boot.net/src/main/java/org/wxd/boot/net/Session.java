@@ -5,12 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.lang.LockBase;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.timer.MyClock;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * session对象
@@ -22,12 +22,9 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class Session implements Serializable {
+public abstract class Session extends LockBase implements Serializable {
 
     static public AtomicLong sessionId0 = new AtomicLong();
-
-    /** 重入锁 */
-    protected final ReentrantLock relock = new ReentrantLock();
 
     private boolean gmSession;
     private long createTime;
@@ -117,7 +114,7 @@ public abstract class Session implements Serializable {
      * 释放连接
      */
     public void disConnect(String msg) {
-        relock.lock();
+        lock();
         try {
             if (!isDisConnect) {
                 if (log.isDebugEnabled()) {
@@ -134,7 +131,7 @@ public abstract class Session implements Serializable {
                 isDisConnect = true;
             }
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

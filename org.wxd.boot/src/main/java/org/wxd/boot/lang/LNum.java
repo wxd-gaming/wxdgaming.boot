@@ -16,9 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class LNum extends ObjectBase implements Serializable {
-
-    protected final ReentrantLock relock = new ReentrantLock();
+public class LNum extends ObjectBaseLock implements Serializable {
 
     private volatile long num = 0;
 
@@ -30,11 +28,11 @@ public class LNum extends ObjectBase implements Serializable {
     }
 
     public void clear() {
-        relock.lock();
+        lock();
         try {
             this.num = 0;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -46,12 +44,12 @@ public class LNum extends ObjectBase implements Serializable {
     }
 
     public LNum setNum(long num) {
-        relock.lock();
+        lock();
         try {
             this.num = num;
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -67,7 +65,7 @@ public class LNum extends ObjectBase implements Serializable {
 
     /** 加法 */
     public long add(long val, Long min, Long max) {
-        relock.lock();
+        lock();
         try {
             setNum(Math.addExact(this.num, val));
             if (min != null) {
@@ -80,7 +78,7 @@ public class LNum extends ObjectBase implements Serializable {
             }
             return getNum();
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -97,7 +95,7 @@ public class LNum extends ObjectBase implements Serializable {
 
     /** 减法 */
     public long sub(long val, Long min, Long max) {
-        relock.lock();
+        lock();
         try {
             setNum(Math.subtractExact(this.num, val));
             if (min != null) {
@@ -110,31 +108,31 @@ public class LNum extends ObjectBase implements Serializable {
             }
             return getNum();
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     /** 如果更新成功返回 true */
     public boolean min(long val) {
-        relock.lock();
+        lock();
         try {
             long oldVal = this.num;
             setNum(Math.min(this.num, val));
             return getNum() != oldVal;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     /** 如果更新成功返回 true */
     public boolean max(long val) {
-        relock.lock();
+        lock();
         try {
             long oldVal = this.num;
             setNum(Math.max(this.num, val));
             return getNum() != oldVal;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

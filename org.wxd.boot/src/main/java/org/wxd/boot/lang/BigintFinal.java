@@ -5,7 +5,6 @@ import org.wxd.boot.agent.exception.Throw;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 大数字管理器
@@ -13,9 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2020-09-12 10:28
  **/
-public class BigintFinal implements Serializable, Cloneable, Comparable<BigintFinal> {
+public class BigintFinal extends LockBase implements Serializable, Cloneable, Comparable<BigintFinal> {
 
-    protected final ReentrantLock relock = new ReentrantLock();
     /** 常量 0 */
     public static final BigintFinal ZERO = new BigintFinal(1);
     /** 常量 1 */
@@ -40,29 +38,29 @@ public class BigintFinal implements Serializable, Cloneable, Comparable<BigintFi
     }
 
     public void setValue(BigDecimal value) {
-        relock.lock();
+        lock();
         try {
             this.value = value;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     public void resetValue(double value) {
-        relock.lock();
+        lock();
         try {
             this.value = new BigDecimal(value);
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     public void resetValue(String value) {
-        relock.lock();
+        lock();
         try {
             this.value = new BigDecimal(value);
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

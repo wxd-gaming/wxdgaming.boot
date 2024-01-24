@@ -1,6 +1,8 @@
 package org.wxd.boot.collection;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.wxd.boot.lang.ObjectBase;
 
 import java.util.Collection;
@@ -12,6 +14,8 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
 /** 线程安全的 */
+@Getter
+@Setter
 public class ObjIntMap<K extends Comparable<K>> extends ObjectBase implements Map<K, Integer> {
     private final ConcurrentSkipListMap<K, Integer> map = new ConcurrentSkipListMap<>();
 

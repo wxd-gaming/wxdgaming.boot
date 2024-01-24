@@ -33,13 +33,22 @@ public class OptFuture<T> {
 
     /** 创建异步获取数据 */
     public static <U> OptFuture<U> createAsync(Supplier<U> supplier) {
-        return new OptFuture<>(supplier, Executors.getVTExecutor(), 5);
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), null, 5);
+    }
+
+    public static <U> OptFuture<U> createAsync(String queueName, Supplier<U> supplier) {
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), queueName, 5);
     }
 
     /** 创建异步获取数据 */
     public static <U> OptFuture<U> createAsync(Supplier<U> supplier, IExecutorServices executorServices) {
-        return new OptFuture<>(supplier, executorServices, 5);
+        return new OptFuture<>(supplier, executorServices, null, 5);
     }
+
+    public static <U> OptFuture<U> createAsync(Supplier<U> supplier, IExecutorServices executorServices, String queueName) {
+        return new OptFuture<>(supplier, executorServices, queueName, 5);
+    }
+
 
     private final ReentrantLock reentrantLock;
     private boolean onComplete = false;
@@ -49,11 +58,11 @@ public class OptFuture<T> {
     private final AtomicReference<Runnable> runnable = new AtomicReference<>();
     private OptFuture next = null;
 
-    public OptFuture(Supplier<T> supplier, IExecutorServices executorServices, int stack) {
+    public OptFuture(Supplier<T> supplier, IExecutorServices executorServices, String queueName, int stack) {
         this.reentrantLock = new ReentrantLock();
         this.data = new AtomicReference<>();
         this.exception = new AtomicReference<>();
-        executorServices.submit(new Event(500, 3000) {
+        executorServices.submit(queueName, new Event(500, 3000) {
             @Override public void onEvent() throws Exception {
                 try {
                     complete(supplier.get());
@@ -73,7 +82,7 @@ public class OptFuture<T> {
         }
     }
 
-    public OptFuture(ReentrantLock reentrantLock, AtomicReference<T> data, AtomicReference<Throwable> exception) {
+    protected OptFuture(ReentrantLock reentrantLock, AtomicReference<T> data, AtomicReference<Throwable> exception) {
         this.reentrantLock = reentrantLock;
         this.data = data;
         this.exception = exception;

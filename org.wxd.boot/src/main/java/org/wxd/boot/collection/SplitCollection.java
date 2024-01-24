@@ -1,5 +1,6 @@
 package org.wxd.boot.collection;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.format.data.Data2Json;
 
@@ -17,14 +18,13 @@ import java.util.List;
  * @version: 2021-10-25 12:05
  **/
 @Slf4j
+@Getter
 public class SplitCollection<E> implements Serializable, Data2Json {
 
-    private static final long serialVersionUID = 1L;
-
-    private volatile int splitOrg;
-    private volatile boolean linked;
+    private final int splitOrg;
+    private final boolean linked;
     private volatile int size = 0;
-    private volatile LinkedList<List<E>> es = new LinkedList<>();
+    private final LinkedList<List<E>> es = new LinkedList<>();
 
     public SplitCollection() {
         this(1000);
@@ -88,10 +88,6 @@ public class SplitCollection<E> implements Serializable, Data2Json {
     public void clear() {
         es.clear();
         size = 0;
-    }
-
-    public LinkedList<List<E>> getEs() {
-        return es;
     }
 
 }

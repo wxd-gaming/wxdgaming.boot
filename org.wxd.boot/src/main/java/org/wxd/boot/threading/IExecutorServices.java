@@ -101,12 +101,22 @@ public interface IExecutorServices extends Executor {
 
     /** 提交带回调的执行 */
     default <V> OptFuture<V> optFuture(Supplier<V> supplier) {
-        return new OptFuture<V>(supplier, this, 5);
+        return new OptFuture<V>(supplier, this, null, 5);
     }
 
     /** 提交带回调的执行 */
     default <V> OptFuture<V> optFuture(Supplier<V> supplier, int stackTrace) {
-        return new OptFuture<V>(supplier, this, stackTrace);
+        return new OptFuture<V>(supplier, this, null, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier) {
+        return new OptFuture<V>(supplier, this, queueName, 5);
+    }
+
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, int stackTrace) {
+        return new OptFuture<V>(supplier, this, queueName, stackTrace);
     }
 
     /** 提交带回调的执行 */

@@ -9,9 +9,7 @@ import java.util.function.Supplier;
  **/
 public interface ILock {
 
-    /**
-     * 读取锁
-     */
+    /** 读取锁 */
     ReentrantLock getLock();
 
     default void lockRun(Runnable runnable) {

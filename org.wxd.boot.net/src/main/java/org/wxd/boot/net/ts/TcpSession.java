@@ -13,8 +13,6 @@ import java.io.Serializable;
  **/
 public class TcpSession extends SocketSession implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     public TcpSession(String name, ChannelHandlerContext ctx) {
         super(name, ctx);
         checkReadTime();

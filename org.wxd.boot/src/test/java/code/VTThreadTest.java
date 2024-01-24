@@ -28,7 +28,6 @@ public class VTThreadTest {
         final int execCount = 10000;
         AtomicInteger atomicInteger = new AtomicInteger(execCount);
         AtomicInteger endInteger = new AtomicInteger(0);
-        ReentrantLock relock = new ReentrantLock();
         do {
             final int index = atomicInteger.get();
             ofVirtual.start(new Runnable() {

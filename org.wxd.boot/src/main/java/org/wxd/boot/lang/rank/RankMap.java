@@ -87,43 +87,43 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
     /** 累加分数 */
     public V addScore(K uid, double score) {
         V v = getOrNew(uid);
-        v.getRelock().lock();
+        v.lock();
         try {
             v.setScore(v.getScore() + score);
-        } finally {v.getRelock().unlock();}
+        } finally {v.unlock();}
         return v;
     }
 
     /** 设置分数 */
     public V setScore(K uid, double score) {
         V v = getOrNew(uid);
-        v.getRelock().lock();
+        v.lock();
         try {
             if (v.getScore() == score) return v;
             v.setScore(score);
-        } finally {v.getRelock().unlock();}
+        } finally {v.unlock();}
         return v;
     }
 
     /** 设置分数，根据当前分数和记录分数对吧，取最大值 */
     public V setScoreMax(K uid, double score) {
         V v = getOrNew(uid);
-        v.getRelock().lock();
+        v.lock();
         try {
             if (v.getScore() >= score) return v;
             v.setScore(score);
-        } finally {v.getRelock().unlock();}
+        } finally {v.unlock();}
         return v;
     }
 
     /** 设置分数，根据当前分数和记录分数对吧，取最小值 */
     public V setScoreMin(K uid, double score) {
         V v = getOrNew(uid);
-        v.getRelock().lock();
+        v.lock();
         try {
             if (v.getScore() <= score) return v;
             v.setScore(score);
-        } finally {v.getRelock().unlock();}
+        } finally {v.unlock();}
         return v;
     }
 

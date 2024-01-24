@@ -14,8 +14,6 @@ import java.math.BigDecimal;
  **/
 public class Bigint extends BigintFinal implements Serializable, Cloneable, Comparable<BigintFinal> {
 
-    private static final long serialVersionUID = 1L;
-
     public Bigint() {
         super();
     }
@@ -59,13 +57,13 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint add(BigintFinal val) {
-        relock.lock();
+        lock();
         try {
             this.value = this.value.add(val.value);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -75,14 +73,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint add(double val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = BigDecimal.valueOf(val);
             this.value = this.value.add(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -92,14 +90,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint add(String val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = new BigDecimal(val);
             this.value = this.value.add(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -120,14 +118,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint subtract(double val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = BigDecimal.valueOf(val);
             this.value = this.value.subtract(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -138,14 +136,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint subtract(String val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = new BigDecimal(val);
             this.value = this.value.subtract(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -155,13 +153,13 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint multiply(BigintFinal val) {
-        relock.lock();
+        lock();
         try {
             this.value = this.value.multiply(val.value);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -171,14 +169,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint multiply(double val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = BigDecimal.valueOf(val);
             this.value = this.value.multiply(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -188,14 +186,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint multiply(String val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = new BigDecimal(val);
             this.value = this.value.multiply(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -205,13 +203,13 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint divide(BigintFinal val) {
-        relock.lock();
+        lock();
         try {
             this.value = this.value.divide(val.value);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -221,14 +219,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint divide(double val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = BigDecimal.valueOf(val);
             this.value = this.value.divide(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -238,14 +236,14 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
      * @param val
      */
     public Bigint divide(String val) {
-        relock.lock();
+        lock();
         try {
             BigDecimal bigVal = new BigDecimal(val);
             this.value = this.value.divide(bigVal);
             clearZero();
             return this;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 }

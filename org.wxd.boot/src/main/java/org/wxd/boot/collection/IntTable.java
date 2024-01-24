@@ -21,8 +21,23 @@ public class IntTable<V> {
         return maps.containsKey(r);
     }
 
+    /** 返回老值 ， 如果原来没有，返回 null */
     public V put(int r, int c, V v) {
         return row(r).put(c, v);
+    }
+
+    /** 如果原来已经存在，会抛出异常 */
+    public V putEx(int r, int c, V v) {
+        V put = put(r, c, v);
+        if (put != null) {
+            throw new RuntimeException("插入重复项 " + r + " - " + c + " - " + v);
+        }
+        return put;
+    }
+
+    /** 返回老值， 如果原来没有，返回新值 */
+    public V putIfAbsent(int r, int c, V v) {
+        return row(r).putIfAbsent(c, v);
     }
 
     public IntObjectHashMap<V> row(int r) {
@@ -32,6 +47,12 @@ public class IntTable<V> {
     public V computeIfAbsent(int r, int c, Function<? super Integer, ? extends V> mappingFunction) {
         IntObjectHashMap<V> row = row(r);
         return row.computeIfAbsent(c, mappingFunction);
+    }
+
+    public Map<Integer, V> getOrDefault(int k, Map map) {
+        IntObjectHashMap<V> vIntObjectHashMap = get(k);
+        if (vIntObjectHashMap == null) return map;
+        return vIntObjectHashMap;
     }
 
     public IntObjectHashMap<V> get(int r) {
@@ -64,6 +85,15 @@ public class IntTable<V> {
         return maps.values();
     }
 
+    /** ！！！不能用这个来边遍历边删除 */
+    public Collection<V> allValues() {
+        List<V> list = new ArrayList<>();
+        for (IntObjectHashMap<V> value : values()) {
+            list.addAll(value.values());
+        }
+        return list;
+    }
+
     public Iterator<Map.Entry<Integer, IntObjectHashMap<V>>> iterator() {
         return maps.entrySet().iterator();
     }
@@ -76,15 +106,6 @@ public class IntTable<V> {
         for (IntObjectHashMap<V> value : maps.values()) {
             value.values().forEach(consumer);
         }
-    }
-
-    /** ！！！不能用这个来边遍历边删除 */
-    public Collection<V> allValues() {
-        List<V> list = new ArrayList<>();
-        for (IntObjectHashMap<V> value : values()) {
-            list.addAll(value.values());
-        }
-        return list;
     }
 
     public void clear() {

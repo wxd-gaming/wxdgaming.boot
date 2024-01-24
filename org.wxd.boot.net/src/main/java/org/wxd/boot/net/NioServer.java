@@ -94,7 +94,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
     }
 
     public void open() {
-        relock.lock();
+        lock();
         try {
             try {
                 /* Bind and start to accept incoming connections*/
@@ -119,13 +119,13 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 JvmUtil.halt(500);
             }
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     @Override public void run() {
         /*如果因为特殊原因，监听端口直接跨了，那么重新开起来*/
-        relock.lock();
+        lock();
         try {
             if (bootstrap != null && serverChannel != null) {
                 if (!serverChannel.isRegistered() && !serverChannel.isOpen()) {
@@ -135,7 +135,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 }
             }
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -143,7 +143,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
      *
      */
     public void close() {
-        relock.lock();
+        lock();
         try {
             if (this.bootstrap != null) {
                 log.info("=====服务关闭 " + this.toString() + " {start}");
@@ -155,7 +155,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 log.info("=====服务关闭 " + this.toString() + " {end}");
             }
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

@@ -39,7 +39,7 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
 
     @Override
     public void disConnect(String msg) {
-        relock.lock();
+        lock();
         try {
             super.disConnect(msg);
             if (readByteBuf != null) {
@@ -51,7 +51,7 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
             }
             tmpOthers = null;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

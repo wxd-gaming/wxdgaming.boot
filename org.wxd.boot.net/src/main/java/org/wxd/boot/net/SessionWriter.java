@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.i.ILock;
 import org.wxd.boot.lang.ConvertUtil;
 import org.wxd.boot.net.message.UpFileAccess;
 import org.wxd.boot.net.util.ByteBufUtil;
@@ -13,18 +14,14 @@ import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.timer.MyClock;
 
 import java.io.File;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-04-30 09:18
  **/
-interface SessionWriter extends ByteBufWrapper {
+interface SessionWriter extends ByteBufWrapper, ILock {
 
     Logger log = LoggerFactory.getLogger(SessionWriter.class);
-
-    /** 获取重入锁 */
-    ReentrantLock getRelock();
 
     /**
      * 远程传输文件
@@ -85,7 +82,7 @@ interface SessionWriter extends ByteBufWrapper {
 
     /** 发送处理 可以直接发 byte[] */
     default ChannelFuture write0(Object obj, boolean flush) {
-        getRelock().lock();
+        getLock().lock();
         try {
             if (!((SocketSession) this).isRegistered()) {
                 log.warn("发送消息异常, 链接状态异常, " + this.toString(), new RuntimeException());
@@ -116,7 +113,7 @@ interface SessionWriter extends ByteBufWrapper {
                 return ((SocketSession) this).getChannelContext().write(obj);
             }
         } finally {
-            getRelock().unlock();
+            getLock().unlock();
         }
     }
 

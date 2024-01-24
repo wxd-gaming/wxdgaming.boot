@@ -1,5 +1,7 @@
 package org.wxd.boot.format;
 
+import org.wxd.boot.lang.LockBase;
+
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -10,9 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-03-13 20:31
  **/
-public class TimeNewId {
+public class TimeNewId extends LockBase {
 
-    protected ReentrantLock relock = new ReentrantLock();
     private long start;
     private long nextMax;
     private long gen;
@@ -25,14 +26,14 @@ public class TimeNewId {
     }
 
     public long nextId() {
-        relock.lock();
+        lock();
         try {
             checkGenStart();
             long ret = ++next;
             if (ret >= nextMax) throw new RuntimeException("超过每一秒生成id的最大数 " + nextMax);
             return ret;
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

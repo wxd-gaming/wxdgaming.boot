@@ -4,6 +4,7 @@ package org.wxd.boot.net;
 import com.google.protobuf.Message;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import org.wxd.boot.lang.LockBase;
 
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,13 +15,12 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-01-21 21:07
  **/
-public class ChannelQueue<E extends SocketSession> {
+public class ChannelQueue<E extends SocketSession> extends LockBase {
 
-    private final ReentrantLock relock = new ReentrantLock();
     volatile LinkedList<E> list = new LinkedList<>();
 
     public boolean add(E e) {
-        relock.lock();
+        lock();
         try {
             e.getChannelContext().channel().closeFuture().addListener(new ChannelFutureListener() {
                 @Override public void operationComplete(ChannelFuture future) throws Exception {
@@ -30,34 +30,34 @@ public class ChannelQueue<E extends SocketSession> {
 
             return list.add(e);
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     public E removeFirst() {
-        relock.lock();
+        lock();
         try {
             return list.removeFirst();
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     public boolean remove(E o) {
-        relock.lock();
+        lock();
         try {
             return list.remove(o);
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
     public void clear() {
-        relock.lock();
+        lock();
         try {
             list.clear();
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 
@@ -99,13 +99,13 @@ public class ChannelQueue<E extends SocketSession> {
     }
 
     public void writeFlushAll(Message message) {
-        relock.lock();
+        lock();
         try {
             list.forEach(channel -> {
                 channel.writeFlush(message);
             });
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

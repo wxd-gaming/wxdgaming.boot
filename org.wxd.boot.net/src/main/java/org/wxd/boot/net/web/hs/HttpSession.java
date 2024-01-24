@@ -98,7 +98,7 @@ public class HttpSession extends Session implements Serializable {
      * @param msg
      */
     public void disConnect(String msg) {
-        relock.lock();
+        lock();
         try {
             if (isDisConnect()) return;
             if (!responseOver.get()) responseText("");
@@ -121,7 +121,7 @@ public class HttpSession extends Session implements Serializable {
             }
             releaseBuf();
         } finally {
-            relock.unlock();
+            unlock();
         }
     }
 

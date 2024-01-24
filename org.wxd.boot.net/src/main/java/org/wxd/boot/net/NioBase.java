@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.locks.ReentrantLock;
+import org.wxd.boot.lang.LockBase;
 
 /**
  * 基于 netty 实现 通信基类
@@ -18,9 +17,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class NioBase {
+public abstract class NioBase extends LockBase {
 
-    protected final ReentrantLock relock = new ReentrantLock();
 
     protected String name;
     /** 仅仅只是展示用的 */
