@@ -31,7 +31,7 @@ public class Tick extends ObjectBase {
     }
 
     public Tick(long heart, long duration, TimeUnit timeUnit) {
-        this(50, timeUnit.toMillis(duration), MyClock.millis());
+        this(heart, timeUnit.toMillis(duration), MyClock.millis());
     }
 
     public Tick(long heart, long duration, long last) {
@@ -39,7 +39,7 @@ public class Tick extends ObjectBase {
         this.interval = duration;
         this.last = last;
         if (heart > this.interval)
-            throw new RuntimeException("自循环心跳 heart=" + heart + " 小于间隔执行 tick=" + this.interval);
+            throw new RuntimeException("自循环心跳 heart=" + heart + " 大于间隔执行 interval=" + this.interval);
     }
 
     /** 判断是否满足条件，如果满足条件自动更新 */
