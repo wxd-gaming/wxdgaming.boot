@@ -145,7 +145,7 @@ public class RpcEvent {
     /** 同步请求，等待结果 */
     public String get(long timeoutMillis) {
         if (!res) {
-            this.rpcId = RPC_ID_FORMAT.next(1);
+            this.rpcId = RPC_ID_FORMAT.next();
             RPC_REQUEST_CACHE_PACK.addCache(this.getRpcId(), this);
             send();
             Boolean poll = null;
