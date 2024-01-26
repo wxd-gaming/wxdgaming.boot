@@ -13,9 +13,9 @@ public class Test4 {
     @Test
     public void t0() {
         ReflectContext code = ReflectContext.Builder.of(this.getClass().getClassLoader(), "code.impl").build();
-        code.getContentList().forEach(c->c.methodStream().forEach(method -> System.out.println(method.getDeclaringClass() + " " + method)));
+        code.stream().forEach(c -> c.methodStream().forEach(method -> System.out.println(method.getDeclaringClass() + " " + method)));
         System.out.println("====================");
-        code.getContentList().forEach(c->c.methodsWithAnnotated(TextMapping.class).forEach(method -> System.out.println(method.getDeclaringClass() + " " + method)));
+        code.stream().forEach(c -> c.methodsWithAnnotated(TextMapping.class).forEach(method -> System.out.println(method.getDeclaringClass() + " " + method)));
     }
 
 }

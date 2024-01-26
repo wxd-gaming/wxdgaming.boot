@@ -29,7 +29,7 @@ public class ActionTimer {
         List<ScheduledInfo> jobList = new ArrayList<>();
         jobList.addAll(scheduledService.getJobList());
 
-        reflectContext.getContentList().forEach(content -> {
+        reflectContext.stream().forEach(content -> {
             Stream<Method> methodStream = content.methodsWithAnnotated(Scheduled.class);
             action(context, jobList, methodStream);
         });

@@ -182,7 +182,7 @@ public class Starter {
 
     static void iocInitBean(IocContext context, ReflectContext reflectContext) throws Exception {
         if (logger().isDebugEnabled()) {
-            long count = reflectContext.getContentList().size();
+            long count = reflectContext.getClassList().size();
             logger().debug("find class size ：" + count);
         }
 

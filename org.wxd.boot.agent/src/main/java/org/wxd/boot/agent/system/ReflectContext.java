@@ -14,10 +14,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.jar.JarEntry;
@@ -35,11 +32,6 @@ public class ReflectContext {
 
     /** 判定 接口, 枚举, 注解, 抽象类 返回 false */
     public static boolean checked(Class<?> aClass) {
-        return checked(null, aClass);
-    }
-
-    /** 判定 接口, 枚举, 注解, 抽象类 返回 false */
-    public static boolean checked(Class<?> cls, Class<?> aClass) {
         /* 判定 是否可用 */
         return !(
                 Object.class.equals(aClass)
@@ -89,51 +81,26 @@ public class ReflectContext {
     }
 
     /** 所有的类 */
-    private final List<Content> contentList;
+    private final List<Class<?>> classList;
 
-    public ReflectContext(Collection<Class<?>> contentList) {
-        this.contentList = contentList.stream().map(Content::new).toList();
+    public ReflectContext(Collection<Class<?>> classList) {
+        this.classList = new ArrayList<>(classList);
     }
 
-    public Stream<Content> stream() {
-        return contentList.stream();
-    }
-
-    /** 父类或者接口 */
-    public Stream<Content> withSuper(Class<?> cls) {
-        return withSuper(cls, null);
-    }
-
-    /** 父类或者接口 */
-    public Stream<Content> withSuper(Class<?> cls, Predicate<Class<?>> predicate) {
-        Stream<Content> tmp = stream().filter(v -> cls.isAssignableFrom(v.getCls()));
-        if (predicate != null) tmp = tmp.filter(v -> predicate.test(v.getCls()));
-        return tmp;
-    }
-
-    /** 所有添加了这个注解的类 */
-    public Stream<Content> withAnnotated(Class<? extends Annotation> annotation) {
-        return withAnnotated(annotation, null);
-    }
-
-    public Stream<Content> withAnnotated(Class<? extends Annotation> annotation, Predicate<Class<?>> predicate) {
-        Stream<Content> tmp = stream().filter(c -> AnnUtil.ann(c.getCls(), annotation) != null);
-        if (predicate != null) tmp = tmp.filter(v -> predicate.test(v.getCls()));
-        return tmp;
-    }
-
+    /** 所有的类 */
     public Stream<Class<?>> classStream() {
-        return contentList.stream().map(Content::getCls);
+        return classList.stream();
     }
 
     /** 父类或者接口 */
-    public Stream<Class<?>> classWithSuper(Class<?> cls) {
+    public <U> Stream<Class<U>> classWithSuper(Class<U> cls) {
         return classWithSuper(cls, null);
     }
 
     /** 父类或者接口 */
-    public Stream<Class<?>> classWithSuper(Class<?> cls, Predicate<Class<?>> predicate) {
-        Stream<Class<?>> tmp = classStream().filter(cls::isAssignableFrom);
+    public <U> Stream<Class<U>> classWithSuper(Class<U> cls, Predicate<Class<U>> predicate) {
+        @SuppressWarnings("unchecked")
+        Stream<Class<U>> tmp = classStream().filter(cls::isAssignableFrom).map(c -> (Class<U>) c);
         if (predicate != null) tmp = tmp.filter(predicate);
         return tmp;
     }
@@ -150,23 +117,54 @@ public class ReflectContext {
         return tmp;
     }
 
+    public Stream<Content<?>> stream() {
+        return classList.stream().map(Content::new);
+    }
+
+    /** 父类或者接口 */
+    public <U> Stream<Content<U>> withSuper(Class<U> cls) {
+        return withSuper(cls, null);
+    }
+
+    /** 父类或者接口 */
+    public <U> Stream<Content<U>> withSuper(Class<U> cls, Predicate<Class<U>> predicate) {
+        return classWithSuper(cls, predicate).map(Content::new);
+    }
+
+    /** 所有添加了这个注解的类 */
+    public Stream<Content<?>> withAnnotated(Class<? extends Annotation> annotation) {
+        return withAnnotated(annotation, null);
+    }
+
+    /** 所有添加了这个注解的类 */
+    public Stream<Content<?>> withAnnotated(Class<? extends Annotation> annotation, Predicate<Class<?>> predicate) {
+        return classWithAnnotated(annotation, predicate).map(Content::new);
+    }
+
     @Getter
-    public static class Content {
+    public static class Content<T> {
 
-        private final Class<?> cls;
+        private final Class<T> cls;
 
-        public static Content of(Class<?> cls) {
-            return new Content(cls);
+        public static <U> Content<U> of(Class<U> cls) {
+            return new Content<>(cls);
         }
 
-        Content(Class<?> cls) {
+        Content(Class<T> cls) {
             this.cls = cls;
         }
 
+        /** 是否添加了注解 */
+        public boolean withAnnotated(Class<? extends Annotation> annotation) {
+            return AnnUtil.ann(cls, annotation) != null;
+        }
+
+        /** 所有的方法 */
         public Collection<Method> getMethods() {
             return MethodUtil.readAllMethod(cls).values();
         }
 
+        /** 所有的方法 */
         public Stream<Method> methodStream() {
             return getMethods().stream();
         }
@@ -176,11 +174,12 @@ public class ReflectContext {
             return methodStream().filter(m -> AnnUtil.ann(m, annotation) != null);
         }
 
+        /** 所有的字段 */
         public Collection<Field> getFields() {
             return FieldUtil.getFields(false, cls).values();
         }
 
-        /** 所有添加了这个注解的方法 */
+        /** 所有的字段 */
         public Stream<Field> fieldStream() {
             return getFields().stream();
         }
