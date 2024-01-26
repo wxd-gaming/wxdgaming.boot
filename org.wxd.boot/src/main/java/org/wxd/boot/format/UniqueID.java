@@ -51,6 +51,10 @@ public final class UniqueID {
             this.origin = origin;
         }
 
+        public Uid(long origin) {
+            this.origin = new AtomicLong(origin);
+        }
+
         public long next(long head) {
 
             Preconditions.checkArgument(
@@ -73,6 +77,24 @@ public final class UniqueID {
             return l;
         }
 
+    }
+
+    public static class HeadUid extends Uid {
+        private final int head;
+
+        public HeadUid(AtomicLong origin, int head) {
+            super(origin);
+            this.head = head;
+        }
+
+        public HeadUid(long origin, int head) {
+            super(origin);
+            this.head = head;
+        }
+
+        public long next() {
+            return super.next(head);
+        }
     }
 
     /** 根据时间做uid */

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.cache.CachePack;
+import org.wxd.boot.format.UniqueID;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.str.StringUtil;
@@ -17,7 +18,6 @@ import org.wxd.boot.threading.OptFuture;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 /**
@@ -38,11 +38,14 @@ public class RpcEvent {
             .setCacheIntervalTime(1000);
 
     public static String RPC_TOKEN = "5cb703a024e54648a70da85890ed7dbb";
-    public static long WaiteMill = 3000;
-    public static AtomicLong idFormat = new AtomicLong();
+    /** 默认的等待时间 单位 毫秒 */
+    public static long RPC_WAITE_MILL = 3000;
+    /** id生成器 */
+    public static UniqueID.HeadUid RPC_ID_FORMAT = new UniqueID.HeadUid(1, 1);
 
     protected final BlockingQueue<Boolean> queue = new LinkedBlockingQueue<>(1);
     protected MarkTimer markTime;
+    protected long waiteMill = RPC_WAITE_MILL;
     protected final SocketSession session;
     protected long rpcId;
     protected final String cmd;
@@ -136,13 +139,13 @@ public class RpcEvent {
 
     /** 同步请求，等待结果 */
     public String get() {
-        return get(WaiteMill);
+        return get(waiteMill);
     }
 
     /** 同步请求，等待结果 */
     public String get(long timeoutMillis) {
         if (!res) {
-            this.rpcId = idFormat.incrementAndGet();
+            this.rpcId = RPC_ID_FORMAT.next(1);
             RPC_REQUEST_CACHE_PACK.addCache(this.getRpcId(), this);
             send();
             Boolean poll = null;

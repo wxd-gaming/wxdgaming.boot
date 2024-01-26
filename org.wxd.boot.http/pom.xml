@@ -14,11 +14,6 @@
     <dependencies>
         <dependency>
             <groupId>org.wxd</groupId>
-            <artifactId>org.wxd.boot</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wxd</groupId>
             <artifactId>org.wxd.boot.agent</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -37,12 +32,6 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
-                        <manifestEntries>
-                            <Manifest-Version>1.0</Manifest-Version>
-                            <Agent-Class>org.wxd.agent.AgentService</Agent-Class>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>

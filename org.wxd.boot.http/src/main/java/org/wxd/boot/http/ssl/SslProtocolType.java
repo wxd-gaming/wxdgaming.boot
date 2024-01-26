@@ -1,10 +1,7 @@
 package org.wxd.boot.http.ssl;
 
 
-import org.wxd.boot.collection.OfMap;
-
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * ssl版本协议
@@ -28,10 +25,13 @@ public enum SslProtocolType implements Serializable {
     /** TLSv1.2 */
     TLSV12("TLSv1.2");
 
-    private static final Map<String, SslProtocolType> Static_Map = OfMap.asMap(SslProtocolType::getTypeName, SslProtocolType.values());
-
     public static SslProtocolType of(String source) {
-        return Static_Map.get(source);
+        for (SslProtocolType value : SslProtocolType.values()) {
+            if (value.getTypeName().equalsIgnoreCase(source)) {
+                return value;
+            }
+        }
+        return null;
     }
 
     private final String typeStr;

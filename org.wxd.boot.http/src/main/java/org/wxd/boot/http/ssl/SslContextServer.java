@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.lang.Record2;
-import org.wxd.boot.collection.concurrent.ConcurrentTable;
-import org.wxd.boot.str.StringUtil;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -15,6 +13,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.KeyStore;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -26,14 +25,16 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class SslContextServer implements Serializable {
 
-    private static final ConcurrentTable<SslProtocolType, String, SSLContext> sslContextMap = new ConcurrentTable<>();
+    private static final ConcurrentHashMap<SslProtocolType, ConcurrentHashMap<String, SSLContext>> sslContextMap = new ConcurrentHashMap<>();
 
     public static SSLContext sslContext(SslProtocolType sslProtocolType, String jks_path, String jks_pwd_path) {
 
-        if (sslProtocolType == null || StringUtil.emptyOrNull(jks_path) || StringUtil.emptyOrNull(jks_path))
+        if (sslProtocolType == null
+                || jks_path == null || jks_path.isEmpty() || jks_path.isBlank()
+                || jks_pwd_path == null || jks_pwd_path.isEmpty() || jks_pwd_path.isBlank())
             return null;
 
-        Map<String, SSLContext> row = sslContextMap.row(sslProtocolType);
+        Map<String, SSLContext> row = sslContextMap.computeIfAbsent(sslProtocolType, l -> new ConcurrentHashMap<>());
         return row.computeIfAbsent(jks_path, l -> {
             try {
                 AtomicReference<InputStream> streams = new AtomicReference<>();
