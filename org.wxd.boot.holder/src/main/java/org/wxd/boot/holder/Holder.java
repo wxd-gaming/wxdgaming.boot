@@ -3,6 +3,9 @@ package org.wxd.boot.holder;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.loader.ClassDirLoader;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -35,7 +38,11 @@ public class Holder {
 
     static void loadJar(String[] args) {
         try {
-            System.out.println(System.getProperty("user.dir"));
+            String domain = "domain-" + args[0];
+            MBeanServer server = MBeanServerFactory.createMBeanServer(domain);
+            ObjectName instance = ObjectName.getInstance(domain, "user.s", domain);
+            server.createMBean("javax.management.loading.MLet", instance);
+            server.getClassLoader(instance);
             /** 父 load null 表示需要做到类的绝对隔离 */
             ClassDirLoader classDirLoader = new ClassDirLoader((ClassLoader) null);
             /**把jar 需要的引用 lib 里面的jar包全部加载 */

@@ -12,6 +12,7 @@ public class LogOut {
 
     public static void main(String[] args) throws Exception {
         LogbackReset.resetLogback(LogOut.class.getClassLoader(), args[0]);
+        System.out.println(System.getProperty("user.s"));
         Logger root = LoggerFactory.getLogger("root");
         for (int i = 0; i < 10; i++) {
             root.info("{}", args[0]);
