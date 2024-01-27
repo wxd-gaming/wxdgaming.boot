@@ -2,7 +2,7 @@ package org.wxd.boot.agent.loader;
 
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaFileObject;
 import java.io.ByteArrayInputStream;
@@ -19,14 +19,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-04-29 09:36
  **/
-@Slf4j
 @Getter
 public class ClassFileObjectLoader extends ClassLoader {
 
     private final Map<String, JavaFileObject4ClassStream> classFileObjectMap = new ConcurrentHashMap<>();
 
+    public ClassFileObjectLoader() {
+        this(Thread.currentThread().getContextClassLoader());
+    }
+
     public ClassFileObjectLoader(ClassLoader parent) {
-        super(parent == null ? Thread.currentThread().getContextClassLoader() : parent);
+        super(parent);
     }
 
     public Collection<ClassInfo> allClass() {
@@ -37,8 +40,7 @@ public class ClassFileObjectLoader extends ClassLoader {
                 final JavaFileObject4ClassStream bytes = classFileObjectMap.get(className);
                 classMap.put(className, new ClassInfo().setLoadClass(aClass).setLoadClassBytes(bytes.getCompiledBytes()));
             } catch (Throwable e) {
-                log.warn("加载 class bytes " + className);
-                e.printStackTrace(System.out);
+                LoggerFactory.getLogger(ClassFileObjectLoader.class).error("加载 class bytes " + className, e);
             }
         }
         return classMap.values();

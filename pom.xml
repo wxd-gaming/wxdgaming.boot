@@ -25,6 +25,7 @@
         <module>org.wxd.boot.net</module>
         <module>org.wxd.boot.net.httpservice</module>
         <module>org.wxd.boot.starter</module>
+        <module>org.wxd.boot.holder</module>
     </modules>
 
     <properties>

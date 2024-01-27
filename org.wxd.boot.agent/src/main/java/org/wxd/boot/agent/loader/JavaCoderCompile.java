@@ -1,7 +1,6 @@
 package org.wxd.boot.agent.loader;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.JDKVersion;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  **/
-@Slf4j
 public class JavaCoderCompile {
 
     /*获取编译器实例*/
@@ -101,10 +99,8 @@ public class JavaCoderCompile {
      * @param compilerFiles 需要编译的文件
      */
     public JavaCoderCompile compilerJava(String sourceDir, Iterable<? extends JavaFileObject> compilerFiles) throws Exception {
-        if (log.isDebugEnabled()) {
-            JDKVersion jdkVersion = JDKVersion.runTimeJDKVersion();
-            log.debug("compiler java file jdk_version：" + jdkVersion.getCurVersionString());
-        }
+        JDKVersion jdkVersion = JDKVersion.runTimeJDKVersion();
+        System.out.println("compiler java file jdk_version：" + jdkVersion.getCurVersionString());
         /**
          * 编译选项，在编译java文件时，
          * <p>

@@ -3,7 +3,8 @@ package org.wxd.boot.agent.loader;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
+import org.wxd.boot.agent.JDKVersion;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
@@ -22,7 +23,6 @@ import java.util.TreeMap;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-08-06 14:40
  **/
-@Slf4j
 @Getter
 @Setter
 public class ClassDirLoader extends URLClassLoader implements Serializable {
@@ -50,7 +50,7 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
                     try {
                         classDirLoader.addURL(lib.toURI().toURL());
                     } catch (Exception e) {
-                        log.error("ClassLoader 附加 jar 包：" + jarPath, e);
+                        throw new RuntimeException("ClassLoader 附加 jar 包：" + jarPath, e);
                     }
                 });
         return classDirLoader;
@@ -80,19 +80,18 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
     public static Class<?> loadAClass(ClassLoader classLoader, String jarPath, String checkClassName) {
         try {
             final Class<?> aClass = classLoader.loadClass(checkClassName);
-            log.warn("原始加载器加载成功：" + checkClassName);
+            System.out.println("原始加载器加载成功：" + checkClassName);
             return aClass;
         } catch (ClassNotFoundException knife) {
             ClassDirLoader jarFileLoader = bootLib(classLoader, jarPath);
             try {
                 final Class<?> loadClass = jarFileLoader.loadClass(checkClassName);
-                log.warn("附加外部 jar 包，加载成功：" + checkClassName);
+                System.out.println("附加外部 jar 包，加载成功：" + checkClassName);
                 return loadClass;
             } catch (Exception e) {
-                log.error("加载 error", e);
+                throw new RuntimeException("加载 error", e);
             }
         }
-        return null;
     }
 
     /** 遇到异常继续 */
@@ -106,26 +105,26 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
     protected final Map<String, ClassInfo> loadClassInfoMap = new TreeMap<>();
 
     public ClassDirLoader() {
-        super(new URL[0]);
+        this(Thread.currentThread().getContextClassLoader());
     }
 
     public ClassDirLoader(ClassLoader parent) {
-        super(new URL[0], parent == null ? Thread.currentThread().getContextClassLoader() : parent);
+        this(new URL[0], parent);
     }
 
     /** 存放class的目录 */
     public ClassDirLoader(String classDir) throws Exception {
-        this(classDir, null);
+        this(classDir, Thread.currentThread().getContextClassLoader());
     }
 
     /** 存放class的目录 */
     public ClassDirLoader(String classDir, ClassLoader parent) throws Exception {
-        this(new File(classDir).toURI().toURL(), parent == null ? Thread.currentThread().getContextClassLoader() : parent);
+        this(new File(classDir).toURI().toURL(), parent);
     }
 
     /** 存放class的目录 */
     public ClassDirLoader(URL url) {
-        this(url, null);
+        this(url, Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -137,11 +136,19 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
         action(url);
     }
 
+    public ClassDirLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
+        for (URL url : urls) {
+            action(url);
+        }
+        JDKVersion jdkVersion = JDKVersion.runTimeJDKVersion();
+        System.out.println("class loader jdk_version：" + jdkVersion.getCurVersionString());
+    }
+
     /** 可以添加资源文件夹 */
-    public ClassDirLoader addURL(String url) {
+    public void addURL(String url) {
         try {
             this.addURL(new File(url).toURI().toURL());
-            return this;
         } catch (Exception e) {
             throw Throw.as(e);
         }
@@ -213,7 +220,7 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
                 this.findClass(className);
             } catch (Throwable e) {
                 if (errorContinue) {
-                    log.warn("load class bytes error " + className, e);
+                    LoggerFactory.getLogger(ClassDirLoader.class).error("load class bytes error " + className, e);
                 } else {
                     throw Throw.as("load class bytes error " + className, e);
                 }

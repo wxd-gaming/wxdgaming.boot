@@ -130,7 +130,7 @@ public class FileUtil implements Serializable {
                                     .filter(z -> !z.isDirectory())
                                     .filter(p -> p.getName().startsWith(path))
                                     .map(z -> new Record2<String, InputStream>(z.getName(), new ByteArrayInputStream(zipFile.unzipFile(z))))
-                                    .collect(Collectors.toList())
+                                    .toList()
                                     .stream();
                         }
                     }

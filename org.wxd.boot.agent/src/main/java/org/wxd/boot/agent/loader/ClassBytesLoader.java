@@ -1,7 +1,6 @@
 package org.wxd.boot.agent.loader;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.JDKVersion;
 
 import javax.tools.JavaFileObject;
@@ -14,21 +13,16 @@ import java.util.Map;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-04-29 09:36
  **/
-@Slf4j
 public class ClassBytesLoader extends ClassDirLoader {
 
     public ClassBytesLoader(Map<String, byte[]> classFileMap) {
-        this(classFileMap, null);
+        this(classFileMap, Thread.currentThread().getContextClassLoader());
     }
 
     public ClassBytesLoader(Map<String, byte[]> classFileMap, ClassLoader parent) {
         super(parent);
         for (Map.Entry<String, byte[]> stringEntry : classFileMap.entrySet()) {
             this.classFileMap.put(qualifiedClassName(stringEntry.getKey()), stringEntry.getValue());
-        }
-        if (log.isDebugEnabled()) {
-            JDKVersion jdkVersion = JDKVersion.runTimeJDKVersion();
-            log.debug("load class file jdk_version：" + jdkVersion.getCurVersionString());
         }
     }
 

@@ -10,7 +10,7 @@
     <!-- 日志记录器，日期滚动记录 -->
     <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
-        <file>target/logs/${SID}error.log</file>
+        <file>${LOG_PATH}target/logs/error.log</file>
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
@@ -26,7 +26,7 @@
         </filter>
         <!-- 日志记录器的滚动策略，按日期记录 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>target/logs/${SID}back/error-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}target/logs/back/error-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
     </appender>
@@ -34,7 +34,7 @@
     <!-- 日志记录器，日期滚动记录 -->
     <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 正在记录的日志文件的路径及文件名 -->
-        <file>target/logs/${SID}app.log</file>
+        <file>${LOG_PATH}target/logs/app.log</file>
         <!-- 追加方式记录日志 -->
         <append>true</append>
         <!-- 日志文件的格式 -->
@@ -49,7 +49,7 @@
         </filter>
         <!--  这个狗东西必须放后面 否则不生效-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>target/logs/${SID}back/app-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}target/logs/back/app-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>2</maxHistory>
         </rollingPolicy>
     </appender>

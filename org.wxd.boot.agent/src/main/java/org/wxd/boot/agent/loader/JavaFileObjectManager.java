@@ -1,7 +1,6 @@
 package org.wxd.boot.agent.loader;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
@@ -16,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-08-10 11:05
  **/
-@Slf4j
 @Getter
 public class JavaFileObjectManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
@@ -40,9 +38,7 @@ public class JavaFileObjectManager extends ForwardingJavaFileManager<StandardJav
      */
     @Override
     public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
-        if (log.isDebugEnabled()) {
-            log.debug("compiler class name " + className);
-        }
+        System.out.println("compiler class name " + className);
         final URI uri = URI.create(className.replaceAll("\\.", "/") + kind.extension);
         JavaFileObject4ClassStream byteClassFileObject = new JavaFileObject4ClassStream(uri, kind);
         classFileObjectLoader.addJavaFileObject(className, byteClassFileObject);
