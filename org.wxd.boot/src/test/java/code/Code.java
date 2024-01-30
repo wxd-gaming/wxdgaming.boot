@@ -5,28 +5,21 @@ import com.carrotsearch.hppc.IntIntHashMap;
 import org.junit.Test;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
-import org.wxd.boot.agent.io.FileWriteUtil;
 import org.wxd.boot.agent.loader.JavaFileObject4StringCode;
 import org.wxd.boot.append.JoinBuilder;
 import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.collection.OfSet;
 import org.wxd.boot.collection.concurrent.ConcurrentHashSet;
 import org.wxd.boot.format.TimeFormat;
-import org.wxd.boot.lang.DayRecord;
 import org.wxd.boot.str.json.FastJsonUtil;
 import org.wxd.boot.system.JvmUtil;
 import org.wxd.boot.system.ThrowableCache;
 import org.wxd.boot.timer.MyClock;
 
 import java.io.Serializable;
-import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.HashMap;
+import java.util.StringJoiner;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -175,4 +168,38 @@ public class Code implements Serializable {
         throw new Exception("a");
     }
 
+    @Test
+    public void d1() {
+        System.out.println(myAtoi(" -54"));
+        System.out.println(myAtoi(" -54 dg"));
+        System.out.println(myAtoi(" -5456777 dg"));
+    }
+
+    public int myAtoi(String str) {
+        str = str.trim();// 去掉前后的空格
+        if (str.isEmpty())
+            return 0;
+        long num = 0;// 最终结果
+        int index = 0;// 遍历字符串中字符的位置
+        int sign = 1;// 符号，1是正数，-1是负数，默认为正数
+        int length = str.length();
+        // 判断符号
+        if (str.charAt(index) == '-' || str.charAt(index) == '+')
+            sign = str.charAt(index++) == '+' ? 1 : -1;
+        for (; index < length; ++index) {
+            // 取出字符串中字符，然后转化为数字
+            int digit = str.charAt(index) - '0';
+            // 按照题中的要求，读入下一个字符，直到到达下一个非数字字符或到达输入的结尾。
+            // 字符串的其余部分将被忽略。如果读取了非数字，后面的都要忽略。
+            if (digit < 0 || digit > 9)
+                break;
+            // 越界处理
+            if (num < Integer.MIN_VALUE || num > Integer.MAX_VALUE)
+                return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            else
+                num = num * 10 + digit;
+        }
+        return (int) (sign * num);
+    }
+    
 }
