@@ -33,20 +33,38 @@ public class OptFuture<T> {
 
     /** 创建异步获取数据 */
     public static <U> OptFuture<U> createAsync(Supplier<U> supplier) {
-        return new OptFuture<>(supplier, Executors.getVTExecutor(), null, 5);
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), null, null, 500, 3000, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> OptFuture<U> createAsync(long logTime, long warningTime, Supplier<U> supplier) {
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), null, null, logTime, warningTime, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> OptFuture<U> createAsync(String taskInfoString, long logTime, long warningTime, Supplier<U> supplier) {
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), null, taskInfoString, logTime, warningTime, 4);
     }
 
     public static <U> OptFuture<U> createAsync(String queueName, Supplier<U> supplier) {
-        return new OptFuture<>(supplier, Executors.getVTExecutor(), queueName, 5);
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), queueName, null, 500, 3000, 4);
+    }
+
+    public static <U> OptFuture<U> createAsync(String queueName, Supplier<U> supplier, long logTime, long warningTime) {
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), queueName, null, logTime, warningTime, 4);
+    }
+
+    public static <U> OptFuture<U> createAsync(String queueName, Supplier<U> supplier, String taskInfoString, long logTime, long warningTime) {
+        return new OptFuture<>(supplier, Executors.getVTExecutor(), queueName, taskInfoString, logTime, warningTime, 4);
     }
 
     /** 创建异步获取数据 */
     public static <U> OptFuture<U> createAsync(Supplier<U> supplier, IExecutorServices executorServices) {
-        return new OptFuture<>(supplier, executorServices, null, 5);
+        return new OptFuture<>(supplier, executorServices, null, null, 500, 3000, 4);
     }
 
     public static <U> OptFuture<U> createAsync(Supplier<U> supplier, IExecutorServices executorServices, String queueName) {
-        return new OptFuture<>(supplier, executorServices, queueName, 5);
+        return new OptFuture<>(supplier, executorServices, queueName, null, 500, 3000, 4);
     }
 
 
@@ -58,11 +76,11 @@ public class OptFuture<T> {
     private final AtomicReference<Runnable> runnable = new AtomicReference<>();
     private OptFuture next = null;
 
-    public OptFuture(Supplier<T> supplier, IExecutorServices executorServices, String queueName, int stack) {
+    public OptFuture(Supplier<T> supplier, IExecutorServices executorServices, String queueName, String taskInfoString, long logTime, long warningTime, int stack) {
         this.reentrantLock = new ReentrantLock();
         this.data = new AtomicReference<>();
         this.exception = new AtomicReference<>();
-        executorServices.submit(queueName, new Event(500, 3000) {
+        executorServices.submit(queueName, new Event(taskInfoString, logTime, warningTime) {
             @Override public void onEvent() throws Exception {
                 try {
                     complete(supplier.get());
@@ -294,25 +312,20 @@ public class OptFuture<T> {
     }
 
     public T get(long timeout, TimeUnit unit) {
-        this.reentrantLock.lock();
-        try {
-            OptCall<T> optCall = new OptCall<>(null);
-            set(() -> {
-                Throwable throwable = exception.get();
-                if (throwable != null) {
-                    optCall.completeExceptionally(throwable);
-                } else {
-                    optCall.complete(this.data.getAndSet(null));
-                }
-            });
-            doAction();
-            if (timeout == -1) {
-                return optCall.get();
+        OptCall<T> optCall = new OptCall<>(null);
+        set(() -> {
+            Throwable throwable = exception.get();
+            if (throwable != null) {
+                optCall.completeExceptionally(throwable);
             } else {
-                return optCall.get(timeout, unit);
+                optCall.complete(this.data.getAndSet(null));
             }
-        } finally {
-            this.reentrantLock.unlock();
+        });
+        doAction();
+        if (timeout == -1) {
+            return optCall.get();
+        } else {
+            return optCall.get(timeout, unit);
         }
     }
 

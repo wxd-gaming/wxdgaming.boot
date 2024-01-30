@@ -101,22 +101,42 @@ public interface IExecutorServices extends Executor {
 
     /** 提交带回调的执行 */
     default <V> OptFuture<V> optFuture(Supplier<V> supplier) {
-        return new OptFuture<V>(supplier, this, null, 5);
+        return new OptFuture<V>(supplier, this, null, null, 66, 150, 4);
     }
 
     /** 提交带回调的执行 */
     default <V> OptFuture<V> optFuture(Supplier<V> supplier, int stackTrace) {
-        return new OptFuture<V>(supplier, this, null, stackTrace);
+        return new OptFuture<V>(supplier, this, null, null, 66, 150, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(Supplier<V> supplier, long logTime, long warningTime) {
+        return new OptFuture<V>(supplier, this, null, null, logTime, warningTime, 4);
+    }
+
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(Supplier<V> supplier, String taskInfoString, long logTime, long warningTime, int stackTrace) {
+        return new OptFuture<V>(supplier, this, null, taskInfoString, logTime, warningTime, stackTrace);
     }
 
     /** 提交带回调的执行 */
     default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier) {
-        return new OptFuture<V>(supplier, this, queueName, 5);
+        return new OptFuture<V>(supplier, this, queueName, null, 66, 150, 4);
     }
 
     /** 提交带回调的执行 */
     default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, int stackTrace) {
-        return new OptFuture<V>(supplier, this, queueName, stackTrace);
+        return new OptFuture<V>(supplier, this, queueName, null, 66, 150, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, long logTime, long warningTime, int stackTrace) {
+        return new OptFuture<V>(supplier, this, queueName, null, logTime, warningTime, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, String taskInfoString, long logTime, long warningTime, int stackTrace) {
+        return new OptFuture<V>(supplier, this, queueName, taskInfoString, logTime, warningTime, stackTrace);
     }
 
     /** 提交带回调的执行 */

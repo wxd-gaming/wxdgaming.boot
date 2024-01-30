@@ -2,7 +2,6 @@ package org.wxd.boot.threading;
 
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.lang.LockBase;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version: 2024-01-15 17:57
  **/
 @Slf4j
-public class OptCall<T> extends LockBase implements Job {
+public class OptCall<T> implements Job {
 
     final Job job;
     final CountDownLatch count = new CountDownLatch(1);
@@ -26,45 +25,22 @@ public class OptCall<T> extends LockBase implements Job {
     }
 
     public void complete(T t) {
-        lock();
-        try {
-            tAtomicReference.set(t);
-            count.countDown();
-        } finally {
-            unlock();
-        }
+        tAtomicReference.set(t);
+        count.countDown();
     }
 
     public void completeExceptionally(Throwable throwable) {
-        lock();
-        try {
-            tAtomicReference.set(throwable);
-            count.countDown();
-        } finally {
-            unlock();
-        }
+        tAtomicReference.set(throwable);
+        count.countDown();
     }
 
     @SuppressWarnings("unchecked")
     public T get() {
-        lock();
-        try {
-            if (count.getCount() > 0) count.await();
-            Object poll = tAtomicReference.get();
-            if (poll instanceof Throwable throwable) {
-                throw Throw.as(throwable);
-            }
-            return (T) poll;
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } finally {
-            unlock();
-        }
+        return get(5, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("unchecked")
     public T get(long time, TimeUnit timeUnit) {
-        lock();
         try {
             if (count.getCount() > 0) {
                 boolean await = count.await(time, timeUnit);
@@ -80,8 +56,6 @@ public class OptCall<T> extends LockBase implements Job {
             return (T) poll;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        } finally {
-            unlock();
         }
     }
 

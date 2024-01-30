@@ -17,6 +17,7 @@ import org.wxd.boot.agent.exception.Throw;
 @Accessors(chain = true)
 public class Qos {
 
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
     public static void retryRun(int retry, Runnable runnable) {
         if (retry < 1) retry = 1;
         Throwable throwable = null;
@@ -31,6 +32,15 @@ public class Qos {
         throw Throw.as("重试次数：" + retry, throwable);
     }
 
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
+    public static OptFuture<Void> retryRunAsync(int retry, Runnable runnable) {
+        return OptFuture.createAsync(() -> {
+            retryRun(retry, runnable);
+            return null;
+        });
+    }
+
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
     public static <R> R retrySupply(int retry, Supplier<R> runnable) {
         if (retry < 1) retry = 1;
         Throwable throwable = null;
@@ -44,14 +54,32 @@ public class Qos {
         throw Throw.as("重试次数：" + retry, throwable);
     }
 
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
+    public static <R> OptFuture<R> retrySupplyAsync(int retry, Supplier<R> runnable) {
+        return OptFuture.createAsync(() -> retrySupply(retry, runnable));
+    }
+
+    /** 重试次数  默认一次 */
     int retry = 1;
 
-    public void run(Runnable runnable) {
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
+    public void qosRun(Runnable runnable) {
         retryRun(retry, runnable);
     }
 
-    public <R> R supply(Supplier<R> supplier) {
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
+    public OptFuture<Void> qosRunAsync(Runnable runnable) {
+        return retryRunAsync(retry, runnable);
+    }
+
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
+    public <R> R qosSupply(Supplier<R> supplier) {
         return retrySupply(retry, supplier);
+    }
+
+    /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
+    public <R> OptFuture<R> qosSupplyAsync(Supplier<R> supplier) {
+        return retrySupplyAsync(retry, supplier);
     }
 
 }

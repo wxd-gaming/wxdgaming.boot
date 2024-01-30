@@ -201,5 +201,5 @@ public class Code implements Serializable {
         }
         return (int) (sign * num);
     }
-    
+
 }
