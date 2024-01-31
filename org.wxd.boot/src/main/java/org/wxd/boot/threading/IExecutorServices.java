@@ -141,8 +141,78 @@ public interface IExecutorServices extends Executor {
     }
 
     /** 提交带回调的执行 */
-    default CompletableFuture<Void> completableFuture(Runnable runnable) {
-        return CompletableFuture.runAsync(runnable, this);
+    default CompletableFuture<Void> completableFuture(String queueName, Runnable runnable) {
+        return completableFuture(queueName, runnable, 4);
+    }
+
+    /** 提交带回调的执行 */
+    default CompletableFuture<Void> completableFuture(Runnable runnable, int stackTrace) {
+        return completableFuture("", runnable, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default CompletableFuture<Void> completableFuture(String queueName, Runnable runnable, int stackTrace) {
+        CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+        this.submit(queueName, new Event(66, 150) {
+            @Override public void onEvent() throws Exception {
+                try {
+                    runnable.run();
+                    completableFuture.complete(null);
+                } catch (Throwable throwable) {
+                    completableFuture.completeExceptionally(throwable);
+                }
+            }
+        }, stackTrace);
+        return completableFuture;
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(Supplier<U> supplier, int stackTrace) {
+        return completableFuture("", supplier, "", 66, 150, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(String queueName, Supplier<U> supplier) {
+        return completableFuture(queueName, supplier, "", 66, 150, 4);
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(String queueName, Supplier<U> supplier, int stackTrace) {
+        return completableFuture(queueName, supplier, "", 66, 150, stackTrace);
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(Supplier<U> supplier, long logTime, long warningTime) {
+        return completableFuture("", supplier, "", logTime, warningTime, 4);
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(String queueName, Supplier<U> supplier, long logTime, long warningTime) {
+        return completableFuture(queueName, supplier, "", logTime, warningTime, 4);
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(String queueName, Supplier<U> supplier,
+                                                       String taskInfoString, long logTime, long warningTime) {
+        return completableFuture(queueName, supplier, taskInfoString, logTime, warningTime, 4);
+    }
+
+    /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(String queueName, Supplier<U> supplier,
+                                                       String taskInfoString, long logTime, long warningTime,
+                                                       int stackTrace) {
+        CompletableFuture<U> completableFuture = new CompletableFuture<>();
+        this.submit(queueName, new Event(taskInfoString, logTime, warningTime) {
+            @Override public void onEvent() throws Exception {
+                try {
+                    U u = supplier.get();
+                    completableFuture.complete(u);
+                } catch (Throwable throwable) {
+                    completableFuture.completeExceptionally(throwable);
+                }
+            }
+        }, stackTrace);
+        return completableFuture;
     }
 
     /** 执行一次的延时任务 */
@@ -187,6 +257,7 @@ public interface IExecutorServices extends Executor {
         return scheduleAtFixedDelay(command, initialDelay, delay, unit, execCount, 3);
     }
 
+    /** 依赖队列 定时运行可取消的周期性任务 上一次没有执行，不会执行第二次，等待上一次执行完成 */
     default TimerJob scheduleAtFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit, int execCount, int stackTrace) {
         String queueName = null;
         if (command instanceof Event event) {
@@ -219,7 +290,7 @@ public interface IExecutorServices extends Executor {
         return timerJob;
     }
 
-    default void executeJob(String queueName, ExecutorServiceJob job) {
+    private void executeJob(String queueName, ExecutorServiceJob job) {
         if (isShutdown() && !isTerminated()) {
             throw new RuntimeException("线程正在关闭 " + job);
         }
