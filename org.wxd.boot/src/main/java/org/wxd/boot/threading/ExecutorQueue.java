@@ -32,7 +32,6 @@ class ExecutorQueue extends LockBase implements Runnable {
             this.queues.add(job);
             if (queues.size() > iExecutorServices.getQueueCheckSize()) {
                 RuntimeException runtimeException = new RuntimeException();
-                log.error("任务剩余过多 主队列：" + iExecutorServices.queueSize() + ", 子队列：" + queueName + ", size：" + this.size() + ", append：" + this.isAppend.get(), runtimeException);
                 GlobalUtil.exception("任务剩余过多 主队列：" + iExecutorServices.queueSize() + ", 子队列：" + queueName + ", size：" + this.size() + ", append：" + this.isAppend.get(), runtimeException);
             }
             if (!this.isAppend.get()) {
@@ -73,7 +72,6 @@ class ExecutorQueue extends LockBase implements Runnable {
                     executorServiceJob.run();
                 }
             } catch (Throwable throwable) {
-                log.error("执行：{}", executorServiceJob, throwable);
                 GlobalUtil.exception("执行：" + executorServiceJob, throwable);
             } finally {
                 lock.lock();

@@ -22,7 +22,8 @@ public class GlobalUtil {
         if (exceptionCall != null) {
             exceptionCall.accept(msg, throwable);
         } else {
-            LoggerFactory.getLogger(GlobalUtil.class).error("{}", msg, throwable);
+            StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
+            LoggerFactory.getLogger(stackTraceElement.getClassName()).error("{}", msg, throwable);
         }
     }
 

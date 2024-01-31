@@ -24,20 +24,20 @@ public class HttpTest {
     @Test
     public void t1() throws Exception {
         String url;
-        // url = "http://47.108.150.14:18800/sjcq/wanIp";
+         url = "http://47.108.150.14:18800/sjcq/wanIp";
         //url = "http://192.168.50.73:19000/test/ok";
         // url = "http://47.108.150.14:18801/test/ok";
         //url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
         //url = "http://47.108.81.97:18001/index";
-        url = "http://47.108.81.97:18881/";
+        //url = "http://47.108.81.97:18881/";
         //url = "https://www.baidu.com";
         tv1(url, 1);
         tv1(url, 10);
-        tv1(url, 50);
-        tv1(url, 100);
-        tv1(url, 500);
-        tv1(url, 1000);
+        //tv1(url, 50);
+        //tv1(url, 100);
+        //tv1(url, 500);
+        //tv1(url, 1000);
     }
 
     public void tv1(String url, int testCount) throws Exception {

@@ -5,9 +5,9 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.http.HttpHeadNameType;
 import org.wxd.boot.http.HttpHeadValueType;
 import org.wxd.boot.lang.SyncJson;
+import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
-import org.wxd.boot.threading.OptFuture;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -65,7 +65,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .timeout(Duration.ofMillis(timeout));
     }
 
-    public OptFuture<Response<H>> async() {
+    public Mono<Response<H>> async() {
         return sendAsync(3);
     }
 
@@ -75,7 +75,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    public OptFuture<String> asyncString() {
+    public Mono<String> asyncString() {
         return sendAsync(3).map(httpResponse -> new String(httpResponse.body(), StandardCharsets.UTF_8));
     }
 
@@ -83,7 +83,7 @@ public abstract class HttpBase<H extends HttpBase> {
         sendAsync(3).subscribe(httpResponse -> consumer.accept(new String(httpResponse.body(), StandardCharsets.UTF_8)));
     }
 
-    public OptFuture<SyncJson> asyncSyncJson() {
+    public Mono<SyncJson> asyncSyncJson() {
         return sendAsync(3).map(httpResponse -> SyncJson.parse(new String(httpResponse.body(), StandardCharsets.UTF_8)));
     }
 
@@ -93,7 +93,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    OptFuture<Response<H>> sendAsync(int stackTraceIndex) {
+    Mono<Response<H>> sendAsync(int stackTraceIndex) {
 
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
@@ -117,12 +117,12 @@ public abstract class HttpBase<H extends HttpBase> {
                 log.debug("http send：" + this.response.postText);
             }
         }
-        OptFuture<Response<H>> optFuture = OptFuture.empty();
+        Mono<Response<H>> optFuture = Mono.empty();
         action(optFuture, httpRequest, 1);
         return optFuture;
     }
 
-    void action(OptFuture<Response<H>> optFuture, HttpRequest httpRequest, int action) {
+    void action(Mono<Response<H>> optFuture, HttpRequest httpRequest, int action) {
         httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofByteArray())
                 .whenComplete((httpResponse, throwable) -> {
                     if (throwable != null) {
@@ -133,19 +133,18 @@ public abstract class HttpBase<H extends HttpBase> {
                             if (stackTraceElements != null) {
                                 runtimeException.setStackTrace(stackTraceElements);
                             }
-                            optFuture.completeExceptionally(runtimeException);
+                            optFuture.completableFuture().completeExceptionally(runtimeException);
                         }
                     } else {
                         response.httpResponse = httpResponse;
-                        optFuture.complete(response);
+                        optFuture.completableFuture().complete(response);
                     }
                 });
     }
 
     public void actionThrowable(Throwable throwable) {
-        log.error("{} url:{}", this.getClass().getSimpleName(), uri, throwable);
-        if (retry > 1)
-            GlobalUtil.exception(this.getClass().getSimpleName() + " url:" + uri, throwable);
+        if (retry > 1) GlobalUtil.exception(this.getClass().getSimpleName() + " url:" + uri, throwable);
+        else log.error("{} url:{}", this.getClass().getSimpleName(), uri, throwable);
     }
 
     /** 读取超时 */

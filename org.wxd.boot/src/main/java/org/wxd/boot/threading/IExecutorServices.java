@@ -2,6 +2,7 @@ package org.wxd.boot.threading;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 
@@ -100,43 +101,43 @@ public interface IExecutorServices extends Executor {
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(Supplier<V> supplier) {
-        return new OptFuture<V>(supplier, this, null, null, 66, 150, 4);
+    default <U> Mono<U> optFuture(Supplier<U> supplier) {
+        return Mono.createAsync(this, "", supplier, "", 66, 150, 4);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(Supplier<V> supplier, int stackTrace) {
-        return new OptFuture<V>(supplier, this, null, null, 66, 150, stackTrace);
+    default <U> Mono<U> optFuture(Supplier<U> supplier, int stackTrace) {
+        return Mono.createAsync(this, "", supplier, "", 66, 150, stackTrace);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(Supplier<V> supplier, long logTime, long warningTime) {
-        return new OptFuture<V>(supplier, this, null, null, logTime, warningTime, 4);
+    default <U> Mono<U> optFuture(Supplier<U> supplier, long logTime, long warningTime) {
+        return Mono.createAsync(this, "", supplier, "", logTime, warningTime, 4);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(Supplier<V> supplier, String taskInfoString, long logTime, long warningTime, int stackTrace) {
-        return new OptFuture<V>(supplier, this, null, taskInfoString, logTime, warningTime, stackTrace);
+    default <U> Mono<U> optFuture(Supplier<U> supplier, String taskInfoString, long logTime, long warningTime, int stackTrace) {
+        return Mono.createAsync(this, "", supplier, taskInfoString, logTime, warningTime, stackTrace);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier) {
-        return new OptFuture<V>(supplier, this, queueName, null, 66, 150, 4);
+    default <U> Mono<U> optFuture(String queueName, Supplier<U> supplier) {
+        return Mono.createAsync(this, queueName, supplier, "", 66, 150, 4);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, int stackTrace) {
-        return new OptFuture<V>(supplier, this, queueName, null, 66, 150, stackTrace);
+    default <U> Mono<U> optFuture(String queueName, Supplier<U> supplier, int stackTrace) {
+        return Mono.createAsync(this, queueName, supplier, "", 66, 150, stackTrace);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, long logTime, long warningTime, int stackTrace) {
-        return new OptFuture<V>(supplier, this, queueName, null, logTime, warningTime, stackTrace);
+    default <U> Mono<U> optFuture(String queueName, Supplier<U> supplier, long logTime, long warningTime, int stackTrace) {
+        return Mono.createAsync(this, queueName, supplier, "", logTime, warningTime, stackTrace);
     }
 
     /** 提交带回调的执行 */
-    default <V> OptFuture<V> optFuture(String queueName, Supplier<V> supplier, String taskInfoString, long logTime, long warningTime, int stackTrace) {
-        return new OptFuture<V>(supplier, this, queueName, taskInfoString, logTime, warningTime, stackTrace);
+    default <U> Mono<U> optFuture(String queueName, Supplier<U> supplier, String taskInfoString, long logTime, long warningTime, int stackTrace) {
+        return Mono.createAsync(this, queueName, supplier, taskInfoString, logTime, warningTime, stackTrace);
     }
 
     /** 提交带回调的执行 */
@@ -237,7 +238,6 @@ public interface IExecutorServices extends Executor {
             int queueSize = queueSize();
             if (queueSize > getQueueCheckSize()) {
                 RuntimeException throwable = new RuntimeException();
-                log.error("任务剩余过多 主队列 size：" + queueSize, throwable);
                 GlobalUtil.exception("任务剩余过多 主队列 size：" + queueSize, throwable);
             }
         }

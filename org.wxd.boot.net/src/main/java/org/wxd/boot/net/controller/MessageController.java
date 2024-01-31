@@ -41,7 +41,6 @@ public final class MessageController implements Runnable, Cloneable {
             mapping.method().invoke(bean, session, message);
         } catch (Throwable throwable) {
             throwable = Throw.filterInvoke(throwable);
-            log.error(this.toString(), throwable);
             GlobalUtil.exception("\n" + this.toString(), throwable);
         }
     }

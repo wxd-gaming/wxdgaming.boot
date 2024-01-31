@@ -209,7 +209,6 @@ class HttpListenerAction extends Event {
                 content += "\nAuth：" + session.getAuthUser();
                 content += "\n执行：cmd = " + urlCmd;
                 content += "\n参数：" + FastJsonUtil.toJson(putData);
-                log.error(content + " 异常", throwable);
                 GlobalUtil.exception(content, throwable);
                 session.response500(Throw.ofString(throwable));
             }

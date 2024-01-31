@@ -9,11 +9,11 @@ import org.wxd.boot.http.HttpHeadValueType;
 import org.wxd.boot.http.ssl.SslContextClient;
 import org.wxd.boot.http.ssl.SslProtocolType;
 import org.wxd.boot.lang.SyncJson;
+import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.GlobalUtil;
 import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.OptFuture;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -115,7 +115,7 @@ public abstract class HttpBase<H extends HttpBase> {
         }
     }
 
-    public OptFuture<Response<H>> async() {
+    public Mono<Response<H>> async() {
         return sendAsync(3);
     }
 
@@ -125,7 +125,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    public OptFuture<String> asyncString() {
+    public Mono<String> asyncString() {
         return sendAsync(3).map(Response::bodyString);
     }
 
@@ -135,7 +135,7 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    public OptFuture<SyncJson> asyncSyncJson() {
+    public Mono<SyncJson> asyncSyncJson() {
         return sendAsync(3).map(Response::bodySyncJson);
     }
 
@@ -145,25 +145,22 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    OptFuture<Response<H>> sendAsync(int stackTraceIndex) {
+    Mono<Response<H>> sendAsync(int stackTraceIndex) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
         System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
-        OptFuture<Response<H>> optFuture = OptFuture.empty();
-        Executors.getVTExecutor().submit(new Event(logTime, waringTime) {
-            @Override public String getTaskInfoString() {
-                return Throw.ofString(stackTraceElements[0]) + " " + HttpBase.this.response.toString();
-            }
+        final Mono<Response<H>> optFuture = Mono.empty();
+        Executors.getVTExecutor().submit(new Event(Throw.ofString(stackTraceElements[0]) + " " + HttpBase.this.response.toString(), logTime, waringTime) {
 
             @Override public void onEvent() throws Exception {
                 try {
                     action();
-                    optFuture.complete(response);
+                    optFuture.completableFuture().complete(response);
                 } catch (Throwable throwable) {
-                    optFuture.completeExceptionally(throwable);
-                    //log.error("构建异步http回调异常 {} ", getTaskInfoString(), throwable);
+                    optFuture.completableFuture().completeExceptionally(throwable);
                 }
             }
+
         }, stackTraceIndex + 2);
         return optFuture;
     }
@@ -223,9 +220,8 @@ public abstract class HttpBase<H extends HttpBase> {
     }
 
     public void actionThrowable(Throwable throwable) {
-        log.error("{} url:{}", this.getClass().getSimpleName(), response.toString(), throwable);
-        if (retry > 1)
-            GlobalUtil.exception(this.getClass().getSimpleName() + " url:" + response.toString(), throwable);
+        if (retry > 1) GlobalUtil.exception(this.getClass().getSimpleName() + " url:" + response.toString(), throwable);
+        else log.error("{} url:{}", this.getClass().getSimpleName(), response.toString(), throwable);
     }
 
     /** 同时设置连接超时和读取超时时间 */

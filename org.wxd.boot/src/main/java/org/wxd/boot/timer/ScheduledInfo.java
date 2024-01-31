@@ -339,7 +339,6 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
             }
         } catch (Throwable throwable) {
             String msg = "执行：" + this.name;
-            log.error(msg, throwable);
             GlobalUtil.exception(msg, throwable);
         } finally {
             /*标记为执行完成*/

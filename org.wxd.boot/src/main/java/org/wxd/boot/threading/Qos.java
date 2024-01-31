@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.publisher.Mono;
 
 /**
  * 自动重试类
@@ -33,8 +34,8 @@ public class Qos {
     }
 
     /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
-    public static OptFuture<Void> retryRunAsync(int retry, Runnable runnable) {
-        return OptFuture.createAsync(() -> {
+    public static Mono<Void> retryRunAsync(int retry, Runnable runnable) {
+        return Mono.createAsync(() -> {
             retryRun(retry, runnable);
             return null;
         });
@@ -55,8 +56,8 @@ public class Qos {
     }
 
     /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
-    public static <R> OptFuture<R> retrySupplyAsync(int retry, Supplier<R> runnable) {
-        return OptFuture.createAsync(() -> retrySupply(retry, runnable));
+    public static <R> Mono<R> retrySupplyAsync(int retry, Supplier<R> runnable) {
+        return Mono.createAsync(() -> retrySupply(retry, runnable));
     }
 
     /** 重试次数  默认一次 */
@@ -68,7 +69,7 @@ public class Qos {
     }
 
     /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
-    public OptFuture<Void> qosRunAsync(Runnable runnable) {
+    public Mono<Void> qosRunAsync(Runnable runnable) {
         return retryRunAsync(retry, runnable);
     }
 
@@ -78,7 +79,7 @@ public class Qos {
     }
 
     /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
-    public <R> OptFuture<R> qosSupplyAsync(Supplier<R> supplier) {
+    public <R> Mono<R> qosSupplyAsync(Supplier<R> supplier) {
         return retrySupplyAsync(retry, supplier);
     }
 

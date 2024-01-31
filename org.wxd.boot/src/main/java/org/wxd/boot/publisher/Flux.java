@@ -1,8 +1,9 @@
 package org.wxd.boot.publisher;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.IExecutorServices;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,25 +19,78 @@ import java.util.stream.Stream;
  * @version: 2023-12-21 09:34
  **/
 @Slf4j
-@Getter
-public class Flux<T> {
+public record Flux<T>(CompletableFuture<Collection<T>> completableFuture) {
 
-    protected CompletableFuture<Collection<T>> completableFuture;
 
-    public Flux(CompletableFuture<Collection<T>> completableFuture) {
-        this.completableFuture = completableFuture;
+    public static <U> Flux<U> empty() {
+        return new Flux<>(new CompletableFuture<>());
     }
 
     /** 创建数据 */
-    public static <U> Flux<U> create(Collection<U> u) {
-        Flux<U> flux = new Flux<>(new CompletableFuture<>());
-        flux.completableFuture.complete(u);
-        return flux;
+    public static <U> Flux<U> create(Collection<U> us) {
+        return new Flux<>(CompletableFuture.completedFuture(us));
     }
 
     /** 创建异步获取数据 */
     public static <U> Flux<U> createAsync(Supplier<Collection<U>> supplier) {
-        return new Flux<>(CompletableFuture.supplyAsync(supplier, Executors.getVTExecutor()));
+        return createAsync(Executors.getVTExecutor(), null, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(IExecutorServices iExecutorServices, Supplier<Collection<U>> supplier) {
+        return createAsync(iExecutorServices, null, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(Supplier<Collection<U>> supplier, int stackIndex) {
+        return createAsync(Executors.getVTExecutor(), null, supplier, "", 66, 150, stackIndex);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(String queue, Supplier<Collection<U>> supplier) {
+        return createAsync(Executors.getVTExecutor(), queue, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(IExecutorServices iExecutorServices, String queue, Supplier<Collection<U>> supplier) {
+        return createAsync(iExecutorServices, queue, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(Supplier<Collection<U>> supplier,
+                                          long logTime, long waringTime) {
+        return createAsync(Executors.getVTExecutor(), null, supplier, "", logTime, waringTime, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(String queue, Supplier<Collection<U>> supplier,
+                                          long logTime, long waringTime) {
+        return createAsync(Executors.getVTExecutor(), queue, supplier, "", logTime, waringTime, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(String queue, Supplier<Collection<U>> supplier,
+                                          String taskInfo, long logTime, long waringTime,
+                                          int stackIndex) {
+        return createAsync(Executors.getVTExecutor(), queue, supplier, taskInfo, logTime, waringTime, stackIndex);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Flux<U> createAsync(IExecutorServices iExecutorServices, String queue,
+                                          Supplier<Collection<U>> supplier,
+                                          String taskInfo, long logTime, long waringTime,
+                                          int stackIndex) {
+        final Flux<U> empty = empty();
+        iExecutorServices.submit(queue, new Event(taskInfo, logTime, waringTime) {
+            @Override public void onEvent() throws Exception {
+                try {
+                    empty.completableFuture().complete(supplier.get());
+                } catch (Throwable throwable) {
+                    empty.completableFuture().completeExceptionally(throwable);
+                }
+            }
+        }, stackIndex);
+        return empty;
     }
 
     /** 当未查找到数据，并且无异常的情况下，赋值给定值 */

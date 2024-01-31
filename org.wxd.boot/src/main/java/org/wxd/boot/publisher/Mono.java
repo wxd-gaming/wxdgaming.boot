@@ -1,8 +1,10 @@
 package org.wxd.boot.publisher;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
+import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
+import org.wxd.boot.threading.IExecutorServices;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -15,13 +17,10 @@ import java.util.function.*;
  * @version: 2023-12-21 09:34
  **/
 @Slf4j
-@Getter
-public class Mono<T> {
+public record Mono<T>(CompletableFuture<T> completableFuture) {
 
-    protected final CompletableFuture<T> completableFuture;
-
-    public Mono(CompletableFuture<T> completableFuture) {
-        this.completableFuture = completableFuture;
+    public static <U> Mono<U> empty() {
+        return new Mono<>(new CompletableFuture<>());
     }
 
     /** 创建数据 */
@@ -33,7 +32,60 @@ public class Mono<T> {
 
     /** 创建异步获取数据 */
     public static <U> Mono<U> createAsync(Supplier<U> supplier) {
-        return new Mono<>(CompletableFuture.supplyAsync(supplier, Executors.getVTExecutor()));
+        return createAsync(Executors.getVTExecutor(), null, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(IExecutorServices iExecutorServices, Supplier<U> supplier) {
+        return createAsync(iExecutorServices, null, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(Supplier<U> supplier, int stackIndex) {
+        return createAsync(Executors.getVTExecutor(), null, supplier, "", 66, 150, stackIndex);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(IExecutorServices iExecutorServices, String queue, Supplier<U> supplier) {
+        return createAsync(iExecutorServices, queue, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(String queue, Supplier<U> supplier) {
+        return createAsync(Executors.getVTExecutor(), queue, supplier, "", 66, 150, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(Supplier<U> supplier, long logTime, long waringTime) {
+        return createAsync(Executors.getVTExecutor(), null, supplier, "", logTime, waringTime, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(String queue, Supplier<U> supplier, long logTime, long waringTime) {
+        return createAsync(Executors.getVTExecutor(), queue, supplier, "", logTime, waringTime, 4);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(String queue, Supplier<U> supplier, String taskInfo, long logTime, long waringTime, int stackIndex) {
+        return createAsync(Executors.getVTExecutor(), queue, supplier, taskInfo, logTime, waringTime, stackIndex);
+    }
+
+    /** 创建异步获取数据 */
+    public static <U> Mono<U> createAsync(IExecutorServices iExecutorServices, String queue,
+                                          Supplier<U> supplier,
+                                          String taskInfo, long logTime, long waringTime,
+                                          int stackIndex) {
+        final Mono<U> empty = empty();
+        iExecutorServices.submit(queue, new Event(taskInfo, logTime, waringTime) {
+            @Override public void onEvent() throws Exception {
+                try {
+                    empty.completableFuture().complete(supplier.get());
+                } catch (Throwable throwable) {
+                    empty.completableFuture().completeExceptionally(throwable);
+                }
+            }
+        }, stackIndex);
+        return empty;
     }
 
     /** 当未查找到数据，并且无异常的情况下，赋值给定值 */
@@ -62,12 +114,23 @@ public class Mono<T> {
         }));
     }
 
+    /** 循环处理 */
+    public Mono<T> peek(Consumer<T> consumer) {
+        return new Mono<>(completableFuture.thenApply(v -> {
+            if (v != null) {
+                consumer.accept(v);
+            }
+            return v;
+        }));
+    }
+
     /** 消费订阅 */
     public Mono<T> subscribe(Consumer<T> consumer) {
         return new Mono<>(completableFuture.thenApply(v -> {
-            if (v == null) return null;
-            consumer.accept(v);
-            return v;
+            if (v != null) {
+                consumer.accept(v);
+            }
+            return null;
         }));
     }
 
@@ -78,7 +141,10 @@ public class Mono<T> {
 
     /** 增加异常处理 */
     public Mono<T> onError() {
-        return onError(throwable -> {log.info("", throwable);});
+        return onError(throwable -> {
+            StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[3];
+            LoggerFactory.getLogger(stackTraceElement.getClassName()).error("{}", "异常", throwable);
+        });
     }
 
     /** 增加异常处理 */

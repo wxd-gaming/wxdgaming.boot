@@ -129,7 +129,6 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
         try {
             if (bootstrap != null && serverChannel != null) {
                 if (!serverChannel.isRegistered() && !serverChannel.isOpen()) {
-                    log.error("端口监听异常了 {}", this.toString());
                     GlobalUtil.exception("端口监听异常" + this.toString(), null);
                     open();
                 }

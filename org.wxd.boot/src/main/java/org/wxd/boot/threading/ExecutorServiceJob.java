@@ -123,13 +123,16 @@ class ExecutorServiceJob implements Runnable, Job {
             }
 
         } catch (Throwable throwable) {
-            log.error("执行：" + runName, throwable);
             GlobalUtil.exception("执行：" + runName, throwable);
         } finally {
             Executors.CurrentThread.remove();
             Executors.Run_THREAD_LOCAL.remove(currentThread);
             this.append.set(false);
         }
+    }
+
+    @Override public String names() {
+        return toString();
     }
 
     @Override public boolean cancel() {

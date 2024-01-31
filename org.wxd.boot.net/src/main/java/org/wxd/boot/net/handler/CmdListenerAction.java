@@ -103,7 +103,6 @@ class CmdListenerAction extends Event {
             content += "\nAuth：" + session.getAuthUser();
             content += "\n执行：cmd = " + listener;
             content += "\n参数：" + FastJsonUtil.toJson(putData);
-            log.error(content + " 异常", throwable);
             GlobalUtil.exception(content, throwable);
             out.clear();
             out.write(RunResult.error(505, Throw.ofString(throwable)));

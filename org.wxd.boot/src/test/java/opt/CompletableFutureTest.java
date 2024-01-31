@@ -2,8 +2,8 @@ package opt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.OptFuture;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -26,9 +26,39 @@ public class CompletableFutureTest {
             }
         };
         // CompletableFuture.supplyAsync(supplier, Executors.getVTExecutor());
-        OptFuture<Long> completable = Executors.getVTExecutor().optFuture(supplier);
+        Mono<Long> completable = Executors.getVTExecutor().optFuture(supplier);
         completable.peek(v -> System.out.println(v));
         while (true) ;
+    }
+
+    @Test
+    public void tm2() throws Exception {
+        CompletableFuture<Object> objectCompletableFuture = new CompletableFuture<>();
+        Executors.getVTExecutor().submit(() -> {
+            objectCompletableFuture.complete("1");
+        });
+        Executors.getVTExecutor().submit(() -> {
+            objectCompletableFuture.completeExceptionally(new RuntimeException("1"));
+        });
+        objectCompletableFuture
+                .thenApply(s -> {
+                    System.out.println("s1 = " + s);
+                    return null;
+                })
+                .thenApply(s -> {
+                    System.out.println("s2 = " + s);
+                    return null;
+                })
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return ex;
+                })
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return ex;
+                });
+
+        Thread.sleep(1000);
     }
 
     @Test
@@ -53,15 +83,15 @@ public class CompletableFutureTest {
 
     @Test
     public void c12() throws IOException {
-        OptFuture<Void> stringCompletableFuture = OptFuture.empty();
-        stringCompletableFuture.complete(null);
+        Mono<Void> stringCompletableFuture = Mono.empty();
+        stringCompletableFuture.completableFuture().complete(null);
         stringCompletableFuture.whenComplete((v, throwable) -> log.info("{}", v, throwable));
         System.in.read();
     }
 
     @Test
     public void c13() throws IOException {
-        OptFuture<String> stringCompletableFuture = Executors.getVTExecutor().optFuture(() -> {
+        Mono<String> stringCompletableFuture = Executors.getVTExecutor().optFuture(() -> {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -75,7 +105,7 @@ public class CompletableFutureTest {
 
     @Test
     public void c14() throws IOException {
-        OptFuture<String> stringCompletableFuture = Executors.getVTExecutor().optFuture(() -> {
+        Mono<String> stringCompletableFuture = Executors.getVTExecutor().optFuture(() -> {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

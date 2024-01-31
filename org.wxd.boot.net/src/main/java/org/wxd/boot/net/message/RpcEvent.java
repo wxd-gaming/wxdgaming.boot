@@ -9,11 +9,11 @@ import org.wxd.boot.cache.CachePack;
 import org.wxd.boot.format.UniqueID;
 import org.wxd.boot.lang.SyncJson;
 import org.wxd.boot.net.SocketSession;
+import org.wxd.boot.publisher.Mono;
 import org.wxd.boot.str.StringUtil;
 import org.wxd.boot.system.MarkTimer;
 import org.wxd.boot.threading.Event;
 import org.wxd.boot.threading.Executors;
-import org.wxd.boot.threading.OptFuture;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -77,7 +77,7 @@ public class RpcEvent {
         sendEnd = true;
     }
 
-    public OptFuture<RpcEvent> async() {
+    public Mono<RpcEvent> async() {
         return sendAsync(3);
     }
 
@@ -87,7 +87,7 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    public OptFuture<String> asyncString() {
+    public Mono<String> asyncString() {
         return sendAsync(3).map(RpcEvent::getResJson);
     }
 
@@ -97,7 +97,7 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    public OptFuture<SyncJson> asyncSyncJson() {
+    public Mono<SyncJson> asyncSyncJson() {
         return sendAsync(3).map(rpcEvent -> SyncJson.parse(rpcEvent.getResJson()));
     }
 
@@ -107,26 +107,23 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    OptFuture<RpcEvent> sendAsync(int stackTraceIndex) {
+    Mono<RpcEvent> sendAsync(int stackTraceIndex) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         stackTraceElements = new StackTraceElement[stackTrace.length - stackTraceIndex];
         System.arraycopy(stackTrace, stackTraceIndex, stackTraceElements, 0, stackTraceElements.length);
-        OptFuture<RpcEvent> optFuture = OptFuture.empty();
-        Executors.getVTExecutor().submit(new Event(150, 1500) {
-            @Override public String getTaskInfoString() {
-                return RpcEvent.this.toString();
-            }
+        final Mono<RpcEvent> optFuture = Mono.empty();
+        Executors.getVTExecutor().submit(new Event(this.toString(), 150, 1500) {
 
             @Override public void onEvent() throws Exception {
                 try {
                     get();
-                    optFuture.complete(RpcEvent.this);
+                    optFuture.completableFuture().complete(RpcEvent.this);
                 } catch (Throwable throwable) {
                     RuntimeException runtimeException = Throw.as(RpcEvent.this.toString(), throwable);
                     if (stackTraceElements != null) {
                         runtimeException.setStackTrace(stackTraceElements);
                     }
-                    optFuture.completeExceptionally(runtimeException);
+                    optFuture.completableFuture().completeExceptionally(runtimeException);
                 }
             }
         }, stackTraceIndex + 2);

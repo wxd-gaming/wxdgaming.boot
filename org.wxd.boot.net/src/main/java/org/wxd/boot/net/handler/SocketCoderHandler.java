@@ -212,7 +212,6 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
             /*处理消息--理论上是丢出去了的*/
             onMessage(session, messageId, messageBytes);
         } catch (Exception e) {
-            log.warn("读取消息异常", e);
             GlobalUtil.exception("读取消息异常 " + toString(), e);
         }
     }

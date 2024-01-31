@@ -27,11 +27,11 @@ public final class TimerJob implements Job {
     int execCount;
     int maxExecCount;
 
-    protected TimerJob(IExecutorServices IExecutorServices,
-                       String queueName,
-                       ExecutorServiceJob executorServiceJob,
-                       long initialDelay, long delay, TimeUnit unit,
-                       int maxExecCount) {
+    TimerJob(IExecutorServices IExecutorServices,
+             String queueName,
+             ExecutorServiceJob executorServiceJob,
+             long initialDelay, long delay, TimeUnit unit,
+             int maxExecCount) {
         this.IExecutorServices = IExecutorServices;
         this.queueName = queueName;
         this.executorServiceJob = executorServiceJob;
@@ -46,7 +46,7 @@ public final class TimerJob implements Job {
         lastExecTime = MyClock.millis() + unit.toMillis(d);
     }
 
-    protected boolean exec() {
+    boolean exec() {
         if (!executorServiceJob.append.get()) {
             if (MyClock.millis() >= lastExecTime) {
                 this.IExecutorServices.executeJob(queueName, executorServiceJob);
@@ -62,10 +62,18 @@ public final class TimerJob implements Job {
         return false;
     }
 
+    @Override public String names() {
+        return executorServiceJob.names();
+    }
+
     /** 取消 */
     @Override public boolean cancel() {
         maxExecCount = 0;
         return true;
+    }
+
+    @Override public String toString() {
+        return executorServiceJob.names();
     }
 
 }

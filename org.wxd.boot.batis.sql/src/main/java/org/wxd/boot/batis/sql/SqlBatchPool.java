@@ -76,8 +76,7 @@ public class SqlBatchPool extends BatchPool {
             }
             stm.executeBatch();
         } catch (Exception tex) {
-            log.error("数据库操作 replace 对象异常：\n" + sqlStr + ", \n", tex);
-            GlobalUtil.exception(sqlStr, tex);
+            GlobalUtil.exception("数据库操作 replace 对象异常：\n" + sqlStr + ", \n", tex);
             j = 0;
             try {
                     /*
@@ -97,7 +96,6 @@ public class SqlBatchPool extends BatchPool {
                 } catch (Exception ex) {
                     String valueJsonString = FastJsonUtil.toJsonWriteType(value);
                     String msg = "数据库操作 replace 对象异常\nSql=" + sqlStr + ", \n数据=" + valueJsonString + "\n";
-                    log.error(msg, ex);
                     GlobalUtil.exception(msg, tex);
                 }
                 j++;

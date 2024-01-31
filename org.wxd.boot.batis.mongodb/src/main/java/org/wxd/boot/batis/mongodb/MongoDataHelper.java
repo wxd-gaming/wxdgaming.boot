@@ -282,8 +282,7 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
             /**/
             count += bulkWriteResult.getUpserts().size();
         } catch (Exception e) {
-            log.error("批量写入集合异常：\n" + tableName + ", \n", e);
-            GlobalUtil.exception(tableName, e);
+            GlobalUtil.exception("批量写入集合异常：\n" + tableName + ", \n", e);
             count = 0;
             for (ReplaceOneModel<Document> replaceOneModel : bsons) {
                 try {
@@ -293,7 +292,6 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
                     }
                 } catch (Exception e2) {
                     String msg = "批量写入集合异常：\n" + tableName + ", \n" + replaceOneModel.getReplacement().toJson();
-                    log.error(msg, e2);
                     GlobalUtil.exception(msg, e2);
                 }
             }

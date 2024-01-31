@@ -227,7 +227,6 @@ public final class Executors implements Serializable {
                             LoggerFactory.getLogger(this.getClass()).info(stringBuilder.toString());
                         }
                     } catch (Throwable throwable) {
-                        LoggerFactory.getLogger(this.getClass()).error("guard-thread", throwable);
                         GlobalUtil.exception("guard-thread", throwable);
                     }
                 } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
@@ -286,7 +285,6 @@ public final class Executors implements Serializable {
                             relock.unlock();
                         }
                     } catch (Throwable throwable) {
-                        LoggerFactory.getLogger(this.getClass()).error("定时任务公共处理器", throwable);
                         GlobalUtil.exception("定时任务公共处理器", throwable);
                     }
                 } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
