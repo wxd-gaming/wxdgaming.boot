@@ -167,6 +167,11 @@ public interface IExecutorServices extends Executor {
     }
 
     /** 提交带回调的执行 */
+    default <U> CompletableFuture<U> completableFuture(Supplier<U> supplier) {
+        return completableFuture("", supplier, "", 66, 150, 4);
+    }
+
+    /** 提交带回调的执行 */
     default <U> CompletableFuture<U> completableFuture(Supplier<U> supplier, int stackTrace) {
         return completableFuture("", supplier, "", 66, 150, stackTrace);
     }
@@ -290,7 +295,7 @@ public interface IExecutorServices extends Executor {
         return timerJob;
     }
 
-    private void executeJob(String queueName, ExecutorServiceJob job) {
+    default void executeJob(String queueName, ExecutorServiceJob job) {
         if (isShutdown() && !isTerminated()) {
             throw new RuntimeException("线程正在关闭 " + job);
         }

@@ -147,4 +147,20 @@ public class CompletableFutureTest {
                 });
         Thread.sleep(1000);
     }
+
+    @Test
+    public void c16() throws Exception {
+        CompletableFuture<String> stringCompletableFuture = Executors.getVTExecutor().completableFuture(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return "1";
+        });
+        stringCompletableFuture.thenAccept(System.out::println);
+        stringCompletableFuture.get();
+        System.in.read();
+    }
+
 }
