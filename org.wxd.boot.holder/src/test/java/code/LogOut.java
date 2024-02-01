@@ -2,7 +2,7 @@ package code;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.boot.agent.LogbackReset;
+import org.wxd.boot.agent.LogbackUtil;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -11,7 +11,7 @@ import org.wxd.boot.agent.LogbackReset;
 public class LogOut {
 
     public static void main(String[] args) throws Exception {
-        LogbackReset.resetLogback(LogOut.class.getClassLoader(), args[0]);
+        LogbackUtil.resetLogback(LogOut.class.getClassLoader(), args[0]);
         System.out.println(System.getProperty("user.s"));
         Logger root = LoggerFactory.getLogger("root");
         for (int i = 0; i < 10; i++) {

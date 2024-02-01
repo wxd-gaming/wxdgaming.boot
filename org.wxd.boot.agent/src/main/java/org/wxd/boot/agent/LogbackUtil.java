@@ -3,6 +3,7 @@ package org.wxd.boot.agent;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.lang.Record2;
@@ -15,7 +16,7 @@ import java.io.InputStream;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2024-01-27 14:28
  **/
-public class LogbackReset {
+public class LogbackUtil {
 
     public static void resetLogback(String userDir) throws JoranException {
         resetLogback(Thread.currentThread().getContextClassLoader(), userDir);
@@ -40,6 +41,11 @@ public class LogbackReset {
         }
         configurator.doConfigure(inputStream.t2());
         LoggerFactory.getLogger("root").info("--------------- init end ---------------");
+    }
+
+    public static Logger logger() {
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
+        return LoggerFactory.getLogger(stackTraceElement.getClassName());
     }
 
 }
