@@ -26,6 +26,7 @@
         <module>org.wxd.boot.net.httpservice</module>
         <module>org.wxd.boot.starter</module>
         <module>org.wxd.boot.holder</module>
+        <module>org.wxd.boot.httpclient.apcha</module>
     </modules>
 
     <properties>

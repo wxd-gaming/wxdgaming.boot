@@ -1,11 +1,15 @@
 package org.wxd.boot.httpclient.jdk;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.str.StringUtil;
-import org.wxd.boot.system.GlobalUtil;
 
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,8 +20,11 @@ import java.util.Map;
  * @version: 2023-10-13 12:22
  **/
 @Slf4j
+@Setter
+@Accessors(chain = true)
 public class PostMulti extends HttpBase<PostMulti> {
 
+    boolean urlEncode = true;
     Map<Object, Object> params = new LinkedHashMap<>();
 
     PostMulti(HttpClient httpClient, String url) {
@@ -39,6 +46,7 @@ public class PostMulti extends HttpBase<PostMulti> {
 
     @Override protected HttpRequest.Builder builder() {
         HttpRequest.Builder builder = super.builder();
+
         response.postText = ofFormData();
         if (StringUtil.notEmptyOrNull(response.postText)) {
             builder.POST(HttpRequest.BodyPublishers.ofString(response.postText));
