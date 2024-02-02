@@ -34,14 +34,14 @@ public class PostText extends Post<PostText> {
     /** 设置提交的参数 */
     public PostText paramJson(String json) {
         this.response.postText = json;
-        this.httpHeadValueType = HttpHeadValueType.Json;
+        this.contentType = HttpHeadValueType.Json;
         return this;
     }
 
     /** 设置提交的参数 */
     public PostText paramXJson(String json) {
         this.response.postText = json;
-        this.httpHeadValueType = HttpHeadValueType.XJson;
+        this.contentType = HttpHeadValueType.XJson;
         return this;
     }
 

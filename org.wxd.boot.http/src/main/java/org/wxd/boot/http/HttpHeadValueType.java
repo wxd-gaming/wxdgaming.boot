@@ -45,8 +45,9 @@ public enum HttpHeadValueType {
     CSS("text/css; charset=UTF-8"),
 
     /** multipart/form-data; charset=UTF-8 */
-    Multipart("multipart/form-data; charset=UTF-8"),
-
+    Multipart("multipart/form-data"),
+    /** form-data */
+    FormData("form-data"),
     /** image/x-ico */
     ICO("image/x-ico"),
 

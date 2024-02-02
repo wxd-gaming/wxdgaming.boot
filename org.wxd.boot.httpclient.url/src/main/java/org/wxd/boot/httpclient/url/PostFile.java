@@ -30,10 +30,10 @@ public class PostFile extends PostMulti {
     public PostFile(String uriPath) {
         super(uriPath);
         this.reqHttpMethod = "POST";
-        this.httpHeadValueType = HttpHeadValueType.Multipart;
+        this.contentType = HttpHeadValueType.Multipart;
     }
 
-    protected void writeTextParams(StreamWriter outWriter) throws Exception {
+    @Override protected void writeTextParams(StreamWriter outWriter) throws Exception {
         writeFileParams(outWriter);
         super.writeTextParams(outWriter);
     }
@@ -43,7 +43,7 @@ public class PostFile extends PostMulti {
      */
     protected void writeFileParams(StreamWriter outWriter) throws Exception {
         if (this.uploadFiles != null && !this.uploadFiles.isEmpty()) {
-            if (httpHeadValueType != HttpHeadValueType.Multipart) {
+            if (contentType != HttpHeadValueType.Multipart) {
                 throw new RuntimeException("需要上传文件 请使用 HttpContentType.Multipart");
             }
 

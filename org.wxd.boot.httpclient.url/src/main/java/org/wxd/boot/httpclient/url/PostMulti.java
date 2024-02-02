@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.collection.ObjMap;
 import org.wxd.boot.http.HttpDataAction;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.http.HttpHeadValueType;
 
 import java.util.Map;
 
@@ -23,6 +23,7 @@ import java.util.Map;
 @Accessors(chain = true)
 public class PostMulti extends Post<PostMulti> {
 
+    protected boolean urlEncoder = true;
     protected ObjMap reqMap = new ObjMap();
 
     protected PostMulti(String uriPath) {
@@ -40,15 +41,26 @@ public class PostMulti extends Post<PostMulti> {
         return this;
     }
 
-    protected void writeTextParams(StreamWriter outWriter) throws Exception {
+    @Override protected void writeTextParams(StreamWriter outWriter) throws Exception {
         if (reqMap.isEmpty()) return;
-        this.response.postText = HttpDataAction.httpDataEncoder(reqMap);
-        if (StringUtil.notEmptyOrNull(this.response.postText)) {
-            outWriter.write(this.response.postText);
-            if (log.isDebugEnabled()) {
-                log.debug("http send：" + this.response.postText);
+        boolean isMultipart = this.contentType == HttpHeadValueType.Multipart || contentType == HttpHeadValueType.FormData;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<Object, Object> stringEntry : reqMap.entrySet()) {
+            String name = String.valueOf(stringEntry.getKey());
+            String value = String.valueOf(stringEntry.getValue());
+            if (urlEncoder) {
+                value = HttpDataAction.urlEncoder(value);
+            }
+            if (isMultipart) {
+                stringBuilder.append("--").append(boundary).append("\r\n");
+                stringBuilder.append("Content-Disposition: form-data; name=\"" + name + "\", Content-Type: " + contentType.getValue() + ", Content-Transfer-Encoding: 8bit").append("\r\n");
+                stringBuilder.append("\r\n").append(value).append("\r\n");
+            } else {
+                if (!stringBuilder.isEmpty()) stringBuilder.append("&");
+                stringBuilder.append(name).append("=").append(value);
             }
         }
+        outWriter.write(stringBuilder.toString());
     }
 
 }

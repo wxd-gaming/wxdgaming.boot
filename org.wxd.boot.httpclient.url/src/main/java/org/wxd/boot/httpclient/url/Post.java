@@ -27,11 +27,13 @@ public abstract class Post<H extends Post> extends HttpBase<H> {
         this.reqHttpMethod = "POST";
     }
 
-    @Override
-    protected void writer(HttpURLConnection urlConnection) throws Exception {
+    @Override protected void writer(HttpURLConnection urlConnection) throws Exception {
         try (StreamWriter streamWriter = new StreamWriter(512)) {
             writeTextParams(streamWriter);
             writesEnd(streamWriter);
+            if (log.isDebugEnabled()) {
+                log.debug("http send：{}", streamWriter.toString());
+            }
             try (OutputStream outputStream = urlConnection.getOutputStream()) {
                 outputStream.write(streamWriter.toBytes());
             }
@@ -45,7 +47,8 @@ public abstract class Post<H extends Post> extends HttpBase<H> {
 
     /** 添加结尾数据 */
     protected void writesEnd(StreamWriter outWriter) throws Exception {
-        if (httpHeadValueType == HttpHeadValueType.Multipart) {
+        if (contentType == HttpHeadValueType.Multipart
+                || contentType == HttpHeadValueType.FormData) {
             outWriter.write("--").write(boundary).write("--").write("\r\n");
             outWriter.write("\r\n");
         }

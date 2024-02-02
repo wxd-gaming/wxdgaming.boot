@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class HttpBase<H extends HttpBase> {
 
-    protected HttpHeadValueType httpHeadValueType = HttpHeadValueType.Application;
+    protected HttpHeadValueType contentType = HttpHeadValueType.Application;
     protected SslProtocolType sslProtocolType = SslProtocolType.SSL;
     protected final Map<String, String> reqHeaderMap = new LinkedHashMap<>();
     protected long logTime = 200;
@@ -77,11 +77,11 @@ public abstract class HttpBase<H extends HttpBase> {
             this.response.urlConnection.setConnectTimeout(connTimeout);
             this.response.urlConnection.setReadTimeout(readTimeout);
 
-            if (httpHeadValueType == HttpHeadValueType.Multipart) {
+            if (contentType == HttpHeadValueType.Multipart || contentType == HttpHeadValueType.FormData) {
                 boundary = StringUtil.getRandomString(15);
-                reqHeaderMap.put("content-type", httpHeadValueType.toString() + "; boundary=" + boundary);
+                reqHeaderMap.put("content-type", contentType.toString() + "; boundary=" + boundary);
             } else {
-                reqHeaderMap.put("content-type", httpHeadValueType.toString());
+                reqHeaderMap.put("content-type", contentType.toString());
             }
 
             for (Map.Entry<String, String> headerEntry : reqHeaderMap.entrySet()) {
@@ -97,7 +97,11 @@ public abstract class HttpBase<H extends HttpBase> {
             /*get or post*/
             this.response.urlConnection.setRequestMethod(reqHttpMethod);
             if (log.isDebugEnabled()) {
-                log.debug(reqHttpMethod + " " + sslProtocolType.getTypeName() + " " + this.response.uriPath);
+                if (this.response.urlConnection instanceof HttpsURLConnection httpsURLConnection) {
+                    log.debug(reqHttpMethod + " " + sslProtocolType.getTypeName() + " " + this.response.uriPath);
+                } else {
+                    log.debug(reqHttpMethod + " " + this.response.uriPath);
+                }
                 final String collect = this.response.urlConnection
                         .getRequestProperties()
                         .entrySet()
@@ -233,6 +237,11 @@ public abstract class HttpBase<H extends HttpBase> {
     /** 同时设置连接超时和读取超时时间 */
     public H waringTime(int time) {
         this.waringTime = time;
+        return (H) this;
+    }
+
+    public H contentType(HttpHeadValueType contentType) {
+        this.contentType = contentType;
         return (H) this;
     }
 
