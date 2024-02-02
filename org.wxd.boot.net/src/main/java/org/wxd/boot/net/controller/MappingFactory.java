@@ -6,6 +6,7 @@ import org.wxd.boot.str.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -72,6 +73,7 @@ public class MappingFactory {
         if (!FINAL_DEFAULT.equalsIgnoreCase(serviceName)) {
             stream = Stream.concat(stream, TEXT_MAP.opt(serviceName).map(Map::values).stream().flatMap(Collection::stream));
         }
+        stream = stream.sorted(Comparator.comparing(TextMappingRecord::path));
         return stream;
     }
 
