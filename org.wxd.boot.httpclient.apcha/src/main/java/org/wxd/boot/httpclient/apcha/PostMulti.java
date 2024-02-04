@@ -45,7 +45,10 @@ public class PostMulti extends HttpClientBuilder {
             }
             HttpEntity build = builder.build();
             httpRequestBase.setEntity(build);
-            log.debug("{}", build);
+            if (log.isDebugEnabled()) {
+                String s = new String(readBytes(build));
+                log.info("send {}", s);
+            }
         }
         response = httpClientPool.getCloseableHttpClient().execute(httpRequestBase);
         HttpEntity entity = response.getEntity();

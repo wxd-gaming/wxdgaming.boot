@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -16,6 +17,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Slf4j
 @Getter
 @Setter
 @Accessors(chain = true)
@@ -41,6 +43,10 @@ public class PostText extends HttpClientBuilder {
         if (null != params) {
             StringEntity stringEntity = new StringEntity(params, contentType);
             httpRequestBase.setEntity(stringEntity);
+            if (log.isDebugEnabled()) {
+                String s = new String(readBytes(stringEntity));
+                log.info("send {}", s);
+            }
         }
         response = httpClientPool.getCloseableHttpClient().execute(httpRequestBase);
         HttpEntity entity = response.getEntity();
