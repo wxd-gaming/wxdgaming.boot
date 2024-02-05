@@ -1,7 +1,6 @@
 package org.wxd.boot.starter.net.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.wxd.boot.agent.LogbackUtil;
 import org.wxd.boot.agent.loader.ClassBytesLoader;
 import org.wxd.boot.agent.system.Base64Util;
 import org.wxd.boot.agent.zip.ZipUtil;
@@ -23,12 +22,10 @@ import java.util.Map;
  **/
 public interface RunCode {
 
-    final Logger log = LoggerFactory.getLogger(RunCode.class);
-
     /**
      * 运行动态代码
      */
-    @TextMapping(remarks = "动态执行代码")
+    @TextMapping(remarks = "动态执行代码", needAuth = 9/*必须验证权限*/)
     default void runCode(HttpSession httpSession, ObjMap putData) throws Exception {
         String codebase64 = putData.getString("codebase64");
         byte[] decode = Base64Util.decode2Byte(codebase64);
@@ -43,7 +40,7 @@ public interface RunCode {
             for (Class<?> aClass : classes) {
                 if (PostCodeRun.class.isAssignableFrom(aClass)) {
                     String params = putData.getString("params");
-                    log.info("run code " + aClass.getName() + "， params " + params);
+                    LogbackUtil.logger().info("run code " + aClass.getName() + "， params " + params);
                     PostCodeRun newInstance = (PostCodeRun) aClass.getDeclaredConstructor().newInstance();
                     newInstance.setIocInjector(Starter.curIocInjector());
                     RunResult result = newInstance.run(params);

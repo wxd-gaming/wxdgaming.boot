@@ -122,14 +122,6 @@
 
     <build>
         <finalName>wxd-j21-boot-core</finalName>
-        <extensions>
-            <!--protobuf插件-->
-            <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.0</version>
-            </extension>
-        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
