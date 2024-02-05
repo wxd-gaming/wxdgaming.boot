@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.loader.ClassBytesLoader;
 import org.wxd.boot.agent.system.Base64Util;
 import org.wxd.boot.agent.zip.ZipUtil;
-import org.wxd.boot.core.append.StreamWriter;
 import org.wxd.boot.core.collection.ObjMap;
 import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.str.json.FastJsonUtil;
 import org.wxd.boot.net.controller.ann.TextMapping;
+import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.starter.Starter;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public interface RunCode {
      * 运行动态代码
      */
     @TextMapping(remarks = "动态执行代码")
-    default void runCode(StreamWriter out, ObjMap putData) throws Exception {
+    default void runCode(HttpSession httpSession, ObjMap putData) throws Exception {
         String codebase64 = putData.getString("codebase64");
         byte[] decode = Base64Util.decode2Byte(codebase64);
         String javaClasses = ZipUtil.unzip2String(decode);
@@ -47,7 +47,8 @@ public interface RunCode {
                     PostCodeRun newInstance = (PostCodeRun) aClass.getDeclaredConstructor().newInstance();
                     newInstance.setIocInjector(Starter.curIocInjector());
                     RunResult result = newInstance.run(params);
-                    out.write(result.toJson());
+                    httpSession.responseText(result.toJson());
+                    return;
                 }
             }
         }
