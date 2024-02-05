@@ -15,7 +15,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.system.JvmUtil;
+import org.wxd.boot.core.system.JvmUtil;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;

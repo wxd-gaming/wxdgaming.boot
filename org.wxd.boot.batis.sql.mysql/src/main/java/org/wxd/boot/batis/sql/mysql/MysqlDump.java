@@ -1,7 +1,7 @@
 package org.wxd.boot.batis.sql.mysql;
 
 import org.wxd.boot.batis.DbConfig;
-import org.wxd.boot.system.JvmUtil;
+import org.wxd.boot.core.system.JvmUtil;
 
 /**
  * dump工具

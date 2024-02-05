@@ -1,8 +1,8 @@
 package org.wxd.boot.batis.sql;
 
 import org.wxd.boot.agent.function.PredicateE;
-import org.wxd.boot.lang.Tuple2;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.lang.Tuple2;
+import org.wxd.boot.core.str.StringUtil;
 
 import java.util.LinkedList;
 import java.util.List;

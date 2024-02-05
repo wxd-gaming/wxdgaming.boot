@@ -1,10 +1,10 @@
 package org.wxd.boot.batis.sql;
 
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.struct.DbTable;
-import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.core.append.StreamWriter;
+import org.wxd.boot.core.collection.ObjMap;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

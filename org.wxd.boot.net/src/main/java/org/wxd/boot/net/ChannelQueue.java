@@ -4,10 +4,9 @@ package org.wxd.boot.net;
 import com.google.protobuf.Message;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import org.wxd.boot.lang.LockBase;
+import org.wxd.boot.core.lang.LockBase;
 
 import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 通信安全集合

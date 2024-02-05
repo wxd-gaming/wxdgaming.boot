@@ -2,12 +2,12 @@ package org.wxd.boot.batis.sql.sqlite;
 
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
-import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.DbConfig;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.sql.SqlDataHelper;
 import org.wxd.boot.batis.sql.SqlDataWrapper;
 import org.wxd.boot.batis.sql.SqlEntityTable;
+import org.wxd.boot.core.append.StreamWriter;
 
 import java.sql.Connection;
 import java.sql.SQLException;

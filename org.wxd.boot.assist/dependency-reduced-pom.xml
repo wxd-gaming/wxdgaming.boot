@@ -3,7 +3,7 @@
   <parent>
     <artifactId>org.wxd</artifactId>
     <groupId>org.wxd</groupId>
-    <version>wxd-j21-01</version>
+    <version>wxd-j21-02</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.wxd.boot.assist</artifactId>

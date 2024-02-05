@@ -5,7 +5,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.*;
 import io.netty.util.AsciiString;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.str.StringUtil;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;

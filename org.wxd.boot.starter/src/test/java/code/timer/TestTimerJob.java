@@ -3,13 +3,13 @@ package code.timer;
 import com.google.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.ann.Sort;
+import org.wxd.boot.core.ann.Sort;
+import org.wxd.boot.core.threading.Async;
+import org.wxd.boot.core.timer.MyClock;
+import org.wxd.boot.core.timer.ScheduledInfo;
+import org.wxd.boot.core.timer.ann.Scheduled;
 import org.wxd.boot.starter.Starter;
 import org.wxd.boot.starter.service.ScheduledService;
-import org.wxd.boot.threading.Async;
-import org.wxd.boot.timer.MyClock;
-import org.wxd.boot.timer.ScheduledInfo;
-import org.wxd.boot.timer.ann.Scheduled;
 
 import java.io.Serializable;
 import java.util.Calendar;

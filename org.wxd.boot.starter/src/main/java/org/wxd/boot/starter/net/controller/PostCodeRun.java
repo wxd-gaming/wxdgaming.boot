@@ -3,7 +3,7 @@ package org.wxd.boot.starter.net.controller;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.lang.RunResult;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.starter.IocContext;
 
 /**

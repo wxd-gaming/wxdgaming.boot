@@ -8,7 +8,7 @@ import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.code.CodeLan;
 import org.wxd.boot.batis.text.json.JsonDataWrapper;
 import org.wxd.boot.batis.text.json.JsonEntityTable;
-import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.core.collection.ObjMap;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;

@@ -1,7 +1,7 @@
 package org.wxd.boot.net.auth;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.core.collection.ObjMap;
 import org.wxd.boot.net.Session;
 
 import java.lang.reflect.Method;

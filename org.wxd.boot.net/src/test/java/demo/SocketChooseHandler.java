@@ -8,7 +8,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.wxd.boot.system.BytesUnit;
+import org.wxd.boot.core.system.BytesUnit;
 
 import java.util.List;
 

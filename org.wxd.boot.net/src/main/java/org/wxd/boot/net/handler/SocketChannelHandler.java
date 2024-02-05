@@ -7,10 +7,10 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.internal.OutOfDirectMemoryError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.core.system.GlobalUtil;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.util.ByteBufUtil;
-import org.wxd.boot.system.GlobalUtil;
 
 import java.util.Optional;
 

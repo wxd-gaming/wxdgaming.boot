@@ -7,8 +7,8 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.lang.Record2;
-import org.wxd.boot.lang.ObjectBase;
-import org.wxd.boot.str.xml.XmlUtil;
+import org.wxd.boot.core.lang.ObjectBase;
+import org.wxd.boot.core.str.xml.XmlUtil;
 
 import java.io.InputStream;
 import java.io.Serializable;

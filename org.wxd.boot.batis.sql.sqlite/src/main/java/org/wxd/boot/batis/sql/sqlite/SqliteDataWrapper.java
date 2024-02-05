@@ -1,10 +1,10 @@
 package org.wxd.boot.batis.sql.sqlite;
 
 
-import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.sql.SqlDataWrapper;
 import org.wxd.boot.batis.sql.SqlEntityTable;
+import org.wxd.boot.core.append.StreamWriter;
 
 import java.io.Serializable;
 import java.util.Collection;

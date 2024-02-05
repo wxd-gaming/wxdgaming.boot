@@ -1,8 +1,8 @@
 package org.wxd.boot.batis.save;
 
 
-import org.wxd.boot.str.StringUtil;
-import org.wxd.boot.str.json.FastJsonUtil;
+import org.wxd.boot.core.str.StringUtil;
+import org.wxd.boot.core.str.json.FastJsonUtil;
 
 import java.util.Map;
 

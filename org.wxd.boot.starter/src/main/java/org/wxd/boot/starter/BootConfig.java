@@ -7,7 +7,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import org.wxd.boot.batis.DbConfig;
-import org.wxd.boot.lang.ObjectBase;
+import org.wxd.boot.core.lang.ObjectBase;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)

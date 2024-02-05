@@ -2,9 +2,9 @@ package org.wxd.boot.batis.sql;
 
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.PredicateE;
-import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.lang.ConvertUtil;
-import org.wxd.boot.lang.Tuple2;
+import org.wxd.boot.core.collection.ObjMap;
+import org.wxd.boot.core.lang.ConvertUtil;
+import org.wxd.boot.core.lang.Tuple2;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;

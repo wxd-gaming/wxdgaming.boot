@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.function.SLFunction0;
 import org.wxd.boot.agent.function.SLFunction1;
 import org.wxd.boot.batis.DataWrapper;
-import org.wxd.boot.lang.Tuple4;
+import org.wxd.boot.core.lang.Tuple4;
 
 import java.io.Serializable;
 import java.util.LinkedList;

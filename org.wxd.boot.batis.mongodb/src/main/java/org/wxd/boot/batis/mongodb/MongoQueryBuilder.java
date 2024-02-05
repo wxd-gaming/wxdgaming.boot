@@ -8,8 +8,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.query.*;
-import org.wxd.boot.lang.Tuple2;
-import org.wxd.boot.lang.Tuple4;
+import org.wxd.boot.core.lang.Tuple2;
+import org.wxd.boot.core.lang.Tuple4;
 
 import java.io.Serializable;
 import java.util.ArrayList;

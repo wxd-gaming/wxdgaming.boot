@@ -4,7 +4,7 @@ import com.google.protobuf.GeneratedMessageV3;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.str.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.Map;

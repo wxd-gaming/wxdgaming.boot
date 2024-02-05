@@ -1,7 +1,7 @@
 package org.wxd.boot.starter.service;
 
 import io.netty.buffer.ByteBuf;
-import org.wxd.boot.ann.Sort;
+import org.wxd.boot.core.ann.Sort;
 import org.wxd.boot.net.ts.TcpServer;
 import org.wxd.boot.net.ts.TcpSession;
 import org.wxd.boot.starter.IocContext;

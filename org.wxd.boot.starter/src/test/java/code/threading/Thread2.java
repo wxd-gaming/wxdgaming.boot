@@ -2,7 +2,7 @@ package code.threading;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.threading.Executors;
+import org.wxd.boot.core.threading.Executors;
 
 /**
  * 线程测试

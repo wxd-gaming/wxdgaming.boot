@@ -1,6 +1,7 @@
 package org.wxd.boot.starter;
 
-import org.wxd.boot.str.xml.XmlUtil;
+
+import org.wxd.boot.core.str.xml.XmlUtil;
 
 /**
  * 启动项目

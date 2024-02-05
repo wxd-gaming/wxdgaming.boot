@@ -6,7 +6,7 @@ import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.batis.struct.DbBean;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.str.StringUtil;
 
 import java.io.Serializable;
 import java.util.Collection;

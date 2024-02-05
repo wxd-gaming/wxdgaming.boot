@@ -8,8 +8,8 @@ import org.wxd.boot.batis.BatchPool;
 import org.wxd.boot.batis.DataBuilder;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.DbConfig;
-import org.wxd.boot.str.json.FastJsonUtil;
-import org.wxd.boot.system.GlobalUtil;
+import org.wxd.boot.core.str.json.FastJsonUtil;
+import org.wxd.boot.core.system.GlobalUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

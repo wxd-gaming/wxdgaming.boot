@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.lang.LockBase;
+import org.wxd.boot.core.lang.LockBase;
 
 /**
  * 基于 netty 实现 通信基类

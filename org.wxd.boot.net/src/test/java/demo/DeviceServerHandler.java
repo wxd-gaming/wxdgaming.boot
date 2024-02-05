@@ -14,7 +14,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.http.HttpHeadValueType;
+import org.wxd.boot.net.http.HttpHeadValueType;
 
 import java.nio.charset.StandardCharsets;
 

@@ -1,6 +1,6 @@
 package org.wxd.boot.batis.redis;
 
-import org.wxd.boot.lang.Tuple2;
+import org.wxd.boot.core.lang.Tuple2;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.resps.Tuple;

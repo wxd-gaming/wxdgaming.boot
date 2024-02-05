@@ -4,8 +4,8 @@ package org.wxd.boot.batis;
 import com.alibaba.fastjson.annotation.JSONField;
 import org.wxd.boot.batis.enums.ColumnType;
 import org.wxd.boot.batis.enums.SortType;
-import org.wxd.boot.field.FieldMapping;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.field.FieldMapping;
+import org.wxd.boot.core.str.StringUtil;
 
 import java.util.Objects;
 

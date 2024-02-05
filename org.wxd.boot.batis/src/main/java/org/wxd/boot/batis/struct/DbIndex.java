@@ -2,7 +2,7 @@ package org.wxd.boot.batis.struct;
 
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.str.StringUtil;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)

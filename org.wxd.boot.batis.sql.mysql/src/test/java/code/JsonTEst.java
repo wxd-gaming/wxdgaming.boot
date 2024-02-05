@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.wxd.boot.batis.sql.SqlEntityTable;
 import org.wxd.boot.batis.sql.mysql.MysqlDataWrapper;
 import org.wxd.boot.batis.struct.DbColumn;
-import org.wxd.boot.str.json.FastJsonUtil;
+import org.wxd.boot.core.str.json.FastJsonUtil;
 
 /**
  * E

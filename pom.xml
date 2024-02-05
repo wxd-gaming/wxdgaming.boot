@@ -6,10 +6,9 @@
 
     <groupId>org.wxd</groupId>
     <artifactId>org.wxd</artifactId>
-    <version>wxd-j21-01</version>
+    <version>wxd-j21-02</version>
     <packaging>pom</packaging>
     <modules>
-        <module>org.wxd.boot</module>
         <module>org.wxd.boot.agent</module>
         <module>org.wxd.boot.assist</module>
         <module>org.wxd.boot.batis</module>
@@ -18,15 +17,16 @@
         <module>org.wxd.boot.batis.sql</module>
         <module>org.wxd.boot.batis.sql.mysql</module>
         <module>org.wxd.boot.batis.sql.sqlite</module>
-        <module>org.wxd.boot.http</module>
-        <module>org.wxd.boot.httpclient.jdk</module>
-        <module>org.wxd.boot.httpclient.url</module>
+        <module>org.wxd.boot.core</module>
         <module>org.wxd.boot.jscript</module>
         <module>org.wxd.boot.net</module>
-        <module>org.wxd.boot.net.httpservice</module>
+        <module>org.wxd.boot.net.http</module>
+        <module>org.wxd.boot.net.http.client.apache</module>
+        <module>org.wxd.boot.net.http.client.jdk</module>
+        <module>org.wxd.boot.net.http.client.url</module>
+        <module>org.wxd.boot.net.http.service.simple</module>
         <module>org.wxd.boot.starter</module>
         <module>org.wxd.boot.holder</module>
-        <module>org.wxd.boot.httpclient.apcha</module>
     </modules>
 
     <properties>

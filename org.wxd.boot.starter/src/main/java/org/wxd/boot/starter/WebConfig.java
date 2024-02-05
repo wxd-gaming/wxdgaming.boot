@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
-import org.wxd.boot.lang.ObjectBase;
+import org.wxd.boot.core.lang.ObjectBase;
 
 import java.io.Serializable;
 import java.util.ArrayList;

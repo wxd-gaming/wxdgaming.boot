@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.service;
 
-import org.wxd.boot.ann.Sort;
+import org.wxd.boot.core.ann.Sort;
 import org.wxd.boot.net.web.ws.WebSession;
 import org.wxd.boot.net.web.ws.WebSocketServer;
 import org.wxd.boot.starter.IocContext;

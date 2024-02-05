@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.service;
 
-import org.wxd.boot.ann.Sort;
+import org.wxd.boot.core.ann.Sort;
 import org.wxd.boot.net.web.hs.HttpServer;
 import org.wxd.boot.starter.HttpConfig;
 import org.wxd.boot.starter.IocContext;

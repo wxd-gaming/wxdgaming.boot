@@ -6,7 +6,7 @@ import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.batis.struct.DataChecked;
 import org.wxd.boot.batis.text.json.JsonDataWrapper;
 import org.wxd.boot.batis.text.json.JsonEntityTable;
-import org.wxd.boot.str.json.FastJsonUtil;
+import org.wxd.boot.core.str.json.FastJsonUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import lombok.extern.slf4j.Slf4j;
-import org.wxd.boot.i.ILock;
+import org.wxd.boot.core.i.ILock;
 import org.wxd.boot.net.NioClient;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.controller.MessageController;

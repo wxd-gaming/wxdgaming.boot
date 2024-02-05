@@ -9,7 +9,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.core.collection.ObjMap;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.SocketSession;

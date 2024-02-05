@@ -1,13 +1,13 @@
 package org.wxd.boot.starter.webapi;
 
-import org.wxd.boot.collection.ObjMap;
-import org.wxd.boot.lang.RandomUtils;
+import org.wxd.boot.core.collection.ObjMap;
+import org.wxd.boot.core.lang.RandomUtils;
+import org.wxd.boot.core.threading.Async;
+import org.wxd.boot.core.threading.ExecutorLog;
+import org.wxd.boot.core.timer.ann.Scheduled;
 import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.web.hs.HttpSession;
-import org.wxd.boot.threading.Async;
-import org.wxd.boot.threading.ExecutorLog;
-import org.wxd.boot.timer.ann.Scheduled;
 
 /**
  * 公共
@@ -51,8 +51,8 @@ public class PublicApi {
         return "test";
     }
 
-    @Async(vt = true)
     @Scheduled
+    @Async(vt = true)
     @ExecutorLog(logTime = 33)
     public void s1() throws Exception {
     }

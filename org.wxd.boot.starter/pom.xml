@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.wxd</groupId>
         <artifactId>org.wxd</artifactId>
-        <version>wxd-j21-01</version>
+        <version>wxd-j21-02</version>
     </parent>
 
     <artifactId>org.wxd.boot.starter</artifactId>
@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>org.wxd</groupId>
-            <artifactId>org.wxd.boot</artifactId>
+            <artifactId>org.wxd.boot.core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -59,12 +59,12 @@
         </dependency>
         <dependency>
             <groupId>org.wxd</groupId>
-            <artifactId>org.wxd.boot.http</artifactId>
+            <artifactId>org.wxd.boot.net.http</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wxd</groupId>
-            <artifactId>org.wxd.boot.httpclient.url</artifactId>
+            <artifactId>org.wxd.boot.net.http.client.url</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

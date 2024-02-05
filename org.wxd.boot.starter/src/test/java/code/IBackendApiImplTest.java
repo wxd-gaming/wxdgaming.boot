@@ -3,11 +3,11 @@ package code;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.http.HttpHeadValueType;
-import org.wxd.boot.httpclient.url.HttpBuilder;
-import org.wxd.boot.str.Md5Util;
-import org.wxd.boot.str.StringUtil;
-import org.wxd.boot.str.json.FastJsonUtil;
+import org.wxd.boot.core.str.Md5Util;
+import org.wxd.boot.core.str.StringUtil;
+import org.wxd.boot.core.str.json.FastJsonUtil;
+import org.wxd.boot.net.http.HttpHeadValueType;
+import org.wxd.boot.net.http.client.url.HttpBuilder;
 
 import java.util.HashMap;
 import java.util.TreeMap;

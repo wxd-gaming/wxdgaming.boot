@@ -2,7 +2,7 @@ package org.wxd.boot.net;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wxd.boot.collection.ObjMap;
+import org.wxd.boot.core.collection.ObjMap;
 import org.wxd.boot.net.message.RpcEvent;
 
 /**

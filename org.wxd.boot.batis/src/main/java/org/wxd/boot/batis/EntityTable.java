@@ -5,9 +5,9 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.wxd.boot.append.StreamWriter;
 import org.wxd.boot.batis.struct.DbIndex;
-import org.wxd.boot.str.StringUtil;
+import org.wxd.boot.core.append.StreamWriter;
+import org.wxd.boot.core.str.StringUtil;
 
 import java.io.Serializable;
 import java.util.Collection;

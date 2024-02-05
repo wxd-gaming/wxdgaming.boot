@@ -3,8 +3,8 @@ package org.wxd.boot.batis.sql;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.batis.DataWrapper;
 import org.wxd.boot.batis.query.*;
-import org.wxd.boot.lang.Tuple2;
-import org.wxd.boot.lang.Tuple4;
+import org.wxd.boot.core.lang.Tuple2;
+import org.wxd.boot.core.lang.Tuple4;
 
 import java.io.Serializable;
 import java.sql.Connection;
