@@ -9,7 +9,7 @@ import org.simpleframework.xml.Root;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
 import org.wxd.boot.agent.lang.Record2;
-import org.wxd.boot.core.collection.OfSet;
+import org.wxd.boot.core.collection.SetOf;
 import org.wxd.boot.core.lang.ObjectBase;
 import org.wxd.boot.core.str.Md5Util;
 import org.wxd.boot.core.str.xml.XmlUtil;
@@ -49,7 +49,7 @@ public class SignConfig extends ObjectBase implements Serializable {
                             new SignUser()
                                     .setUserName("root")
                                     .setToken(Md5Util.md5DigestEncode(MyClock.millis() + ""))
-                                    .setAuthority(OfSet.asSet(1, 2, 3, 4, 5, 6, 7, 8, 9))
+                                    .setAuthority(SetOf.asSet(1, 2, 3, 4, 5, 6, 7, 8, 9))
                     );
                     String fileName = "config/sign-config.xml";
                     FileWriteUtil.writeString(fileName, instance.toXml());

@@ -1,7 +1,5 @@
 package org.wxd.boot.core.collection;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -13,7 +11,7 @@ import java.util.Set;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-11-03 17:24
  **/
-public class OfSet implements Serializable {
+public class SetOf implements Serializable {
 
     public static Set empty() {
         return Collections.EMPTY_SET;

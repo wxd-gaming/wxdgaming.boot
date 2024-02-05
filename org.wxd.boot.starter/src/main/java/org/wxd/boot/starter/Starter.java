@@ -12,7 +12,7 @@ import org.wxd.boot.agent.function.STVFunction1;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.core.AAAAA;
-import org.wxd.boot.core.collection.OfSet;
+import org.wxd.boot.core.collection.SetOf;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.str.json.ProtobufMessageSerializerFastJson;
 import org.wxd.boot.core.system.BytesUnit;
@@ -56,7 +56,7 @@ public class Starter {
 
     public static void startBoot(String... packages) {
         JvmUtil.setLogbackConfig();
-        Set<String> packages1 = OfSet.asSet(packages);
+        Set<String> packages1 = SetOf.asSet(packages);
         packages1.add(AAAAA.class.getPackage().getName());
         String[] array = packages1.toArray(new String[0]);
         if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");

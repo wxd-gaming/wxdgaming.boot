@@ -117,7 +117,7 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
             lock();
             try {
 
-                boolean add = taskQueue.computeIfAbsent(tableName, k -> new ConvertCollection<>(batchSize))
+                boolean add = taskQueue.computeIfAbsent(tableName, k -> new ConvertCollection<>())
                         .add(obj);
                 if (add) {
                     BatchPool.this.cacheSize++;
@@ -166,11 +166,10 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
             final MarkTimer markTimer = MarkTimer.build();
             try {
                 final ConvertCollection<DataBuilder> copyValue = copy.getValue();
-
-                while (copyValue.hasNext()) {
-                    List<DataBuilder> tmp = copyValue.next();
+                List<List<DataBuilder>> lists = copyValue.splitAndClear(batchSize);
+                for (List<DataBuilder> list : lists) {
                     /*同一张表结构*/
-                    i += exec(copy.getKey(), tmp);
+                    i += exec(copy.getKey(), list);
                 }
 
                 float execTime = markTimer.execTime();

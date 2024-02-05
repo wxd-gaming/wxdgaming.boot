@@ -12,7 +12,7 @@ import org.wxd.boot.batis.code.CodeLan;
 import org.wxd.boot.batis.code.CreateJavaCode;
 import org.wxd.boot.batis.enums.ColumnType;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.collection.OfSet;
+import org.wxd.boot.core.collection.SetOf;
 import org.wxd.boot.core.field.ClassMapping;
 import org.wxd.boot.core.field.ClassWrapper;
 import org.wxd.boot.core.lang.ConvertUtil;
@@ -60,7 +60,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
     /** 读取excel文件读取字段的权限 server, client, all, no */
     public ExcelRead loadExcel(String... haveExtends) {
         MarkTimer timerMark = MarkTimer.build();
-        this.haveExtend = OfSet.asSet(haveExtends);
+        this.haveExtend = SetOf.asSet(haveExtends);
         this.excelDataTableMap = new LinkedHashMap<>();
         List<File> excelFiles = new LinkedList<>();
         for (String excelPath : excelPaths) {

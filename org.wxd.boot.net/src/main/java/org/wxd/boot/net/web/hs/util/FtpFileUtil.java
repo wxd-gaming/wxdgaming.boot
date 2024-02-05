@@ -5,7 +5,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import org.wxd.boot.agent.io.TemplatePack;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.collection.OfList;
+import org.wxd.boot.core.collection.ListOf;
 import org.wxd.boot.core.format.ByteFormat;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.system.JvmUtil;
@@ -63,7 +63,7 @@ public class FtpFileUtil implements Serializable {
             ftpPath = ftpPath.substring(1);
         }
         ObjMap objMap = new ObjMap();
-        List<String> pathList = OfList.asList(ftpPath.split("\\/"));
+        List<String> pathList = ListOf.asList(ftpPath.split("\\/"));
         pathList.add(0, "/");
         String htmlPath = "";
         ArrayList<ObjMap> urls = new ArrayList<>();

@@ -2,7 +2,7 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.wxd.boot.core.collection.OfList;
+import org.wxd.boot.core.collection.ListOf;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,7 +32,7 @@ public class ParallelStreamTest implements Serializable {
     }
 
     public void parallelStream() {
-        List<Integer> list = OfList.asList(1, 2, 3, 4, 5);
+        List<Integer> list = ListOf.asList(1, 2, 3, 4, 5);
         final long nanoTime = System.nanoTime();
         list.parallelStream().forEach(v -> {
             list.parallelStream().forEach(i -> log.warn(Thread.currentThread().getId() + ", " + String.valueOf(i)));
@@ -41,7 +41,7 @@ public class ParallelStreamTest implements Serializable {
     }
 
     public void stream() {
-        List<Integer> list = OfList.asList(1, 2, 3, 4, 5);
+        List<Integer> list = ListOf.asList(1, 2, 3, 4, 5);
         final long nanoTime = System.nanoTime();
         list.stream().forEach(v -> {
             list.stream().forEach(i -> log.warn(Thread.currentThread().getId() + ", " + String.valueOf(i)));

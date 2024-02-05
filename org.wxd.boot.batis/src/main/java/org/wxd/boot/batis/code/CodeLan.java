@@ -1,6 +1,6 @@
 package org.wxd.boot.batis.code;
 
-import org.wxd.boot.core.collection.OfMap;
+import org.wxd.boot.core.collection.MapOf;
 import org.wxd.boot.core.lang.IEnum;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ public enum CodeLan implements IEnum {
     Lua(4, "lua", "Lua"),
     ;
 
-    private static final Map<Integer, CodeLan> static_map = OfMap.asMap(CodeLan::getCode, CodeLan.values());
+    private static final Map<Integer, CodeLan> static_map = MapOf.asMap(CodeLan::getCode, CodeLan.values());
 
     public static CodeLan as(int value) {
         return static_map.get(value);
