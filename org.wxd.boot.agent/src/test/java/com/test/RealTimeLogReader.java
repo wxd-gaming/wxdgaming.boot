@@ -2,10 +2,7 @@ package com.test;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  * 读取文件
@@ -21,16 +18,21 @@ public class RealTimeLogReader {
         log.info("1");
         String logFile = "target/logs/app.log";
         try {
+            File file = new File(logFile);
+
             FileReader fileReader = new FileReader(logFile);
             RandomAccessFile randomAccessFile = new RandomAccessFile(logFile, "r");
             randomAccessFile.seek(randomAccessFile.length());
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line;
+            final long oldLength = file.length();
             while (true) {
-                if ((line = bufferedReader.readLine()) != null) {
-                    System.out.println(line); // 将日志输出到控制台
-                } else {
-                    log.info("{}", System.currentTimeMillis());
+                if (oldLength != file.length()) {
+                    if ((line = bufferedReader.readLine()) != null) {
+                        System.out.println(line); // 将日志输出到控制台
+                    } else {
+                        log.info("{}", System.currentTimeMillis());
+                    }
                 }
                 // 其他处理逻辑
             }

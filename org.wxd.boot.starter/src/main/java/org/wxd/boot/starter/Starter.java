@@ -57,7 +57,6 @@ public class Starter {
     public static void startBoot(String... packages) {
         JvmUtil.setLogbackConfig();
         Set<String> packages1 = SetOf.asSet(packages);
-        packages1.add(AAAAA.class.getPackage().getName());
         String[] array = packages1.toArray(new String[0]);
         if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");
         ReflectContext.Builder builder = ReflectContext.Builder.of(array);
