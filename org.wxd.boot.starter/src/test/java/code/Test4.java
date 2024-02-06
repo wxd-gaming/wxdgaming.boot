@@ -1,6 +1,7 @@
 package code;
 
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.LogbackUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.net.controller.ann.TextMapping;
@@ -46,16 +47,11 @@ public class Test4 {
 
     @Test
     public void t3() {
-        Runnable runnable = () -> {
-            LogbackUtil.logger().info("1");
-            System.out.println(this.getClass());
-            System.out.println(this.getClass().isUnnamedClass());
-            System.out.println(this.getClass().getEnclosingClass());
-            System.out.println(this.getClass().getEnclosingConstructor());
-            System.out.println(this.getClass().getEnclosingMethod());
-        };
-        runnable.run();
-        LogbackUtil.logger().info("1");
+
+        LoggerFactory.getLogger(this.getClass()).info("{}", 1, new RuntimeException());
+        LoggerFactory.getLogger(this.getClass()).error("{} {}", 1, 3, new RuntimeException());
+
     }
+
 
 }
