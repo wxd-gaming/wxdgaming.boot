@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public class RankMap<K extends Comparable, V extends RankScore<K>> extends ConcurrentSkipListMap<K, V> {
 
     @JSONField(serialize = false, deserialize = false)
-    private RankFactory<K, V> factory = new RankFactory<>();
+    private transient RankFactory<K, V> factory = new RankFactory<>();
 
     public RankMap() {
         this(null);
@@ -131,7 +131,7 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
         return stream(RankScore.BreSort);
     }
 
-    public Stream<V> stream(Comparator comparator) {
+    public Stream<V> stream(Comparator<? super V> comparator) {
         return values().stream().sorted(comparator);
     }
 

@@ -3,7 +3,7 @@ package org.wxd.boot.core.lang.rank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.wxd.boot.core.lang.LockBase;
+import org.wxd.boot.core.lang.ObjectBaseLock;
 
 import java.util.Comparator;
 
@@ -16,7 +16,7 @@ import java.util.Comparator;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class RankScore<K extends Comparable> extends LockBase implements Comparable<RankScore<K>> {
+public class RankScore<K extends Comparable> extends ObjectBaseLock implements Comparable<RankScore<K>> {
 
     /** 正序 */
     public static final Comparator<RankScore<?>> Sort = (o1, o2) -> {

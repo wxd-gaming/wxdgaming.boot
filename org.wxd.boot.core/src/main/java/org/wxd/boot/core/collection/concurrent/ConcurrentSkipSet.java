@@ -12,8 +12,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class ConcurrentSkipSet<E extends Comparable> extends AbstractSet<E> implements Set<E>, java.io.Serializable, Data2Json {
 
-    private static final long serialVersionUID = 1L;
-
     private ConcurrentSkipListMap<E, Boolean> map;
 
     public ConcurrentSkipSet() {
