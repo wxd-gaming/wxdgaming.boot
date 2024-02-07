@@ -11,7 +11,6 @@ import org.wxd.boot.agent.function.ConsumerE2;
 import org.wxd.boot.agent.function.STVFunction1;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.system.ReflectContext;
-import org.wxd.boot.core.AAAAA;
 import org.wxd.boot.core.collection.SetOf;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.str.json.ProtobufMessageSerializerFastJson;
@@ -137,7 +136,10 @@ public class Starter {
 
             GlobalUtil.exceptionCall = new Consumer2<Object, Throwable>() {
                 @Override public void accept(Object o, Throwable throwable) {
-                    FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
+                    if (StringUtil.emptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
+                        logger().error("{}", o, throwable);
+                    else
+                        FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
                 }
             };
 

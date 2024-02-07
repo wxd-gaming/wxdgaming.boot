@@ -199,6 +199,9 @@ public abstract class DataWrapper<DM extends EntityTable>
                 continue;
             }
 
+            if (Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
             if (Modifier.isFinal(field.getModifiers())) {
                 if (/*ConvertUtil.isBaseType(field.getType())*/
                         !Map.class.isAssignableFrom(field.getType())
@@ -211,15 +214,6 @@ public abstract class DataWrapper<DM extends EntityTable>
                                         + " 实体类：" + entityTable.getLogTableName()
                         );
                     }
-                    continue;
-                }
-            }
-
-            if (Filter_Transient) {
-                if (Modifier.isTransient(field.getModifiers())) {
-                    log.warn("警告 无法处理 transient 字段：" + field.getName()
-                            + " 实体类：" + entityTable.getLogTableName()
-                    );
                     continue;
                 }
             }

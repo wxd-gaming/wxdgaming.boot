@@ -3,7 +3,7 @@ package org.wxd.boot.batis.save;
 import com.alibaba.fastjson.annotation.JSONField;
 import org.wxd.boot.batis.struct.DbColumn;
 import org.wxd.boot.core.field.extend.FieldAnn;
-import org.wxd.boot.core.lang.ObjectBase;
+import org.wxd.boot.core.lang.ObjectBaseLock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2020-09-12 15:39
  **/
-public abstract class ObjectSave extends ObjectBase implements CheckSaveCode {
+public abstract class ObjectSave extends ObjectBaseLock implements CheckSaveCode {
 
     /*保存数据的 临时hashcode值*/
     @FieldAnn(alligator = true)

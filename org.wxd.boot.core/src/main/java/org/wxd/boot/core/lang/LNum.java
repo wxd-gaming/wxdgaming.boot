@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * long 类型 数量
