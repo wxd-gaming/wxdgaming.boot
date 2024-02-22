@@ -14,49 +14,39 @@ import java.util.concurrent.atomic.AtomicReference;
  **/
 interface SqlSelect<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> extends SqlExecute<DM, DW> {
 
-    /**
-     * 获取现有数据量
-     *
-     * @param entityTable
-     * @return
-     */
-    default long getCount(Class<?> entityTable) {
+    /** 获取现有数据量 */
+    default long rowCount(Class<?> entityTable) {
         final DM sqlDataModelMapping = getDataWrapper().asEntityTable(entityTable);
-        return getCount(sqlDataModelMapping);
+        return rowCount(sqlDataModelMapping);
     }
 
-    /**
-     * @param entityTable
-     * @return
-     */
-    default long getCount(DM entityTable) {
-        return getCount(entityTable, null);
+    /** 获取现有数据量 */
+    default long rowCount(DM entityTable) {
+        return rowCount(entityTable, null);
     }
 
-    default long getCount(Class<?> entityTable, String whereSqlString, Object... args) {
+    /** 获取现有数据量 */
+    default long rowCount(Class<?> entityTable, String whereSqlString, Object... args) {
         final DM sqlDataModelMapping = getDataWrapper().asEntityTable(entityTable);
-        return getCount(sqlDataModelMapping, whereSqlString, args);
+        return rowCount(sqlDataModelMapping, whereSqlString, args);
     }
 
-    /**
-     * @param entityTable
-     * @param whereSqlString
-     * @return
-     */
-    default long getCount(DM entityTable, String whereSqlString, Object... args) {
+    /** 获取现有数据量 */
+    default long rowCount(DM entityTable, String whereSqlString, Object... args) {
         long count = 0;
         if (entityTable.getSplitNumber() > 1) {
             for (int i = 0; i < entityTable.getSplitNumber(); i++) {
-                count += getCount(entityTable.tableName(i), whereSqlString, args);
+                count += rowCount(entityTable.tableName(i), whereSqlString, args);
             }
         } else {
             /*获取表名*/
-            count = getCount(entityTable.getTableName(), whereSqlString, args);
+            count = rowCount(entityTable.getTableName(), whereSqlString, args);
         }
         return count;
     }
 
-    default long getCount(String tableName, String whereSqlString, Object... args) {
+    /** 获取现有数据量 */
+    default long rowCount(String tableName, String whereSqlString, Object... args) {
         String sqlString = "select count(1) usm from `" + tableName + "`";
         if (StringUtil.notEmptyOrNull(whereSqlString)) {
             sqlString += " where " + whereSqlString;
@@ -64,6 +54,7 @@ interface SqlSelect<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ex
         return this.executeScalar(sqlString, long.class, args);
     }
 
+    /** 根据主键查找数据 */
     default <R> R queryEntity(Class<R> clazz, Object... args) {
         DM sqlDataModelMapping = getDataWrapper().asEntityTable(clazz);
         return queryEntity(sqlDataModelMapping, args);

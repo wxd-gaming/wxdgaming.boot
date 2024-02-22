@@ -52,26 +52,26 @@ interface MongoSelect {
     }
 
     /** 快速计算法，预估值 */
-    default long estimatedDocumentCount(Class<?> obj) {
+    default long rowCount(Class<?> obj) {
         final MongoEntityTable entityTable = ((MongoDataHelper) this).asEntityTable(obj);
-        return estimatedDocumentCount(entityTable);
+        return rowCount(entityTable);
     }
 
     /** 快速计算法，预估值 */
-    default long estimatedDocumentCount(MongoEntityTable entityTable) {
+    default long rowCount(MongoEntityTable entityTable) {
         long count = 0;
         if (entityTable.getSplitNumber() > 1) {
             for (int i = 0; i < entityTable.getSplitNumber(); i++) {
-                count += estimatedDocumentCount(entityTable.tableName(i));
+                count += rowCount(entityTable.tableName(i));
             }
         } else {
-            count += estimatedDocumentCount(entityTable.getTableName());
+            count += rowCount(entityTable.getTableName());
         }
         return count;
     }
 
     /** 快速计算法，预估值 */
-    default long estimatedDocumentCount(String tableName) {
+    default long rowCount(String tableName) {
         MongoCollection<Document> collection = ((MongoDataHelper) this).getCollection(tableName);
         return collection.estimatedDocumentCount();
     }

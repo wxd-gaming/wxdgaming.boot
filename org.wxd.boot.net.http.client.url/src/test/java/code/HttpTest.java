@@ -25,7 +25,7 @@ public class HttpTest {
     public void t1() throws Exception {
         String url;
          url = "http://47.108.150.14:18800/sjcq/wanIp";
-        //url = "http://192.168.50.73:19000/test/ok";
+        //url = "http://127.0.0.1:19000/test/ok";
         // url = "http://47.108.150.14:18801/test/ok";
         //url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";

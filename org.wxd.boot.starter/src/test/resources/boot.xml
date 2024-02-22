@@ -53,7 +53,7 @@
         <show_sql>true</show_sql>
         <connectionPool>true</connectionPool>
         <batchSizeThread>2</batchSizeThread>
-        <dbHost>192.168.50.73</dbHost>
+        <dbHost>127.0.0.1</dbHost>
         <dbPort>3306</dbPort>
         <dbBase>test3</dbBase>
         <dbUser>root</dbUser>
@@ -64,7 +64,7 @@
         <show_sql>false</show_sql>
         <connectionPool>false</connectionPool>
         <batchSizeThread>2</batchSizeThread>
-        <dbHost>192.168.50.73</dbHost>
+        <dbHost>127.0.0.1</dbHost>
         <dbPort>27017</dbPort>
         <dbBase>test</dbBase>
         <dbUser></dbUser>
@@ -72,7 +72,7 @@
     </mongodb>
     <redis>
         <name>数据源1</name>
-        <dbHost>192.168.50.73</dbHost>
+        <dbHost>127.0.0.1</dbHost>
         <dbPort>6379</dbPort>
         <dbPwd>test</dbPwd>
     </redis>
