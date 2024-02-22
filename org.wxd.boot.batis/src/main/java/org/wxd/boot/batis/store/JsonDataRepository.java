@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * json 配置仓储
+ *
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-04-19 17:51
  **/

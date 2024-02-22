@@ -59,17 +59,6 @@
         <dbUser>root</dbUser>
         <dbPwd>test</dbPwd>
     </mysql>
-    <mongodb>
-        <name>数据源1</name>
-        <show_sql>false</show_sql>
-        <connectionPool>false</connectionPool>
-        <batchSizeThread>2</batchSizeThread>
-        <dbHost>127.0.0.1</dbHost>
-        <dbPort>27017</dbPort>
-        <dbBase>test</dbBase>
-        <dbUser></dbUser>
-        <dbPwd></dbPwd>
-    </mongodb>
     <redis>
         <name>数据源1</name>
         <dbHost>127.0.0.1</dbHost>
