@@ -7,7 +7,6 @@ import com.google.inject.Key;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
-import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.*;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.system.MethodUtil;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -89,12 +89,21 @@ public abstract class IocContext {
         forEachBean(filter, (String) null, consumer);
     }
 
+    public <R> void forEachBean(Class<R> filter, ConsumerE1<R> consumer, Consumer<Throwable> onError) {
+        forEachBean(filter, (String) null, consumer, onError);
+    }
+
     public <R> void forEachBean(Class<R> filter, String methodName, ConsumerE1<R> consumer) {
+        forEachBean(filter, methodName, consumer, null);
+    }
+
+    public <R> void forEachBean(Class<R> filter, String methodName, ConsumerE1<R> consumer, Consumer<Throwable> onError) {
         beanStream(filter, methodName).forEach(r -> {
             try {
                 consumer.accept(r);
             } catch (Exception e) {
-                throw Throw.as(e);
+                log.error("event 事件 {}", r, e);
+                if (onError != null) onError.accept(e);
             }
         });
     }
@@ -125,11 +134,16 @@ public abstract class IocContext {
     }
 
     public <R> void forEachBean(Class<R> filter, Method method, Object... args) {
+        forEachBean(filter, null, method, args);
+    }
+
+    public <R> void forEachBean(Class<R> filter, Consumer<Throwable> onError, Method method, Object... args) {
         beanStream(filter, method.getName()).forEach(r -> {
             try {
                 method.invoke(r, args);
             } catch (Exception e) {
-                throw Throw.as(r.getClass().getName(), e);
+                log.error("event 事件 {}", r, e);
+                if (onError != null) onError.accept(e);
             }
         });
     }
