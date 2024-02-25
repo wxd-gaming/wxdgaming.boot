@@ -39,7 +39,6 @@ public class SslContextServer implements Serializable {
             try {
                 AtomicReference<InputStream> streams = new AtomicReference<>();
                 AtomicReference<String> pwd = new AtomicReference<>();
-
                 // 获取当前运行的JAR文件
                 Record2<String, InputStream> jksStream = FileUtil.findInputStream(SslContextServer.class.getClassLoader(), jks_path);
                 streams.set(jksStream.t2());

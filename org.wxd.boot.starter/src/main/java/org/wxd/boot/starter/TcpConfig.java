@@ -32,9 +32,9 @@ public class TcpConfig extends ObjectBase implements Serializable {
     @Element(required = false)
     private String sslProtocolType = null;
     @Element(required = false)
-    private String jks = "org_wxd_pkcs12.keystore";
+    private String jks = "";
     @Element(required = false)
-    private String jksPwd = "wxd2021";
+    private String jksPwd = "";
     @Element(required = false)
     private String serviceClassName = null;
 
