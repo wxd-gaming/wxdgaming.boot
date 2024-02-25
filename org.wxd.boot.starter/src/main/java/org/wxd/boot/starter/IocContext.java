@@ -134,6 +134,11 @@ public abstract class IocContext {
         forEachBean(filter, method, args);
     }
 
+    public <R> void forEachBean(Class<R> filter, SerializableLambda serializedLambda, Consumer<Throwable> onError, Object... args) {
+        Method method = serializedLambda.ofMethod();
+        forEachBean(filter, method, onError, args);
+    }
+
     public <R> void forEachBean(Class<R> filter, Method method, Object... args) {
         forEachBean(filter, method, null, args);
     }

@@ -8,7 +8,7 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.core.append.StreamWriter;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.str.json.FastJsonUtil;
 import org.wxd.boot.core.system.GlobalUtil;
@@ -149,7 +149,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                         if (StringUtil.emptyOrNull(cmd)) {
                             log.info("{} 命令参数 cmd , 未找到", session.getChannelContext());
                             if (rpcId > 0) {
-                                session.rpcResponse(rpcId, SyncJson.error("命令参数 cmd , 未找到").toJson());
+                                session.rpcResponse(rpcId, RunResult.error("命令参数 cmd , 未找到").toJson());
                             }
                             return;
                         }
@@ -159,7 +159,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                         if (mappingRecord == null) {
                             log.info("{} not found url {}", session.getChannelContext(), cmd);
                             if (rpcId > 0) {
-                                session.rpcResponse(rpcId, SyncJson.error("not found url " + cmd).toJson());
+                                session.rpcResponse(rpcId, RunResult.error("not found url " + cmd).toJson());
                             }
                             return;
                         }

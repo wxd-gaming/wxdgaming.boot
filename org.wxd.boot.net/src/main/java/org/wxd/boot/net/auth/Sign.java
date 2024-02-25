@@ -3,7 +3,7 @@ package org.wxd.boot.net.auth;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import org.wxd.boot.agent.system.Base64Util;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.net.Session;
 import org.wxd.boot.net.controller.ann.TextMapping;
@@ -19,7 +19,7 @@ import java.util.Objects;
 public interface Sign<S extends Session> {
 
     @TextMapping(url = "/", remarks = "登录")
-    default SyncJson sign(S session, ObjMap putData) {
+    default RunResult sign(S session, ObjMap putData) {
         String username = putData.getString("userName");
         String userPwd = putData.getString("userPwd");
         userPwd = Base64Util.decode(userPwd);
@@ -32,21 +32,21 @@ public interface Sign<S extends Session> {
      * @return
      * @throws Exception
      */
-    default SyncJson signAuth(String username, String md5Pwd) {
+    default RunResult signAuth(String username, String md5Pwd) {
         final SignConfig signConfig = SignConfig.get();
         if (signConfig != null) {
             final IAuth sign = signConfig.optByUser(username).orElse(null);
             if (sign == null) {
-                return SyncJson.error(101, "账号不存在");
+                return RunResult.error(101, "账号不存在");
             }
 
             if (!Objects.equals(sign.getToken(), md5Pwd)) {
-                return SyncJson.error(101, "密码错误");
+                return RunResult.error(101, "密码错误");
             }
             String token = cacheToken(sign);
-            return SyncJson.ok().append(HttpHeaderNames.AUTHORIZATION.toString(), token);
+            return RunResult.ok().append(HttpHeaderNames.AUTHORIZATION.toString(), token);
         }
-        return SyncJson.error(100, "账号不存在");
+        return RunResult.error(100, "账号不存在");
     }
 
     default String cacheToken(IAuth auth) {

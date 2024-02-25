@@ -1,124 +1,83 @@
 package org.wxd.boot.core.lang;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import lombok.NoArgsConstructor;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.format.data.Data2Json;
 import org.wxd.boot.core.str.json.FastJsonUtil;
 
-import java.io.Serializable;
-
 /**
- * 执行结果
+ * 用户rpc同步体
  *
  * @author: Troy.Chen(無心道, 15388152619)
- * @version: 2021-01-19 10:27
+ * @version: 2023-11-01 16:58
  **/
-public class RunResult implements Serializable, Data2Json {
+@NoArgsConstructor
+public class RunResult extends ObjMap {
 
-    private static final long serialVersionUID = 1L;
-
-    @JSONField(ordinal = 1)
-    private int code = 999;
-    @JSONField(ordinal = 2)
-    private String msg = "";
-    @JSONField(ordinal = 3)
-    private Object data;
-
-    public static RunResult ok() {
-        return of().setCode(0);
-    }
-
-    public static RunResult ok1() {
-        return of().setCode(1);
-    }
-
-    public static RunResult error(int code, String error) {
-        return of().setCode(code).setMsg(error);
-    }
-
-    public static RunResult of() {
-        return new RunResult();
-    }
-
-    /**
-     * 从json反序列化
-     *
-     * @param json
-     * @return
-     */
-    public static RunResult ofJson(String json) {
+    public static RunResult parse(String json) {
         return FastJsonUtil.parse(json, RunResult.class);
     }
 
-    /**
-     * code设置
-     *
-     * @return
-     */
-    public int getCode() {
-        return code;
+    public static RunResult build(int code) {
+        return new RunResult().code(code);
     }
 
-    public RunResult setCode(int code) {
-        this.code = code;
+    public static RunResult ok() {
+        return new RunResult().code(1);
+    }
+
+    public static RunResult error(String msg) {
+        return error(99, msg);
+    }
+
+    /** code不等于1表示异常 */
+    public static RunResult error(int code, String msg) {
+        return new RunResult().code(code).errorMsg(msg);
+    }
+
+    /** code不等于1表示异常 */
+    public boolean isOk() {
+        return getIntValue("code") == 1;
+    }
+
+    /** code不等于1表示异常 */
+    public boolean isError() {
+        return !isOk();
+    }
+
+    /** code不等于1表示异常 */
+    public int code() {
+        return getIntValue("code");
+    }
+
+    public RunResult code(int c) {
+        put("code", c);
         return this;
     }
 
-    public String getMsg() {
-        return msg;
+    public String errorMsg() {
+        return getString("error");
     }
 
-    public RunResult setMsg(String msg) {
-        this.msg = msg;
+    public RunResult errorMsg(String m) {
+        put("error", m);
         return this;
     }
 
-    /**
-     * 追加数据
-     *
-     * @param key
-     * @param value
-     * @return
-     */
-    public RunResult putData(String key, Object value) {
-        jsonObject().put(key, value);
+    public String data() {
+        return getString("data");
+    }
+
+    public RunResult data(Object data) {
+        put("data", data);
         return this;
     }
 
-    /**
-     * 如果是默认初始化。{@link ObjMap}
-     *
-     * @return
-     */
-    public ObjMap jsonObject() {
-        return (ObjMap) getData();
+    public <R> R data(Class<R> r) {
+        return parseObject("data", r);
     }
 
-    /**
-     * 如果是默认初始化。{@link ObjMap}
-     *
-     * @return
-     */
-    public Object getData() {
-        if (this.data == null) {
-            this.data = new ObjMap();
-        }
-        return data;
-    }
-
-    /**
-     * 设置参数
-     *
-     * @param data 可以是任意值
-     * @return
-     */
-    public RunResult setData(Object data) {
-        this.data = data;
+    @Override public RunResult append(Object key, Object value) {
+        super.append(key, value);
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return toJson();
     }
 }

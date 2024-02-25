@@ -19,32 +19,36 @@ public abstract class EventBusBase extends IocSubContext {
 
     protected final ConcurrentTable<Class<? extends IScript>, Serializable, IScript> scripts = new ConcurrentTable<>();
 
-    public <S extends IScript> S getScript(Class<S> scriptClass, Serializable scriptId) {
-        Map<Serializable, IScript> serializableObjectConcurrentHashMap = scripts.computeIfAbsent(scriptClass, l -> {
+    public <Key extends Serializable, S extends IScript<Key>> S getScript(Class<S> scriptClass, Serializable scriptId) {
+        Map<Serializable, IScript> iScriptMap = scripts.computeIfAbsent(scriptClass, l -> {
             ConcurrentHashMap<Serializable, IScript> map = new ConcurrentHashMap<>();
             beanStream(scriptClass).forEach(object -> {
+                IScript iScript = map.get(object.scriptKey());
+                if (iScript != null && !iScript.getClass().getName().equalsIgnoreCase(object.getClass().getName())) {
+                    throw new RuntimeException("script class=" + scriptClass + ", script key=" + object.scriptKey() + ", 文件 " + iScript.getClass() + " 与 文件" + object.getClass() + " 冲突");
+                }
                 map.put(object.scriptKey(), object);
             });
             return map;
         });
-        if (serializableObjectConcurrentHashMap == null) return null;
-        return (S) serializableObjectConcurrentHashMap.get(scriptId);
+        if (iScriptMap == null) return null;
+        return (S) iScriptMap.get(scriptId);
     }
 
-    public <S extends IScript> void script(Class<S> scriptClass, Serializable scriptId, ConsumerE1<S> consumer) {
+    public <Key extends Serializable, S extends IScript<Key>> void script(Class<S> scriptClass, Serializable scriptId, ConsumerE1<S> consumer) {
         S script = getScript(scriptClass, scriptId);
         if (script != null) {
             try {
                 consumer.accept(script);
             } catch (Exception e) {
-                throw new RuntimeException("scriptClass=" + scriptClass + ",id=" + scriptId, e);
+                log.error("scriptClass={}, key={}", script.getClass(), scriptId, e);
             }
         }
     }
 
-    public interface IScript {
+    public interface IScript<Key extends Serializable> {
 
-        default Serializable scriptKey() {
+        default Key scriptKey() {
             return null;
         }
 

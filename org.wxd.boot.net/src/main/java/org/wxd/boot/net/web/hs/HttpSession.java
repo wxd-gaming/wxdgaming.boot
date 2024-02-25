@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.system.BytesUnit;
 import org.wxd.boot.core.timer.MyClock;
@@ -130,7 +130,7 @@ public class HttpSession extends Session implements Serializable {
         responseText(res.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void responseText(SyncJson res) {
+    public void responseText(RunResult res) {
         responseText(res.toJson().getBytes(StandardCharsets.UTF_8));
     }
 
@@ -142,7 +142,7 @@ public class HttpSession extends Session implements Serializable {
         responseJson(res.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void responseJson(SyncJson res) {
+    public void responseJson(RunResult res) {
         responseJson(res.toJson().getBytes(StandardCharsets.UTF_8));
     }
 

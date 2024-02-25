@@ -2,7 +2,7 @@ package org.wxd.boot.net.http.client.jdk;
 
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.publisher.Mono;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.system.GlobalUtil;
@@ -83,13 +83,13 @@ public abstract class HttpBase<H extends HttpBase> {
         sendAsync(3).subscribe(httpResponse -> consumer.accept(new String(httpResponse.body(), StandardCharsets.UTF_8)));
     }
 
-    public Mono<SyncJson> asyncSyncJson() {
-        return sendAsync(3).map(httpResponse -> SyncJson.parse(new String(httpResponse.body(), StandardCharsets.UTF_8)));
+    public Mono<RunResult> asyncSyncJson() {
+        return sendAsync(3).map(httpResponse -> RunResult.parse(new String(httpResponse.body(), StandardCharsets.UTF_8)));
     }
 
-    public void asyncSyncJson(Consumer<SyncJson> consumer) {
+    public void asyncSyncJson(Consumer<RunResult> consumer) {
         sendAsync(3)
-                .subscribe(httpResponse -> consumer.accept(SyncJson.parse(new String(httpResponse.body(), StandardCharsets.UTF_8))))
+                .subscribe(httpResponse -> consumer.accept(RunResult.parse(new String(httpResponse.body(), StandardCharsets.UTF_8))))
                 .onError(this::actionThrowable);
     }
 

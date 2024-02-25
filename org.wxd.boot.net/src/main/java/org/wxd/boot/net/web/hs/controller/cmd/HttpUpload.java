@@ -1,5 +1,6 @@
 package org.wxd.boot.net.web.hs.controller.cmd;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.multipart.FileUpload;
 import io.netty.util.ReferenceCounted;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public interface HttpUpload {
             }
             new File(outDir).mkdirs();
             RunResult result = RunResult.ok();
+            JSONObject data = new JSONObject(true);
             try {
                 for (Map.Entry<String, FileUpload> entry : uploadFilesMap.entrySet()) {
                     FileUpload fileUpload = entry.getValue();
@@ -74,8 +76,9 @@ public interface HttpUpload {
                     }
                     String msg = "上传成功, 文件：" + file.getCanonicalPath();
                     log.info(msg);
-                    result.putData(fileUpload.getFilename(), "ok");
+                    data.put(fileUpload.getFilename(), "ok");
                 }
+                result.data(data);
                 return result;
             } finally {
                 /*资源释放*/

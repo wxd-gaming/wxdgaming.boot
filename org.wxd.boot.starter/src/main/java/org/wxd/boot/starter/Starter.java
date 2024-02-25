@@ -215,11 +215,11 @@ public class Starter {
     public static void start(boolean debug, int serverId, String serverName, String... extInfos) {
         {
             ConsumerE2<IStart, IocContext> startFun = IStart::start;
-            curIocInjector().forEachBean(IStart.class, startFun, curIocInjector());
+            curIocInjector().forEachBean(IStart.class, startFun, throwable -> JvmUtil.halt(-1), curIocInjector());
         }
         {
             ConsumerE2<IStartEnd, IocContext> startEndFun = IStartEnd::startEnd;
-            curIocInjector().forEachBean(IStartEnd.class, startEndFun, curIocInjector());
+            curIocInjector().forEachBean(IStartEnd.class, startEndFun, throwable -> JvmUtil.halt(-1), curIocInjector());
         }
         Executors.getDefaultExecutor().scheduleAtFixedDelay(
                 () -> {

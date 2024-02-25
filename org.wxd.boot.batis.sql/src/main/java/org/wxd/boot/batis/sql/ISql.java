@@ -84,7 +84,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
                 conn.commit();
             } catch (Exception e) {
                 conn.rollback();
-                throw Throw.as(sql, e);
+                throw e;
             } finally {
                 conn.setAutoCommit(true);
             }

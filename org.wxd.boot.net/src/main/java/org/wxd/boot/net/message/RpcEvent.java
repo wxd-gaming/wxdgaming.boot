@@ -7,7 +7,7 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.zip.GzipUtil;
 import org.wxd.boot.core.cache.CachePack;
 import org.wxd.boot.core.format.UniqueID;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.publisher.Mono;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.system.MarkTimer;
@@ -97,13 +97,13 @@ public class RpcEvent {
                 .onError(this::actionThrowable);
     }
 
-    public Mono<SyncJson> asyncSyncJson() {
-        return sendAsync(3).map(rpcEvent -> SyncJson.parse(rpcEvent.getResJson()));
+    public Mono<RunResult> asyncSyncJson() {
+        return sendAsync(3).map(rpcEvent -> RunResult.parse(rpcEvent.getResJson()));
     }
 
-    public void asyncSyncJson(Consumer<SyncJson> consumer) {
+    public void asyncSyncJson(Consumer<RunResult> consumer) {
         sendAsync(3)
-                .subscribe(rpcEvent -> consumer.accept(SyncJson.parse(rpcEvent.getResJson())))
+                .subscribe(rpcEvent -> consumer.accept(RunResult.parse(rpcEvent.getResJson())))
                 .onError(this::actionThrowable);
     }
 

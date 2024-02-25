@@ -3,7 +3,7 @@ package org.wxd.boot.net.http.client.jdk;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.net.http.HttpHeadNameType;
 
@@ -62,12 +62,12 @@ public final class Response<H extends HttpBase> {
         return new String(body(), charset);
     }
 
-    public SyncJson bodySyncJson() {
+    public RunResult bodySyncJson() {
         return bodySyncJson(StandardCharsets.UTF_8);
     }
 
-    public SyncJson bodySyncJson(Charset charset) {
-        return SyncJson.parse(bodyString(charset));
+    public RunResult bodySyncJson(Charset charset) {
+        return RunResult.parse(bodyString(charset));
     }
 
     public String bodyUnicodeDecodeString() {

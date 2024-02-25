@@ -4,7 +4,7 @@ import io.netty.util.AsciiString;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.zip.GzipUtil;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.core.publisher.Mono;
 import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.system.GlobalUtil;
@@ -139,11 +139,11 @@ public abstract class HttpBase<H extends HttpBase> {
                 .onError(this::actionThrowable);
     }
 
-    public Mono<SyncJson> asyncSyncJson() {
+    public Mono<RunResult> asyncSyncJson() {
         return sendAsync(3).map(Response::bodySyncJson);
     }
 
-    public void asyncSyncJson(Consumer<SyncJson> consumer) {
+    public void asyncSyncJson(Consumer<RunResult> consumer) {
         sendAsync(3)
                 .subscribe(httpResponse -> consumer.accept(httpResponse.bodySyncJson()))
                 .onError(this::actionThrowable);

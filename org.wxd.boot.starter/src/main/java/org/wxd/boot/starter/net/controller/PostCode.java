@@ -141,14 +141,11 @@ public class PostCode implements PrintConsole {
         RunResult r = null;
         try {
             r = FastJsonUtil.parse(post, RunResult.class);
-            if (r.getCode() != 0) {
-                log.warn("\n" + r.getCode() + " - " + r.getMsg());
+            if (r.code() != 0) {
+                log.warn("\n" + r.code() + " - " + r.errorMsg());
             } else {
-                if (r.getData() instanceof String) {
-                    log.warn("\n" + r.getData());
-                } else {
-                    log.warn("\n" + FastJsonUtil.toJsonFmt(r.getData()));
-                }
+                String data = r.data();
+                log.warn("\n" + data);
             }
         } catch (Exception e) {
             log.error("\n" + post, e);

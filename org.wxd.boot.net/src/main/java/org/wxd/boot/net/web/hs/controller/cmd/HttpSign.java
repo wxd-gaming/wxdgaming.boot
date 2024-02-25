@@ -2,7 +2,7 @@ package org.wxd.boot.net.web.hs.controller.cmd;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import org.wxd.boot.core.collection.ObjMap;
-import org.wxd.boot.core.lang.SyncJson;
+import org.wxd.boot.core.lang.RunResult;
 import org.wxd.boot.net.auth.Sign;
 import org.wxd.boot.net.controller.ann.TextMapping;
 import org.wxd.boot.net.web.hs.HttpSession;
@@ -18,8 +18,8 @@ public interface HttpSign extends Sign<HttpSession> {
     /** 用于http登录生成秘钥的，秘钥过期时间是10分钟 */
     @Override
     @TextMapping(url = "/", remarks = "登录")
-    default SyncJson sign(HttpSession session, ObjMap putData) {
-        SyncJson runResult = Sign.super.sign(session, putData);
+    default RunResult sign(HttpSession session, ObjMap putData) {
+        RunResult runResult = Sign.super.sign(session, putData);
         if (runResult != null && runResult.code() == 1) {
             session.getResCookie().addCookie(
                     HttpHeaderNames.AUTHORIZATION,
