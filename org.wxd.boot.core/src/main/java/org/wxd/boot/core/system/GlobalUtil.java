@@ -1,6 +1,7 @@
 package org.wxd.boot.core.system;
 
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.agent.LogbackUtil;
 import org.wxd.boot.agent.function.Consumer2;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,8 +23,7 @@ public class GlobalUtil {
         if (exceptionCall != null) {
             exceptionCall.accept(msg, throwable);
         } else {
-            StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
-            LoggerFactory.getLogger(stackTraceElement.getClassName()).error("{}", msg, throwable);
+            LogbackUtil.logger(3).error("{}", msg, throwable);
         }
     }
 

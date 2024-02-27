@@ -44,7 +44,11 @@ public class LogbackUtil {
     }
 
     public static Logger logger() {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[2];
+        return logger(3);
+    }
+
+    public static Logger logger(int stack) {
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stack];
         return LoggerFactory.getLogger(stackTraceElement.getClassName());
     }
 
