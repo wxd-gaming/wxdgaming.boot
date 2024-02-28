@@ -3,13 +3,12 @@
 此框架可以理解为“spring spring boot”作为快速搭建应用的一些辅助实现;
 <p>其中包括数据库操作，tcp,http,websocket rpc等网络服务应用
 <p>
-**表格标题**
 
 | 项目模块 | 描述  |
 |------|-----|
-|org.wxd.boot.agent  | 用于字节码更新 java 文件编译，class文件加载 |
-|org.wxd.boot.agent   | 用于字节码更新 java 文件编译，class文件加载|
-|org.wxd.boot.assist  | 用于运行耗时统计，通过 assist 字节码增强方式对调用链路增加耗时统计代码|
+|org.wxd.boot.agent|用于字节码更新 java 文件编译，class文件加载 |
+|org.wxd.boot.agent| 用于字节码更新 java 文件编译，class文件加载|
+|org.wxd.boot.assist| 用于运行耗时统计，通过 assist 字节码增强方式对调用链路增加耗时统计代码|
 |org.wxd.boot.batis   | batis，数据库操作基类|
 |org.wxd.boot.batis.mongodb | 操作mongodb|
 |org.wxd.boot.batis.redis   | 操作redis|
@@ -75,3 +74,44 @@ class = org.wxd.boot.starter.webapi.PublicApi
 [2024-02-28 19:35:53.016] [INFO ] [main] [o.w.b.n.NioServer.open() Line:116] - class org.wxd.boot.starter.service.TsService tcp-server default 127.0.0.1:17000 - 17000 服务器已启动
 [2024-02-28 19:35:53.017] [INFO ] [main] [o.w.b.n.NioServer.open() Line:116] - class org.wxd.boot.starter.service.WsService web-server default - 18000 服务器已启动
 ```
+
+## 项目最主要的配置 boot.xml
+
+配置方案具体可以参考 org.wxd.boot.starter 模块的test目录 test/resources/boot.xml
+
+```java
+<!-- 虚拟线程池 -->
+<vtExecutor coreSize="100" maxSize="200"/>
+<!-- 默认线程池 -->
+<defaultExecutor coreSize="2" maxSize="4"/>
+<!-- 逻辑线程池 -->
+<logicExecutor coreSize="8" maxSize="16"/>
+```
+start 项目启动 框架所支持的线程池配置，可以更改线程数量
+```java
+<server>
+    <name>g1</name>
+    <host>*</host>
+    <wanIp>127.0.0.1</wanIp>
+    <port>17000</port>
+    <sslProtocolType></sslProtocolType>
+    <jks></jks>
+    <jksPwd></jksPwd>
+</server>
+<server1>
+    <name>g2</name>
+    <host>*</host>
+    <wanIp>127.0.0.1</wanIp>
+    <port>17001</port>
+    <sslProtocolType></sslProtocolType>
+    <jks></jks>
+    <jksPwd></jksPwd>
+</server1>
+```
+开启两个tcp端口的监听
+
+## 更完整的解决方案落地实现请查阅 test-all/mmoarpg-j21 仓储代码
+
+两个文件皆可以启动，注意自己配置数据库访问（test-all/mmoarpg-j21/pom.xml 配置自己的数据库访问）
+<br>GameSrAppMain
+<br>GameSrScriptMain
