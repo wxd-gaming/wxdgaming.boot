@@ -26,20 +26,6 @@ public class ExcelRead2Json extends ExcelRead<JsonEntityTable, JsonDataWrapper> 
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(ExcelRead2Json.class);
 
-    public static void main(String[] args) throws Exception {
-        ExcelRead2Json.builder()
-                .dataIndex(2, 3, 4, 1, 5)
-                .excelPaths(false, "D:\\gitee\\com.fish.excel\\配置文件")
-                .loadExcel("server")
-                .saveData("d:/out/server/config_json")
-//                .showData()
-                .createCode(CodeLan.Java, "d:\\out\\server\\java", "com.server.cfg")
-                .loadExcel("client")
-                .saveData("C:\\Users\\49279\\source\\repos\\TestProject1\\ConsoleApp1\\config_json")
-                .createCode(CodeLan.CSharp, "C:\\Users\\49279\\source\\repos\\TestProject1\\ConsoleApp1", "Cfg")
-        ;
-    }
-
     public static ExcelRead2Json builder() {
         return new ExcelRead2Json();
     }

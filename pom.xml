@@ -17,7 +17,9 @@
         <module>org.wxd.boot.batis.sql</module>
         <module>org.wxd.boot.batis.sql.mysql</module>
         <module>org.wxd.boot.batis.sql.sqlite</module>
+        <module>org.wxd.boot.convert</module>
         <module>org.wxd.boot.core</module>
+        <module>org.wxd.boot.holder</module>
         <module>org.wxd.boot.jscript</module>
         <module>org.wxd.boot.net</module>
         <module>org.wxd.boot.net.http</module>
@@ -26,7 +28,6 @@
         <module>org.wxd.boot.net.http.client.url</module>
         <module>org.wxd.boot.net.http.service.simple</module>
         <module>org.wxd.boot.starter</module>
-        <module>org.wxd.boot.holder</module>
     </modules>
 
     <properties>
