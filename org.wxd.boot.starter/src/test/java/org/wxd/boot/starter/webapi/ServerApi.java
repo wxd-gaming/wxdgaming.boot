@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 import org.wxd.boot.core.collection.ObjMap;
 import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
+import org.wxd.boot.net.ts.TcpServer;
 import org.wxd.boot.net.web.hs.HttpSession;
 import org.wxd.boot.starter.IocContext;
 import org.wxd.boot.starter.i.IBeanInit;
 import org.wxd.boot.starter.service.HsService;
+import org.wxd.boot.starter.service.TsService;
 
 /**
  * 公共
@@ -18,6 +20,7 @@ import org.wxd.boot.starter.service.HsService;
 @TextController()
 public class ServerApi implements IBeanInit {
 
+    @Inject TsService tsService;
     @Inject HsService hsService;
 
     @Override public void beanInit(IocContext iocContext) throws Exception {
