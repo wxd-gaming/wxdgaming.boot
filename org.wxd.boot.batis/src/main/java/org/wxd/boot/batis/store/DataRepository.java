@@ -43,10 +43,12 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
         return (R) dbBean;
     }
 
+    /** 实现重新加载配置 */
     public void removeAll() {
         beanMap = new ConcurrentHashMap<>();
     }
 
+    /** 实现重新加载配置--如果只是某个配置表更新了，不需要解析其他的 */
     public void removeDbBean(Class<? extends DbBean> beanClazz) {
         Class<?> tClass = ReflectContext.getTClass(beanClazz);
         DM entityTable = dataBuilder().asEntityTable(tClass);
