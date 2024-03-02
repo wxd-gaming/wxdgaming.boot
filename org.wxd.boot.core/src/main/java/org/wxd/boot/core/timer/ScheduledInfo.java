@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.core.ann.Sort;
 import org.wxd.boot.core.str.StringUtil;
@@ -63,7 +64,11 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         final Sort sortAnn = AnnUtil.ann(method, Sort.class);
         this.index = sortAnn == null ? 999999 : sortAnn.value();
         this.scheduleAtFixedRate = scheduled.scheduleAtFixedRate();
-        action(scheduled.value());
+        try {
+            action(scheduled.value());
+        } catch (Exception e) {
+            throw Throw.as("Scheduled 定时任务 corn 表达式异常 - (" + scheduled.value() + ") - " + instance.getClass().getSimpleName() + " - " + method.getName(), e);
+        }
     }
 
     @Override public String getTaskInfoString() {

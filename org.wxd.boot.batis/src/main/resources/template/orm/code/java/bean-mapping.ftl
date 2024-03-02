@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import org.wxd.boot.batis.struct.DataChecked;
 import org.wxd.boot.batis.struct.DbColumn;
 import org.wxd.boot.batis.struct.DbTable;
-import org.wxd.boot.core.lang.ObjectBase
+import org.wxd.boot.core.lang.ObjectBase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
