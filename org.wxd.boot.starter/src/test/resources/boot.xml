@@ -16,15 +16,6 @@
         <jks></jks>
         <jksPwd></jksPwd>
     </server>
-    <server1>
-        <name>g2</name>
-        <host>*</host>
-        <wanIp>127.0.0.1</wanIp>
-        <port>17001</port>
-        <sslProtocolType></sslProtocolType>
-        <jks></jks>
-        <jksPwd></jksPwd>
-    </server1>
     <wsserver>
         <name>default</name>
         <host>*</host>
@@ -59,21 +50,21 @@
 <!--            <header key="cache-control" value="max-age=36000"/>-->
         </headers>
     </http>
-    <mysql>
-        <name>default</name>
-        <show_sql>true</show_sql>
-        <connectionPool>true</connectionPool>
-        <batchSizeThread>2</batchSizeThread>
-        <dbHost>127.0.0.1</dbHost>
-        <dbPort>3306</dbPort>
-        <dbBase>test3</dbBase>
-        <dbUser>root</dbUser>
-        <dbPwd>test</dbPwd>
-    </mysql>
-    <redis>
-        <name>数据源1</name>
-        <dbHost>127.0.0.1</dbHost>
-        <dbPort>6379</dbPort>
-        <dbPwd>test</dbPwd>
-    </redis>
+<!--    <mysql>-->
+<!--        <name>default</name>-->
+<!--        <show_sql>true</show_sql>-->
+<!--        <connectionPool>true</connectionPool>-->
+<!--        <batchSizeThread>2</batchSizeThread>-->
+<!--        <dbHost>127.0.0.1</dbHost>-->
+<!--        <dbPort>3306</dbPort>-->
+<!--        <dbBase>test3</dbBase>-->
+<!--        <dbUser>root</dbUser>-->
+<!--        <dbPwd>test</dbPwd>-->
+<!--    </mysql>-->
+<!--    <redis>-->
+<!--        <name>数据源1</name>-->
+<!--        <dbHost>127.0.0.1</dbHost>-->
+<!--        <dbPort>6379</dbPort>-->
+<!--        <dbPwd>test</dbPwd>-->
+<!--    </redis>-->
 </bootConfig>
