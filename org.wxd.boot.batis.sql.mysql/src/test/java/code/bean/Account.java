@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.apache.poi.util.Beta;
+import org.wxd.boot.batis.enums.ColumnType;
 import org.wxd.boot.batis.struct.DbColumn;
 import org.wxd.boot.batis.struct.DbTable;
 import org.wxd.boot.core.lang.ObjectBase;
@@ -25,12 +26,12 @@ public class Account extends ObjectBase {
 
     @DbColumn(key = true, comment = "唯一ID")
     private long uid;
-    @DbColumn(index = true, comment = "账号")
+    @DbColumn(index = true, columnType = ColumnType.Varchar, length = 128, comment = "账号")
     private String accountName;
 
     @DbColumn(index = true, comment = "创建时间")
     private long createTime;
-    @DbColumn(index = true, comment = "注册渠道")
+    @DbColumn(index = true, columnType = ColumnType.Varchar, length = 128, comment = "注册渠道")
     private String channel;
 
     @DbColumn(comment = "其他数据")
