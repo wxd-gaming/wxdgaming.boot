@@ -128,6 +128,7 @@ public final class ThreadPoolExecutors implements Executor, Runnable {
                     }
                 } catch (Throwable throwable) {
                     log.error("执行器异常 {}", runnable, throwable);
+                    GlobalUtil.exception("执行器异常 " + runnable, throwable);
                 }
             } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
         }

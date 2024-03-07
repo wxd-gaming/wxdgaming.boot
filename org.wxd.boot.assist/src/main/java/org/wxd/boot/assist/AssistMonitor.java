@@ -25,8 +25,8 @@ public class AssistMonitor {
     public static final InheritableThreadLocal<MonitorRecord> THREAD_LOCAL = new InheritableThreadLocal<>();
     public static AssistClassTransform transformer = null;
     public static OpenOption[] openOptions;
-    public static Path assist_path_error;
-    public static Path assist_path_log;
+    public static Path assist_path_error = new File(AssistMonitor.ASSIST_OUT_DIR + "/assist.error").toPath();
+    public static Path assist_path_log = new File(AssistMonitor.ASSIST_OUT_DIR + "/assist.log").toPath();
 
     public static void premain(String ages, Instrumentation instrumentation) {
         try {
@@ -72,6 +72,7 @@ public class AssistMonitor {
     }
 
     public static void print(Path path, String info) {
+        path.toFile().getParentFile().mkdir();
         try (OutputStream out = Files.newOutputStream(path, openOptions)) {
             out.write("\n----------------------------------start--------------------------------------\n".getBytes(StandardCharsets.UTF_8));
             out.write(info.getBytes(StandardCharsets.UTF_8));
