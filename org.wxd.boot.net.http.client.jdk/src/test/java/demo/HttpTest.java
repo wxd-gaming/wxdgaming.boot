@@ -19,13 +19,7 @@ public class HttpTest {
 
     @Test
     public void t1() throws Exception {
-        String url;
-        // url = "http://47.108.150.14:18800/sjcq/wanIp";
-        url = "http://127.0.0.1:19000/test/ok";
-        // url = "http://47.108.150.14:18801/test/ok";
-        //url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
-        // url = "http://center.xiaw.net:18800/sjcq/wanIp";
-        // url = "https://www.baidu.com";
+        String url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
         tv1(url, 1);
         tv1(url, 10);
         tv1(url, 50);

@@ -43,7 +43,7 @@ public class DbConfig extends ObjectBase implements Serializable, Cloneable {
 
     /** 命名 */
     private String name;
-    /** 链接池 */
+    /** 显示sql执行语句 */
     private boolean show_sql = false;
     /** 链接池 */
     private boolean connectionPool = false;

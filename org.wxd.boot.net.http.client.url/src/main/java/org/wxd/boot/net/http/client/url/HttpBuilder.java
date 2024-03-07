@@ -2,6 +2,7 @@ package org.wxd.boot.net.http.client.url;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -35,6 +36,14 @@ public final class HttpBuilder {
 
     public static PostMulti postMulti(String url, Map map) {
         return new PostMulti(url).putParams(map);
+    }
+
+    public static PostFile postFile(String url, Map map) {
+        return new PostFile(url).putParams(map);
+    }
+
+    public static PostFile postFile(String url, File file) {
+        return new PostFile(url).addFile(file);
     }
 
 }

@@ -57,4 +57,10 @@ public class PublicApi {
     public void s1() throws Exception {
     }
 
+    @Scheduled("0 0 0")/*每小时执行*/
+    @Async(vt = true)/*因为耗时，异步交给虚拟线程执行*/
+    @ExecutorLog(logTime = 33)/*如果执行超过33毫秒就开始加入监控日志*/
+    public void s2() throws Exception {
+    }
+
 }

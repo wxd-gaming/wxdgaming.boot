@@ -76,6 +76,15 @@ public class ThreadPoolTest {
                 TimeUnit.MILLISECONDS,
                 10/*执行10次*/
         );
+        Executors.getLogicExecutor().scheduleAtFixedDelay(
+                () -> {
+                    log.info("我是周期定时任务");
+                },
+                50,/*添加之后50毫秒开始执行*/
+                500,/*周期间隔是500毫秒*/
+                TimeUnit.MILLISECONDS,
+                10/*执行10次*/
+        );
         //timerJob.cancel();
         Thread.sleep(10000);
     }
