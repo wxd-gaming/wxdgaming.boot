@@ -86,7 +86,8 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
 
     @Override
     public void close() {
-        jedisPool.close();
+        if (jedisPool != null)
+            jedisPool.close();
         log.info("{} 关闭 redis db host={} serviceName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName());
     }
 
@@ -278,61 +279,59 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
 
     public void inDb4File(String zipFile, int batchSize) {
         try (ReadZipFile readZipFile = new ReadZipFile(zipFile)) {
-            readZipFile.forEach(
-                    (tableName, bytes) -> {
-                        String s = new String(bytes, StandardCharsets.UTF_8);
+            readZipFile.forEach((tableName, bytes) -> {
+                String s = new String(bytes, StandardCharsets.UTF_8);
 
-                        try (StringReader stringReader = new StringReader(s)) {
-                            try (BufferedReader bufferedReader = new BufferedReader(stringReader)) {
+                try (StringReader stringReader = new StringReader(s)) {
+                    try (BufferedReader bufferedReader = new BufferedReader(stringReader)) {
 
-                                AtomicLong size = new AtomicLong();
+                        AtomicLong size = new AtomicLong();
 
-                                File file = new File(tableName);
-                                int dbIndex = Integer.valueOf(file.getParent());
-                                String key = file.getName();
-                                String key_type = bufferedReader.readLine();
-                                consumerPipeline(dbIndex, pipeline -> {
+                        File file = new File(tableName);
+                        int dbIndex = Integer.valueOf(file.getParent());
+                        String key = file.getName();
+                        String key_type = bufferedReader.readLine();
+                        consumerPipeline(dbIndex, pipeline -> {
 
-                                    if ("string".equalsIgnoreCase(key_type)) {
-                                        pipeline.set(key, bufferedReader.readLine());
-                                        size.incrementAndGet();
-                                    } else if ("list".equalsIgnoreCase(key_type)) {
-                                        String line;
-                                        while ((line = bufferedReader.readLine()) != null) {
-                                            pipeline.rpush(key, line);
-                                            size.incrementAndGet();
-                                        }
-                                    } else if ("set".equalsIgnoreCase(key_type)) {
-                                        String line;
-                                        while ((line = bufferedReader.readLine()) != null) {
-                                            pipeline.sadd(key, line);
-                                            size.incrementAndGet();
-                                        }
-                                    } else if ("zset".equalsIgnoreCase(key_type)) {
-                                        /*有序集合*/
-                                        String line;
-                                        while ((line = bufferedReader.readLine()) != null) {
-                                            Map<String, Double> jsonObject = FastJsonUtil.parse(line, new TypeReference<HashMap<String, Double>>() {
-                                            });
-                                            for (Map.Entry<String, Double> entry : jsonObject.entrySet()) {
-                                                pipeline.zadd(key, entry.getValue(), entry.getKey());
-                                            }
-                                            size.addAndGet(jsonObject.size());
-                                        }
-                                    } else if ("hash".equalsIgnoreCase(key_type)) {
-                                        String line;
-                                        while ((line = bufferedReader.readLine()) != null) {
-                                            Map<String, String> jsonObject = FastJsonUtil.parseStringMap(line);
-                                            pipeline.hmset(key, jsonObject);
-                                            size.addAndGet(jsonObject.size());
-                                        }
+                            if ("string".equalsIgnoreCase(key_type)) {
+                                pipeline.set(key, bufferedReader.readLine());
+                                size.incrementAndGet();
+                            } else if ("list".equalsIgnoreCase(key_type)) {
+                                String line;
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    pipeline.rpush(key, line);
+                                    size.incrementAndGet();
+                                }
+                            } else if ("set".equalsIgnoreCase(key_type)) {
+                                String line;
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    pipeline.sadd(key, line);
+                                    size.incrementAndGet();
+                                }
+                            } else if ("zset".equalsIgnoreCase(key_type)) {
+                                /*有序集合*/
+                                String line;
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    Map<String, Double> jsonObject = FastJsonUtil.parse(line, new TypeReference<HashMap<String, Double>>() {
+                                    });
+                                    for (Map.Entry<String, Double> entry : jsonObject.entrySet()) {
+                                        pipeline.zadd(key, entry.getValue(), entry.getKey());
                                     }
-                                });
-                                log.warn("从文件：" + zipFile + ", 数据插槽：" + dbIndex + ", 键：" + key + ", 数据：" + size.get() + " 完成");
+                                    size.addAndGet(jsonObject.size());
+                                }
+                            } else if ("hash".equalsIgnoreCase(key_type)) {
+                                String line;
+                                while ((line = bufferedReader.readLine()) != null) {
+                                    Map<String, String> jsonObject = FastJsonUtil.parseStringMap(line);
+                                    pipeline.hmset(key, jsonObject);
+                                    size.addAndGet(jsonObject.size());
+                                }
                             }
-                        }
+                        });
+                        log.warn("从文件：" + zipFile + ", 数据插槽：" + dbIndex + ", 键：" + key + ", 数据：" + size.get() + " 完成");
                     }
-            );
+                }
+            });
         }
         log.info("所有数据 导入 完成：" + FileUtil.getCanonicalPath(zipFile));
     }

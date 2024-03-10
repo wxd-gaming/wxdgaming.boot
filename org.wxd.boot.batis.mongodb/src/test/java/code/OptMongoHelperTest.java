@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DbConfig;
-import org.wxd.boot.batis.sql.mysql.MysqlDataHelper;
+import org.wxd.boot.batis.mongodb.MongoDataHelper;
 import org.wxd.boot.batis.struct.DbTable;
 
 /**
@@ -17,28 +17,28 @@ import org.wxd.boot.batis.struct.DbTable;
  * @version: 2024-03-07 16:39
  **/
 @Slf4j
-public class OptMysql {
+public class OptMongoHelperTest {
 
-    static MysqlDataHelper dbHelper;
+    static MongoDataHelper dbHelper;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
         DbConfig dbConfig = new DbConfig()
                 .setShow_sql(true)
-                .setDbHost("127.0.0.1").setDbPort(3306)
+                .setDbHost("127.0.0.1").setDbPort(27191)
                 .setDbBase("test")
                 .setDbUser("root")
                 .setDbPwd("test")
                 .setConnectionPool(false)
                 .setCreateDbBase(true);
 
-        dbHelper = new MysqlDataHelper(dbConfig);
+        dbHelper = new MongoDataHelper(dbConfig);
 
-        dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
+        dbHelper.checkDataBase(OptMongoHelperTest.class.getClassLoader(), "code.bean");
 
 
         ReflectContext build = ReflectContext.Builder
-                .of(OptMysql.class.getClassLoader(), "code.bean")
+                .of(OptMongoHelperTest.class.getClassLoader(), "code.bean")
                 .build();
 
         build

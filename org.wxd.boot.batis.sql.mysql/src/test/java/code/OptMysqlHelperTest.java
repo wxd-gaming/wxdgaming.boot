@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.DbConfig;
-import org.wxd.boot.batis.mongodb.MongoDataHelper;
+import org.wxd.boot.batis.sql.mysql.MysqlDataHelper;
 import org.wxd.boot.batis.struct.DbTable;
 
 /**
@@ -17,9 +17,9 @@ import org.wxd.boot.batis.struct.DbTable;
  * @version: 2024-03-07 16:39
  **/
 @Slf4j
-public class OptMysql {
+public class OptMysqlHelperTest {
 
-    static MongoDataHelper dbHelper;
+    static MysqlDataHelper dbHelper;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -32,13 +32,13 @@ public class OptMysql {
                 .setConnectionPool(false)
                 .setCreateDbBase(true);
 
-        dbHelper = new MongoDataHelper(dbConfig);
+        dbHelper = new MysqlDataHelper(dbConfig);
 
-        dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
+        //dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
 
 
         ReflectContext build = ReflectContext.Builder
-                .of(OptMysql.class.getClassLoader(), "code.bean")
+                .of(OptMysqlHelperTest.class.getClassLoader(), "code.bean")
                 .build();
 
         build

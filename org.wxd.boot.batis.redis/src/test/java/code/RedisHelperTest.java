@@ -1,0 +1,57 @@
+package code;
+
+import code.bean.Account;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.wxd.boot.batis.DbConfig;
+import org.wxd.boot.batis.redis.RedisDataHelper;
+
+/**
+ * 数据操作
+ *
+ * @author: Troy.Chen(無心道, 15388152619)
+ * @version: 2024-03-07 16:39
+ **/
+@Slf4j
+public class RedisHelperTest {
+
+    static RedisDataHelper dbHelper;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        DbConfig dbConfig = new DbConfig()
+                .setShow_sql(true)
+                .setDbHost("127.0.0.1").setDbPort(6379)
+                .setDbBase("test")
+                .setConnectionPool(false)
+                .setCreateDbBase(true);
+
+        dbHelper = new RedisDataHelper(dbConfig);
+
+        //dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
+
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        dbHelper.close();
+    }
+
+    @Test
+    public void t1() {
+        Account model = new Account()
+                .setUid(System.nanoTime())
+                .setCreateTime(System.currentTimeMillis())
+                .setAccountName(String.valueOf(System.currentTimeMillis()));
+        dbHelper.hsetDbBean(model);
+        log.info("{}", model.toJson());
+    }
+
+
+    @Test
+    public void t2() {
+    }
+
+}

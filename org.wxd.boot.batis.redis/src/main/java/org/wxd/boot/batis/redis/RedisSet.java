@@ -1,12 +1,16 @@
 package org.wxd.boot.batis.redis;
 
 import org.wxd.boot.agent.function.ConsumerE1;
+import org.wxd.boot.batis.DataWrapper;
+import org.wxd.boot.batis.EntityTable;
+import org.wxd.boot.core.str.json.FastJsonUtil;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.params.SetParams;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * redis的hash处理
@@ -17,13 +21,16 @@ import java.util.Map;
 interface RedisSet {
 
     /**
-     * 暂时思路不清晰
+     * 用hashset的形式存储bean
      *
      * @param dbBase
      */
-    @Deprecated
-    default void hset(Object dbBase) {
-        final Map<String, String> toJsonMap = ((RedisDataHelper) this).getDataWrapper().toJsonMapString(dbBase);
+    default void hsetDbBean(Object dbBase) {
+        DataWrapper<EntityTable> dataWrapper = ((RedisDataHelper) this).getDataWrapper();
+        EntityTable entityTable = dataWrapper.asEntityTable(dbBase);
+        Object fieldValue = entityTable.getDataColumnKey().getFieldValue(dbBase);
+        final Map<String, String> toJsonMap = dataWrapper.toJsonMapString(dbBase);
+        hmset(entityTable.getTableName() + ":" + fieldValue, toJsonMap);
     }
 
     default String set(RedisKey redisKey, Object value, Object... redisParams) {
@@ -126,7 +133,7 @@ interface RedisSet {
             setParams.nx();/* IF NOT EXIST的缩写，只有KEY不存在的前提下才会设置值。*/
             setParams.px(px);/* 设置超时时间，单位是毫秒。 */
             String set = jedis.set(key_resource_id, uni_request_id, setParams);
-            if (set == "1") { // 加锁
+            if (Objects.equals(set, "1")) { // 加锁
                 try {
                     // 业务处理
                     lockCall.accept(jedis);
