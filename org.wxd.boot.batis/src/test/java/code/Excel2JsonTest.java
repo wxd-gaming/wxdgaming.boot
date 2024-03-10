@@ -19,7 +19,7 @@ public class Excel2JsonTest {
                 .excelPaths(false, "src/test/resources")
                 .loadExcel("server")
                 .saveData("target/out/server/config_json")
-//                .showData()
+                .showData()
                 .createCode(CodeLan.Java, "target/out/server/code", "com.server.cfg")
                 .loadExcel("client")
                 .saveData("target/out/client/config_json")

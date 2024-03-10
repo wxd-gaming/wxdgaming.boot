@@ -73,4 +73,28 @@ public class OptMongoHelperTest {
         log.info("{}", account);
     }
 
+    @Test
+    public void t3() throws InterruptedException {
+        for (int i = 0; i < 1000; i++) {
+            Account model = new Account()
+                    .setUid(System.nanoTime())
+                    .setCreateTime(System.currentTimeMillis())
+                    .setAccountName(String.valueOf(System.currentTimeMillis()));
+            dbHelper.getBatchPool().replace(model);
+            log.info("{}", model.toJson());
+        }
+        Thread.sleep(5000);
+    }
+
+    @Test
+    public void t4() throws Exception {
+        dbHelper.outDb2File("target/db_bak");
+        Thread.sleep(5000);
+    }
+
+    @Test
+    public void t5() throws Exception {
+        dbHelper.inDb4File("target/db_bak/test/test-2024-03-10-20-31-20.zip", 200);
+        Thread.sleep(5000);
+    }
 }

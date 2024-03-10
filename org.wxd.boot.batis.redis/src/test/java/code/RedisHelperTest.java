@@ -54,4 +54,16 @@ public class RedisHelperTest {
     public void t2() {
     }
 
+    @Test
+    public void t4() throws Exception {
+        dbHelper.out2File("target/db_bak");
+        Thread.sleep(5000);
+    }
+
+    @Test
+    public void t5() throws Exception {
+        dbHelper.inDb4File("target/db_bak/test/test-2024-03-10-20-31-20.zip", 200);
+        Thread.sleep(5000);
+    }
+
 }
