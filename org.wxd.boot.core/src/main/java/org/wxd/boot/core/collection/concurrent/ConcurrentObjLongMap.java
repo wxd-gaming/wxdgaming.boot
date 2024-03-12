@@ -1,16 +1,16 @@
-package org.wxd.boot.core.collection;
+package org.wxd.boot.core.collection.concurrent;
 
 
 import org.wxd.boot.core.str.json.FastJsonUtil;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
 
-/** 非线程安全的 */
-public class ObjLongMap<K> extends HashMap<K, Long> implements Map<K, Long> {
+/** 线程安全的 */
+public class ConcurrentObjLongMap<K> extends ConcurrentHashMap<K, Long> implements Map<K, Long> {
 
 
     /** 会覆盖数据 */
@@ -82,7 +82,7 @@ public class ObjLongMap<K> extends HashMap<K, Long> implements Map<K, Long> {
         return super.merge(key, value, Math::max);
     }
 
-    /** 当前值和最新值谁小，用谁 */
+    /** 当前值和最新值谁大，用谁 */
     public long min(K key, long value) {
         return super.merge(key, value, Math::min);
     }

@@ -1,20 +1,20 @@
-package org.wxd.boot.core.collection;
+package org.wxd.boot.core.collection.concurrent;
 
 
 import lombok.Getter;
 import lombok.Setter;
 import org.wxd.boot.core.str.json.FastJsonUtil;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
-/** 非线程安全的 */
+/** 线程安全的, 并且是有序的 */
 @Getter
 @Setter
-public class ObjIntMap<K> extends HashMap<K, Integer> implements Map<K, Integer> {
+public class ConcurrentSkipIntMap<K extends Comparable<K>> extends ConcurrentSkipListMap<K, Integer> implements Map<K, Integer> {
 
     public int getCount(K key) {
         return this.getOrDefault(key, 0);

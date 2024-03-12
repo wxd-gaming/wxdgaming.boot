@@ -1,17 +1,16 @@
-package org.wxd.boot.core.collection;
+package org.wxd.boot.core.collection.concurrent;
 
 
 import org.wxd.boot.core.str.json.FastJsonUtil;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
 
-/** 非线程安全的 */
-public class ObjLongMap<K> extends HashMap<K, Long> implements Map<K, Long> {
-
+/** 线程安全的,并且是有序的 */
+public class ConcurrentSkipLongMap<K extends Comparable<K>> extends ConcurrentSkipListMap<K, Long> implements Map<K, Long> {
 
     /** 会覆盖数据 */
     public long putCount(K key, long newValue) {

@@ -1,20 +1,20 @@
-package org.wxd.boot.core.collection;
+package org.wxd.boot.core.collection.concurrent;
 
 
 import lombok.Getter;
 import lombok.Setter;
 import org.wxd.boot.core.str.json.FastJsonUtil;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
-/** 非线程安全的 */
+/** 线程安全的 */
 @Getter
 @Setter
-public class ObjIntMap<K> extends HashMap<K, Integer> implements Map<K, Integer> {
+public class ConcurrentObjIntMap<K> extends ConcurrentHashMap<K, Integer> implements Map<K, Integer> {
 
     public int getCount(K key) {
         return this.getOrDefault(key, 0);
@@ -91,7 +91,7 @@ public class ObjIntMap<K> extends HashMap<K, Integer> implements Map<K, Integer>
         return super.merge(key, value, Math::max);
     }
 
-    /** 当前值和最新值谁小，用谁 */
+    /** 当前值和最新值谁大，用谁 */
     public int min(K key, int value) {
         return super.merge(key, value, Math::min);
     }
