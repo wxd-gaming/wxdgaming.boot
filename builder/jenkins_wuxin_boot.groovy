@@ -40,9 +40,18 @@ pipeline {
         stage('compile and package') {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
+                echo '当前目录'
                 sh 'pwd'
+                echo '转换sh文件格式'
                 sh 'find ./ -name "*.sh" | xargs dos2unix'
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                echo '开始编译'
+                sh '''
+mvn clean package -Dmaven.test.skip=true
+if [ $? != 0 ]; then
+  echo "打包失败"
+  exit 1
+fi
+'''
             }
         }
 
