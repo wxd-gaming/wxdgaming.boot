@@ -38,7 +38,7 @@ pipeline {
         stage('compile and package') {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
-                sh 'mvn clean -T 1C package -Dmaven.test.skip=true'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
 
