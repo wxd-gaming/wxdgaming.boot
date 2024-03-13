@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wxd.boot.agent.LogbackUtil;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.function.Consumer2;
 import org.wxd.boot.agent.function.ConsumerE2;
@@ -54,7 +55,7 @@ public class Starter {
     }
 
     public static void startBoot(String... packages) {
-        JvmUtil.setLogbackConfig();
+        LogbackUtil.setLogbackConfig();
         Set<String> packages1 = SetOf.asSet(packages);
         String[] array = packages1.toArray(new String[0]);
         if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");

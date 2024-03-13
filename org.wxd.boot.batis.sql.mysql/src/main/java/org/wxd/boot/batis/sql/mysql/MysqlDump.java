@@ -1,7 +1,7 @@
 package org.wxd.boot.batis.sql.mysql;
 
+import org.wxd.boot.agent.LogbackUtil;
 import org.wxd.boot.batis.DbConfig;
-import org.wxd.boot.core.system.JvmUtil;
 
 /**
  * dump工具
@@ -12,7 +12,7 @@ import org.wxd.boot.core.system.JvmUtil;
 public class MysqlDump {
 
     public static void main(String[] args) throws Exception {
-        JvmUtil.setLogbackConfig();
+        LogbackUtil.setLogbackConfig();
         MysqlDump.action(args);
     }
 

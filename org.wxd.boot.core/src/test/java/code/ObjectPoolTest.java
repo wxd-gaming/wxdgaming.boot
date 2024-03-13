@@ -2,7 +2,7 @@ package code;
 
 import org.junit.Test;
 import org.wxd.boot.core.collection.ObjList;
-import org.wxd.boot.core.collection.concurrent.ConcurrentIntMap;
+import org.wxd.boot.core.collection.concurrent.ConcurrentObjIntMap;
 import org.wxd.boot.core.collection.concurrent.ConcurrentSkipSet;
 import org.wxd.boot.core.format.data.Data2Size;
 import org.wxd.boot.core.io.IObjectClear;
@@ -66,8 +66,8 @@ public class ObjectPoolTest implements Serializable {
 
     @Test
     public void t3() {
-        ConcurrentIntMap<Integer> map = new ConcurrentIntMap<>();
-        System.out.println(map.add(1, 3));
+        ConcurrentObjIntMap<Integer> map = new ConcurrentObjIntMap<>();
+        System.out.println(map.addAndGet(1, 3));
     }
 
 }

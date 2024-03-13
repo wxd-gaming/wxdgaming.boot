@@ -1,14 +1,8 @@
 package org.wxd.boot.core.system;
 
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.core.str.StringUtil;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.Map;
@@ -21,53 +15,6 @@ import java.util.function.Function;
  * @version: 2021-04-02 15:07
  **/
 public class JvmUtil {
-
-    /** 强制设置logback 配置目录 */
-    public static void setLogbackConfig() {
-        String key = "logback.configurationFile";
-        if (System.getProperty(key) == null) {
-            File path = FileUtil.findFile("logback.xml");
-            if (path != null && !(path.getPath().contains("jar") && path.getPath().contains("!"))) {
-                /*强制设置logback的目录位置*/
-                setProperty(key, FileUtil.getCanonicalPath(path));
-                System.out.println("logback configuration " + FileUtil.getCanonicalPath(path));
-            }
-        }
-    }
-
-    /** 重设日志级别 */
-    public static String refreshLoggerLevel() {
-        Level lv;
-        Logger root = LoggerFactory.getLogger("root");
-        if (root.isDebugEnabled()) {
-            lv = Level.INFO;
-        } else {
-            lv = Level.DEBUG;
-        }
-        refreshLoggerLevel("", lv);
-        return lv.toString();
-    }
-
-    /** 重设日志级别 */
-    public static void refreshLoggerLevel(Level loggerLevel) {
-        refreshLoggerLevel("", loggerLevel);
-    }
-
-    /**
-     * 重设日志级别
-     *
-     * @param loggerPackage
-     * @param loggerLevel
-     */
-    public static void refreshLoggerLevel(String loggerPackage, Level loggerLevel) {
-        // #1.get logger context
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        // #2.filter the Logger object
-        loggerContext.getLoggerList()
-                .stream()
-                .filter(a -> StringUtil.emptyOrNull(loggerPackage) || a.getName().startsWith(loggerPackage))
-                .forEach((logger) -> logger.setLevel(loggerLevel));
-    }
 
     /** 默认线程池的，初始数量 */
     public static final String Default_Executor_Core_Size = "default.executor.core.size";

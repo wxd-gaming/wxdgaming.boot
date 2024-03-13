@@ -1,5 +1,6 @@
 package org.wxd.boot.agent;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.lang.Record2;
 
+import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -50,6 +52,53 @@ public class LogbackUtil {
     public static Logger logger(int stack) {
         StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stack];
         return LoggerFactory.getLogger(stackTraceElement.getClassName());
+    }
+
+    /** 强制设置logback 配置目录 */
+    public static void setLogbackConfig() {
+        String key = "logback.configurationFile";
+        if (System.getProperty(key) == null) {
+            File path = FileUtil.findFile("logback.xml");
+            if (path != null && !(path.getPath().contains("jar") && path.getPath().contains("!"))) {
+                /*强制设置logback的目录位置*/
+                System.setProperty(key, FileUtil.getCanonicalPath(path));
+                System.out.println("logback configuration " + FileUtil.getCanonicalPath(path));
+            }
+        }
+    }
+
+    /** 重设日志级别 */
+    public static String refreshLoggerLevel() {
+        Level lv;
+        Logger root = LoggerFactory.getLogger("root");
+        if (root.isDebugEnabled()) {
+            lv = Level.INFO;
+        } else {
+            lv = Level.DEBUG;
+        }
+        refreshLoggerLevel("", lv);
+        return lv.toString();
+    }
+
+    /** 重设日志级别 */
+    public static void refreshLoggerLevel(Level loggerLevel) {
+        refreshLoggerLevel("", loggerLevel);
+    }
+
+    /**
+     * 重设日志级别
+     *
+     * @param loggerPackage
+     * @param loggerLevel
+     */
+    public static void refreshLoggerLevel(String loggerPackage, Level loggerLevel) {
+        // #1.get logger context
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        // #2.filter the Logger object
+        loggerContext.getLoggerList()
+                .stream()
+                .filter(a -> loggerPackage == null || loggerPackage.isEmpty() || loggerPackage.isBlank() || a.getName().startsWith(loggerPackage))
+                .forEach((logger) -> logger.setLevel(loggerLevel));
     }
 
 }
