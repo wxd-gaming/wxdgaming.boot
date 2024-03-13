@@ -37,7 +37,7 @@ pipeline {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
                 sh 'find ./ -name "*.sh" | xargs dos2unix'
-                sh 'mvn-package.sh'
+                sh './mvn-package.sh'
             }
         }
 
