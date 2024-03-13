@@ -3,6 +3,7 @@ package code;
 import org.junit.Test;
 import org.wxd.boot.core.lang.rank.RankMap;
 import org.wxd.boot.core.lang.rank.RankScore;
+import org.wxd.boot.core.lang.rank.RedisRankScore;
 
 /**
  * 排行榜测试
@@ -19,10 +20,12 @@ public class RankTest {
         rankMap.addScore(1L, 2);
         rankMap.addScore(2L, 1);
         rankMap.addScore(2L, 2);
-        rankMap.addScore(3L, 2);
+        rankMap.addScore(3L, RedisRankScore.scoreMax(3));
         rankMap.getRange(RankScore.Sort, 0, 20).forEach(System.out::println);
         System.out.println("===================================");
         rankMap.getRange(RankScore.BreSort, 0, 20).forEach(System.out::println);
+
+
     }
 
 }
