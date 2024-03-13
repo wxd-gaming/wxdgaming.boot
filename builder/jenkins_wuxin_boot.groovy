@@ -11,10 +11,9 @@ pipeline {
     }
 
     environment {
+        //全局参数
         project_model = "712_qj5"
         svn_url = "svn://192.168.11.50/qj5"
-        //工作目录
-        work_path = "/data/game/server/game_${project_model}${SERVER_ID}"
     }
 
     stages {
@@ -40,10 +39,6 @@ pipeline {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
                 sh 'mvn clean -T 1C package -Dmaven.test.skip=true'
-                // sh 'mvn clean install'
-                //打包直接到当前目录下的libs
-                sh 'mvn  dependency:copy-dependencies -DoutputDirectory=\'${env.WORKSPACE}\'/libs -DincludeScope=runtime'
-
             }
         }
 
