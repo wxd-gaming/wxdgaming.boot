@@ -26,96 +26,78 @@
         <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
-            <version>1.13</version>
         </dependency>
         <!--计算对象占用内存大小-->
         <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
-            <version>0.17</version>
         </dependency>
         <!--创建代理对象-->
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
-            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-common</artifactId>
-            <version>4.1.105.Final</version>
         </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
-            <version>1.4.20</version>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>${protobuf-java.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
-            <version>${protobuf-java.version}</version>
         </dependency>
         <dependency>
             <groupId>org.simpleframework</groupId>
             <artifactId>simple-xml</artifactId>
-            <version>2.7.1</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>2.0.45</version>
         </dependency>
         <!--生成二维码-->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
-            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
-            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
-            <version>1.82</version>
         </dependency>
         <dependency>
             <groupId>com.github.jai-imageio</groupId>
             <artifactId>jai-imageio-core</artifactId>
-            <version>1.4.0</version>
         </dependency>
         <!--生成二维码-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.13.0</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
         </dependency>
         <dependency>
             <groupId>com.carrotsearch</groupId>
             <artifactId>hppc</artifactId>
-            <version>0.9.1</version>
         </dependency>
     </dependencies>
 

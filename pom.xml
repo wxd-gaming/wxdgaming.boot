@@ -79,38 +79,264 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.13.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+            </dependency>
+            <!--日志框架-->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-access</artifactId>
+                <version>1.4.14</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.4.14</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.4.14</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.7</version>
+            </dependency>
+            <!--日志框架-->
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js-scriptengine</artifactId>
+                <version>22.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js</artifactId>
+                <version>22.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>4.1.105.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>4.1.105.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>32.1.2-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>7.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.14</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>4.5.14</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.4.16</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.30.2-GA</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.31</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>5.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>5.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-schemas</artifactId>
+                <version>4.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlbeans</groupId>
+                <artifactId>xmlbeans</artifactId>
+                <version>5.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.22.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.22.0</version>
+            </dependency><!-- 导航网格算法需要-->
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts</artifactId>
+                <version>1.13</version>
+            </dependency>
+            <!--计算对象占用内存大小-->
+            <dependency>
+                <groupId>org.openjdk.jol</groupId>
+                <artifactId>jol-core</artifactId>
+                <version>0.17</version>
+            </dependency>
+            <!--创建代理对象-->
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>3.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>1.4.20</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>1.6.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>${protobuf-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.simpleframework</groupId>
+                <artifactId>simple-xml</artifactId>
+                <version>2.7.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>2.0.45</version>
+            </dependency>
+            <!--生成二维码-->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>3.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beust</groupId>
+                <artifactId>jcommander</artifactId>
+                <version>1.82</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jai-imageio</groupId>
+                <artifactId>jai-imageio-core</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <!--生成二维码-->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.15</version>
+            </dependency>
+            <dependency>
+                <groupId>com.carrotsearch</groupId>
+                <artifactId>hppc</artifactId>
+                <version>0.9.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>3.12.14</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver</artifactId>
+                <version>3.12.14</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-core</artifactId>
+                <version>4.9.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>bson</artifactId>
+                <version>4.9.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
         </dependency>
         <!--日志框架-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-access</artifactId>
-            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.7</version>
         </dependency>
         <!--日志框架-->
     </dependencies>

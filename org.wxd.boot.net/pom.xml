@@ -30,45 +30,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.105.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.l42111996</groupId>
-            <artifactId>kcp-base</artifactId>
-            <version>1.6</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-all</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.l42111996</groupId>
-            <artifactId>kcp-fec</artifactId>
-            <version>1.6</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-all</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
