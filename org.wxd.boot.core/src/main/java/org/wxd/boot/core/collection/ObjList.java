@@ -83,7 +83,9 @@ public class ObjList extends ArrayList<Object> implements Serializable, List<Obj
     }
 
     public String getString(int index) {
-        return getObject(index, String.class);
+        Object o = get(index);
+        if (o == null) return null;
+        return String.valueOf(o);
     }
 
     public Boolean getBoolean(int index) {

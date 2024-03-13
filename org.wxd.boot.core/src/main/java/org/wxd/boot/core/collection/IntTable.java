@@ -32,11 +32,8 @@ public class IntTable<V> {
 
     /** 如果原来已经存在，会抛出异常 */
     public V putEx(int r, int c, V v) {
-        V put = put(r, c, v);
-        if (put != null) {
-            throw new RuntimeException("插入重复项 " + r + " - " + c + " - " + v);
-        }
-        return put;
+        optional(r, c).ifPresent(old -> {throw new RuntimeException("插入重复项 " + r + " - " + c + " - " + v);});
+        return putIfAbsent(r, c, v);
     }
 
     /** 返回老值， 如果原来没有，返回新值 */

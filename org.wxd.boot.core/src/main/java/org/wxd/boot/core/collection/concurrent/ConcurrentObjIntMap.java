@@ -40,7 +40,7 @@ public class ConcurrentObjIntMap<K> extends ConcurrentHashMap<K, Integer> implem
 
     /** 获取到最新的数据 */
     public int addAndGet(K key, int delta) {
-        return accumulateAndGet(key, delta, Integer::sum);
+        return accumulateAndGet(key, delta, Math::addExact);
     }
 
     /** 返回老数据，更新新数据 */
@@ -55,7 +55,7 @@ public class ConcurrentObjIntMap<K> extends ConcurrentHashMap<K, Integer> implem
 
     /** 返回老数据，更新新数据 */
     public int getAndAdd(K key, int delta) {
-        return getAndAccumulate(key, delta, Integer::sum);
+        return getAndAccumulate(key, delta, Math::addExact);
     }
 
     /** 更新新数据 */

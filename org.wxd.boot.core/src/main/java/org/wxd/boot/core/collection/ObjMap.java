@@ -108,7 +108,9 @@ public class ObjMap extends LinkedHashMap<Object, Object> implements Map<Object,
     }
 
     public String getString(Object key) {
-        return getObject(key, String.class);
+        Object o = get(key);
+        if (o == null) return null;
+        return String.valueOf(o);
     }
 
     public Boolean getBoolean(Object key) {

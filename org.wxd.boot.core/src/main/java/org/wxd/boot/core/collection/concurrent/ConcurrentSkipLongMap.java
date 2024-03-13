@@ -33,7 +33,7 @@ public class ConcurrentSkipLongMap<K extends Comparable<K>> extends ConcurrentSk
 
     /** 获取到最新的数据 */
     public long addAndGet(K key, long delta) {
-        return accumulateAndGet(key, delta, Long::sum);
+        return accumulateAndGet(key, delta, Math::addExact);
     }
 
     /** 获取到的是老数据 */
@@ -48,7 +48,7 @@ public class ConcurrentSkipLongMap<K extends Comparable<K>> extends ConcurrentSk
 
     /** 获取到的是老数据 */
     public long getAndAdd(K key, long delta) {
-        return getAndAccumulate(key, delta, Long::sum);
+        return getAndAccumulate(key, delta, Math::addExact);
     }
 
     /** 获取到最新的数据 */

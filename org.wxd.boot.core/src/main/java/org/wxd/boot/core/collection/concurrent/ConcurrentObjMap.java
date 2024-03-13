@@ -100,7 +100,9 @@ public class ConcurrentObjMap extends ConcurrentHashMap<Object, Object> implemen
     }
 
     public String getString(Object key) {
-        return getObject(key, String.class);
+        Object o = get(key);
+        if (o == null) return null;
+        return String.valueOf(o);
     }
 
     public Boolean getBoolean(Object key) {

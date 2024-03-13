@@ -21,29 +21,29 @@ import java.util.function.Predicate;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ConcurrentListTable<K1 extends Comparable<K1>, K2 extends Comparable<K2>, V> implements Serializable, Data2Json {
+public class ConcurrentSkipTable<K1 extends Comparable<K1>, K2 extends Comparable<K2>, V> implements Serializable, Data2Json {
 
     private static final Map EMPTY_MAP = Map.of();
 
     private final ConcurrentSkipListMap<K1, ConcurrentSkipListMap<K2, V>> nodes;
 
-    public ConcurrentListTable() {
+    public ConcurrentSkipTable() {
         nodes = new ConcurrentSkipListMap<>();
     }
 
-    public ConcurrentListTable(Map<K1, Map<K2, V>> m) {
+    public ConcurrentSkipTable(Map<K1, Map<K2, V>> m) {
         this();
         for (Map.Entry<K1, Map<K2, V>> entry : m.entrySet()) {
             putAll(entry.getKey(), entry.getValue());
         }
     }
 
-    public ConcurrentListTable<K1, K2, V> putAll(K1 k1, Map<K2, V> m) {
+    public ConcurrentSkipTable<K1, K2, V> putAll(K1 k1, Map<K2, V> m) {
         row(k1).putAll(m);
         return this;
     }
 
-    public ConcurrentListTable<K1, K2, V> append(K1 k1, K2 k2, V v) {
+    public ConcurrentSkipTable<K1, K2, V> append(K1 k1, K2 k2, V v) {
         row(k1).put(k2, v);
         return this;
     }
