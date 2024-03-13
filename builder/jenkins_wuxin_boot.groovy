@@ -21,21 +21,15 @@ pipeline {
         stage('显示选择内容') {
             steps {
                 echo '更新内容------------------------------------------'
-                echo 'SERVER_ID：'
-                echo "${SERVER_ID}"
-                echo 'version：'
-                echo "${version}"
-                echo 'svn_url：'
-                echo "${svn_url}"
-                echo 'csv_url：'
-                echo "${csv_url}"
+                echo 'branch：'
+                echo "${branch}"
             }
         }
 
         stage('git pull') {
             steps {
                 echo '拉取代码'
-                checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], extensions: [], userRemoteConfigs: [[url: 'http://192.168.10.124:8081/project712/engine712.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${branch}"]], extensions: [], userRemoteConfigs: [[url: 'https://gitee.com/wxd-gaming/org.wxd.boot.git']]])
                 // sh 'cd /data/compile/src/engine712 && git checkout develop  && git pull'
 
             }
