@@ -2,7 +2,6 @@
 pipeline {
     agent any
 
-
     /**
      * 选择性参数
      */
@@ -34,11 +33,10 @@ pipeline {
             }
         }
 
-
         stage('compile and package') {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
-                sh 'mvn clean package -Dmaven.test.skip=true'
+                sh 'mvn-package.sh'
             }
         }
 
