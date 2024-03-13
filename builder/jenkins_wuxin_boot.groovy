@@ -13,6 +13,10 @@ pipeline {
         //全局参数
         project_model = "712_qj5"
         svn_url = "svn://192.168.11.50/qj5"
+        // 预定义的环境变量
+        JAVA_HOME = '/usr/local/jdk-21'
+        PATH="$JAVA_HOME/bin:$PATH"
+        CLASSPATH = ".:${env.JAVA_HOME}/lib/dt.jar:${env.JAVA_HOME}/lib/tools.jar"
     }
 
     stages {
@@ -36,9 +40,9 @@ pipeline {
         stage('compile and package') {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
-                echo '${pwd}'
+                sh 'pwd'
                 sh 'find ./ -name "*.sh" | xargs dos2unix'
-                sh './mvn-package.sh'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
 
