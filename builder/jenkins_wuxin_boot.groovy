@@ -36,6 +36,7 @@ pipeline {
         stage('compile and package') {
             steps {
                 //sh 'cd /data/compile/src/engine712 && mvn clean package'
+                echo '${pwd}'
                 sh 'find ./ -name "*.sh" | xargs dos2unix'
                 sh './mvn-package.sh'
             }
