@@ -7,6 +7,7 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.system.MethodUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.core.str.StringUtil;
+import org.wxd.boot.net.NioBase;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.ann.ProtoController;
@@ -65,7 +66,7 @@ public class ActionProtoController {
         }
     }
 
-    static void register(String serviceName, Object instance, Collection<Method> methodList) {
+    static void register(Class<? extends NioBase> serviceName, Object instance, Collection<Method> methodList) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("\nprotobuf controller").append(" ").append(" \n")

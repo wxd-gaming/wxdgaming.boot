@@ -2,7 +2,7 @@ package org.wxd.boot.net.controller;
 
 
 import org.wxd.boot.core.collection.concurrent.ConcurrentTable;
-import org.wxd.boot.core.str.StringUtil;
+import org.wxd.boot.net.NioBase;
 import org.wxd.boot.net.controller.ann.TextMapping;
 
 import java.lang.reflect.Method;
@@ -19,60 +19,60 @@ import java.util.stream.Stream;
  **/
 public class MappingFactory {
 
-    public static final String FINAL_DEFAULT = "default";
+    public static final Class<? extends NioBase> FINAL_DEFAULT = NioBase.class;
     /** 消息id -> 映射 */
-    public static final ConcurrentTable<String, Integer, ProtoMappingRecord> PROTO_MAP = new ConcurrentTable<>();
+    public static final ConcurrentTable<Class<? extends NioBase>, Integer, ProtoMappingRecord> PROTO_MAP = new ConcurrentTable<>();
     /** 路由 -> 映射 */
-    public static final ConcurrentTable<String, String, TextMappingRecord> TEXT_MAP = new ConcurrentTable<>();
+    public static final ConcurrentTable<Class<? extends NioBase>, String, TextMappingRecord> TEXT_MAP = new ConcurrentTable<>();
 
-    public static void putProto(String serviceName, String remarks, int messageId, Object instance, Method method) {
+    public static void putProto(Class<? extends NioBase> service, String remarks, int messageId, Object instance, Method method) {
         /** 虚拟线程 */
-        if (StringUtil.emptyOrNull(serviceName)) serviceName = FINAL_DEFAULT;
+        if (service == null) service = FINAL_DEFAULT;
         PROTO_MAP.put(
-                serviceName,
+                service,
                 messageId,
-                new ProtoMappingRecord(serviceName, remarks, messageId, instance, method)
+                new ProtoMappingRecord(service, remarks, messageId, instance, method)
         );
     }
 
-    public static void putText(TextMapping textMapping, String serviceName, String path, String remarks, Object instance, Method method) {
+    public static void putText(TextMapping textMapping, Class<? extends NioBase> service, String path, String remarks, Object instance, Method method) {
         /** 虚拟线程 */
-        if (StringUtil.emptyOrNull(serviceName)) serviceName = FINAL_DEFAULT;
+        if (service == null) service = FINAL_DEFAULT;
         TEXT_MAP.put(
-                serviceName,
+                service,
                 path,
-                new TextMappingRecord(textMapping, serviceName, path, remarks, instance, method)
+                new TextMappingRecord(textMapping, path, remarks, instance, method)
         );
     }
 
-    public static ProtoMappingRecord protoMappingRecord(String serviceName, int messageId) {
-        ProtoMappingRecord mapping = PROTO_MAP.get(serviceName, messageId);
+    public static ProtoMappingRecord protoMappingRecord(Class<? extends NioBase> service, int messageId) {
+        ProtoMappingRecord mapping = PROTO_MAP.get(service, messageId);
         if (mapping == null) {
             mapping = PROTO_MAP.get(FINAL_DEFAULT, messageId);
         }
         return mapping;
     }
 
-    public static TextMappingRecord textMappingRecord(String serviceName, String path) {
-        TextMappingRecord mapping = TEXT_MAP.get(serviceName, path);
+    public static TextMappingRecord textMappingRecord(Class<? extends NioBase> service, String path) {
+        TextMappingRecord mapping = TEXT_MAP.get(service, path);
         if (mapping == null) {
             mapping = TEXT_MAP.get(FINAL_DEFAULT, path);
         }
         return mapping;
     }
 
-    public static Stream<ProtoMappingRecord> protoMappingRecord(String serviceName) {
+    public static Stream<ProtoMappingRecord> protoMappingRecord(Class<? extends NioBase> service) {
         Stream<ProtoMappingRecord> stream = PROTO_MAP.opt(MappingFactory.FINAL_DEFAULT).map(Map::values).stream().flatMap(Collection::stream);
-        if (!FINAL_DEFAULT.equalsIgnoreCase(serviceName)) {
-            stream = Stream.concat(stream, PROTO_MAP.opt(serviceName).map(Map::values).stream().flatMap(Collection::stream));
+        if (!FINAL_DEFAULT.equals(service)) {
+            stream = Stream.concat(stream, PROTO_MAP.opt(service).map(Map::values).stream().flatMap(Collection::stream));
         }
         return stream;
     }
 
-    public static Stream<TextMappingRecord> textMappingRecord(String serviceName) {
+    public static Stream<TextMappingRecord> textMappingRecord(Class<? extends NioBase> service) {
         Stream<TextMappingRecord> stream = TEXT_MAP.opt(MappingFactory.FINAL_DEFAULT).map(Map::values).stream().flatMap(Collection::stream);
-        if (!FINAL_DEFAULT.equalsIgnoreCase(serviceName)) {
-            stream = Stream.concat(stream, TEXT_MAP.opt(serviceName).map(Map::values).stream().flatMap(Collection::stream));
+        if (!FINAL_DEFAULT.equals(service)) {
+            stream = Stream.concat(stream, TEXT_MAP.opt(service).map(Map::values).stream().flatMap(Collection::stream));
         }
         stream = stream.sorted(Comparator.comparing(TextMappingRecord::path));
         return stream;

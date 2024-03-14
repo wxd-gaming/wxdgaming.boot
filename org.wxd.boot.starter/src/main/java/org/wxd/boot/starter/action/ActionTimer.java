@@ -53,7 +53,7 @@ public class ActionTimer {
                         throw new RuntimeException(method.getDeclaringClass().getName() + " timer job " + method.getName() + " 不允许有参数");
                     }
                     ScheduledInfo scheduledInfo = new ScheduledInfo(instance, method, scheduled);
-                    jobList.removeIf(v -> v.toString().equals(scheduledInfo.toString()));
+                    jobList.removeIf(v -> v.toString().equalsIgnoreCase(scheduledInfo.toString()));
                     jobList.add(scheduledInfo);
                     streamWriter.write(scheduledInfo.toString()).writeLn();
                 }

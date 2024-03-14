@@ -24,13 +24,13 @@ import org.wxd.boot.core.str.StringUtil;
 import org.wxd.boot.core.system.BytesUnit;
 import org.wxd.boot.core.system.JvmUtil;
 import org.wxd.boot.core.timer.MyClock;
-import org.wxd.boot.net.http.HttpDataAction;
-import org.wxd.boot.net.http.HttpHeadValueType;
-import org.wxd.boot.net.http.ssl.SslProtocolType;
 import org.wxd.boot.net.NioFactory;
 import org.wxd.boot.net.NioServer;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.handler.SocketChannelHandler;
+import org.wxd.boot.net.http.HttpDataAction;
+import org.wxd.boot.net.http.HttpHeadValueType;
+import org.wxd.boot.net.http.ssl.SslProtocolType;
 
 import javax.net.ssl.SSLContext;
 import java.io.File;
@@ -199,7 +199,7 @@ public class HttpServer extends NioServer<HttpSession> {
 
     @Override public void open() {
         super.open();
-        MappingFactory.textMappingRecord(getName())
+        MappingFactory.textMappingRecord(getClass())
                 .forEach(v -> {
                     log.debug("http://{}:{}{}", this.getWanIp(), this.getPort(), v.path());
                 });

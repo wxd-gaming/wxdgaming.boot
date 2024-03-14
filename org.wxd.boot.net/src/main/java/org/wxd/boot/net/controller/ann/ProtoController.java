@@ -1,6 +1,8 @@
 package org.wxd.boot.net.controller.ann;
 
 
+import org.wxd.boot.net.NioBase;
+
 import java.lang.annotation.*;
 
 /**
@@ -19,6 +21,6 @@ public @interface ProtoController {
     boolean alligatorAutoRegister() default false;
 
     /** 服务名称 */
-    String service() default "";
+    Class<? extends NioBase> service() default NioBase.class;
 
 }

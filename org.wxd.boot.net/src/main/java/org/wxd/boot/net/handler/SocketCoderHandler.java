@@ -17,6 +17,7 @@ import org.wxd.boot.core.threading.Async;
 import org.wxd.boot.core.threading.ExecutorLog;
 import org.wxd.boot.core.threading.Executors;
 import org.wxd.boot.core.threading.IExecutorServices;
+import org.wxd.boot.net.NioBase;
 import org.wxd.boot.net.SocketSession;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.MessageController;
@@ -147,7 +148,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     }
                     default -> {
                         if (StringUtil.emptyOrNull(cmd)) {
-                            log.info("{} 命令参数 cmd , 未找到", session.getChannelContext());
+                            log.info("{} 命令参数 cmd , 未找到", session.toString());
                             if (rpcId > 0) {
                                 session.rpcResponse(rpcId, RunResult.error("命令参数 cmd , 未找到").toJson());
                             }
@@ -155,9 +156,9 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                         }
 
                         final String methodNameLowerCase = cmd.toLowerCase().trim();
-                        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(getName(), methodNameLowerCase);
+                        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord((Class<? extends NioBase>) getClass(), methodNameLowerCase);
                         if (mappingRecord == null) {
-                            log.info("{} not found url {}", session.getChannelContext(), cmd);
+                            log.info("{} not found url {}", session.toString(), cmd);
                             if (rpcId > 0) {
                                 session.rpcResponse(rpcId, RunResult.error("not found url " + cmd).toJson());
                             }
@@ -167,7 +168,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                         final StreamWriter outAppend = new StreamWriter(1024);
                         CmdListenerAction listenerAction = new CmdListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
                             if (showLog) {
-                                log.info("\n执行：" + this.toString()
+                                log.info("\n执行：" + session.toString()
                                         + "\n" + markTimer.execTime2String() +
                                         "\nrpcId=" + rpcId +
                                         "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
@@ -225,7 +226,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param messageBytes 消息报文
      */
     default void onMessage(S session, int messageId, byte[] messageBytes) {
-        ProtoMappingRecord mapping = MappingFactory.protoMappingRecord(getName(), messageId);
+        ProtoMappingRecord mapping = MappingFactory.protoMappingRecord((Class<? extends NioBase>) getClass(), messageId);
         if (mapping != null) {
             try {
                 Message message = MessagePackage.parseMessage(messageId, messageBytes);
@@ -255,7 +256,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param message   消息
      */
     default void executor(S session, int messageId, Message message) {
-        ProtoMappingRecord mapping = MappingFactory.protoMappingRecord(getName(), messageId);
+        ProtoMappingRecord mapping = MappingFactory.protoMappingRecord((Class<? extends NioBase>) getClass(), messageId);
         MessageController controller = new MessageController(mapping, session, message);
 
         if (msgExecutorBefore() != null) {

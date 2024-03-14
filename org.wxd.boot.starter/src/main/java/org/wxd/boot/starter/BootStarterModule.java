@@ -42,24 +42,24 @@ class BootStarterModule extends BaseModule {
 
         ConsumerE2<Class, TcpConfig> action = (aClass, config) -> {
             if (config.getPort() > 0) {
-                if (StringUtil.emptyOrNull(config.getName())) {
-                    config.setName(MappingFactory.FINAL_DEFAULT);
-                }
                 if (StringUtil.notEmptyOrNull(config.getServiceClassName())) {
                     /*通过指定的类进行加载*/
                     aClass = BootStarterModule.class.getClassLoader().loadClass(config.getServiceClassName());
                 }
                 Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
+                if (StringUtil.emptyOrNull(config.getName())) {
+                    config.setName(newInstance.getClass().getSimpleName());
+                }
                 bindSingleton(aClass, newInstance);
             }
         };
 
-        ConsumerE2<Class, DbConfig> dbAction = (aClass, o) -> {
-            if (o.getDbPort() > 0) {
-                if (StringUtil.emptyOrNull(o.getName())) {
-                    o.setName(MappingFactory.FINAL_DEFAULT);
+        ConsumerE2<Class, DbConfig> dbAction = (aClass, config) -> {
+            if (config.getDbPort() > 0) {
+                Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
+                if (StringUtil.emptyOrNull(config.getName())) {
+                    config.setName(newInstance.getClass().getSimpleName());
                 }
-                Object newInstance = aClass.getDeclaredConstructor(o.getClass()).newInstance(o);
                 bindSingleton(aClass, newInstance);
             }
         };

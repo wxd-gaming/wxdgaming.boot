@@ -53,7 +53,7 @@ class HttpListenerAction extends Event {
 
     @Override public long getLogTime() {
         return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
                 .map(ExecutorLog::logTime)
                 .orElse(66L);
@@ -61,7 +61,7 @@ class HttpListenerAction extends Event {
 
     @Override public long getWarningTime() {
         return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
                 .map(ExecutorLog::warningTime)
                 .orElse(super.getWarningTime());
@@ -69,7 +69,7 @@ class HttpListenerAction extends Event {
 
     @Override public boolean isVt() {
         return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), Async.class))
                 .map(Async::vt)
                 .orElse(false);
@@ -77,7 +77,7 @@ class HttpListenerAction extends Event {
 
     @Override public String getThreadName() {
         return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), Async.class))
                 .map(Async::threadName)
                 .orElse("");
@@ -85,7 +85,7 @@ class HttpListenerAction extends Event {
 
     @Override public String getQueueName() {
         return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getName(), v.toLowerCase()))
+                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
                 .map(v -> AnnUtil.ann(v.method(), Async.class))
                 .map(Async::queueName)
                 .orElse("");
@@ -115,7 +115,7 @@ class HttpListenerAction extends Event {
             }
 
             final String urlPath = urlCmd.toLowerCase().trim();
-            TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(httpServer.getName(), urlPath);
+            TextMappingRecord mappingRecord = MappingFactory.textMappingRecord(httpServer.getClass(), urlPath);
             if (mappingRecord == null) {
                 if (actionFile()) {
                     return;
@@ -125,9 +125,11 @@ class HttpListenerAction extends Event {
                 } else {
                     callBack.accept(" 软件：無心道  \n not found url " + urlPath, false);
                 }
+                if (log.isDebugEnabled()) {
+                    log.debug("{}({}) not found url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
+                }
                 return;
             }
-
 
             final Post post = AnnUtil.ann(mappingRecord.method(), Post.class);
             final Get get = AnnUtil.ann(mappingRecord.method(), Get.class);
@@ -141,19 +143,25 @@ class HttpListenerAction extends Event {
                 };
                 if (post != null && get != null) {
                     if (!"post".equalsIgnoreCase(reqMethod.name()) && !"get".equalsIgnoreCase(reqMethod.name())) {
-                        log.warn("请求 " + urlPath + " 被限制 必须是 get or post");
+                        if (log.isDebugEnabled()) {
+                            log.debug("{}({}) 必须是 GET OR POST 请求 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
+                        }
                         action.run();
                         return;
                     }
                 } else if (post != null) {
                     if (!"post".equalsIgnoreCase(reqMethod.name())) {
-                        log.warn("请求 " + urlPath + " 被限制 必须是 post");
+                        if (log.isDebugEnabled()) {
+                            log.debug("{}({}) 必须是 POST 请求 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
+                        }
                         action.run();
                         return;
                     }
                 } else {
                     if (!"get".equalsIgnoreCase(reqMethod.name())) {
-                        log.warn("请求 " + urlPath + " 被限制 必须是 get");
+                        if (log.isDebugEnabled()) {
+                            log.debug("{}({}) 必须是 GET 请求 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
+                        }
                         action.run();
                         return;
                     }
@@ -165,12 +173,18 @@ class HttpListenerAction extends Event {
                     String s = signCheck.checkSign(mappingRecord.method(), session, putData);
                     if (StringUtil.notEmptyOrNull(s)) {
                         callBack.accept("权限认证失败", false);
+                        if (log.isDebugEnabled()) {
+                            log.debug("{}({}) 权限认证失败 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
+                        }
                         return;
                     }
                 } else if (mappingRecord.textMapping().needAuth() > 0) {
                     String s = HttpSignCheck.checkAuth(mappingRecord.method(), session, putData);
                     if (StringUtil.notEmptyOrNull(s)) {
                         callBack.accept("权限认证失败", false);
+                        if (log.isDebugEnabled()) {
+                            log.debug("{}({}) 权限认证失败 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
+                        }
                         return;
                     }
                 }

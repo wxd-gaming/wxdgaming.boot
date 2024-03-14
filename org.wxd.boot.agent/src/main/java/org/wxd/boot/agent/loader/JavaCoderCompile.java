@@ -2,6 +2,7 @@ package org.wxd.boot.agent.loader;
 
 
 import org.wxd.boot.agent.JDKVersion;
+import org.wxd.boot.agent.LogbackUtil;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
 
@@ -87,6 +88,7 @@ public class JavaCoderCompile {
      * @return
      */
     public JavaCoderCompile compilerJava(String sourceDir, Collection<File> sourceFileList) throws Exception {
+        LogbackUtil.logger().info("目录：{}/{}, 文件数量：{}", System.getProperty("user.dir"), sourceDir, sourceFileList.size());
         if (!sourceFileList.isEmpty()) {
             final Iterable<? extends JavaFileObject> compilerFiles = javaFileManager().getSuperFileManager().getJavaFileObjectsFromFiles(sourceFileList);
             this.compilerJava(sourceDir, compilerFiles);
@@ -100,7 +102,7 @@ public class JavaCoderCompile {
      */
     public JavaCoderCompile compilerJava(String sourceDir, Iterable<? extends JavaFileObject> compilerFiles) throws Exception {
         JDKVersion jdkVersion = JDKVersion.runTimeJDKVersion();
-        System.out.println("compiler java file jdk_version：" + jdkVersion.getCurVersionString());
+        LogbackUtil.logger().info("目录：{}/{}, compiler java file jdk_version：{}", System.getProperty("user.dir"), sourceDir, jdkVersion.getCurVersionString());
         /**
          * 编译选项，在编译java文件时，
          * <p>

@@ -1,6 +1,8 @@
 package org.wxd.boot.net.controller.ann;
 
 
+import org.wxd.boot.net.NioServer;
+
 import java.lang.annotation.*;
 
 /**
@@ -16,11 +18,8 @@ import java.lang.annotation.*;
 @Repeatable(TextControllers.class/*表示复用*/)
 public @interface TextController {
 
-    /** 自动注册的时候忽略 */
-    boolean alligatorAutoRegister() default false;
-
     /** 服务名称 */
-    String serviceName() default "";
+    Class<? extends NioServer> service() default NioServer.class;
 
     /** url 会被 {@link TextMapping}.url() */
     String url() default "";

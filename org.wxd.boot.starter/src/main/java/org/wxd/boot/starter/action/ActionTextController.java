@@ -5,6 +5,7 @@ import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.system.MethodUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.core.str.StringUtil;
+import org.wxd.boot.net.NioBase;
 import org.wxd.boot.net.controller.MappingFactory;
 import org.wxd.boot.net.controller.ann.TextController;
 import org.wxd.boot.net.controller.ann.TextMapping;
@@ -32,13 +33,9 @@ public class ActionTextController {
                 log.debug("类：{} 没有标记 {} 已经忽略", aClass.getName(), TextController.class);
             } else {
                 for (TextController textController : controllerList) {
-                    if (textController.alligatorAutoRegister()) {
-                        log.info("忽略自动注册{}", aClass);
-                        continue;
-                    }
                     Object instance = iocInjector.getInstance(aClass);
                     List<Method> methodList = content.methodsWithAnnotated(TextMapping.class).collect(Collectors.toList());
-                    bindCmd(textController.serviceName(), textController.url(), instance, methodList);
+                    bindCmd(textController.service(), textController.url(), instance, methodList);
                 }
             }
         });
@@ -51,10 +48,10 @@ public class ActionTextController {
         Collection<Method> methodList = MethodUtil.readAllMethod(instance.getClass()).values();
         Collection<TextController> controllerList = AnnUtil.annStream(instance.getClass(), TextController.class).toList();
         if (controllerList.isEmpty()) {
-            bindCmd("", "", instance.getClass(), methodList);
+            bindCmd(NioBase.class, "", instance.getClass(), methodList);
         } else {
             for (TextController textController : controllerList) {
-                bindCmd(textController.serviceName(), textController.url(), instance.getClass(), methodList);
+                bindCmd(textController.service(), textController.url(), instance.getClass(), methodList);
             }
         }
     }
@@ -66,7 +63,7 @@ public class ActionTextController {
      * @param instance   绑定对象
      * @param methodList 函数查找
      */
-    static void bindCmd(String serviceName, String parentUrl, Object instance, Collection<Method> methodList) {
+    static void bindCmd(Class<? extends NioBase> service, String parentUrl, Object instance, Collection<Method> methodList) {
         String url = parentUrl;
         if (StringUtil.emptyOrNull(url)) {
             url = instance.getClass().getSimpleName().toLowerCase();
@@ -124,7 +121,7 @@ public class ActionTextController {
 
                 MappingFactory.putText(
                         mapping,
-                        serviceName,
+                        service,
                         cmdUrl,
                         remarks,
                         instance,
