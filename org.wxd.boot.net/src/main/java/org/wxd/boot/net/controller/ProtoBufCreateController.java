@@ -119,19 +119,18 @@ public class ProtoBufCreateController {
         return msgIdMap;
     }
 
-    public void createController(String startsWithRegex,
-                                 String serviceClass,
-                                 String obj_player_package,
-                                 String obj_player_name) {
-        TemplatePack templatePack = TemplatePack.build(this.getClass().getClassLoader(), "template/message");
-        createController(templatePack, startsWithRegex, serviceClass, obj_player_package, obj_player_name);
+    public void createController(String startsWithRegex, String serviceClass) {
+        createController("proto-controller.ftl", startsWithRegex, serviceClass);
     }
 
-    public void createController(TemplatePack templatePack,
+    public void createController(String ftlName, String startsWithRegex, String serviceClass) {
+        TemplatePack templatePack = TemplatePack.build(this.getClass().getClassLoader(), "template/message");
+        createController(templatePack, ftlName, startsWithRegex, serviceClass);
+    }
+
+    public void createController(TemplatePack templatePack, String ftlName,
                                  String startsWithRegex,
-                                 String serviceClass,
-                                 String obj_player_package,
-                                 String obj_player_name) {
+                                 String serviceClass) {
         final String _startsWithRegex = "^(" + startsWithRegex + ").*";
         Collection<File> lists = FileUtil.walkFiles(protoSourcePath, 1, ".proto").toList();
         for (File protoFile : lists) {
@@ -202,16 +201,7 @@ public class ProtoBufCreateController {
                             objMap.put("res", "");
                         }
 
-                        if (StringUtil.notEmptyOrNull(obj_player_package)) {
-                            imports.add(obj_player_package);
-                        }
-
-                        if (StringUtil.notEmptyOrNull(obj_player_name)) {
-                            String lowerFirst = StringUtil.lowerFirst(obj_player_name);
-                            objMap.put("userInfo", obj_player_name + " " + lowerFirst + " = (" + obj_player_name + ") param.get(" + MessageController.class.getSimpleName() + ".OBJ_Player);");
-                        }
-
-                        templatePack.ftl2File("proto-controller.ftl", objMap, saveFileName);
+                        templatePack.ftl2File(ftlName, objMap, saveFileName);
 
 
                         try (StreamWriter out = new StreamWriter()) {
