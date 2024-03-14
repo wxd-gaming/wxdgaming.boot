@@ -5,6 +5,7 @@ import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
+import org.wxd.boot.batis.store.DataRepository;
 import org.wxd.boot.core.append.StreamWriter;
 import org.wxd.boot.core.field.extend.FieldAnn;
 import org.wxd.boot.core.field.extend.FieldType;
@@ -109,6 +110,10 @@ public abstract class DbBean<T> {
      */
     @JSONField(serialize = false, deserialize = false)
     public void initDb() {
+    }
+
+    @JSONField(serialize = false, deserialize = false)
+    public void checkDb(DataRepository dataRepository) {
     }
 
     public String toDataString() {

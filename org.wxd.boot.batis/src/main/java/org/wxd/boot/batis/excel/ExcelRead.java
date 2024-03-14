@@ -822,19 +822,19 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
         File file;
         {
             file = new File(tmpPath + "bean/mapping/" + entityTable.getCodeClassName() + "Mapping." + houZhui);
-            templatePack.ftl2File("bean-mapping.ftl", parse, file.getPath());
+            templatePack.ftl2File("mapping.ftl", parse, file.getPath());
             log.info("生成 映射 文件：" + entityTable.getTableComment() + ", " + entityTable.getTableName() + ", " + FileUtil.getCanonicalPath(file));
         }
-        file = new File(tmpPath + "bean/" + entityTable.getCodeClassName() + "Bean." + houZhui);
+        file = new File(tmpPath + "bean/" + entityTable.getCodeClassName() + "Row." + houZhui);
         if (!file.exists()) {
-            templatePack.ftl2File("bean.ftl", parse, file.getPath());
+            templatePack.ftl2File("row.ftl", parse, file.getPath());
             log.info("生成 扩展 文件：" + entityTable.getTableComment() + ", " + entityTable.getTableName() + ", " + FileUtil.getCanonicalPath(file));
         }
 
-        file = new File(tmpPath + "factory/" + entityTable.getCodeClassName() + "Factory." + houZhui);
+        file = new File(tmpPath + "table/" + entityTable.getCodeClassName() + "Table." + houZhui);
         if (!file.exists()) {
-            templatePack.ftl2File("factory.ftl", parse, file.getPath());
-            log.info("生成 工厂 文件：" + entityTable.getTableComment() + ", " + entityTable.getLogTableName() + "Factory, " + FileUtil.getCanonicalPath(file));
+            templatePack.ftl2File("table.ftl", parse, file.getPath());
+            log.info("生成 工厂 文件：" + entityTable.getTableComment() + ", " + entityTable.getLogTableName() + "Table, " + FileUtil.getCanonicalPath(file));
         }
         return this;
     }

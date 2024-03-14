@@ -1,9 +1,9 @@
-package ${packageName}.factory;
+package ${packageName}.table;
 
 
 import lombok.Getter;
 import org.wxd.boot.batis.struct.DbBean;
-import ${packageName}.bean.${codeClassName}Bean;
+import ${packageName}.bean.${codeClassName}Row;
 
 import java.io.Serializable;
 
@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @version: ${.now?string("yyyy-MM-dd HH:mm:ss")}
  **/
 @Getter
-public class ${codeClassName}Factory extends DbBean<${codeClassName}Bean> implements Serializable {
+public class ${codeClassName}Table extends DbBean<${codeClassName}Row> implements Serializable {
 
     @Override public void initDb() {
         /*todo 实现一些数据分组*/
