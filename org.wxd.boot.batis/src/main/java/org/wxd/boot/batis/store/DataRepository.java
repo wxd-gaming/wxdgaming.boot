@@ -138,7 +138,7 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
     public <R extends DbBean> R load(Class<R> beanClazz, DM entityTable) {
         try {
             R dbBean = beanClazz.getDeclaredConstructor().newInstance();
-            dbBean.setDataStruct(entityTable);
+            dbBean.setDataMapping(entityTable);
             dbBean.setModelList(readDbList(entityTable));
             dbBean.initDb();
             return dbBean;

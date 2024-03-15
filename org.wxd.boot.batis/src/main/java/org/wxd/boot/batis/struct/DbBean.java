@@ -1,11 +1,16 @@
 package org.wxd.boot.batis.struct;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.wxd.boot.agent.exception.Throw;
+import org.wxd.boot.agent.system.AnnUtil;
 import org.wxd.boot.agent.system.ReflectContext;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.batis.store.DataRepository;
+import org.wxd.boot.batis.store.ann.Keys;
 import org.wxd.boot.core.append.StreamWriter;
 import org.wxd.boot.core.field.extend.FieldAnn;
 import org.wxd.boot.core.field.extend.FieldType;
@@ -21,10 +26,14 @@ import java.util.Map;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-04-19 14:12
  **/
+@Getter
+@Setter
+@Accessors(chain = true)
 public abstract class DbBean<T> {
 
-    @JSONField(serialize = false, deserialize = false)
+    /** 返回实体类 */
     @DbColumn(alligator = true)
+    @JSONField(serialize = false, deserialize = false)
     @FieldAnn(alligator = true, fieldTypes = {FieldType.DB1, FieldType.DB2})
     protected transient final Class<?> entityClass;
     @JSONField(serialize = false, deserialize = false)
@@ -38,28 +47,38 @@ public abstract class DbBean<T> {
         entityClass = ReflectContext.getTClass(this.getClass());
     }
 
-    public List<T> getModelList() {
-        return modelList;
-    }
-
     public DbBean setModelList(List<T> modelList) {
         this.modelList = modelList;
         if (modelList != null) {
             this.modelMap = new LinkedHashMap<>();
             this.modelList.forEach((dbModel) -> {
                 try {
-                    Object fieldValue = getDataStruct().getDataColumnKey().getFieldValue(dbModel);
-                    this.modelMap.put(fieldValue, dbModel);
+                    Object fieldValue = getDataMapping().getDataColumnKey().getFieldValue(dbModel);
+                    if (this.modelMap.put(fieldValue, dbModel) != null) {
+                        throw new RuntimeException("数据 主键 【" + fieldValue + "】 重复");
+                    }
+                    Keys keys = AnnUtil.ann(DbBean.this.getClass(), Keys.class);
+                    if (keys != null) {
+                        for (String s : keys.value()) {
+                            String index = "";
+                            String[] split = s.split(keys.split());
+                            for (String string : split) {
+                                EntityField entityField = getDataMapping().getColumnMap().get(string);
+                                Object fv = entityField.getFieldValue(dbModel);
+                                if (!index.isEmpty()) index += keys.split();
+                                index += fv;
+                            }
+                            if (this.modelMap.put(index, dbModel) != null) {
+                                throw new Throw("数据 自定义索引 【" + s + "】 【" + fieldValue + "】 重复 ");
+                            }
+                        }
+                    }
                 } catch (Throwable e) {
                     throw Throw.as("数据：" + FastJsonUtil.toJson(dbModel), e);
                 }
             });
         }
         return this;
-    }
-
-    public Map<Object, T> getModelMap() {
-        return modelMap;
     }
 
     /**
@@ -74,30 +93,6 @@ public abstract class DbBean<T> {
 
     public boolean containsKey(Object key) {
         return modelMap.containsKey(key);
-    }
-
-    /**
-     * 返回实体类
-     *
-     * @return
-     */
-    public Class<?> getEntityClass() {
-        return entityClass;
-    }
-
-    /**
-     * 实体模型
-     */
-    public EntityTable getDataStruct() {
-        return dataMapping;
-    }
-
-    /**
-     * 实体模型
-     */
-    public DbBean<T> setDataStruct(EntityTable dataMapping) {
-        this.dataMapping = dataMapping;
-        return this;
     }
 
     @JSONField(serialize = false, deserialize = false)
