@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.str.StringUtil;
@@ -13,9 +12,9 @@ import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.timer.ann.Scheduled;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -36,14 +35,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
     private Method method = null;
     /** 和method是互斥的 */
     private Runnable scheduledTask;
-    private TreeSet<Integer> secondSet = new TreeSet<>();
-    private TreeSet<Integer> minuteSet = new TreeSet<>();
-    private TreeSet<Integer> hourSet = new TreeSet<>();
-    private TreeSet<Integer> dayOfWeekSet = new TreeSet<>();
-    private TreeSet<Integer> dayOfMonthSet = new TreeSet<>();
-    private TreeSet<Integer> monthSet = new TreeSet<>();
-    private TreeSet<Integer> yearSet = new TreeSet<>();
-
+    private CronExpress cronExpress;
     /** 上一次执行尚未完成是否持续执行 默认false 不执行 */
     private boolean scheduleAtFixedRate = false;
     protected AtomicBoolean runEnd = new AtomicBoolean(true);
@@ -64,11 +56,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         final Sort sortAnn = AnnUtil.ann(method, Sort.class);
         this.index = sortAnn == null ? 999999 : sortAnn.value();
         this.scheduleAtFixedRate = scheduled.scheduleAtFixedRate();
-        try {
-            action(scheduled.value());
-        } catch (Exception e) {
-            throw Throw.as("Scheduled 定时任务 corn 表达式异常 - (" + scheduled.value() + ") - " + instance.getClass().getSimpleName() + " - " + method.getName(), e);
-        }
+        cronExpress = new CronExpress(scheduled.value(), TimeUnit.SECONDS, 0);
     }
 
     @Override public String getTaskInfoString() {
@@ -94,61 +82,11 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
      * <p> 年 1970 - 2199
      */
     public ScheduledInfo(Runnable scheduledTask, String scheduledName, String scheduled, boolean scheduleAtFixedRate) {
-
         this.scheduledTask = scheduledTask;
         this.name = "[timer-job]" + scheduledTask.getClass() + "-" + scheduledName;
 
         this.index = 999999;
         this.scheduleAtFixedRate = scheduleAtFixedRate;
-        action(scheduled);
-    }
-
-    /**
-     * 用于获取下一次执行时间
-     * <br>
-     * <br>
-     * 秒 分 时 日 月 星期 年
-     * <p> {@code * * * * * * * }
-     * <p> 下面以 秒 配置举例
-     * <p> * 或者 ? 无限制,
-     * <p> 数字是 指定秒执行
-     * <p> 0-5 第 0 秒 到 第 5 秒执行 每秒执行
-     * <p> 0,5 第 0 秒 和 第 5 秒 各执行一次
-     * <p> {@code *}/5 秒 % 5 == 0 执行
-     * <p> 5/5 第五秒之后 每5秒执行一次
-     * <p> 秒 0-59
-     * <p> 分 0-59
-     * <p> 时 0-23
-     * <p> 日 1-28 or 29 or 30 or 31
-     * <p> 月 1-12
-     * <p> 星期 1-7 Mon Tues Wed Thur Fri Sat Sun
-     * <p> 年 1970 - 2199
-     */
-    public ScheduledInfo(String scheduled) {
-        action(scheduled);
-    }
-
-    protected void action(String scheduled) {
-        String[] values = new String[7];
-        Arrays.fill(values, "*");
-
-        if (StringUtil.notEmptyOrNull(scheduled)) {
-            String[] split = scheduled.split(" ");
-            for (int i = 0; i < split.length; i++) {
-                if (StringUtil.emptyOrNull(split[i])) {
-                    throw new RuntimeException("cron 表达式异常 [" + scheduled + "] 第 " + (i + 1) + " 个参数 空 不合法");
-                }
-                values[i] = split[i];
-            }
-        }
-
-        action(secondSet, values[0], 0, 59);
-        action(minuteSet, values[1], 0, 59);
-        action(hourSet, values[2], 0, 23);
-        action(dayOfMonthSet, values[3], 1, 31);
-        action(monthSet, values[4], 1, 12);
-        action(dayOfWeekSet, values[5], 1, 7);
-        action(yearSet, values[6], 1970, 2199);
     }
 
     protected void action(TreeSet<Integer> set, String actionStr, int min, int max) {
@@ -204,126 +142,11 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         } else {
             set.add(Integer.valueOf(actionStr));
         }
-
     }
-
-    /** 获取下一次可用的格式化时间字符串 */
-    public String nextDate() {
-        return nextDate(MyClock.millis());
-    }
-
-    /** 获取下一次可用的格式化时间字符串 */
-    public String nextDate(long time) {
-        return MyClock.formatDate(findValidateTime(time, 1000));
-    }
-
-    /** 取下一次可用的时间 */
-    public long nextTime() {
-        return findValidateTime(MyClock.millis(), 1000);
-    }
-
-    /** 获取上一次可用的格式化时间字符串 */
-    public String upDate() {
-        return upDate(MyClock.millis());
-    }
-
-    /** 获取上一次可用的格式化时间字符串 */
-    public String upDate(long time) {
-        return MyClock.formatDate(findValidateTime(time, -1000));
-    }
-
-    /** 获取上一次可用的时间 */
-    public long upTime() {
-        return upTime(MyClock.millis());
-    }
-
-    /** 获取上一次可用的时间 */
-    public long upTime(long time) {
-        return findValidateTime(time, -1000);
-    }
-
-    /**
-     * 获取开启时间
-     *
-     * @param time   时间磋
-     * @param change 每一次变更的时间差查找上一次就是 -1000
-     * @return
-     */
-    public long findValidateTime(long time, long change) {
-        for (int i = 0; i < 20000; i++) {
-            int second = MyClock.getSecond(time);
-            int minute = MyClock.getMinute(time);
-            int hour = MyClock.getHour(time);
-            int dayOfWeek = MyClock.dayOfWeek(time);
-            int dayOfMonth = MyClock.dayOfMonth(time);
-            int month = MyClock.getMonth(time);
-            int year = MyClock.getYear(time);
-            if (checkJob(second, minute, hour, dayOfWeek, dayOfMonth, month, year)) {
-                return time;
-            }
-            time += change;
-        }
-        return 0;
-    }
-
-    public boolean checkJob(int second, int minute, int hour, int dayOfWeek, int dayOfMonth, int month, int year) {
-
-        if (cursecond == second) {
-            /*保证一秒内只执行一次*/
-            return false;
-        }
-
-        cursecond = second;
-
-        if (!secondSet.isEmpty()) {
-            if (!secondSet.contains(second)) {
-                return false;
-            }
-        }
-
-        if (!minuteSet.isEmpty()) {
-            if (!minuteSet.contains(minute)) {
-                return false;
-            }
-        }
-
-        if (!hourSet.isEmpty()) {
-            if (!hourSet.contains(hour)) {
-                return false;
-            }
-        }
-
-        if (!dayOfWeekSet.isEmpty()) {
-            if (!dayOfWeekSet.contains(dayOfWeek)) {
-                return false;
-            }
-        }
-
-        if (!dayOfMonthSet.isEmpty()) {
-            if (!dayOfMonthSet.contains(dayOfMonth)) {
-                return false;
-            }
-        }
-
-        if (!monthSet.isEmpty()) {
-            if (!monthSet.contains(month)) {
-                return false;
-            }
-        }
-
-        if (!yearSet.isEmpty()) {
-            if (!yearSet.contains(year)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 
     public void job(int second, int minute, int hour, int dayOfWeek, int dayOfMonth, int month, int year) {
 
-        if (!checkJob(second, minute, hour, dayOfWeek, dayOfMonth, month, year)) {
+        if (!cronExpress.checkJob(second, minute, hour, dayOfWeek, dayOfMonth, month, year)) {
             return;
         }
         if (!scheduleAtFixedRate && !runEnd.get()) return;

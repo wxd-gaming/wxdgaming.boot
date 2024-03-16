@@ -22,6 +22,10 @@
             <artifactId>wxdgaming.boot.assist</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
         <!-- 导航网格算法需要-->
         <dependency>
             <groupId>com.vividsolutions</groupId>
