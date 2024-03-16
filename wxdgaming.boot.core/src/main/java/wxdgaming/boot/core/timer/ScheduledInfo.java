@@ -207,41 +207,50 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
 
     }
 
+    /** 获取下一次可用的格式化时间字符串 */
     public String nextDate() {
         return nextDate(MyClock.millis());
     }
 
+    /** 获取下一次可用的格式化时间字符串 */
     public String nextDate(long time) {
         return MyClock.formatDate(findValidateTime(time, 1000));
     }
 
-    /** 获取开启时间 */
+    /** 取下一次可用的时间 */
     public long nextTime() {
         return findValidateTime(MyClock.millis(), 1000);
     }
 
+    /** 获取上一次可用的格式化时间字符串 */
     public String upDate() {
         return upDate(MyClock.millis());
     }
 
+    /** 获取上一次可用的格式化时间字符串 */
     public String upDate(long time) {
         return MyClock.formatDate(findValidateTime(time, -1000));
     }
 
-    /** 获取开启时间 */
+    /** 获取上一次可用的时间 */
     public long upTime() {
-        return findValidateTime(MyClock.millis(), -1000);
+        return upTime(MyClock.millis());
+    }
+
+    /** 获取上一次可用的时间 */
+    public long upTime(long time) {
+        return findValidateTime(time, -1000);
     }
 
     /**
      * 获取开启时间
      *
      * @param time   时间磋
-     * @param append 每一次变更的时间差查找上一次就是 -1000
+     * @param change 每一次变更的时间差查找上一次就是 -1000
      * @return
      */
-    public long findValidateTime(long time, long append) {
-        while (true) {
+    public long findValidateTime(long time, long change) {
+        for (int i = 0; i < 20000; i++) {
             int second = MyClock.getSecond(time);
             int minute = MyClock.getMinute(time);
             int hour = MyClock.getHour(time);
@@ -252,8 +261,9 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
             if (checkJob(second, minute, hour, dayOfWeek, dayOfMonth, month, year)) {
                 return time;
             }
-            time += append;
+            time += change;
         }
+        return 0;
     }
 
     public boolean checkJob(int second, int minute, int hour, int dayOfWeek, int dayOfMonth, int month, int year) {
