@@ -18,6 +18,18 @@ import java.util.Map;
 @Slf4j
 public class TemplatePack {
 
+    public static void ftl2File(ClassLoader classLoader, String dir, String ftl, Map<String, Object> obj, String outFile) {
+        TemplatePack.build(classLoader, dir).ftl2File(ftl, obj, outFile);
+    }
+
+    public static String ftl2String(ClassLoader classLoader, String dir, String ftl, Map<String, Object> obj) {
+        return TemplatePack.build(classLoader, dir).ftl2String(ftl, obj);
+    }
+
+    public static byte[] ftl2Bytes(ClassLoader classLoader, String dir, String ftl, Map<String, Object> obj) {
+        return TemplatePack.build(classLoader, dir).ftl2Bytes(ftl, obj);
+    }
+
     public static TemplatePack build(String dir) {
         return build(Thread.currentThread().getContextClassLoader(), dir);
     }
