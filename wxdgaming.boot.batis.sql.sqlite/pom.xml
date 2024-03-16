@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>wxdgaming.boot</groupId>
+        <artifactId>wxdgaming.boot</artifactId>
+        <version>j21-003</version>
+    </parent>
+
+    <artifactId>wxdgaming.boot.batis.sql.sqlite</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.agent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.batis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.batis.sql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.42.0.0</version>
+        </dependency>
+    </dependencies>
+
+</project>

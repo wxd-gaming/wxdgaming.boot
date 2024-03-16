@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- @author: Troy.Chen(無心道, 15388152619) -->
+<bootConfig>
+    <!-- 虚拟线程池 -->
+    <vtExecutor coreSize="100" maxSize="200"/>
+    <!-- 默认线程池 -->
+    <defaultExecutor coreSize="2" maxSize="4"/>
+    <!-- 逻辑线程池 -->
+    <logicExecutor coreSize="8" maxSize="16"/>
+    <server>
+        <name>g1</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>17000</port>
+        <sslProtocolType></sslProtocolType>
+        <jks></jks>
+        <jksPwd></jksPwd>
+    </server>
+    <wsserver>
+        <name>default</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>18000</port>
+        <sslProtocolType></sslProtocolType>
+        <jks></jks>
+        <jksPwd></jksPwd>
+        <headers/>
+    </wsserver>
+    <http>
+        <name>default</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>19000</port>
+        <sslProtocolType></sslProtocolType>
+        <jks></jks>
+        <jksPwd></jksPwd>
+        <serviceClassName>wxdgaming.boot.starter.service.HsService</serviceClassName>
+        <needCache>true</needCache>
+        <resourcesPath></resourcesPath>
+        <headers>
+            <!-- 跨域支持 -->
+            <header key="Access-Control-Allow-Origin" value="*"/>
+            <header key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
+            <header key="Access-Control-Allow-Credentials" value="true"/>
+            <header key="Access-Control-Allow-Headers"
+                    value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
+            <!-- 添加缓存 -->
+<!--            <header key="pragma" value="private"/>-->
+<!--            <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>-->
+<!--            <header key="cache-control" value="max-age=36000"/>-->
+        </headers>
+    </http>
+<!--    <mysql>-->
+<!--        <name>default</name>-->
+<!--        <show_sql>true</show_sql>-->
+<!--        <connectionPool>true</connectionPool>-->
+<!--        <batchSizeThread>2</batchSizeThread>-->
+<!--        <dbHost>127.0.0.1</dbHost>-->
+<!--        <dbPort>3306</dbPort>-->
+<!--        <dbBase>test3</dbBase>-->
+<!--        <dbUser>root</dbUser>-->
+<!--        <dbPwd>test</dbPwd>-->
+<!--    </mysql>-->
+<!--    <redis>-->
+<!--        <name>数据源1</name>-->
+<!--        <dbHost>127.0.0.1</dbHost>-->
+<!--        <dbPort>6379</dbPort>-->
+<!--        <dbPwd>test</dbPwd>-->
+<!--    </redis>-->
+</bootConfig>

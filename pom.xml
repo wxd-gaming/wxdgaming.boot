@@ -4,30 +4,30 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.wxd</groupId>
-    <artifactId>org.wxd</artifactId>
-    <version>wxd-j21-02</version>
+    <groupId>wxdgaming.boot</groupId>
+    <artifactId>wxdgaming.boot</artifactId>
+    <version>j21-003</version>
     <packaging>pom</packaging>
     <modules>
-        <module>org.wxd.boot.agent</module>
-        <module>org.wxd.boot.assist</module>
-        <module>org.wxd.boot.batis</module>
-        <module>org.wxd.boot.batis.mongodb</module>
-        <module>org.wxd.boot.batis.redis</module>
-        <module>org.wxd.boot.batis.sql</module>
-        <module>org.wxd.boot.batis.sql.mysql</module>
-        <module>org.wxd.boot.batis.sql.sqlite</module>
-        <module>org.wxd.boot.convert</module>
-        <module>org.wxd.boot.core</module>
-        <module>org.wxd.boot.holder</module>
-        <module>org.wxd.boot.jscript</module>
-        <module>org.wxd.boot.net</module>
-        <module>org.wxd.boot.net.http</module>
-        <module>org.wxd.boot.net.http.client.apache</module>
-        <module>org.wxd.boot.net.http.client.jdk</module>
-        <module>org.wxd.boot.net.http.client.url</module>
-        <module>org.wxd.boot.net.http.service.simple</module>
-        <module>org.wxd.boot.starter</module>
+        <module>wxdgaming.boot.agent</module>
+        <module>wxdgaming.boot.assist</module>
+        <module>wxdgaming.boot.batis</module>
+        <module>wxdgaming.boot.batis.mongodb</module>
+        <module>wxdgaming.boot.batis.redis</module>
+        <module>wxdgaming.boot.batis.sql</module>
+        <module>wxdgaming.boot.batis.sql.mysql</module>
+        <module>wxdgaming.boot.batis.sql.sqlite</module>
+        <module>wxdgaming.boot.convert</module>
+        <module>wxdgaming.boot.core</module>
+        <module>wxdgaming.boot.holder</module>
+        <module>wxdgaming.boot.jscript</module>
+        <module>wxdgaming.boot.net</module>
+        <module>wxdgaming.boot.net.http</module>
+        <module>wxdgaming.boot.net.http.client.apache</module>
+        <module>wxdgaming.boot.net.http.client.jdk</module>
+        <module>wxdgaming.boot.net.http.client.url</module>
+        <module>wxdgaming.boot.net.http.service.simple</module>
+        <module>wxdgaming.boot.starter</module>
     </modules>
 
     <properties>
@@ -307,6 +307,12 @@
                 <groupId>org.mongodb</groupId>
                 <artifactId>bson</artifactId>
                 <version>4.9.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>opendmk_jdmkrt_jar</artifactId>
+                <version>1.0-b01-ea</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

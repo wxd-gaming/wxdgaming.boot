@@ -41,3 +41,4 @@ build/
 /org.wxd.boot/protoc-plugin
 /org.wxd.boot.core/protoc-plugin
 /.idea
+/wxdgaming.boot.net/protoc-plugin
