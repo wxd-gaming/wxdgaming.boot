@@ -2,7 +2,7 @@ package org.wxd.boot.batis.sql.excel;
 
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.exception.Throw;
-import org.wxd.boot.agent.io.TemplatePack;
+import org.wxd.boot.core.str.TemplatePack;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.code.CodeLan;
 import org.wxd.boot.batis.excel.ExcelRead;

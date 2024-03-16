@@ -6,7 +6,6 @@ import org.wxd.boot.agent.AgentService;
 import org.wxd.boot.agent.exception.Throw;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
-import org.wxd.boot.agent.io.TemplatePack;
 
 import java.io.File;
 import java.io.Serializable;
@@ -25,21 +24,9 @@ import java.util.Map;
 @Slf4j
 public class FileUtilTest implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @Test
     public void write() {
         FileWriteUtil.writeString("target/tmp/sss.log", "ssss", false);
-    }
-
-    @Test
-    public void ftl() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("tableName", "sss");
-        map.put("columns", List.of("1", 2, 4, "5"));
-
-        TemplatePack template = TemplatePack.build(FileUtilTest.class.getClassLoader(), "template/sql");
-        System.out.println(template.ftl2String("replace.ftl", map));
     }
 
     @Test

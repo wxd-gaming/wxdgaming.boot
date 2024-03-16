@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.LocalShell;
 import org.wxd.boot.agent.io.FileReadUtil;
 import org.wxd.boot.agent.io.FileUtil;
-import org.wxd.boot.agent.io.TemplatePack;
+import org.wxd.boot.core.str.TemplatePack;
 import org.wxd.boot.core.append.StreamWriter;
 import org.wxd.boot.core.collection.ObjMap;
 import org.wxd.boot.core.str.StringUtil;

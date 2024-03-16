@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
-import org.wxd.boot.agent.io.TemplatePack;
+import org.wxd.boot.core.str.TemplatePack;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.batis.struct.DataChecked;

@@ -3,7 +3,7 @@ package org.wxd.boot.batis.code;
 import lombok.extern.slf4j.Slf4j;
 import org.wxd.boot.agent.io.FileUtil;
 import org.wxd.boot.agent.io.FileWriteUtil;
-import org.wxd.boot.agent.io.TemplatePack;
+import org.wxd.boot.core.str.TemplatePack;
 import org.wxd.boot.batis.EntityField;
 import org.wxd.boot.batis.EntityTable;
 import org.wxd.boot.core.append.StreamWriter;

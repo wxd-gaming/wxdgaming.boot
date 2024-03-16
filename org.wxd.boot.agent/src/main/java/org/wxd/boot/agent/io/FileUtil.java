@@ -198,18 +198,6 @@ public class FileUtil implements Serializable {
         }
     }
 
-    public static void ftl2File(ClassLoader classLoader, String dir, String ftl, Map<String, Object> obj, String outFile) {
-        TemplatePack.build(classLoader, dir).ftl2File(ftl, obj, outFile);
-    }
-
-    public static String ftl2String(ClassLoader classLoader, String dir, String ftl, Map<String, Object> obj) {
-        return TemplatePack.build(classLoader, dir).ftl2String(ftl, obj);
-    }
-
-    public static byte[] ftl2Bytes(ClassLoader classLoader, String dir, String ftl, Map<String, Object> obj) {
-        return TemplatePack.build(classLoader, dir).ftl2Bytes(ftl, obj);
-    }
-
     public static File createFile(String fileName) {
         return createFile(new File(fileName));
     }
