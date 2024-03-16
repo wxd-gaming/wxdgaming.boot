@@ -94,6 +94,8 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
                 .collect(Collectors.toList());
         load(stringBuilder, forceLoad, list);
         log.info(stringBuilder.toString());
+        log.info("开始检查数据合法性");
+        beanMap.values().forEach(v -> v.checkDb(this));
     }
 
     /**

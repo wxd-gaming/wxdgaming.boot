@@ -48,7 +48,8 @@ public abstract class DbBean<T> {
     }
 
     public DbBean setModelList(List<T> modelList) {
-        this.modelList = modelList;
+        /*不可变列表*/
+        this.modelList = List.copyOf(modelList);
         if (modelList != null) {
             this.modelMap = new LinkedHashMap<>();
             this.modelList.forEach((dbModel) -> {
@@ -68,6 +69,7 @@ public abstract class DbBean<T> {
                                 if (!index.isEmpty()) index += keys.split();
                                 index += fv;
                             }
+                            /*添加自定义索引*/
                             if (this.modelMap.put(index, dbModel) != null) {
                                 throw new Throw("数据 自定义索引 【" + s + "】 【" + fieldValue + "】 重复 ");
                             }
@@ -77,6 +79,8 @@ public abstract class DbBean<T> {
                     throw Throw.as("数据：" + FastJsonUtil.toJson(dbModel), e);
                 }
             });
+            /*不可变的列表*/
+            this.modelMap = Map.copyOf(this.modelMap);
         }
         return this;
     }
@@ -100,13 +104,12 @@ public abstract class DbBean<T> {
         return this.modelList.size();
     }
 
-    /**
-     * 初始化
-     */
+    /** 初始化，做一些构建相关的操作 */
     @JSONField(serialize = false, deserialize = false)
     public void initDb() {
     }
 
+    /** 检查数据合法性 */
     @JSONField(serialize = false, deserialize = false)
     public void checkDb(DataRepository dataRepository) {
     }
