@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.threading.Async;
+import wxdgaming.boot.core.timer.CronExpress;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.core.timer.ScheduledInfo;
 import wxdgaming.boot.core.timer.ann.Scheduled;
@@ -23,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Singleton
 public class TestTimerJob implements Serializable {
-
 
 
     public static void main(String[] args) throws Throwable {
@@ -50,7 +50,7 @@ public class TestTimerJob implements Serializable {
     }
 
     public void tt0(String cron) {
-        ScheduledInfo scheduledInfo = new ScheduledInfo(cron);
+        CronExpress scheduledInfo = new CronExpress(cron, TimeUnit.SECONDS, 0);
         long millis = MyClock.millis();
         for (int i = 0; i < 5; i++) {
             millis = scheduledInfo.findValidateTime(millis, 1000);

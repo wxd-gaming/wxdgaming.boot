@@ -154,31 +154,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                             }
                             return;
                         }
-
-                        final String methodNameLowerCase = cmd.toLowerCase().trim();
-                        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord((Class<? extends NioBase>) getClass(), methodNameLowerCase);
-                        if (mappingRecord == null) {
-                            log.info("{} not found url {}", session.toString(), cmd);
-                            if (rpcId > 0) {
-                                session.rpcResponse(rpcId, RunResult.error("not found url " + cmd).toJson());
-                            }
-                            return;
-                        }
-                        final MarkTimer markTimer = MarkTimer.build();
-                        final StreamWriter outAppend = new StreamWriter(1024);
-                        CmdListenerAction listenerAction = new CmdListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
-                            if (showLog) {
-                                log.info("\n执行：" + session.toString()
-                                        + "\n" + markTimer.execTime2String() +
-                                        "\nrpcId=" + rpcId +
-                                        "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
-                                        "\n结果 = " + outAppend.toString());
-                            }
-                            if (rpcId > 0) {
-                                session.rpcResponse(rpcId, outAppend.toString());
-                            }
-                        });
-                        listenerAction.submit();
+                        actionCmdListener(session, rpcId, cmd, putData);
                     }
                 }
                 return;
@@ -217,6 +193,32 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         }
     }
 
+    default void actionCmdListener(S session, long rpcId, String cmd, ObjMap putData) {
+        final String methodNameLowerCase = cmd.toLowerCase().trim();
+        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord((Class<? extends NioBase>) getClass(), methodNameLowerCase);
+        if (mappingRecord == null) {
+            log.info("{} not found url {}", session.toString(), cmd);
+            if (rpcId > 0) {
+                session.rpcResponse(rpcId, RunResult.error("not found url " + cmd).toJson());
+            }
+            return;
+        }
+        final MarkTimer markTimer = MarkTimer.build();
+        final StreamWriter outAppend = new StreamWriter(1024);
+        CmdListenerAction listenerAction = new CmdListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
+            if (showLog) {
+                log.info("\n执行：" + session.toString()
+                        + "\n" + markTimer.execTime2String() +
+                        "\nrpcId=" + rpcId +
+                        "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
+                        "\n结果 = " + outAppend.toString());
+            }
+            if (rpcId > 0) {
+                session.rpcResponse(rpcId, outAppend.toString());
+            }
+        });
+        listenerAction.submit();
+    }
 
     /**
      * 处理消息，并且派发到对应线程

@@ -50,16 +50,14 @@ public class WebSession extends SocketSession implements Serializable {
         return this;
     }
 
-    public WebSession write(String msg) {
+    public ChannelFuture write(String msg) {
         TextWebSocketFrame bwsf = new TextWebSocketFrame(msg);
-        write0(bwsf, false);
-        return this;
+        return write0(bwsf, false);
     }
 
-    public WebSession writeAndFlush(String msg) {
+    public ChannelFuture writeAndFlush(String msg) {
         TextWebSocketFrame bwsf = new TextWebSocketFrame(msg);
-        write0(bwsf, true);
-        return this;
+        return write0(bwsf, true);
     }
 
     @Override
