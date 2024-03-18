@@ -41,6 +41,10 @@ public class ProtoBufCreateController {
         buildProtobuf("java", protoc_path, "java_out");
     }
 
+    public void buildProtobufToJs(String protoc_path) {
+        buildProtobuf("js", protoc_path, "js_out");
+    }
+
     /**
      * @param codeLan
      * @param protoc_path
