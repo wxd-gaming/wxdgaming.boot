@@ -2,14 +2,14 @@ package wxdgaming.boot.batis.sql.excel;
 
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.batis.sql.SqlDataHelper;
-import wxdgaming.boot.batis.sql.SqlDataWrapper;
-import wxdgaming.boot.batis.sql.SqlEntityTable;
-import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.code.CodeLan;
 import wxdgaming.boot.batis.excel.ExcelRead;
+import wxdgaming.boot.batis.sql.SqlDataHelper;
+import wxdgaming.boot.batis.sql.SqlDataWrapper;
+import wxdgaming.boot.batis.sql.SqlEntityTable;
 import wxdgaming.boot.core.append.StreamWriter;
+import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.io.Serializable;
@@ -65,8 +65,13 @@ public class ExcelRead2Sql extends ExcelRead<SqlEntityTable, SqlDataWrapper<SqlE
         return new SqlEntityTable(this.sqlDao.getDataWrapper());
     }
 
+    @Override public ExcelRead2Sql loadExcel() {
+        super.loadExcel();
+        return this;
+    }
+
     @Override
-    public ExcelRead2Sql loadExcel(String... haveExtends) {
+    public ExcelRead2Sql loadExcel(String haveExtends) {
         super.loadExcel(haveExtends);
         return this;
     }

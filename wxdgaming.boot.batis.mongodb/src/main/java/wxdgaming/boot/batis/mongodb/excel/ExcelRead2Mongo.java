@@ -5,13 +5,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wxdgaming.boot.batis.mongodb.MongoDataHelper;
-import wxdgaming.boot.batis.mongodb.MongoEntityTable;
-import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.code.CodeLan;
 import wxdgaming.boot.batis.excel.ExcelRead;
+import wxdgaming.boot.batis.mongodb.MongoDataHelper;
 import wxdgaming.boot.batis.mongodb.MongoDataWrapper;
+import wxdgaming.boot.batis.mongodb.MongoEntityTable;
+import wxdgaming.boot.core.str.TemplatePack;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -61,13 +61,16 @@ public class ExcelRead2Mongo extends ExcelRead<MongoEntityTable, MongoDataWrappe
         return mongoDataHelper.getDataWrapper();
     }
 
-    @Override
-    protected MongoEntityTable createDataStruct() {
+    @Override protected MongoEntityTable createDataStruct() {
         return new MongoEntityTable();
     }
 
-    @Override
-    public ExcelRead2Mongo loadExcel(String... haveExtends) {
+    @Override public ExcelRead2Mongo loadExcel() {
+        super.loadExcel();
+        return this;
+    }
+
+    @Override public ExcelRead2Mongo loadExcel(String haveExtends) {
         super.loadExcel(haveExtends);
         return this;
     }

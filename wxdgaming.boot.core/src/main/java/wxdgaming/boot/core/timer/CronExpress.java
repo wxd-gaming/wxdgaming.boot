@@ -16,9 +16,16 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CronExpress {
 
+    /** 表达式 */
+    String cron;
+    /** 时间需求 */
+    TimeUnit timeUnit;
+    /** 偏移量 */
+    long duration;
+
+    private transient int curSecond = -1;
     /** 配合持续时间使用 */
-    transient long duration;
-    transient int curSecond = -1;
+    private final transient long offsetTime;
     private final transient TreeSet<Integer> secondSet = new TreeSet<>();
     private final transient TreeSet<Integer> minuteSet = new TreeSet<>();
     private final transient TreeSet<Integer> hourSet = new TreeSet<>();
@@ -26,6 +33,7 @@ public class CronExpress {
     private final transient TreeSet<Integer> dayOfMonthSet = new TreeSet<>();
     private final transient TreeSet<Integer> monthSet = new TreeSet<>();
     private final transient TreeSet<Integer> yearSet = new TreeSet<>();
+
 
     /**
      * 用于获取下一次执行时间
@@ -50,8 +58,11 @@ public class CronExpress {
      * <p> 年 1970 - 2199
      */
     public CronExpress(String cron, TimeUnit timeUnit, long duration) {
+        this.cron = cron;
+        this.timeUnit = timeUnit;
+        this.duration = duration;
         action(cron);
-        this.duration = timeUnit.toMillis(duration);
+        this.offsetTime = timeUnit.toMillis(duration);
     }
 
     protected void action(String cron) {
@@ -160,7 +171,7 @@ public class CronExpress {
 
     /** 取下一次可用的时间 */
     public long validateOverTimeAfter(long time) {
-        return validateTimeAfter(time) + this.duration;
+        return validateTimeAfter(time) + this.offsetTime;
     }
 
     /** 获取下一次可用的时间 持续结束时间 格式化字符串 */
@@ -200,7 +211,7 @@ public class CronExpress {
 
     /** 获取上一次可用时间 持续结束时间 */
     public long validateOverTimeBefore(long time) {
-        return findValidateTime(time, -1000) + duration;
+        return findValidateTime(time, -1000) + offsetTime;
     }
 
     /** 获取上一次可用时间 持续结束时间 的格式化字符串 */
@@ -290,5 +301,32 @@ public class CronExpress {
         }
 
         return true;
+    }
+
+    public String getCron() {
+        return cron;
+    }
+
+    public CronExpress setCron(String cron) {
+        this.cron = cron;
+        return this;
+    }
+
+    public TimeUnit getTimeUnit() {
+        return timeUnit;
+    }
+
+    public CronExpress setTimeUnit(TimeUnit timeUnit) {
+        this.timeUnit = timeUnit;
+        return this;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public CronExpress setDuration(long duration) {
+        this.duration = duration;
+        return this;
     }
 }

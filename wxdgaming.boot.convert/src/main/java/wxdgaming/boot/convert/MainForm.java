@@ -135,7 +135,7 @@ public class MainForm implements Serializable {
         return collect;
     }
 
-    public ExcelRead2Json excelRead2Json(String... haveExtends) {
+    public ExcelRead2Json excelRead2Json(String haveExtends) {
 
         List<String> collect = getSelectPath(".xls", ".xlsx");
         if (collect == null) return null;

@@ -260,7 +260,7 @@ public abstract class DataWrapper<DM extends EntityTable>
 
             if (entityField.getColumnType() == ColumnType.None) {
                 String fieldTypeName = fieldMapping.getFieldType().getName().toLowerCase();
-                buildColumnType(entityField, fieldTypeName);
+                buildColumnType(entityField, fieldTypeName, false);
             }
             if (entityField.getColumnType() == ColumnType.None) {
                 entityField.setColumnType(ColumnType.Json);
@@ -285,7 +285,7 @@ public abstract class DataWrapper<DM extends EntityTable>
         return entityTable;
     }
 
-    public void buildColumnType(EntityField entityField, String fieldTypeName) {
+    public void buildColumnType(EntityField entityField, String fieldTypeName, boolean client) {
         final String typeString = PatternStringUtil.typeString(fieldTypeName);
         switch (typeString.toLowerCase()) {
             case "bool":
@@ -514,6 +514,14 @@ public abstract class DataWrapper<DM extends EntityTable>
                 entityField.setFieldType(ArrayList.class);
                 entityField.setFieldTypeString("ArrayList<Float>");
                 break;
+            case "list<float[]>":
+            case "arraylist<float[]>":
+            case "list<java.lang.float[]>":
+            case "arraylist<java.lang.float[]>":
+                entityField.setColumnType(ColumnType.Json);
+                entityField.setFieldType(ArrayList.class);
+                entityField.setFieldTypeString("ArrayList<Float[]>");
+                break;
             case "float[][]":
                 entityField.setColumnType(ColumnType.Json);
                 entityField.setFieldType(float[][].class);
@@ -525,9 +533,22 @@ public abstract class DataWrapper<DM extends EntityTable>
                 entityField.setFieldTypeString("Float[][]");
                 break;
             default:
-                entityField.setColumnType(ColumnType.None);
-                entityField.setFieldType(null);
-                break;
+                if (client) {
+                    entityField.setColumnType(ColumnType.Json);
+                    entityField.setFieldType(String.class);
+                    entityField.setFieldTypeString("String");
+                    break;
+                } else {
+                    try {
+                        Class<?> aClass = this.getClass().getClassLoader().loadClass(fieldTypeName);
+                        entityField.setColumnType(ColumnType.Json);
+                        entityField.setFieldType(aClass);
+                        entityField.setFieldTypeString(fieldTypeName);
+                        break;
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         }
     }
 

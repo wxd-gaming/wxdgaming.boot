@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.batis.DataWrapper;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.EntityTable;
@@ -12,11 +11,11 @@ import wxdgaming.boot.batis.code.CodeLan;
 import wxdgaming.boot.batis.code.CreateJavaCode;
 import wxdgaming.boot.batis.enums.ColumnType;
 import wxdgaming.boot.core.collection.ObjMap;
-import wxdgaming.boot.core.collection.SetOf;
 import wxdgaming.boot.core.field.ClassMapping;
 import wxdgaming.boot.core.field.ClassWrapper;
 import wxdgaming.boot.core.lang.ConvertUtil;
 import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.timer.MyClock;
@@ -35,10 +34,7 @@ import java.util.*;
 @Slf4j
 public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<DM>> extends Excel implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    /**
-     * excel 文件数据
-     */
+    /** excel 文件数据 */
     protected Map<String, DM> excelDataTableMap;
     /** 数据类型起始行号 */
     protected int dataTypeRowIndex = 1;
@@ -53,14 +49,15 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
 
     protected boolean loopFind = false;
     protected String[] excelPaths = null;
+    protected String[] splitStrs = {"[,，]", "[:：]"};
 
-    protected Set<String> haveExtend = new HashSet<>();
-    protected String[] splitStrs = {",|，", ":|："};
+    public ExcelRead loadExcel() {
+        return loadExcel("");
+    }
 
     /** 读取excel文件读取字段的权限 server, client, all, no */
-    public ExcelRead loadExcel(String... haveExtends) {
+    public ExcelRead loadExcel(String haveExtend) {
         MarkTimer timerMark = MarkTimer.build();
-        this.haveExtend = SetOf.asSet(haveExtends);
         this.excelDataTableMap = new LinkedHashMap<>();
         List<File> excelFiles = new LinkedList<>();
         for (String excelPath : excelPaths) {
@@ -84,7 +81,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                 }
             }
             for (Map.Entry<String, Workbook> entry : workbooks.entrySet()) {
-                readExcelHead(entry.getKey(), entry.getValue());
+                readExcelHead(entry.getKey(), entry.getValue(), haveExtend);
             }
 
             for (Map.Entry<String, Workbook> entry : workbooks.entrySet()) {
@@ -106,7 +103,8 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
     /**
      * 读取表头
      */
-    protected ExcelRead readExcelHead(String excelFile, Workbook workbook) {
+    protected ExcelRead readExcelHead(String excelFile, Workbook workbook,
+                                      String haveExtend) {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             /*只读取第一个*/
             Sheet sheet = workbook.getSheetAt(i);
@@ -170,7 +168,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                 Cell cellDataDesc = rowDataDesc.getCell(c);
                 Cell cellDataExtend = rowDataExtend.getCell(c);
                 if (cellDataType != null && cellDataName != null && cellDataDesc != null) {
-                    builderTable(entityTable, columnSet, cellDataType, cellDataName, cellDataDesc, cellDataExtend);
+                    builderTable(entityTable, haveExtend, columnSet, cellDataType, cellDataName, cellDataDesc, cellDataExtend);
                 }
             }
             if (!entityTable.getColumns().isEmpty()) {
@@ -196,6 +194,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
      * @param cellDataExtend 标注是客户端还是服务器
      */
     protected void builderTable(DM entityTable,
+                                String haveExtend,
                                 HashSet<String> columnSet,
                                 Cell cellDataType,
                                 Cell cellDataName,
@@ -214,7 +213,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
         }
 
         if (StringUtil.notEmptyOrNull(cellExtend) && !"all".equalsIgnoreCase(cellExtend)) {
-            if (!this.haveExtend.isEmpty() && !this.haveExtend.contains(cellExtend)) {
+            if (StringUtil.notEmptyOrNull(haveExtend) && !haveExtend.equalsIgnoreCase(cellExtend)) {
                 return;
             }
         }
@@ -233,7 +232,13 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
 
         entityField.setColumnLength(5000);
 
-        getDataWrapper().buildColumnType(entityField, cellType);
+        String[] split = cellType.split("_");
+        if (split.length > 1) {
+            cellType = split[0];
+            entityField.setColumnLength(Integer.parseInt(split[1]));
+        }
+
+        getDataWrapper().buildColumnType(entityField, cellType, "client".equalsIgnoreCase(haveExtend));
 
         if (entityField.getColumnType() == null
                 || entityField.getColumnType() == ColumnType.None) {
@@ -813,7 +818,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
         for (EntityField field : entityTable.getColumnMap().values()) {
             ClassMapping wrapper = ClassWrapper.wrapper(field.getClass());
             Map<String, Object> column = wrapper.toMap(field);
-            column.put("fieldNameLower", field.getFieldName());
+            column.put("fieldNameLower", StringUtil.lowerFirst(field.getFieldName()));
             column.put("fieldNameUpper", StringUtil.upperFirst(field.getFieldName()));
             columns.add(column);
         }

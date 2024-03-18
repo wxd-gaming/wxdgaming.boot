@@ -1,14 +1,13 @@
 package wxdgaming.boot.batis.excel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.io.FileWriteUtil;
-import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.code.CodeLan;
 import wxdgaming.boot.batis.text.json.JsonDataWrapper;
 import wxdgaming.boot.batis.text.json.JsonEntityTable;
 import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.str.TemplatePack;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -21,10 +20,8 @@ import java.util.Map;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2021-01-13 15:06
  **/
+@Slf4j
 public class ExcelRead2Json extends ExcelRead<JsonEntityTable, JsonDataWrapper> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(ExcelRead2Json.class);
 
     public static ExcelRead2Json builder() {
         return new ExcelRead2Json();
@@ -44,13 +41,13 @@ public class ExcelRead2Json extends ExcelRead<JsonEntityTable, JsonDataWrapper> 
     }
 
     /**
-     * @param haveExtends
+     * @param haveExtend
      * @return
      * @throws Exception
      */
     @Override
-    public ExcelRead2Json loadExcel(String... haveExtends) {
-        super.loadExcel(haveExtends);
+    public ExcelRead2Json loadExcel(String haveExtend) {
+        super.loadExcel(haveExtend);
         return this;
     }
 
