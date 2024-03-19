@@ -259,7 +259,7 @@ public abstract class DataWrapper<DM extends EntityTable>
             }
 
             if (entityField.getColumnType() == ColumnType.None) {
-                String fieldTypeName = fieldMapping.getFieldType().getName().toLowerCase();
+                String fieldTypeName = fieldMapping.getFieldType().getName();
                 buildColumnType(entityField, fieldTypeName, false);
             }
             if (entityField.getColumnType() == ColumnType.None) {
@@ -486,6 +486,7 @@ public abstract class DataWrapper<DM extends EntityTable>
                 entityField.setFieldType(ArrayList.class);
                 entityField.setFieldTypeString("ArrayList<Long>");
                 break;
+            case "[[j":
             case "long[][]":
                 entityField.setColumnType(ColumnType.Json);
                 entityField.setFieldType(long[][].class);
@@ -539,14 +540,12 @@ public abstract class DataWrapper<DM extends EntityTable>
                     entityField.setFieldTypeString("String");
                     break;
                 } else {
+                    entityField.setColumnType(ColumnType.Json);
                     try {
                         Class<?> aClass = this.getClass().getClassLoader().loadClass(fieldTypeName);
-                        entityField.setColumnType(ColumnType.Json);
                         entityField.setFieldType(aClass);
-                        entityField.setFieldTypeString(fieldTypeName);
-                        break;
                     } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
+                        //throw new RuntimeException(entityField.getFieldName() + " - " + fieldTypeName, e);
                     }
                 }
         }
