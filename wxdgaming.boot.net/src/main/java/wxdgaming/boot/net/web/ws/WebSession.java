@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.Session;
@@ -51,6 +52,8 @@ public class WebSession extends SocketSession implements Serializable {
     }
 
     public ChannelFuture write(String msg) {
+        if (LogbackUtil.logger().isDebugEnabled())
+            LogbackUtil.logger().debug("发送消息：{} {}", this.toString(), msg);
         TextWebSocketFrame bwsf = new TextWebSocketFrame(msg);
         return write0(bwsf, false);
     }
