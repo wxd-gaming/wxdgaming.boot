@@ -13,13 +13,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-12-04 19:23
  **/
-public class AsyncImpl {
+public class ThreadInfoImpl {
 
-    public static boolean asyncAction(AtomicBoolean vt,
-                                      AtomicReference<String> threadName,
-                                      AtomicReference<String> queueName,
-                                      Method method) {
-        Async ann = AnnUtil.ann(method, Async.class);
+    public static void action(AtomicBoolean vt,
+                              AtomicReference<String> threadName,
+                              AtomicReference<String> queueName,
+                              Method method) {
+        ThreadInfo ann = AnnUtil.ann(method, ThreadInfo.class);
         if (ann != null) {
             vt.set(ann.vt());
             if (StringUtil.notEmptyOrNull(ann.threadName())) {
@@ -28,9 +28,7 @@ public class AsyncImpl {
             if (StringUtil.notEmptyOrNull(ann.queueName())) {
                 queueName.set(ann.queueName());
             }
-            return true;
         }
-        return false;
     }
 
 }

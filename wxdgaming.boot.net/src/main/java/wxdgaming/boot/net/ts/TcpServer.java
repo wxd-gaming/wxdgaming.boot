@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.SocketServer;
-import wxdgaming.boot.net.controller.MessageController;
+import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
 
@@ -101,7 +101,7 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
     }
 
     @Override
-    public TcpServer<S> msgExecutorBefore(Predicate<MessageController> messageExecutorBefore) {
+    public TcpServer<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
         super.msgExecutorBefore(messageExecutorBefore);
         return this;
     }

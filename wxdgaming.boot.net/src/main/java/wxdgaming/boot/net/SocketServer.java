@@ -7,7 +7,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import wxdgaming.boot.net.controller.MessageController;
+import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketCoderHandler;
 
@@ -36,7 +36,7 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
     protected Consumer<S> onCloseSession;
 
     /** 消息执行前，可以添加过滤器 */
-    protected Predicate<MessageController> messageExecutorBefore;
+    protected Predicate<ProtoListenerAction> messageExecutorBefore;
     protected INotController<S> onNotController;
 
     protected abstract S newSession(String name, ChannelHandlerContext ctx);
@@ -85,12 +85,12 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
     }
 
     @Override
-    public Predicate<MessageController> msgExecutorBefore() {
+    public Predicate<ProtoListenerAction> msgExecutorBefore() {
         return messageExecutorBefore;
     }
 
     @Override
-    public SocketServer<S> msgExecutorBefore(Predicate<MessageController> messageExecutorBefore) {
+    public SocketServer<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
         this.messageExecutorBefore = messageExecutorBefore;
         return this;
     }

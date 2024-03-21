@@ -16,7 +16,7 @@ import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
-import wxdgaming.boot.core.threading.Async;
+import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.core.timer.MyClock;
@@ -70,24 +70,24 @@ class HttpListenerAction extends Event {
     @Override public boolean isVt() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), Async.class))
-                .map(Async::vt)
+                .map(v -> AnnUtil.ann(v.method(), ThreadInfo.class))
+                .map(ThreadInfo::vt)
                 .orElse(false);
     }
 
     @Override public String getThreadName() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), Async.class))
-                .map(Async::threadName)
+                .map(v -> AnnUtil.ann(v.method(), ThreadInfo.class))
+                .map(ThreadInfo::threadName)
                 .orElse("");
     }
 
     @Override public String getQueueName() {
         return Optional.ofNullable(session.getUriPath())
                 .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), Async.class))
-                .map(Async::queueName)
+                .map(v -> AnnUtil.ann(v.method(), ThreadInfo.class))
+                .map(ThreadInfo::queueName)
                 .orElse("");
     }
 

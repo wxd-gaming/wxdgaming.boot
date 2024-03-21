@@ -1,8 +1,11 @@
 package wxdgaming.boot.net.controller;
 
 
+import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
+import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.NioBase;
+import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 
 import java.lang.reflect.Method;
@@ -18,6 +21,11 @@ import java.util.stream.Stream;
  * @version: 2023-12-12 20:06
  **/
 public class MappingFactory {
+
+    /** text mapping submit 监听 */
+    public static ConsumerE2<Session, Event> TextMappingSubmitBefore = null;
+    /** proto mapping submit 监听 */
+    public static ConsumerE2<Session, Event> ProtoMappingSubmitBefore = null;
 
     public static final Class<? extends NioBase> FINAL_DEFAULT = NioBase.class;
     /** 消息id -> 映射 */
@@ -62,17 +70,35 @@ public class MappingFactory {
     }
 
     public static Stream<ProtoMappingRecord> protoMappingRecord(Class<? extends NioBase> service) {
-        Stream<ProtoMappingRecord> stream = PROTO_MAP.opt(MappingFactory.FINAL_DEFAULT).map(Map::values).stream().flatMap(Collection::stream);
+        Stream<ProtoMappingRecord> stream = PROTO_MAP.opt(MappingFactory.FINAL_DEFAULT)
+                .map(Map::values)
+                .stream()
+                .flatMap(Collection::stream);
         if (!FINAL_DEFAULT.equals(service)) {
-            stream = Stream.concat(stream, PROTO_MAP.opt(service).map(Map::values).stream().flatMap(Collection::stream));
+            stream = Stream.concat(
+                    stream,
+                    PROTO_MAP.opt(service)
+                            .map(Map::values)
+                            .stream()
+                            .flatMap(Collection::stream)
+            );
         }
         return stream;
     }
 
     public static Stream<TextMappingRecord> textMappingRecord(Class<? extends NioBase> service) {
-        Stream<TextMappingRecord> stream = TEXT_MAP.opt(MappingFactory.FINAL_DEFAULT).map(Map::values).stream().flatMap(Collection::stream);
+        Stream<TextMappingRecord> stream = TEXT_MAP.opt(MappingFactory.FINAL_DEFAULT)
+                .map(Map::values)
+                .stream()
+                .flatMap(Collection::stream);
         if (!FINAL_DEFAULT.equals(service)) {
-            stream = Stream.concat(stream, TEXT_MAP.opt(service).map(Map::values).stream().flatMap(Collection::stream));
+            stream = Stream.concat(
+                    stream,
+                    TEXT_MAP.opt(service)
+                            .map(Map::values)
+                            .stream()
+                            .flatMap(Collection::stream)
+            );
         }
         stream = stream.sorted(Comparator.comparing(TextMappingRecord::path));
         return stream;

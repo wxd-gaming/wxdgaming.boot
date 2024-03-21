@@ -36,5 +36,6 @@ public @interface Scheduled {
      * <p> 年 1970 - 2199
      */
     String value() default "";
+    boolean async() default false;
 
 }

@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.i.ILock;
 import wxdgaming.boot.net.NioClient;
 import wxdgaming.boot.net.NioFactory;
-import wxdgaming.boot.net.controller.MessageController;
+import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
 
@@ -81,7 +81,7 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
     }
 
     @Override
-    public TcpClient<S> msgExecutorBefore(Predicate<MessageController> messageExecutorBefore) {
+    public TcpClient<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
         super.msgExecutorBefore(messageExecutorBefore);
         return this;
     }

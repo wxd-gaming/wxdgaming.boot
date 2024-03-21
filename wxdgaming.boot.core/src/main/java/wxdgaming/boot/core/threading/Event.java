@@ -1,6 +1,7 @@
 package wxdgaming.boot.core.threading;
 
 import lombok.Getter;
+import lombok.Setter;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.IAssistMonitor;
@@ -27,10 +28,10 @@ public abstract class Event implements Runnable, IAssistMonitor {
     /** 是否使用虚拟线程，如果支持指定了 threadName 这个值无效 */
     protected boolean vt = false;
     /** 队列名称 */
-    protected String threadName = "";
+    @Setter protected String threadName = "";
     /** 队列名称 */
-    protected String queueName = "";
-    protected boolean async = false;
+    @Setter protected String queueName = "";
+
 
     public Event() {
     }
@@ -41,7 +42,7 @@ public abstract class Event implements Runnable, IAssistMonitor {
         AtomicReference<String> threadName = new AtomicReference<>();
         AtomicReference<String> queueName = new AtomicReference<>();
 
-        this.async = AsyncImpl.asyncAction(vt, threadName, queueName, method);
+        ThreadInfoImpl.action(vt, threadName, queueName, method);
         this.vt = vt.get();
         this.threadName = threadName.get();
         this.queueName = queueName.get();

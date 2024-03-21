@@ -2,7 +2,7 @@ package org.wxd.boot.starter.webapi;
 
 import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RandomUtils;
-import wxdgaming.boot.core.threading.Async;
+import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.core.timer.ann.Scheduled;
 import wxdgaming.boot.net.controller.ann.TextController;
@@ -43,7 +43,7 @@ public class PublicApi {
         return "test";
     }
 
-    @Async(vt = true)
+    @ThreadInfo(vt = true)
     @TextMapping(remarks = "test")
     public String test3(HttpSession httpSession, ObjMap objMap) throws Exception {
         int random = RandomUtils.random(6);
@@ -52,13 +52,13 @@ public class PublicApi {
     }
 
     @Scheduled
-    @Async(vt = true)
+    @ThreadInfo(vt = true)
     @ExecutorLog(logTime = 33)
     public void s1() throws Exception {
     }
 
     @Scheduled("0 0 0")/*每小时执行*/
-    @Async(vt = true)/*因为耗时，异步交给虚拟线程执行*/
+    @ThreadInfo(vt = true)/*因为耗时，异步交给虚拟线程执行*/
     @ExecutorLog(logTime = 33)/*如果执行超过33毫秒就开始加入监控日志*/
     public void s2() throws Exception {
     }

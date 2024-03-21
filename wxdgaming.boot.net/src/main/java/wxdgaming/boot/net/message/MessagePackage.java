@@ -95,7 +95,10 @@ public class MessagePackage {
     }
 
     static public void loadMessageId_HashCode(ClassLoader classLoader, boolean findChild, String... packageNames) {
-        ReflectContext.Builder.of(classLoader, packageNames).build().classStream()
+        ReflectContext.Builder
+                .of(classLoader, packageNames)
+                .build()
+                .classStream()
                 .forEach(aClass -> loadMessageId_HashCode(aClass, true));
     }
 
@@ -128,7 +131,8 @@ public class MessagePackage {
         if (com.google.protobuf.Message.class.isAssignableFrom(declaredClass)) {
             final String messageName = declaredClass.getName();
             if (reqOrRes) {
-                if (!declaredClass.getSimpleName().startsWith("Req") && !declaredClass.getSimpleName().startsWith("Res")) {
+                if (!declaredClass.getSimpleName().startsWith("Req")
+                        && !declaredClass.getSimpleName().startsWith("Res")) {
                     return;
                 }
             }

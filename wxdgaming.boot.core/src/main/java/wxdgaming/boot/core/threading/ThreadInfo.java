@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.METHOD/*方法*/})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Async {
+public @interface ThreadInfo {
 
     /** 标记是否虚拟线程 指定thread 后失效 */
     boolean vt() default false;

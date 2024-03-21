@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.i.ILock;
 import wxdgaming.boot.core.system.JvmUtil;
-import wxdgaming.boot.net.controller.MessageController;
+import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketCoderHandler;
 
@@ -42,7 +42,7 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     protected int connectTimeOut = 500;
 
     /** 消息执行前，可以添加过滤器 */
-    protected Predicate<MessageController> messageExecutorBefore;
+    protected Predicate<ProtoListenerAction> messageExecutorBefore;
     protected INotController<S> onNotController;
 
     protected final ReentrantLock readLock = new ReentrantLock(false);
@@ -209,12 +209,12 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     }
 
     @Override
-    public Predicate<MessageController> msgExecutorBefore() {
+    public Predicate<ProtoListenerAction> msgExecutorBefore() {
         return messageExecutorBefore;
     }
 
     @Override
-    public NioClient<S> msgExecutorBefore(Predicate<MessageController> messageExecutorBefore) {
+    public NioClient<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
         this.messageExecutorBefore = messageExecutorBefore;
         return this;
     }

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * @version: 2023-12-19 15:38
  **/
 @Slf4j
-class CmdListenerAction extends Event {
+class TextListenerAction extends Event {
 
     private final TextMappingRecord mappingRecord;
     private final SocketSession session;
@@ -34,10 +34,10 @@ class CmdListenerAction extends Event {
     private final StreamWriter out;
     private final Consumer<Boolean> callBack;
 
-    public CmdListenerAction(TextMappingRecord mappingRecord,
-                             SocketSession session,
-                             String listener, ObjMap putData,
-                             StreamWriter out, Consumer<Boolean> callBack) {
+    public TextListenerAction(TextMappingRecord mappingRecord,
+                              SocketSession session,
+                              String listener, ObjMap putData,
+                              StreamWriter out, Consumer<Boolean> callBack) {
         super(mappingRecord.method());
         this.mappingRecord = mappingRecord;
         this.session = session;

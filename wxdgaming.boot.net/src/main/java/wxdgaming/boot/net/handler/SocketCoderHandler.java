@@ -13,14 +13,11 @@ import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
 import wxdgaming.boot.core.system.MarkTimer;
-import wxdgaming.boot.core.threading.Async;
 import wxdgaming.boot.core.threading.ExecutorLog;
-import wxdgaming.boot.core.threading.Executors;
-import wxdgaming.boot.core.threading.IExecutorServices;
 import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.controller.MappingFactory;
-import wxdgaming.boot.net.controller.MessageController;
+import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.controller.ProtoMappingRecord;
 import wxdgaming.boot.net.controller.TextMappingRecord;
 import wxdgaming.boot.net.message.MessagePackage;
@@ -30,7 +27,6 @@ import wxdgaming.boot.net.message.UpFileAccess;
 import wxdgaming.boot.net.util.ByteBufUtil;
 
 import java.io.Serializable;
-import java.util.function.Predicate;
 
 /**
  * socket 编解码器
@@ -51,12 +47,6 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
     /** 设置没有监听调用的消息处理 */
     SocketCoderHandler<S> setOnNotController(INotController<S> onNotController);
-
-    /** 执行前处理 */
-    Predicate<MessageController> msgExecutorBefore();
-
-    /** 执行前处理 */
-    SocketCoderHandler<S> msgExecutorBefore(Predicate<MessageController> consumer);
 
     /** 处理网络接受到的消息字节 */
     default void read(S session, ByteBuf byteBuf) {
@@ -205,7 +195,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         }
         final MarkTimer markTimer = MarkTimer.build();
         final StreamWriter outAppend = new StreamWriter(1024);
-        CmdListenerAction listenerAction = new CmdListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
+        TextListenerAction listenerAction = new TextListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
             if (showLog) {
                 log.info("\n执行：" + session.toString()
                         + "\n" + markTimer.execTime2String() +
@@ -217,6 +207,15 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 session.rpcResponse(rpcId, outAppend.toString());
             }
         });
+
+        if (MappingFactory.TextMappingSubmitBefore != null) {
+            try {
+                MappingFactory.TextMappingSubmitBefore.accept(session, listenerAction);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         listenerAction.submit();
     }
 
@@ -259,33 +258,22 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      */
     default void executor(S session, int messageId, Message message) {
         ProtoMappingRecord mapping = MappingFactory.protoMappingRecord((Class<? extends NioBase>) getClass(), messageId);
-        MessageController controller = new MessageController(mapping, session, message);
-
-        if (msgExecutorBefore() != null) {
-            if (!msgExecutorBefore().test(controller)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("{} 请求：" + "\n{}", this.getClass().getSimpleName(), controller.toString(), new RuntimeException("被过滤掉"));
-                }
-                return;
-            }
-        }
+        ProtoListenerAction protoListenerAction = new ProtoListenerAction(mapping, session, message);
 
         ExecutorLog protoMapping = AnnUtil.ann(mapping.method(), ExecutorLog.class);
         if (log.isDebugEnabled() || (protoMapping != null && protoMapping.showLog())) {
-            log.info("{} 收到消息：" + "\n{}", this.getClass().getSimpleName(), controller.toString());
+            log.info("{} 收到消息：" + "\n{}", this.getClass().getSimpleName(), protoListenerAction.toString());
         }
-        Async async = AnnUtil.ann(mapping.method(), Async.class);
-        String queueName = "";
-        IExecutorServices executorServices = Executors.getLogicExecutor();
-        if (async != null) {
-            if (StringUtil.notEmptyOrNull(async.threadName())) {
-                executorServices = Executors.All_THREAD_LOCAL.get(async.threadName());
-            } else if (async.vt()) {
-                executorServices = Executors.getVTExecutor();
+
+        if (MappingFactory.ProtoMappingSubmitBefore != null) {
+            try {
+                MappingFactory.ProtoMappingSubmitBefore.accept(session, protoListenerAction);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            queueName = async.queueName();
         }
-        executorServices.submit(queueName, controller);
+
+        protoListenerAction.submit();
     }
 
     /**

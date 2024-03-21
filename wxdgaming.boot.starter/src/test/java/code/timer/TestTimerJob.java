@@ -4,7 +4,7 @@ import com.google.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import wxdgaming.boot.core.ann.Sort;
-import wxdgaming.boot.core.threading.Async;
+import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.CronExpress;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.core.timer.ScheduledInfo;
@@ -70,7 +70,7 @@ public class TestTimerJob implements Serializable {
         System.out.println(MyClock.getSecond(time));
     }
 
-    @Async
+    @ThreadInfo
     @Scheduled(value = "* *", scheduleAtFixedRate = true)
     public void t1() {
         try {
@@ -81,7 +81,7 @@ public class TestTimerJob implements Serializable {
         log.info("间隔 1 秒执行");
     }
 
-    @Async
+    @ThreadInfo
     @Scheduled(value = "*/10")
     public void t2() {
         log.info("间隔 10 秒执行");

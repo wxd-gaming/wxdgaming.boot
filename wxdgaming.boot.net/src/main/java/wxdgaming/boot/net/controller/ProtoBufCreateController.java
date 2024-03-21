@@ -176,7 +176,7 @@ public class ProtoBufCreateController {
 
                         imports.add(ObjMap.class.getName());
                         imports.add(SocketSession.class.getName());
-                        imports.add(MessageController.class.getName());
+                        imports.add(ProtoListenerAction.class.getName());
                         imports.add(ProtoController.class.getName());
                         imports.add(ProtoMapping.class.getName());
                         imports.add(IController.class.getName());

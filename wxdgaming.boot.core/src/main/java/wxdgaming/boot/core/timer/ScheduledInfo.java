@@ -8,6 +8,7 @@ import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.timer.ann.Scheduled;
 
@@ -39,8 +40,8 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
     /** 上一次执行尚未完成是否持续执行 默认false 不执行 */
     private boolean scheduleAtFixedRate = false;
     protected AtomicBoolean runEnd = new AtomicBoolean(true);
-
-    int cursecond = -1;
+    protected boolean async = false;
+    protected int cursecond = -1;
     protected long startExecTime;
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
@@ -52,6 +53,8 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         } else {
             this.name = "[scheduled-job]" + instance.getClass().getName() + "." + method.getName();
         }
+
+        this.async = AnnUtil.ann(method, ThreadInfo.class) != null;
 
         final Sort sortAnn = AnnUtil.ann(method, Sort.class);
         this.index = sortAnn == null ? 999999 : sortAnn.value();
@@ -128,9 +131,9 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
             }
 
         } else if (actionStr.contains(",") || actionStr.contains("，")) {
-            String[] split = actionStr.split(",|，");
+            String[] split = actionStr.split("[,，]");
             for (String s : split) {
-                final Integer of = Integer.valueOf(s);
+                final int of = Integer.parseInt(s);
                 if (min > of) {
                     throw new RuntimeException(actionStr + " 起始值 " + of + " 小于最小值：" + min);
                 }

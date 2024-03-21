@@ -182,8 +182,15 @@ public class HttpServer extends NioServer<HttpSession> {
                 if (reqMethod.equals(HttpMethod.POST)) {
                     session.actionPostData();
                 }
-                new HttpListenerAction(HttpServer.this, session)
-                        .submit();
+                HttpListenerAction httpListenerAction = new HttpListenerAction(HttpServer.this, session);
+                if (MappingFactory.TextMappingSubmitBefore != null) {
+                    try {
+                        MappingFactory.TextMappingSubmitBefore.accept(session, httpListenerAction);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                httpListenerAction.submit();
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
                 response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));

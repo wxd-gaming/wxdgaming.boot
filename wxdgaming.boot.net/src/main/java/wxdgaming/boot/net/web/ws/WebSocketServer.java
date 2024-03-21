@@ -17,7 +17,7 @@ import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.SocketServer;
-import wxdgaming.boot.net.controller.MessageController;
+import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
 import wxdgaming.boot.net.util.ByteBufUtil;
@@ -145,7 +145,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
     }
 
     @Override
-    public WebSocketServer<S> msgExecutorBefore(Predicate<MessageController> messageExecutorBefore) {
+    public WebSocketServer<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
         super.msgExecutorBefore(messageExecutorBefore);
         return this;
     }

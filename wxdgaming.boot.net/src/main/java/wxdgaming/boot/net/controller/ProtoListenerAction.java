@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.SocketSession;
 
 /**
@@ -21,21 +22,25 @@ import wxdgaming.boot.net.SocketSession;
 @Getter
 @Setter
 @Accessors(chain = true)
-public final class MessageController implements Runnable, Cloneable {
+public final class ProtoListenerAction extends Event {
 
     private ProtoMappingRecord mapping;
     private SocketSession session;
     @JSONField(serialize = false, deserialize = false)
     private Message message;
 
-    public MessageController(ProtoMappingRecord mapping, SocketSession session, Message message) {
+    public ProtoListenerAction(ProtoMappingRecord mapping, SocketSession session, Message message) {
+        super(mapping.method());
         this.mapping = mapping;
         this.session = session;
         this.message = message;
     }
 
-    @Override
-    public void run() {
+    @Override public String getTaskInfoString() {
+        return toString();
+    }
+
+    @Override public void onEvent() throws Exception {
         try {
             Object bean = mapping.instance();
             mapping.method().invoke(bean, session, message);
