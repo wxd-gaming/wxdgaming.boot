@@ -81,12 +81,6 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
     }
 
     @Override
-    public TcpClient<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
-        super.msgExecutorBefore(messageExecutorBefore);
-        return this;
-    }
-
-    @Override
     public String toString() {
         return "tcp-client-" + this.getName();
     }

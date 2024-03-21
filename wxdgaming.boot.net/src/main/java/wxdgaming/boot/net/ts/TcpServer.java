@@ -100,12 +100,6 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
         return this;
     }
 
-    @Override
-    public TcpServer<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
-        super.msgExecutorBefore(messageExecutorBefore);
-        return this;
-    }
-
     public class TcpServerSocketChannelHandler extends SocketChannelHandler<S> {
 
         public TcpServerSocketChannelHandler(String name) {

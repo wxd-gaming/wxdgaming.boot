@@ -14,12 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.JvmUtil;
-import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.SocketServer;
-import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
+import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.util.ByteBufUtil;
 import wxdgaming.boot.net.web.hs.HttpServer;
 
@@ -28,7 +27,6 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * 基于 netty web socket 服务
@@ -138,15 +136,8 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
         return this;
     }
 
-    @Override
-    public WebSocketServer<S> setOnNotController(INotController<S> onNotController) {
+    @Override public WebSocketServer<S> setOnNotController(INotController<S> onNotController) {
         super.setOnNotController(onNotController);
-        return this;
-    }
-
-    @Override
-    public WebSocketServer<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
-        super.msgExecutorBefore(messageExecutorBefore);
         return this;
     }
 
@@ -154,8 +145,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
         return "ws://" + host + ":" + port + "/" + url;
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "web-server " + this.getName();
     }
 

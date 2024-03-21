@@ -181,7 +181,7 @@ public class JavaAssistBox extends ClassLoader {
     }
 
     /** 实现某个接口的 */
-    public JavaAssist implInterfaces(String className, Class<?>[] interfaces) {
+    public JavaAssist implInterfaces(String className, Class<?>... interfaces) {
         try {
             CtClass tmp = CLASS_POOL.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
             for (Class<?> aClass : interfaces) {

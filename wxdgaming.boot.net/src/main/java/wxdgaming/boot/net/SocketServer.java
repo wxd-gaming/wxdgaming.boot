@@ -85,17 +85,6 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
     }
 
     @Override
-    public Predicate<ProtoListenerAction> msgExecutorBefore() {
-        return messageExecutorBefore;
-    }
-
-    @Override
-    public SocketServer<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
-        this.messageExecutorBefore = messageExecutorBefore;
-        return this;
-    }
-
-    @Override
     public String toString() {
         return "tcp-server " + this.getName() + " " + getWanIp() + ":" + this.getPort();
     }

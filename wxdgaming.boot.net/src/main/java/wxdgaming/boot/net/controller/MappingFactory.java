@@ -1,7 +1,11 @@
 package wxdgaming.boot.net.controller;
 
 
+import com.google.protobuf.Message;
+import wxdgaming.boot.agent.function.Consumer3;
 import wxdgaming.boot.agent.function.ConsumerE2;
+import wxdgaming.boot.agent.system.LambdaUtil;
+import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.NioBase;
@@ -22,6 +26,21 @@ import java.util.stream.Stream;
  **/
 public class MappingFactory {
 
+    public interface TextMappingProxy {
+
+        void proxy(Session session, ObjMap putData);
+
+    }
+
+    public interface ProtoMappingProxy {
+
+        void proxy(Session session, Message message);
+
+    }
+
+    static final Consumer3<TextMappingProxy, Session, ObjMap> text_proxy = TextMappingProxy::proxy;
+    static final Consumer3<ProtoMappingProxy, Session, Message> proto_proxy = ProtoMappingProxy::proxy;
+
     /** text mapping submit 监听 */
     public static ConsumerE2<Session, Event> TextMappingSubmitBefore = null;
     /** proto mapping submit 监听 */
@@ -34,22 +53,31 @@ public class MappingFactory {
     public static final ConcurrentTable<Class<? extends NioBase>, String, TextMappingRecord> TEXT_MAP = new ConcurrentTable<>();
 
     public static void putProto(Class<? extends NioBase> service, String remarks, int messageId, Object instance, Method method) {
-        /** 虚拟线程 */
+        /* 虚拟线程 */
         if (service == null) service = FINAL_DEFAULT;
+
+        /*通过lambda 对象 创建一个代理实例，比反射效果好*/
+        LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, proto_proxy);
+
         PROTO_MAP.put(
                 service,
                 messageId,
-                new ProtoMappingRecord(service, remarks, messageId, instance, method)
+                new ProtoMappingRecord(service, remarks, messageId, delegate.getMapping(), instance, method)
         );
+
     }
 
     public static void putText(TextMapping textMapping, Class<? extends NioBase> service, String path, String remarks, Object instance, Method method) {
-        /** 虚拟线程 */
+        /* 虚拟线程 */
         if (service == null) service = FINAL_DEFAULT;
+
+        /*通过lambda 对象 创建一个代理实例，比反射效果好*/
+        LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, text_proxy);
+
         TEXT_MAP.put(
                 service,
                 path,
-                new TextMappingRecord(textMapping, path, remarks, instance, method)
+                new TextMappingRecord(textMapping, path, remarks, delegate.getMapping(), instance, method)
         );
     }
 

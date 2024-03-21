@@ -180,7 +180,8 @@ public class LambdaUtil implements Serializable {
                     source = false;
                 }
                 if (source) {
-                    createDelegate(inClass, inMethod, object, method, call);
+                    LambdaMapping delegate = createDelegate(inClass, inMethod, object, method);
+                    call.accept(delegate);
                 }
             }
         } catch (Throwable throwable) {
@@ -188,7 +189,28 @@ public class LambdaUtil implements Serializable {
         }
     }
 
-    public static void createDelegate(Class inClass, Method inMethod, Object object, Method method, Consumer1<LambdaMapping> call) {
+    /**
+     * 创建代理 lambda 表达式调用
+     *
+     * @param object             需要代理的对象
+     * @param method             需要代理的对象
+     * @param serializableLambda 代理映射接口
+     */
+    public static LambdaMapping createDelegate(Object object, Method method, SerializableLambda serializableLambda) {
+        Class inClass = serializableLambda.ofClass();
+        Method inMethod = serializableLambda.ofMethod();
+        return createDelegate(inClass, inMethod, object, method);
+    }
+
+    /**
+     * 创建代理 lambda 表达式调用
+     *
+     * @param inClass  代理映射接口
+     * @param inMethod 代理映射方法
+     * @param object   需要代理的对象
+     * @param method   需要代理的对象
+     */
+    public static LambdaMapping createDelegate(Class inClass, Method inMethod, Object object, Method method) {
         try {
             /*获取方法对象 委托*/
             MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -203,7 +225,7 @@ public class LambdaUtil implements Serializable {
             /*获取代理对象，注意，第二个参数的字符串必须为函数式接口里的方法名*/
             CallSite metafactory = LambdaMetafactory.metafactory(lookup, inMethod.getName(), factoryType, type, mh, type);
             Object invokeExact = metafactory.getTarget().bindTo(object).invoke();
-            call.accept(new LambdaMapping(object, method, invokeExact));
+            return new LambdaMapping(object, method, invokeExact);
         } catch (Throwable throwable) {
             throw Throw.as(throwable);
         }
@@ -211,9 +233,9 @@ public class LambdaUtil implements Serializable {
 
     public static final class LambdaMapping {
 
-        private Object instance;
-        private Method method;
-        private Object mapping;
+        private final Object instance;
+        private final Method method;
+        private final Object mapping;
 
         private LambdaMapping(Object instance, Method method, Object mapping) {
             this.instance = instance;

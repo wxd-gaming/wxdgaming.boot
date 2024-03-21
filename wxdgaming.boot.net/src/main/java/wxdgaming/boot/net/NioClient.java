@@ -209,17 +209,6 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
     }
 
     @Override
-    public Predicate<ProtoListenerAction> msgExecutorBefore() {
-        return messageExecutorBefore;
-    }
-
-    @Override
-    public NioClient<S> msgExecutorBefore(Predicate<ProtoListenerAction> messageExecutorBefore) {
-        this.messageExecutorBefore = messageExecutorBefore;
-        return this;
-    }
-
-    @Override
     public ChannelQueue<S> getAllSessionQueue() {
         return allSessionQueue;
     }

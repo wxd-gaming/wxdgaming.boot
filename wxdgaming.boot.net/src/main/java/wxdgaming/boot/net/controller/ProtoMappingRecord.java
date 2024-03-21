@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
  */
 public record ProtoMappingRecord(Class<? extends NioBase> service,
         String remarks, int messageId,
+        MappingFactory.ProtoMappingProxy mapping,
         Object instance, Method method) {
 
 }
