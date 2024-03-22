@@ -88,21 +88,6 @@ class TextListenerAction extends Event {
                     } else {
                         /*实现注入*/
                         Param annotation = parameter.getAnnotation(Param.class);
-                        if (boolean.class.equals(clazz)) {
-                            clazz = Boolean.class;
-                        } else if (byte.class.equals(clazz)) {
-                            clazz = Integer.class;
-                        } else if (short.class.equals(clazz)) {
-                            clazz = Integer.class;
-                        } else if (int.class.equals(clazz)) {
-                            clazz = Integer.class;
-                        } else if (long.class.equals(clazz)) {
-                            clazz = Integer.class;
-                        } else if (float.class.equals(clazz)) {
-                            clazz = Integer.class;
-                        } else if (double.class.equals(clazz)) {
-                            clazz = Integer.class;
-                        }
                         params[i] = putData.parseObject(annotation.value(), (Class) clazz);
                     }
                 }

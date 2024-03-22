@@ -23,6 +23,7 @@ import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.TextMappingRecord;
 import wxdgaming.boot.net.controller.ann.Get;
+import wxdgaming.boot.net.controller.ann.Param;
 import wxdgaming.boot.net.controller.ann.Post;
 import wxdgaming.boot.net.http.HttpHeadValueType;
 import wxdgaming.boot.net.web.hs.controller.cmd.HttpSignCheck;
@@ -205,7 +206,8 @@ class HttpListenerAction extends Event {
                             params[i] = session;
                         } else {
                             /*实现注入*/
-                            params[i] = putData.parseObject(parameter.getName(), (Class) clazz);
+                            Param annotation = parameter.getAnnotation(Param.class);
+                            params[i] = putData.parseObject(annotation.value(), (Class) clazz);
                         }
                     }
                 }
