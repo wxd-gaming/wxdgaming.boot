@@ -338,6 +338,8 @@ const wxd = {
             onError = null;
             /** 链接成功 */
             onSource = null;
+            /** 链接成功 */
+            onClose = null;
             /** 收到消息后回调 */
             onRead = null;
             //socket对象
@@ -385,6 +387,7 @@ const wxd = {
                         }
                         this.socketOpen = false;
                         this.socket = null;
+                        if (!wxd.isNull(this.onClose)) this.onClose();
                     };
                 } else {
                     wxd.message.notice("您的浏览器不支持 web socket 协议！");
