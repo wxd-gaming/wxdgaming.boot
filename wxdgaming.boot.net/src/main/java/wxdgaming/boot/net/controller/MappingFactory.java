@@ -1,11 +1,8 @@
 package wxdgaming.boot.net.controller;
 
 
-import com.google.protobuf.Message;
-import wxdgaming.boot.agent.function.Consumer3;
 import wxdgaming.boot.agent.function.ConsumerE2;
-import wxdgaming.boot.agent.system.LambdaUtil;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.NioBase;
@@ -13,9 +10,11 @@ import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 /**
@@ -26,21 +25,7 @@ import java.util.stream.Stream;
  **/
 public class MappingFactory {
 
-    public interface TextMappingProxy {
-
-        void proxy(Session session, ObjMap putData);
-
-    }
-
-    public interface ProtoMappingProxy {
-
-        void proxy(Session session, Message message);
-
-    }
-
-    static final Consumer3<TextMappingProxy, Session, ObjMap> text_proxy = TextMappingProxy::proxy;
-    static final Consumer3<ProtoMappingProxy, Session, Message> proto_proxy = ProtoMappingProxy::proxy;
-
+    public static JavaAssistBox javaAssistBox = JavaAssistBox.of();
     /** text mapping submit 监听 */
     public static ConsumerE2<Session, Event> TextMappingSubmitBefore = null;
     /** proto mapping submit 监听 */
@@ -57,12 +42,11 @@ public class MappingFactory {
         if (service == null) service = FINAL_DEFAULT;
 
         /*通过lambda 对象 创建一个代理实例，比反射效果好*/
-        LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, proto_proxy);
 
         PROTO_MAP.put(
                 service,
                 messageId,
-                new ProtoMappingRecord(service, remarks, messageId, delegate.getMapping(), instance, method)
+                new ProtoMappingRecord(service, remarks, messageId, null, instance, method)
         );
 
     }
@@ -72,12 +56,53 @@ public class MappingFactory {
         if (service == null) service = FINAL_DEFAULT;
 
         /*通过lambda 对象 创建一个代理实例，比反射效果好*/
-        LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, text_proxy);
+        //LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, text_proxy);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        JavaAssistBox.JavaAssist javaAssist = javaAssistBox.extendSuperclass(
+                TextMappingProxy.class,
+                instance.getClass().getClassLoader()
+        );
+        javaAssist.importPackage(AtomicReference.class);
+        javaAssist.importPackage(TextMappingProxy.class);
+        javaAssist.importPackage(instance.getClass());
+
+        stringBuilder.append("public void proxy(Object out, Object instance, Object[] params) {").append("\n");
+        stringBuilder.append("    AtomicReference atomicReference = (AtomicReference) out;").append("\n");
+        stringBuilder.append("    Object ret = null;").append("\n");
+        if (void.class.equals(method.getReturnType()) || Void.class.equals(method.getReturnType())) {
+            stringBuilder.append("    Object ret = null;").append("\n");
+        } else {
+            javaAssist.importPackage(method.getReturnType().getPackageName());
+            stringBuilder.append("    ").append(method.getReturnType().getSimpleName()).append(" ret = null;").append("\n");
+            stringBuilder.append("    ret = ");
+        }
+        stringBuilder.append(String.format("((%s) instance).%s(", instance.getClass().getSimpleName(), method.getName()));
+        if (method.getParameters() != null) {
+            for (int i = 0; i < method.getParameters().length; i++) {
+                if (i > 0) stringBuilder.append(",");
+                stringBuilder.append("\n");
+                Parameter parameter = method.getParameters()[i];
+                stringBuilder.append(String.format("        (%s) params[%s]", parameter.getType().getSimpleName(), i));
+                javaAssist.importPackage(parameter.getType());
+            }
+        }
+        stringBuilder.append(");").append("\n");
+        stringBuilder.append("    atomicReference.set(ret);").append("\n");
+        stringBuilder.append("}").append("\n");
+        String strCode = stringBuilder.toString();
+        System.out.println(strCode);
+        javaAssist.createMethod(strCode);
+        javaAssist.writeFile("target/out");
+        TextMappingProxy textMappingProxy = javaAssist.toInstance();
+        javaAssist.getCtClass().defrost();
+        javaAssist.getCtClass().detach();
 
         TEXT_MAP.put(
                 service,
                 path,
-                new TextMappingRecord(textMapping, path, remarks, delegate.getMapping(), instance, method)
+                new TextMappingRecord(textMapping, path, remarks, textMappingProxy, instance, method)
         );
     }
 

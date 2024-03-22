@@ -14,5 +14,5 @@ import java.lang.reflect.Method;
  * @version: 2023-12-12 20:13
  */
 public record TextMappingRecord(TextMapping textMapping,
-        String path, String remarks, MappingFactory.TextMappingProxy mapping, Object instance, Method method) {
+        String path, String remarks, TextMappingProxy mapping, Object instance, Method method) {
 }

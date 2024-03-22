@@ -5,6 +5,8 @@ import javassist.Modifier;
 import org.junit.Test;
 import wxdgaming.boot.assist.JavaAssistBox;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * javassist 测试
  *
@@ -20,12 +22,13 @@ public class JavaAssistBoxTest {
         JavaAssistBox javaAssistBox = JavaAssistBox.of();
         JavaAssistBox.JavaAssist javaAssist = javaAssistBox
                 .extendSuperclass(ICheck.class)
-                .createMethod(Modifier.PUBLIC, CtClass.voidType, "println", new CtClass[]{}, ctMethod -> {
+                .createMethod(Modifier.PUBLIC, CtClass.voidType, "println", new Class[]{AtomicReference.class, Object.class}, ctMethod -> {
                     ctMethod.setBody("System.out.println(\"impl\");");
                 })
                 .createMethod("""
-                            public void println2() {
-                                System.out.println("impl");
+                            public void println2(Object out,Object[] objs) {
+                             java.util.concurrent.atomic.AtomicReference ar=(java.util.concurrent.atomic.AtomicReference)out; 
+                                System.out.println("impl " + out);
                             }
                         }
                         """)
@@ -39,7 +42,7 @@ public class JavaAssistBoxTest {
 
         javaAssistBox
                 .editClass(ICheck.class)
-                .declaredMethod("println", new CtClass[]{}, ctMethod -> {
+                .declaredMethod("println", new Class[]{}, ctMethod -> {
                     ctMethod.setBody("System.out.println(\"impl\");");
                 })
                 .createMethod("""

@@ -16,6 +16,7 @@ import wxdgaming.boot.net.auth.SignCheck;
 import wxdgaming.boot.net.controller.TextMappingRecord;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -72,27 +73,24 @@ class TextListenerAction extends Event {
         }
 
         try {
-            Object invoke;
-            if (mappingRecord.method().getParameterCount() == 0) {
-                invoke = mappingRecord.method().invoke(mappingRecord.instance());
-            } else {
-                Object[] params = new Object[mappingRecord.method().getParameterCount()];
-                Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
-                for (int i = 0; i < params.length; i++) {
-                    Type genericParameterType = genericParameterTypes[i];
-                    if (genericParameterType instanceof Class<?>) {
-                        if (genericParameterType.equals(ObjMap.class)) {
-                            params[i] = putData;
-                        } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
-                            params[i] = session;
-                        }
+            Object[] params = new Object[mappingRecord.method().getParameterCount()];
+            Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
+            for (int i = 0; i < params.length; i++) {
+                Type genericParameterType = genericParameterTypes[i];
+                if (genericParameterType instanceof Class<?>) {
+                    if (genericParameterType.equals(ObjMap.class)) {
+                        params[i] = putData;
+                    } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
+                        params[i] = session;
                     }
                 }
-                invoke = mappingRecord.method().invoke(mappingRecord.instance(), params);
             }
+            AtomicReference atomicReference = new AtomicReference();
+            mappingRecord.mapping().proxy(atomicReference, mappingRecord.instance(), params);
+            //invoke = mappingRecord.method().invoke(mappingRecord.instance(), params);
             Class<?> returnType = mappingRecord.method().getReturnType();
             if (!void.class.equals(returnType)) {
-                out.write(String.valueOf(invoke));
+                out.write(String.valueOf(atomicReference.get()));
             }
         } catch (Throwable throwable) {
             if (throwable.getCause() != null) {

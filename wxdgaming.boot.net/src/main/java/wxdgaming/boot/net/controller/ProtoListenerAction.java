@@ -12,6 +12,8 @@ import wxdgaming.boot.core.system.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.SocketSession;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * socket message 处理器
  *
@@ -43,7 +45,8 @@ public final class ProtoListenerAction extends Event {
     @Override public void onEvent() throws Exception {
         try {
             Object bean = mapping.instance();
-            mapping.mapping().proxy(session, message);
+            AtomicReference<Object> out = new AtomicReference<>();
+            mapping.mapping().proxy(out, bean, new Object[]{session, message});
             //mapping.method().invoke(bean, session, message);
         } catch (Throwable throwable) {
             throwable = Throw.filterInvoke(throwable);

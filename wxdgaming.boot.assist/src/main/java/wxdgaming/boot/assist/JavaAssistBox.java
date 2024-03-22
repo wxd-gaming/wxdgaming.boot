@@ -13,33 +13,30 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version: 2023-12-06 20:07
  **/
 @Getter
-public class JavaAssistBox extends ClassLoader {
+public class JavaAssistBox {
+
+    public static String javaClassPath() {
+        return System.getProperty("java.class.path");
+    }
 
     public static JavaAssistBox of() {
         return new JavaAssistBox();
     }
 
-    final AtomicInteger ATOMIC_INTEGER;
-    final ClassPool CLASS_POOL;
+    static final AtomicInteger ATOMIC_INTEGER = new AtomicInteger();
 
     private JavaAssistBox() {
-        ATOMIC_INTEGER = new AtomicInteger();
-        CLASS_POOL = ClassPool.getDefault();
-        try {
-            CLASS_POOL.insertClassPath("./class");
-        } catch (NotFoundException e) {
-        }
     }
 
-    @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public ClassPool build() {
+        final ClassPool classPool = new ClassPool(null);
+        classPool.appendSystemPath();
         try {
-            CtClass cc = CLASS_POOL.get(name);
-            byte[] b = cc.toBytecode();
-            return defineClass(name, b, 0, b.length);
-        } catch (NotFoundException | IOException | CannotCompileException e) {
-            throw new ClassNotFoundException();
+            classPool.insertClassPath("./class");
+            classPool.appendClassPath(javaClassPath());
+        } catch (NotFoundException e) {
         }
+        return classPool;
     }
 
     /**
@@ -53,20 +50,52 @@ public class JavaAssistBox extends ClassLoader {
     }
 
     @Getter
-    public static class JavaAssist {
+    public static class JavaAssist extends ClassLoader {
 
-        private final JavaAssistBox javaAssistBox;
         private final CtClass ctClass;
+        private final ClassPool classPool;
 
-        private JavaAssist(JavaAssistBox javaAssistBox, CtClass ctClass) {
-            this.javaAssistBox = javaAssistBox;
+        private JavaAssist(ClassPool classPool, CtClass ctClass, ClassLoader classLoader) {
+            super(classLoader);
+            this.classPool = classPool;
             this.ctClass = ctClass;
         }
 
-        /** 查询已有的方法 */
-        public JavaAssist declaredMethod(String methodName, CtClass[] methodParams, Call<CtMethod> call) {
+        public CtClass ctClass(String name) {
             try {
-                CtMethod ctMethod = ctClass.getDeclaredMethod(methodName, methodParams);
+                return classPool.get(name);
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public void importPackage(Class<?>... packages) {
+            for (Class<?> aPackage : packages) {
+                classPool.importPackage(aPackage.getPackageName());
+            }
+        }
+
+        public void importPackage(String... packages) {
+            for (String aPackage : packages) {
+                classPool.importPackage(aPackage);
+            }
+        }
+
+        CtClass[] convert(Class[] methodParams) {
+            CtClass[] ctClasses = new CtClass[methodParams.length];
+            for (int i = 0; i < methodParams.length; i++) {
+                Class methodParam = methodParams[i];
+                CtClass ctClass1 = ctClass(methodParam.getName());
+                ctClasses[i] = ctClass1;
+            }
+            return ctClasses;
+        }
+
+        /** 查询已有的方法 */
+        public JavaAssist declaredMethod(String methodName, Class[] methodParams, Call<CtMethod> call) {
+            CtClass[] convert = convert(methodParams);
+            try {
+                CtMethod ctMethod = ctClass.getDeclaredMethod(methodName, convert);
                 call.accept(ctMethod);
                 return this;
             } catch (Exception e) {
@@ -84,10 +113,11 @@ public class JavaAssistBox extends ClassLoader {
          * @param call         回调
          */
         public JavaAssist createMethod(int modifier, CtClass returnType,
-                                       String methodName, CtClass[] methodParams,
+                                       String methodName, Class[] methodParams,
                                        Call<CtMethod> call) {
             try {
-                CtMethod ctMethod = new CtMethod(returnType, methodName, methodParams, ctClass);
+                CtClass[] convert = convert(methodParams);
+                CtMethod ctMethod = new CtMethod(returnType, methodName, convert, ctClass);
                 ctMethod.setModifiers(modifier);
                 call.accept(ctMethod);
                 ctClass.addMethod(ctMethod);
@@ -126,20 +156,30 @@ public class JavaAssistBox extends ClassLoader {
         }
 
         /** 通过 classloader 加载类 */
-        public Class loadClass() {
-            try {
-                return javaAssistBox.loadClass(ctClass.getName());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        /** 通过 classloader 加载类 */
         public JavaAssist call(Call<Class<?>> call) {
             try {
                 Class<?> aClass = loadClass();
                 call.accept(aClass);
                 return this;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        /** 通过 classloader 加载类 */
+        public Class<?> loadClass() {
+            try {
+                return loadClass(ctClass.getName());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override protected Class<?> findClass(String name) throws ClassNotFoundException {
+            try {
+                //return ctClass.toClass(getParent());
+                byte[] b = ctClass.toBytecode();
+                return defineClass(name, b, 0, b.length);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -156,14 +196,23 @@ public class JavaAssistBox extends ClassLoader {
 
     /** 查找某个类编辑 */
     public JavaAssist editClass(Class<?> clazz) {
-        return editClass(clazz.getName());
+        return editClass(clazz.getName(), Thread.currentThread().getContextClassLoader());
+    }
+
+    public JavaAssist editClass(Class<?> clazz, ClassLoader classLoader) {
+        return editClass(clazz.getName(), classLoader);
     }
 
     /** 查找某个类编辑 */
     public JavaAssist editClass(String clazzName) {
+        return editClass(clazzName, Thread.currentThread().getContextClassLoader());
+    }
+
+    public JavaAssist editClass(String clazzName, ClassLoader classLoader) {
         try {
-            CtClass tmp = CLASS_POOL.get(clazzName);
-            return new JavaAssist(this, tmp);
+            ClassPool classPool = build();
+            CtClass tmp = classPool.get(clazzName);
+            return new JavaAssist(classPool, tmp, classLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -171,10 +220,15 @@ public class JavaAssistBox extends ClassLoader {
 
     /** 继承某个类的实现 */
     public JavaAssist extendSuperclass(Class<?> superclass) {
+        return extendSuperclass(superclass, superclass.getClassLoader());
+    }
+
+    public JavaAssist extendSuperclass(Class<?> superclass, ClassLoader classLoader) {
         try {
-            CtClass tmp = CLASS_POOL.makeClass(superclass.getName() + "Impl" + ATOMIC_INTEGER.incrementAndGet());
-            tmp.setSuperclass(CLASS_POOL.get(superclass.getName()));
-            return new JavaAssist(this, tmp);
+            ClassPool classPool = build();
+            CtClass tmp = classPool.makeClass(superclass.getName() + "Impl" + ATOMIC_INTEGER.incrementAndGet());
+            tmp.setSuperclass(classPool.get(superclass.getName()));
+            return new JavaAssist(classPool, tmp, classLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -182,12 +236,17 @@ public class JavaAssistBox extends ClassLoader {
 
     /** 实现某个接口的 */
     public JavaAssist implInterfaces(String className, Class<?>... interfaces) {
+        return implInterfaces(className, Thread.currentThread().getContextClassLoader(), interfaces);
+    }
+
+    public JavaAssist implInterfaces(String className, ClassLoader classLoader, Class<?>... interfaces) {
         try {
-            CtClass tmp = CLASS_POOL.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
+            ClassPool classPool = build();
+            CtClass tmp = classPool.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
             for (Class<?> aClass : interfaces) {
-                tmp.addInterface(CLASS_POOL.get(aClass.getName()));
+                tmp.addInterface(classPool.get(aClass.getName()));
             }
-            return new JavaAssist(this, tmp);
+            return new JavaAssist(classPool, tmp, classLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -195,9 +254,14 @@ public class JavaAssistBox extends ClassLoader {
 
     /** 创建一个类 */
     public JavaAssist create(String className) {
+        return create(className, Thread.currentThread().getContextClassLoader());
+    }
+
+    public JavaAssist create(String className, ClassLoader classLoader) {
         try {
-            CtClass tmp = CLASS_POOL.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
-            return new JavaAssist(this, tmp);
+            ClassPool classPool = build();
+            CtClass tmp = classPool.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
+            return new JavaAssist(classPool, tmp, classLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
