@@ -14,7 +14,9 @@ import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.auth.SignCheck;
 import wxdgaming.boot.net.controller.TextMappingRecord;
+import wxdgaming.boot.net.controller.ann.Param;
 
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -73,21 +75,40 @@ class TextListenerAction extends Event {
         }
 
         try {
-            Object[] params = new Object[mappingRecord.method().getParameterCount()];
-            Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
+            Parameter[] parameters = mappingRecord.method().getParameters();
+            Object[] params = new Object[parameters.length];
             for (int i = 0; i < params.length; i++) {
-                Type genericParameterType = genericParameterTypes[i];
-                if (genericParameterType instanceof Class<?>) {
-                    if (genericParameterType.equals(ObjMap.class)) {
+                Parameter parameter = parameters[i];
+                Type type = parameter.getParameterizedType();
+                if (type instanceof Class<?> clazz) {
+                    if (clazz.getName().equals(ObjMap.class.getName())) {
                         params[i] = putData;
-                    } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
+                    } else if (clazz.isAssignableFrom(session.getClass())) {
                         params[i] = session;
+                    } else {
+                        /*实现注入*/
+                        Param annotation = parameter.getAnnotation(Param.class);
+                        if (boolean.class.equals(clazz)) {
+                            clazz = Boolean.class;
+                        } else if (byte.class.equals(clazz)) {
+                            clazz = Integer.class;
+                        } else if (short.class.equals(clazz)) {
+                            clazz = Integer.class;
+                        } else if (int.class.equals(clazz)) {
+                            clazz = Integer.class;
+                        } else if (long.class.equals(clazz)) {
+                            clazz = Integer.class;
+                        } else if (float.class.equals(clazz)) {
+                            clazz = Integer.class;
+                        } else if (double.class.equals(clazz)) {
+                            clazz = Integer.class;
+                        }
+                        params[i] = putData.parseObject(annotation.value(), (Class) clazz);
                     }
                 }
             }
             AtomicReference atomicReference = new AtomicReference();
             mappingRecord.mapping().proxy(atomicReference, mappingRecord.instance(), params);
-            //invoke = mappingRecord.method().invoke(mappingRecord.instance(), params);
             Class<?> returnType = mappingRecord.method().getReturnType();
             if (!void.class.equals(returnType)) {
                 out.write(String.valueOf(atomicReference.get()));

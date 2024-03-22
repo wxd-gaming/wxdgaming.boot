@@ -16,9 +16,9 @@ import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
-import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ExecutorLog;
+import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.TextMappingRecord;
@@ -30,9 +30,11 @@ import wxdgaming.boot.net.web.hs.controller.cmd.HttpSignCheck;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * http 请求处理
@@ -191,28 +193,28 @@ class HttpListenerAction extends Event {
             }
 
             try {
-                Object invoke;
-                if (mappingRecord.method().getParameterCount() == 0) {
-                    invoke = mappingRecord.method().invoke(mappingRecord.instance());
-                } else {
-                    Object[] params = new Object[mappingRecord.method().getParameterCount()];
-                    Type[] genericParameterTypes = mappingRecord.method().getGenericParameterTypes();
-                    for (int i = 0; i < params.length; i++) {
-                        Type genericParameterType = genericParameterTypes[i];
-                        if (genericParameterType instanceof Class<?>) {
-                            if (genericParameterType.equals(ObjMap.class)) {
-                                params[i] = putData;
-                            } else if (((Class<?>) genericParameterType).isAssignableFrom(session.getClass())) {
-                                params[i] = session;
-                            }
+                Parameter[] parameters = mappingRecord.method().getParameters();
+                Object[] params = new Object[parameters.length];
+                for (int i = 0; i < params.length; i++) {
+                    Parameter parameter = parameters[i];
+                    Type type = parameter.getParameterizedType();
+                    if (type instanceof Class<?> clazz) {
+                        if (clazz.getName().equals(ObjMap.class.getName())) {
+                            params[i] = putData;
+                        } else if (clazz.isAssignableFrom(session.getClass())) {
+                            params[i] = session;
+                        } else {
+                            /*实现注入*/
+                            params[i] = putData.parseObject(parameter.getName(), (Class) clazz);
                         }
                     }
-                    invoke = mappingRecord.method().invoke(mappingRecord.instance(), params);
                 }
+                AtomicReference atomicReference = new AtomicReference();
+                mappingRecord.mapping().proxy(atomicReference, mappingRecord.instance(), params);
                 boolean showLog = AnnUtil.annOpt(mappingRecord.method(), ExecutorLog.class).map(ExecutorLog::showLog).orElse(false);
                 Class<?> returnType = mappingRecord.method().getReturnType();
                 if (!void.class.equals(returnType)) {
-                    callBack.accept(invoke, showLog);
+                    callBack.accept(atomicReference.get(), showLog);
                 }
             } catch (Throwable throwable) {
                 if (throwable.getCause() != null) {

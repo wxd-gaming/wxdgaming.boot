@@ -1,7 +1,10 @@
 package wxdgaming.boot.net.controller;
 
 
+import wxdgaming.boot.agent.LogbackUtil;
+import wxdgaming.boot.agent.function.Consumer4;
 import wxdgaming.boot.agent.function.ConsumerE2;
+import wxdgaming.boot.agent.system.LambdaUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.threading.Event;
@@ -26,6 +29,11 @@ import java.util.stream.Stream;
 public class MappingFactory {
 
     public static JavaAssistBox javaAssistBox = JavaAssistBox.of();
+    public static boolean Print_Java_Assist_Code = false;
+    public static boolean OUT_FILE_Java_Assist_Code = false;
+
+    public static Consumer4<ProtoMappingProxy, Object, Object, Object[]> Proto_Mapping_Proxy = ProtoMappingProxy::proxy;
+
     /** text mapping submit 监听 */
     public static ConsumerE2<Session, Event> TextMappingSubmitBefore = null;
     /** proto mapping submit 监听 */
@@ -42,11 +50,11 @@ public class MappingFactory {
         if (service == null) service = FINAL_DEFAULT;
 
         /*通过lambda 对象 创建一个代理实例，比反射效果好*/
-
+        LambdaUtil.LambdaMapping lambdaMapping = LambdaUtil.createDelegate(instance, method, Proto_Mapping_Proxy);
         PROTO_MAP.put(
                 service,
                 messageId,
-                new ProtoMappingRecord(service, remarks, messageId, null, instance, method)
+                new ProtoMappingRecord(service, remarks, messageId, lambdaMapping.getMapping(), instance, method)
         );
 
     }
@@ -84,17 +92,29 @@ public class MappingFactory {
                 if (i > 0) stringBuilder.append(",");
                 stringBuilder.append("\n");
                 Parameter parameter = method.getParameters()[i];
-                stringBuilder.append(String.format("        (%s) params[%s]", parameter.getType().getSimpleName(), i));
-                javaAssist.importPackage(parameter.getType());
+                Class<?> parameterType = parameter.getType();
+                if (boolean.class.equals(parameterType)
+                        || byte.class.equals(parameterType)
+                        || short.class.equals(parameterType)
+                        || int.class.equals(parameterType)
+                        || long.class.equals(parameterType)
+                        || float.class.equals(parameterType)
+                        || double.class.equals(parameterType)) {
+                    throw new RuntimeException(instance.getClass().getName() + "." + method.getName() + ", 参数：类型请使用引用类型不要使用值类型 例如 int 改为 Integer");
+                }
+                stringBuilder.append(String.format("        (%s) params[%s]", parameterType.getSimpleName(), i));
+                javaAssist.importPackage(parameterType);
             }
         }
         stringBuilder.append(");").append("\n");
         stringBuilder.append("    atomicReference.set(ret);").append("\n");
         stringBuilder.append("}").append("\n");
         String strCode = stringBuilder.toString();
-        System.out.println(strCode);
+        if (Print_Java_Assist_Code)
+            LogbackUtil.logger().warn("\n创建代理\n{}", strCode);
         javaAssist.createMethod(strCode);
-        javaAssist.writeFile("target/out");
+        if (LogbackUtil.logger().isDebugEnabled())
+            javaAssist.writeFile("target/out_assist_code");
         TextMappingProxy textMappingProxy = javaAssist.toInstance();
         javaAssist.getCtClass().defrost();
         javaAssist.getCtClass().detach();
@@ -104,6 +124,7 @@ public class MappingFactory {
                 path,
                 new TextMappingRecord(textMapping, path, remarks, textMappingProxy, instance, method)
         );
+
     }
 
     public static ProtoMappingRecord protoMappingRecord(Class<? extends NioBase> service, int messageId) {
