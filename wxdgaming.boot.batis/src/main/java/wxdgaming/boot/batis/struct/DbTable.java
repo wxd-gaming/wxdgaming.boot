@@ -25,17 +25,9 @@ public @interface DbTable {
     /** 大于1表示需要拆分表 */
     public int splitTable() default 0;
 
-    /**
-     * 备注
-     *
-     * @return
-     */
+    /** 备注 */
     public String comment() default "";
 
-    /**
-     * 忽略表
-     *
-     * @return
-     */
+    /** 忽略表 */
     public boolean alligator() default false;
 }

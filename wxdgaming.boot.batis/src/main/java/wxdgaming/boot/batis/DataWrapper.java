@@ -541,12 +541,14 @@ public abstract class DataWrapper<DM extends EntityTable>
                     break;
                 } else {
                     entityField.setColumnType(ColumnType.Json);
+                    entityField.setFieldType(String.class);
                     try {
                         Class<?> aClass = this.getClass().getClassLoader().loadClass(fieldTypeName);
                         entityField.setFieldType(aClass);
                     } catch (ClassNotFoundException e) {
-                        //throw new RuntimeException(entityField.getFieldName() + " - " + fieldTypeName, e);
+                        log.error(entityField.getFieldName() + " - " + fieldTypeName, e);
                     }
+                    entityField.setFieldTypeString(fieldTypeName);
                 }
         }
     }

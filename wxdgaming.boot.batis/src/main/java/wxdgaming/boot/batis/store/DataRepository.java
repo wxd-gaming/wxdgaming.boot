@@ -32,6 +32,10 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
     /** 数据来源名字 */
     public abstract String dataName();
 
+    public <T extends DbBean, R> R getDbBean(Class<T> beanClazz, Object key) {
+        return (R) getDbBean(beanClazz).get(key);
+    }
+
     public <R extends DbBean> R getDbBean(Class<R> beanClazz) {
         Class<?> tClass = ReflectContext.getTClass(beanClazz);
         DM entityTable = dataBuilder().asEntityTable(tClass);
@@ -94,8 +98,6 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
                 .collect(Collectors.toList());
         load(stringBuilder, forceLoad, list);
         log.info(stringBuilder.toString());
-        log.info("开始检查数据合法性");
-        beanMap.values().forEach(v -> v.checkDb(this));
     }
 
     /**

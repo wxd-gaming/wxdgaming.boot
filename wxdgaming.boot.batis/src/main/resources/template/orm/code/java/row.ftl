@@ -16,7 +16,7 @@ import java.io.Serializable;
  **/
 @Getter
 @DbTable(name = "${tableName}", comment = "${tableComment}")
-public class ${codeClassName}Row extends ${codeClassName}Mapping implements Serializable {
+public class ${codeClassName}Bean extends ${codeClassName}Mapping implements Serializable {
 
     @Override public void initAndCheck() throws Exception {
         /*todo 实现数据检测和初始化*/

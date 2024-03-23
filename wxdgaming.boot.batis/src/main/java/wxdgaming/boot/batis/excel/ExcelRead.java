@@ -681,8 +681,13 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                         }
                         return list;
                     }
-                    default:
-                        return ConvertUtil.changeType(trim, entityField.getFieldType());
+                    default: {
+                        try {
+                            return ConvertUtil.changeType(trim, entityField.getFieldType());
+                        } catch (Exception e) {
+                            return ConvertUtil.changeType(trim, entityField.getFieldType());
+                        }
+                    }
                 }
             }
             return ConvertUtil.defaultValue(entityField.getFieldType());
@@ -830,7 +835,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
             templatePack.ftl2File("mapping.ftl", parse, file.getPath());
             log.info("生成 映射 文件：" + entityTable.getTableComment() + ", " + entityTable.getTableName() + ", " + FileUtil.getCanonicalPath(file));
         }
-        file = new File(tmpPath + "bean/" + entityTable.getCodeClassName() + "Row." + houZhui);
+        file = new File(tmpPath + "bean/" + entityTable.getCodeClassName() + "Bean." + houZhui);
         if (!file.exists()) {
             templatePack.ftl2File("row.ftl", parse, file.getPath());
             log.info("生成 扩展 文件：" + entityTable.getTableComment() + ", " + entityTable.getTableName() + ", " + FileUtil.getCanonicalPath(file));

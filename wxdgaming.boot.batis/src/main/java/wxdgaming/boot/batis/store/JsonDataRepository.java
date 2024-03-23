@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.batis.struct.DataChecked;
+import wxdgaming.boot.batis.struct.DbBean;
 import wxdgaming.boot.batis.text.json.JsonDataWrapper;
 import wxdgaming.boot.batis.text.json.JsonEntityTable;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
@@ -42,6 +43,10 @@ public class JsonDataRepository extends DataRepository<JsonEntityTable, JsonData
     @Override
     public String dataName() {
         return "Json Data：" + path;
+    }
+
+    @Override public <R extends DbBean> R load(Class<R> beanClazz, JsonEntityTable entityTable) {
+        return super.load(beanClazz, entityTable);
     }
 
     @Override

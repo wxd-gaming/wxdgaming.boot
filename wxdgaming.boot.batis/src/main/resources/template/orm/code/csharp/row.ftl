@@ -11,7 +11,7 @@ namespace ${packageName}.Bean
     /// <summary>
     /// ${tableComment}
     /// </summary>
-    public class ${codeClassName}Row : ${codeClassName}Mapping
+    public class ${codeClassName}Bean : ${codeClassName}Mapping
     {
 
     }

@@ -29,7 +29,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class DbBean<T> {
+public abstract class DbBean<T, S extends DataRepository> {
 
     /** 返回实体类 */
     @DbColumn(alligator = true)
@@ -111,7 +111,7 @@ public abstract class DbBean<T> {
 
     /** 检查数据合法性 */
     @JSONField(serialize = false, deserialize = false)
-    public void checkDb(DataRepository dataRepository) {
+    public void checkDb(S dataRepository) {
     }
 
     public String toDataString() {

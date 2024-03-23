@@ -32,7 +32,7 @@ public class MappingFactory {
     public static boolean Print_Java_Assist_Code = false;
     public static boolean OUT_FILE_Java_Assist_Code = false;
 
-    public static Consumer4<ProtoMappingProxy, Object, Object, Object[]> Proto_Mapping_Proxy = ProtoMappingProxy::proxy;
+    public static Consumer4<ProtoMappingProxy, AtomicReference<Object>, Object, Object[]> Proto_Mapping_Proxy = ProtoMappingProxy::proxy;
 
     /** text mapping submit 监听 */
     public static FunctionE2<Session, Event, Boolean> TextMappingSubmitBefore = null;
@@ -76,7 +76,7 @@ public class MappingFactory {
         javaAssist.importPackage(TextMappingProxy.class);
         javaAssist.importPackage(instance.getClass());
 
-        stringBuilder.append("public void proxy(Object out, Object instance, Object[] params) {").append("\n");
+        stringBuilder.append("public void proxy(Object out, Object instance, Object[] params) throws Throwable {").append("\n");
         stringBuilder.append("    AtomicReference atomicReference = (AtomicReference) out;").append("\n");
         stringBuilder.append("    Object ret = null;").append("\n");
         if (void.class.equals(method.getReturnType()) || Void.class.equals(method.getReturnType())) {

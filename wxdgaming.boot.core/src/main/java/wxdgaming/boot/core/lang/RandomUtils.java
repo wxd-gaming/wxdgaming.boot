@@ -100,6 +100,16 @@ public class RandomUtils {
     }
 
     /**
+     * 返回 0 - (max-1)
+     *
+     * @param max 如果10 返回 0-9
+     * @return
+     */
+    public static long random(long max) {
+        return ThreadLocalRandom.current().nextLong(max);
+    }
+
+    /**
      * 从 min 和 max 中间随机一个值
      *
      * @param min
