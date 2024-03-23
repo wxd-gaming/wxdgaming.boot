@@ -185,7 +185,8 @@ public class HttpServer extends NioServer<HttpSession> {
                 HttpListenerAction httpListenerAction = new HttpListenerAction(HttpServer.this, session);
                 if (MappingFactory.TextMappingSubmitBefore != null) {
                     try {
-                        MappingFactory.TextMappingSubmitBefore.accept(session, httpListenerAction);
+                        Boolean apply = MappingFactory.TextMappingSubmitBefore.apply(session, httpListenerAction);
+                        if (Boolean.FALSE.equals(apply)) return;
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

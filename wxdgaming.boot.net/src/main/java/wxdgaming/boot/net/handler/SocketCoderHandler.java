@@ -210,7 +210,8 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
         if (MappingFactory.TextMappingSubmitBefore != null) {
             try {
-                MappingFactory.TextMappingSubmitBefore.accept(session, listenerAction);
+                Boolean apply = MappingFactory.TextMappingSubmitBefore.apply(session, listenerAction);
+                if (Boolean.FALSE.equals(apply)) return;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -267,7 +268,10 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
         if (MappingFactory.ProtoMappingSubmitBefore != null) {
             try {
-                MappingFactory.ProtoMappingSubmitBefore.accept(session, protoListenerAction);
+                Boolean apply = MappingFactory.ProtoMappingSubmitBefore.apply(session, protoListenerAction);
+                if (Boolean.FALSE.equals(apply)) {
+                    return;
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

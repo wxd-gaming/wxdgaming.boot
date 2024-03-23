@@ -49,35 +49,35 @@
         </extensions>
         <plugins>
             <!--protobuf插件-->
-            <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <configuration>
-                    <pluginId>proto-java</pluginId>
-                    <protocArtifact>
-                        com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}
-                    </protocArtifact>
-                    <tempDirectory>protoc-plugin</tempDirectory>
-                    <temporaryProtoFileDirectory>protoc-plugin/dependencies</temporaryProtoFileDirectory>
-                    <!--插件下载后的目录-->
-                    <protocPluginDirectory>protoc-plugin</protocPluginDirectory>
-                    <!-- proto文件放置的目录 -->
-                    <protoSourceRoot>src/main/proto</protoSourceRoot>
-                    <!-- 生成文件的目录 -->
-                    <outputDirectory>src/main/java</outputDirectory>
-                    <!-- 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 -->
-                    <clearOutputDirectory>false</clearOutputDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <!--                            <goal>compile-custom</goal>-->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.xolstice.maven.plugins</groupId>-->
+<!--                <artifactId>protobuf-maven-plugin</artifactId>-->
+<!--                <version>0.6.1</version>-->
+<!--                <configuration>-->
+<!--                    <pluginId>proto-java</pluginId>-->
+<!--                    <protocArtifact>-->
+<!--                        com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}-->
+<!--                    </protocArtifact>-->
+<!--                    <tempDirectory>protoc-plugin</tempDirectory>-->
+<!--                    <temporaryProtoFileDirectory>protoc-plugin/dependencies</temporaryProtoFileDirectory>-->
+<!--                    &lt;!&ndash;插件下载后的目录&ndash;&gt;-->
+<!--                    <protocPluginDirectory>protoc-plugin</protocPluginDirectory>-->
+<!--                    &lt;!&ndash; proto文件放置的目录 &ndash;&gt;-->
+<!--                    <protoSourceRoot>src/main/proto</protoSourceRoot>-->
+<!--                    &lt;!&ndash; 生成文件的目录 &ndash;&gt;-->
+<!--                    <outputDirectory>src/main/java</outputDirectory>-->
+<!--                    &lt;!&ndash; 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 &ndash;&gt;-->
+<!--                    <clearOutputDirectory>false</clearOutputDirectory>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>compile</goal>-->
+<!--                            &lt;!&ndash;                            <goal>compile-custom</goal>&ndash;&gt;-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

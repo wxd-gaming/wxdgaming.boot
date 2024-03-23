@@ -3,7 +3,7 @@ package wxdgaming.boot.net.controller;
 
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.function.Consumer4;
-import wxdgaming.boot.agent.function.ConsumerE2;
+import wxdgaming.boot.agent.function.FunctionE2;
 import wxdgaming.boot.agent.system.LambdaUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
@@ -35,9 +35,9 @@ public class MappingFactory {
     public static Consumer4<ProtoMappingProxy, Object, Object, Object[]> Proto_Mapping_Proxy = ProtoMappingProxy::proxy;
 
     /** text mapping submit 监听 */
-    public static ConsumerE2<Session, Event> TextMappingSubmitBefore = null;
+    public static FunctionE2<Session, Event, Boolean> TextMappingSubmitBefore = null;
     /** proto mapping submit 监听 */
-    public static ConsumerE2<Session, Event> ProtoMappingSubmitBefore = null;
+    public static FunctionE2<Session, Event, Boolean> ProtoMappingSubmitBefore = null;
 
     public static final Class<? extends NioBase> FINAL_DEFAULT = NioBase.class;
     /** 消息id -> 映射 */
