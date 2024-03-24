@@ -4,12 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.function.Consumer1;
 import wxdgaming.boot.agent.system.AnnUtil;
+import wxdgaming.boot.agent.system.LambdaUtil;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
-import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.threading.Event;
+import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.ann.Scheduled;
 
 import java.lang.reflect.Method;
@@ -32,8 +34,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
 
     private String name;
     private int index;
-    private Object instance = null;
-    private Method method = null;
+    private ScheduledProxy scheduledProxy;
     /** 和method是互斥的 */
     private Runnable scheduledTask;
     private CronExpress cronExpress;
@@ -46,8 +47,10 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
         super(method);
-        this.instance = instance;
-        this.method = method;
+
+        Consumer1<ScheduledProxy> proxy = ScheduledProxy::proxy;
+        scheduledProxy = LambdaUtil.createDelegate(instance, method, proxy).getMapping();
+
         if (StringUtil.notEmptyOrNull(scheduled.name())) {
             this.name = "[scheduled-job]" + scheduled.name();
         } else {
@@ -173,8 +176,8 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
 
     @Override public void onEvent() {
         try {
-            if (method != null) {
-                method.invoke(instance);
+            if (scheduledProxy != null) {
+                scheduledProxy.proxy();
             } else {
                 scheduledTask.run();
             }
