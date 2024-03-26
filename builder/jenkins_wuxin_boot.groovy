@@ -17,6 +17,7 @@ pipeline {
         JAVA_HOME = '/usr/local/jdk-21'
         PATH="$JAVA_HOME/bin:$PATH"
         CLASSPATH = ".:${env.JAVA_HOME}/lib/dt.jar:${env.JAVA_HOME}/lib/tools.jar"
+
     }
 
     stages {
@@ -48,8 +49,10 @@ pipeline {
                 sh '''
 mvn clean package -Dmaven.test.skip=true
 if [ $? != 0 ]; then
-  echo "打包失败"
-  exit 1
+    echo "编译失败"
+    json="{\\"msg_type\\":\\"text\\",\\"content\\":{\\"text\\":\\"\\\\n项目 ${project_model} \\\\n服务器 ${SERVER_ID} \\\\n代码 $version \\\\n编译失败\\"}}"
+    curl -X POST -H "Content-Type: application/json" -d "$json" "${feishu_url}"
+    exit 1
 fi
 '''
             }
