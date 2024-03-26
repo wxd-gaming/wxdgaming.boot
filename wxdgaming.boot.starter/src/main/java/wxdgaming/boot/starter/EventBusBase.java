@@ -16,14 +16,17 @@ import java.util.stream.Stream;
 @Getter
 public abstract class EventBusBase extends IocSubContext {
 
-    public <Key extends Serializable, S extends IScript<Key>> S script(Class<S> scriptClass, Key scriptId) {
-        return beanStream(scriptClass).filter(script -> Objects.equals(script.scriptKey(), scriptId)).findAny().orElse(null);
-    }
-
+    /** 获取所有脚本 */
     public <Key extends Serializable, S extends IScript<Key>> Stream<S> scripts(Class<S> scriptClass, Key scriptId) {
         return beanStream(scriptClass).filter(script -> Objects.equals(script.scriptKey(), scriptId));
     }
 
+    /** 获取一个脚本 */
+    public <Key extends Serializable, S extends IScript<Key>> S script(Class<S> scriptClass, Key scriptId) {
+        return scripts(scriptClass, scriptId).findAny().orElse(null);
+    }
+
+    /** 执行 */
     public <Key extends Serializable, S extends IScript<Key>> void scripts(Class<S> scriptClass, Key scriptId, ConsumerE1<S> consumer) {
         scripts(scriptClass, scriptId).forEach(script -> {
             try {
