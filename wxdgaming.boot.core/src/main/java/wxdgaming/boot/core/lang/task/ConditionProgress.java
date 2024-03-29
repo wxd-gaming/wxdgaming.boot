@@ -23,17 +23,17 @@ public class ConditionProgress extends ObjectBase implements Serializable {
     /** 当前进度 */
     private long progress;
 
-    public boolean change(int k1, int k2, int k3, long progress) {
+    public boolean change(UpdateKey k1, UpdateKey k2, UpdateKey k3, long progress) {
 
         Condition condition = condition();
 
-        if (condition.getK1() != k1) return false;
-        if (condition.getK2() != 0 && condition.getK2() != k2) return false;
-        if (condition.getK3() != 0 && condition.getK3() != k3) return false;
+        if (condition.getK1().equals(k1)) return false;
+        if (condition.getK2().getCode() != 0 && !condition.getK2().equals(k2)) return false;
+        if (condition.getK3().getCode() != 0 && !condition.getK3().equals(k3)) return false;
 
         if (condition.getTarget() > 0 && progress >= condition.getTarget()) return false;
 
-        switch (condition.getChangeType()) {
+        switch (condition.getUpdateType()) {
             case Add: {
                 this.progress = Math.addExact(this.progress, progress);
             }
@@ -57,7 +57,7 @@ public class ConditionProgress extends ObjectBase implements Serializable {
 
     protected Condition condition() {
         /*自己考虑通过 cfgId 获取*/
-        return new Condition(1, 0, 0, ChangeType.Add, 100);
+        return null;
     }
 
     @JSONField(serialize = false, deserialize = false)

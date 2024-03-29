@@ -14,7 +14,7 @@ import java.util.Map;
  * @version: 2022-10-10 15:46
  **/
 @Slf4j
-public enum ChangeType implements Serializable, IEnum {
+public enum UpdateType implements Serializable, IEnum {
     /** 累加 */
     Add(1, "累加"),
     /** 直接替换 */
@@ -25,16 +25,16 @@ public enum ChangeType implements Serializable, IEnum {
     Min(4, "取最小值"),
     ;
 
-    private static final Map<Integer, ChangeType> static_map = MapOf.asMap(ChangeType::getCode, ChangeType.values());
+    private static final Map<Integer, UpdateType> static_map = MapOf.asMap(UpdateType::getCode, UpdateType.values());
 
-    public static ChangeType as(int value) {
+    public static UpdateType as(int value) {
         return static_map.get(value);
     }
 
     private final int code;
     private final String comment;
 
-    ChangeType(int code, String comment) {
+    UpdateType(int code, String comment) {
         this.code = code;
         this.comment = comment;
     }
