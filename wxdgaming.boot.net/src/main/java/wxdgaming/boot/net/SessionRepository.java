@@ -2,6 +2,7 @@ package wxdgaming.boot.net;
 
 import com.google.protobuf.Message;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.group.ChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.net.message.MessagePackage;
@@ -19,14 +20,19 @@ public interface SessionRepository<S extends SocketSession> {
 
     Logger log = LoggerFactory.getLogger(SessionRepository.class);
 
+    ChannelGroup getAllChannels();
+
     ChannelQueue<S> getAllSessionQueue();
 
     /*所有的session*/
     Map<Long, S> getAllSessionMap();
 
     default void openSession(S session) {
-        this.getAllSessionQueue().add(session);
+        this.getAllChannels().add(session.getChannelContext().channel());
         this.getAllSessionMap().put(session.getId(), session);
+        session.getChannelContext().channel().closeFuture().addListener(future -> {
+            closeSession(session);
+        });
     }
 
     default void closeSession(S session) {

@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import wxdgaming.boot.core.lang.ObjectBase;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 完成条件
@@ -17,21 +18,26 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ConditionProgress extends ObjectBase implements Serializable {
+public abstract class ConditionProgress extends ObjectBase implements Serializable {
 
+    /** 配置ID */
     private int cfgId;
     /** 当前进度 */
     private long progress;
 
-    public boolean change(UpdateKey k1, UpdateKey k2, UpdateKey k3, long progress) {
+    public boolean change(UpdateKey k1, Serializable k2, Serializable k3, long progress) {
 
         Condition condition = condition();
 
-        if (condition.getK1().equals(k1)) return false;
-        if (condition.getK2().getCode() != 0 && !condition.getK2().equals(k2)) return false;
-        if (condition.getK3().getCode() != 0 && !condition.getK3().equals(k3)) return false;
+        if (!condition.getK1().toString().equalsIgnoreCase(k1.getCode())) return false;
 
-        if (condition.getTarget() > 0 && progress >= condition.getTarget()) return false;
+        if ((!Objects.equals(condition.getK2(), "0")) && !condition.getK2().toString().equalsIgnoreCase(String.valueOf(k2)))
+            return false;
+
+        if ((!Objects.equals(condition.getK3(), "0")) && !condition.getK3().toString().equalsIgnoreCase(String.valueOf(k3)))
+            return false;
+
+        if (condition.getTarget() > 0 &&  this.progress >= condition.getTarget()) return false;
 
         switch (condition.getUpdateType()) {
             case Add: {
@@ -55,13 +61,10 @@ public class ConditionProgress extends ObjectBase implements Serializable {
         return true;
     }
 
-    protected Condition condition() {
-        /*自己考虑通过 cfgId 获取*/
-        return null;
-    }
+    protected abstract Condition condition();
 
     @JSONField(serialize = false, deserialize = false)
     public boolean isFinish() {
-        return condition().getTarget() >= this.progress;
+        return condition().getTarget() <= this.progress;
     }
 }

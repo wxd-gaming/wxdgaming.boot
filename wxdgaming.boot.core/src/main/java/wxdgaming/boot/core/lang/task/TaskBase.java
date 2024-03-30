@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class TaskBase extends ConditionProgress {
+public abstract class TaskBase extends ConditionProgress {
 
     private long acceptTime;
     /** 是否领取奖励 */

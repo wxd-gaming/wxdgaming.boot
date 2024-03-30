@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import wxdgaming.boot.core.lang.ObjectBase;
 
 import java.io.Serializable;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.Objects;
 
 /**
  * 完成条件
@@ -17,22 +17,14 @@ import java.util.concurrent.ConcurrentSkipListMap;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class UpdateKey extends ObjectBase implements Serializable {
-
-    private static final ConcurrentSkipListMap<Integer, UpdateKey> static_map = new ConcurrentSkipListMap<>();
-
-    public static final UpdateKey NONE = new UpdateKey(0);
+public final class UpdateKey extends ObjectBase implements Serializable {
 
     /** 条件 */
-    private final int code;
+    private final String code;
 
-    public UpdateKey(int code) {
+    public UpdateKey(String code) {
+        if (code == null || Objects.equals("", code)) throw new RuntimeException("不允许空值");
         this.code = code;
-
-        if (static_map.put(code, this) != null) {
-            throw new RuntimeException("出现重复key " + code);
-        }
-
     }
 
     @Override public boolean equals(Object o) {
@@ -40,15 +32,15 @@ public class UpdateKey extends ObjectBase implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         UpdateKey updateKey = (UpdateKey) o;
-
-        return code == updateKey.code;
+        return Objects.equals(code, updateKey.code);
     }
 
     @Override public int hashCode() {
-        return code;
+        return code.hashCode();
     }
 
     @Override public String toString() {
         return String.valueOf(code);
     }
+
 }

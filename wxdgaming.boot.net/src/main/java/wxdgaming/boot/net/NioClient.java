@@ -2,9 +2,12 @@ package wxdgaming.boot.net;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.internal.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,6 +50,8 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
 
     protected final ReentrantLock readLock = new ReentrantLock(false);
     protected final Condition lockCondition = readLock.newCondition();
+
+    protected final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     protected final ChannelQueue<S> allSessionQueue = new ChannelQueue<>();
     protected final ConcurrentMap<Long, S> allSessionMap = new ConcurrentHashMap<>();
 
@@ -208,13 +213,15 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
         return this;
     }
 
-    @Override
-    public ChannelQueue<S> getAllSessionQueue() {
+    @Override public ChannelGroup getAllChannels() {
+        return allChannels;
+    }
+
+    @Override public ChannelQueue<S> getAllSessionQueue() {
         return allSessionQueue;
     }
 
-    @Override
-    public ConcurrentMap<Long, S> getAllSessionMap() {
+    @Override public ConcurrentMap<Long, S> getAllSessionMap() {
         return allSessionMap;
     }
 

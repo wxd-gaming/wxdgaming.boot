@@ -25,14 +25,13 @@ public class ConcurrentSkipTable<K1 extends Comparable<K1>, K2 extends Comparabl
 
     private static final Map EMPTY_MAP = Map.of();
 
-    private final ConcurrentSkipListMap<K1, ConcurrentSkipListMap<K2, V>> nodes;
+    private ConcurrentSkipListMap<K1, ConcurrentSkipListMap<K2, V>> nodes = new ConcurrentSkipListMap<>();
 
     public ConcurrentSkipTable() {
-        nodes = new ConcurrentSkipListMap<>();
+
     }
 
     public ConcurrentSkipTable(Map<K1, Map<K2, V>> m) {
-        this();
         for (Map.Entry<K1, Map<K2, V>> entry : m.entrySet()) {
             putAll(entry.getKey(), entry.getValue());
         }

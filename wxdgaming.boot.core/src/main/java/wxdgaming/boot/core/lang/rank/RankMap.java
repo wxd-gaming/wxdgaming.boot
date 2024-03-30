@@ -26,9 +26,19 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
     private transient RankFactory<K, V> factory = new RankFactory<>();
 
     public RankMap() {
-        this(null);
     }
 
+    public RankMap(Comparator<? super K> comparator) {
+        super(comparator);
+    }
+
+    public RankMap(Map<? extends K, ? extends V> m) {
+        super(m);
+    }
+
+    public RankMap(SortedMap<K, ? extends V> m) {
+        super(m);
+    }
 
     public RankMap(RankFactory<K, V> factory) {
         if (factory != null) {

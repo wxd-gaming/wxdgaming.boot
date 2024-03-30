@@ -11,14 +11,14 @@ import wxdgaming.boot.agent.function.*;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.MethodUtil;
 import wxdgaming.boot.core.ann.Sort;
+import wxdgaming.boot.core.collection.concurrent.ConcurrentObjMap;
+import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.starter.config.Config;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 public abstract class IocContext {
 
     @Inject protected Injector injector;
+
+    protected ConcurrentHashMap<String, List<Object>> iocBeanMap = new ConcurrentHashMap<>();
 
     public <R> R getInstance(Class<R> bean) {
         log.debug("{} {}", injector.hashCode(), bean.getName());
@@ -169,54 +171,61 @@ public abstract class IocContext {
      * @return
      */
     public <R> Stream<R> beanStream(Class<R> filter, String methodName) {
-        HashMap<String, R> hashMap = new HashMap<>();
-        Map<Key<?>, Binding<?>> allBindings = new HashMap<>();
-        allBindings(injector, allBindings);
-        final Set<Key<?>> keys = allBindings.keySet();
-        try {
-            for (Key<?> key : keys) {
-                if (filter.isAssignableFrom(key.getTypeLiteral().getRawType())) {
-                    final R instance = (R) injector.getInstance(key);
-                    hashMap.put(instance.getClass().getName(), instance);
-                }
-            }
-        } catch (Exception e) {
-            final RuntimeException runtimeException = new RuntimeException(e.getMessage());
-            runtimeException.setStackTrace(e.getStackTrace());
-            throw runtimeException;
-        }
-        if (hashMap.isEmpty()) {
-            return Stream.of();
-        }
 
-        return hashMap.values().stream()
-                .filter(v -> filter.isAssignableFrom(v.getClass()))
-                .sorted((o1, o2) -> {
-                    int c1 = Optional.ofNullable(AnnUtil.ann(o1.getClass(), Config.class)).map(v -> 1).orElse(2);
-                    int c2 = Optional.ofNullable(AnnUtil.ann(o2.getClass(), Config.class)).map(v -> 1).orElse(2);
-                    if (c1 != c2) {
-                        return Integer.compare(c1, c2);
-                    }
-                    if (StringUtil.notEmptyOrNull(methodName)) {
-                        Method method1 = MethodUtil.findMethod(o1.getClass(), methodName);
-                        Method method2 = MethodUtil.findMethod(o2.getClass(), methodName);
-                        int ms1 = Optional.ofNullable(AnnUtil.ann(method1, Sort.class)).map(Sort::value).orElse(99999);
-                        int ms2 = Optional.ofNullable(AnnUtil.ann(method2, Sort.class)).map(Sort::value).orElse(99999);
-                        if (ms1 != ms2) {
-                            return Integer.compare(ms1, ms2);
+        String findKey = filter.getName().toLowerCase() + "#" + String.valueOf(methodName).toLowerCase();
+        /*构建缓存*/
+        return iocBeanMap.computeIfAbsent(findKey, l -> {
+
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    Map<Key<?>, Binding<?>> allBindings = new HashMap<>();
+                    allBindings(injector, allBindings);
+                    final Set<Key<?>> keys = allBindings.keySet();
+                    try {
+                        for (Key<?> key : keys) {
+                            if (filter.isAssignableFrom(key.getTypeLiteral().getRawType())) {
+                                final Object instance = injector.getInstance(key);
+                                hashMap.put(instance.getClass().getName(), instance);
+                            }
                         }
+                    } catch (Exception e) {
+                        final RuntimeException runtimeException = new RuntimeException(e.getMessage());
+                        runtimeException.setStackTrace(e.getStackTrace());
+                        throw runtimeException;
                     }
-                    Sort cs1 = AnnUtil.ann(o1.getClass(), Sort.class);
-                    Sort cs2 = AnnUtil.ann(o2.getClass(), Sort.class);
-                    if (cs1 != null && cs2 != null) {
-                        return Integer.compare(cs1.value(), cs2.value());
-                    } else if (cs1 != null) {
-                        return -1;
-                    } else if (cs2 != null) {
-                        return -1;
-                    }
-                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
-                });
+
+                    List<Object> list = hashMap.values().stream()
+                            .filter(v -> filter.isAssignableFrom(v.getClass()))
+                            .sorted((o1, o2) -> {
+                                int c1 = Optional.ofNullable(AnnUtil.ann(o1.getClass(), Config.class)).map(v -> 1).orElse(2);
+                                int c2 = Optional.ofNullable(AnnUtil.ann(o2.getClass(), Config.class)).map(v -> 1).orElse(2);
+                                if (c1 != c2) {
+                                    return Integer.compare(c1, c2);
+                                }
+                                if (StringUtil.notEmptyOrNull(methodName)) {
+                                    Method method1 = MethodUtil.findMethod(o1.getClass(), methodName);
+                                    Method method2 = MethodUtil.findMethod(o2.getClass(), methodName);
+                                    int ms1 = Optional.ofNullable(AnnUtil.ann(method1, Sort.class)).map(Sort::value).orElse(99999);
+                                    int ms2 = Optional.ofNullable(AnnUtil.ann(method2, Sort.class)).map(Sort::value).orElse(99999);
+                                    if (ms1 != ms2) {
+                                        return Integer.compare(ms1, ms2);
+                                    }
+                                }
+                                Sort cs1 = AnnUtil.ann(o1.getClass(), Sort.class);
+                                Sort cs2 = AnnUtil.ann(o2.getClass(), Sort.class);
+                                if (cs1 != null && cs2 != null) {
+                                    return Integer.compare(cs1.value(), cs2.value());
+                                } else if (cs1 != null) {
+                                    return -1;
+                                } else if (cs2 != null) {
+                                    return -1;
+                                }
+                                return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
+                            })
+                            .toList();
+                    return List.copyOf(list);
+                })
+                .stream()
+                .map(v -> (R) v);
     }
 
 }

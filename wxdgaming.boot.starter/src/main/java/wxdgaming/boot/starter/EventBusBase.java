@@ -3,9 +3,12 @@ package wxdgaming.boot.starter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.function.ConsumerE1;
+import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
+import wxdgaming.boot.starter.i.IBeanInit;
 
 import java.io.Serializable;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -14,11 +17,36 @@ import java.util.stream.Stream;
  **/
 @Slf4j
 @Getter
-public abstract class EventBusBase extends IocSubContext {
+public abstract class EventBusBase extends IocSubContext implements IBeanInit {
+
+    final ConcurrentTable<String, Serializable, List<IScript<? extends Serializable>>> listTable = new ConcurrentTable<>();
+
+    /**
+     * bean初始化调用的，即便是热更新也会调用，会优先处理ioc注入
+     *
+     * @param iocContext
+     */
+    @Override public void beanInit(IocContext iocContext) throws Exception {
+
+    }
+
 
     /** 获取所有脚本 */
     public <Key extends Serializable, S extends IScript<Key>> Stream<S> scripts(Class<S> scriptClass, Key scriptId) {
-        return beanStream(scriptClass).filter(script -> Objects.equals(script.scriptKey(), scriptId));
+        String name = scriptClass.getName().toLowerCase();
+
+        List<IScript<? extends Serializable>> scriptList = listTable.computeIfAbsent(name, scriptId, l -> {
+            List<IScript<?>> tmps = new ArrayList<>();
+            beanStream(IScript.class).filter(script -> script.scriptKey().equals(scriptId)).forEach(tmps::add);
+            if (IScriptSingleton.class.isAssignableFrom(scriptClass)) {
+                /* 实现是单例的key */
+                if (tmps.size() > 1) throw new RuntimeException("单例的脚本 却有多个实现 key " + scriptId + " 重复");
+            }
+            return List.copyOf(tmps);
+        });
+
+
+        return (Stream<S>) scriptList.stream();
     }
 
     /** 获取一个脚本 */
@@ -39,10 +67,11 @@ public abstract class EventBusBase extends IocSubContext {
 
     public interface IScript<Key extends Serializable> {
 
-        default Key scriptKey() {
-            return null;
-        }
+        Key scriptKey();
 
     }
+
+    /** 会检查key值不能重复 */
+    public interface IScriptSingleton<Key extends Serializable> extends IScript<Key> {}
 
 }

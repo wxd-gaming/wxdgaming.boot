@@ -1,6 +1,5 @@
 package wxdgaming.boot.core.lang.task;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -17,26 +16,29 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Accessors(chain = true)
-@AllArgsConstructor
-public class Condition extends ObjectBase implements Serializable {
+public final class Condition extends ObjectBase implements Serializable {
 
     /** 条件1 */
-    private final UpdateKey k1;
+    private final Serializable k1;
     /** 条件2 */
-    private final UpdateKey k2;
+    private final Serializable k2;
     /** 条件3 */
-    private final UpdateKey k3;
+    private final Serializable k3;
     /** 当前完成条件变更方案 */
     private final UpdateType updateType;
     /** 目标进度 如果等于-1 表示不限制 */
     private final long target;
 
-    public Condition(int k1, int k2, int k3, UpdateType updateType, long target) {
-        this.k1 = new UpdateKey(k1);
-        this.k2 = new UpdateKey(k2);
-        this.k3 = new UpdateKey(k3);
+    public Condition(Serializable k1, Serializable k2, Serializable k3, UpdateType updateType, long target) {
+        this.k1 = String.valueOf(k1);
+        this.k2 = String.valueOf(k2);
+        this.k3 = String.valueOf(k3);
         this.updateType = updateType;
         this.target = target;
+    }
+
+    public Condition copy(long target) {
+        return new Condition(this.k1, this.k2, this.k3, this.updateType, target);
     }
 
 }
