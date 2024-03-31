@@ -15,7 +15,7 @@ public class RankTest {
 
     @Test
     public void stream() {
-        RankMap<Long, RankScore<Long>> rankMap = new RankMap<>();
+        RankMap<RankScore> rankMap = new RankMap<>();
         rankMap.addScore(1L, 1);
         rankMap.addScore(1L, 2);
         rankMap.addScore(2L, 1);

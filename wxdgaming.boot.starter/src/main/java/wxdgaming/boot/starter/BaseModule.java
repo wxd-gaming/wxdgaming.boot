@@ -51,7 +51,7 @@ abstract class BaseModule extends AbstractModule {
     protected final void configure() {
         binder().requireExplicitBindings();
         binder().requireExactBindingAnnotations();
-        binder().disableCircularProxies();
+        //binder().disableCircularProxies();/*禁用循环依赖*/
 
         try {
             for (Class aClass : classes) {

@@ -2,15 +2,18 @@ package wxdgaming.boot.core.lang.rank;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.checkerframework.checker.units.qual.K;
 import wxdgaming.boot.agent.function.Consumer2;
 import wxdgaming.boot.agent.function.Predicate2;
+import wxdgaming.boot.core.format.data.Data2Json;
 import wxdgaming.boot.core.lang.Tuple2;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -20,82 +23,48 @@ import java.util.stream.Stream;
  * @version: 2022-12-14 13:08
  **/
 @Getter
-public class RankMap<K extends Comparable, V extends RankScore<K>> extends ConcurrentSkipListMap<K, V> {
+@Setter
+@Accessors(chain = true)
+public class RankMap<V extends RankScore> implements Data2Json {
 
     @JSONField(serialize = false, deserialize = false)
-    private transient RankFactory<K, V> factory = new RankFactory<>();
+    private transient RankFactory<V> factory = new RankFactory<>();
+
+    private ConcurrentSkipListMap<String, V> nodes = new ConcurrentSkipListMap<>();
 
     public RankMap() {
     }
 
-    public RankMap(Comparator<? super K> comparator) {
-        super(comparator);
-    }
-
-    public RankMap(Map<? extends K, ? extends V> m) {
-        super(m);
-    }
-
-    public RankMap(SortedMap<K, ? extends V> m) {
-        super(m);
-    }
-
-    public RankMap(RankFactory<K, V> factory) {
+    public RankMap(RankFactory<V> factory) {
         if (factory != null) {
             this.factory = factory;
         }
     }
 
-    public RankMap<K, V> setFactory(RankFactory<K, V> factory) {
+    public RankMap<V> setFactory(RankFactory<V> factory) {
         this.factory = factory;
         return this;
     }
 
-    @Override public V putIfAbsent(K key, V value) {
-        throw new RuntimeException("不可用");
+    public V getOrNew(Object uid) {
+        return getOrNew(uid, 0);
     }
 
-    @Override public boolean replace(K key, V oldValue, V newValue) {
-        throw new RuntimeException("不可用");
+    public V getOrNew(Object uid, double score) {
+        String uKey = String.valueOf(uid);
+        return nodes.computeIfAbsent(uKey, l -> factory.createRankData(l, score));
     }
 
-    @Override public V replace(K key, V value) {
-        throw new RuntimeException("不可用");
+    public V remove(Object k) {
+        return nodes.remove(k);
     }
 
-    @Override public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
-        throw new RuntimeException("不可用");
-    }
-
-    @Override public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-        throw new RuntimeException("不可用");
-    }
-
-    @Override public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-        throw new RuntimeException("不可用");
-    }
-
-    @Override public boolean remove(Object key, Object value) {
-        throw new RuntimeException("不可用");
-    }
-
-
-    public V getOrNew(K uid) {
-        V orNew = getOrNew(uid, 0);
-        return orNew;
-    }
-
-    public V getOrNew(K uid, double score) {
-        V v = get(uid);
-        if (v == null) {
-            v = factory.createRankData(uid, score);
-            put(uid, v);
-        }
-        return v;
+    public boolean removeIf(Predicate<Map.Entry<String, V>> filter) {
+        return nodes.entrySet().removeIf(filter);
     }
 
     /** 累加分数 */
-    public V addScore(K uid, double score) {
+    public V addScore(Object uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -105,7 +74,7 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
     }
 
     /** 设置分数 */
-    public V setScore(K uid, double score) {
+    public V setScore(Object uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -116,7 +85,7 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
     }
 
     /** 设置分数，根据当前分数和记录分数对吧，取最大值 */
-    public V setScoreMax(K uid, double score) {
+    public V setScoreMax(Object uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -127,7 +96,7 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
     }
 
     /** 设置分数，根据当前分数和记录分数对吧，取最小值 */
-    public V setScoreMin(K uid, double score) {
+    public V setScoreMin(Object uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -142,7 +111,7 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
     }
 
     public Stream<V> stream(Comparator<? super V> comparator) {
-        return values().stream().sorted(comparator);
+        return nodes.values().stream().sorted(comparator);
     }
 
     public int rank(K uid) {
@@ -157,8 +126,9 @@ public class RankMap<K extends Comparable, V extends RankScore<K>> extends Concu
         return -1;
     }
 
+    /** 查找分数 */
     public Double scoreValue(K uid) {
-        return Optional.ofNullable(get(uid)).map(RankScore::getScore).orElse(0D);
+        return Optional.ofNullable(nodes.get(uid)).map(RankScore::getScore).orElse(0D);
     }
 
     public Tuple2<Integer, Double> rankScoreValue(K uid) {

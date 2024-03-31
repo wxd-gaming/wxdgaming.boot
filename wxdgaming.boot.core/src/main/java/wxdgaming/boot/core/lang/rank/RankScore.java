@@ -3,6 +3,7 @@ package wxdgaming.boot.core.lang.rank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.checkerframework.checker.units.qual.K;
 import wxdgaming.boot.core.lang.ObjectBaseLock;
 
 import java.util.Comparator;
@@ -16,10 +17,10 @@ import java.util.Comparator;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class RankScore<K extends Comparable> extends ObjectBaseLock implements Comparable<RankScore<K>> {
+public class RankScore extends ObjectBaseLock implements Comparable<RankScore> {
 
     /** 正序 */
-    public static final Comparator<RankScore<?>> Sort = (o1, o2) -> {
+    public static final Comparator<RankScore> Sort = (o1, o2) -> {
         if (o1.score != o2.score) {
             return Double.compare(o1.score, o2.score);
         }
@@ -33,7 +34,7 @@ public class RankScore<K extends Comparable> extends ObjectBaseLock implements C
     };
 
     /** 倒叙 */
-    public static final Comparator<RankScore<?>> BreSort = (o1, o2) -> {
+    public static final Comparator<RankScore> BreSort = (o1, o2) -> {
         if (o1.score != o2.score) {
             return Double.compare(o2.score, o1.score);
         }
@@ -46,17 +47,25 @@ public class RankScore<K extends Comparable> extends ObjectBaseLock implements C
         return o2.uid.compareTo(o1.uid);
     };
 
-    private K uid;
+    private String uid;
     private double score;
     private long scoreTime;
 
-    public RankScore<K> setScore(double score) {
+    public long uid2Long() {
+        return Long.parseLong(uid);
+    }
+
+    public int uid2Int() {
+        return Integer.parseInt(uid);
+    }
+
+    public RankScore setScore(double score) {
         this.score = score;
         this.scoreTime = System.nanoTime();
         return this;
     }
 
-    @Override public int compareTo(RankScore<K> o2) {
+    @Override public int compareTo(RankScore o2) {
         return BreSort.compare(this, o2);
     }
 
@@ -72,7 +81,7 @@ public class RankScore<K extends Comparable> extends ObjectBaseLock implements C
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RankScore<?> rankScore = (RankScore<?>) o;
+        RankScore rankScore = (RankScore) o;
 
         return uid.equals(rankScore.uid);
     }

@@ -546,7 +546,13 @@ public abstract class DataWrapper<DM extends EntityTable>
                         Class<?> aClass = this.getClass().getClassLoader().loadClass(fieldTypeName);
                         entityField.setFieldType(aClass);
                     } catch (ClassNotFoundException e) {
-                        log.error(entityField.getFieldName() + " - " + fieldTypeName, e);
+                        if (fieldTypeName.contains("List<")) {
+                            entityField.setFieldType(List.class);
+                        } else if (fieldTypeName.contains("Map<")) {
+                            entityField.setFieldType(List.class);
+                        } else {
+                            log.error(entityField.getFieldName() + " - " + fieldTypeName, e);
+                        }
                     }
                     entityField.setFieldTypeString(fieldTypeName);
                 }
