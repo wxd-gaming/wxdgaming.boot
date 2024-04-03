@@ -42,9 +42,9 @@ public abstract class Check implements Serializable {
     }
 
     /**
-     * @param x
-     * @param z
-     * @param tmpradius
+     * @param x         坐标
+     * @param z         坐标
+     * @param tmpradius 允许的误差值
      * @return
      */
     public boolean contains(double x, double z, float tmpradius) {
@@ -85,4 +85,7 @@ public abstract class Check implements Serializable {
         return true;
     }
 
+    @Override public String toString() {
+        return "center" + getCenter().showString() + "; ";
+    }
 }

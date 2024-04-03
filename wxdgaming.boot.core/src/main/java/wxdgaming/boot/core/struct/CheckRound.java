@@ -34,8 +34,7 @@ public class CheckRound extends Check {
         this.radius = radius;
     }
 
-    @Override
-    public boolean contains(double x, double z, float tmpradius) {
+    @Override public boolean contains(double x, double z, float tmpradius) {
         return MoveUtil.distance(getCenter().getX(), getCenter().getZ(), x, z) - tmpradius <= radius;
     }
 

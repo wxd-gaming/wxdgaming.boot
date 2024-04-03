@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.struct;
 
-import wxdgaming.boot.core.lang.ConvertUtil;
 import straightedge.geom.Vector3;
+import wxdgaming.boot.core.lang.ConvertUtil;
 
 /**
  * 任意多边形，
@@ -29,7 +29,7 @@ public class CheckPolygon extends Check {
         super(center);
     }
 
-    private void init(int size) {
+    public void init(int size) {
         pointXs = new double[size];
         pointZs = new double[size];
     }
@@ -83,10 +83,10 @@ public class CheckPolygon extends Check {
     /**
      * 根据中心点和朝向正前方的矩形
      *
-     * @param direction
-     * @param offset
-     * @param vr_width
-     * @param vr_hight
+     * @param direction 当前朝向
+     * @param offset    根据当前坐标点偏移位置设置矩形初始位置
+     * @param vr_width  根据三角函数计算移动方向偏移量
+     * @param vr_hight  根据三角函数计算移动方向偏移量
      */
     public void initRectangle(double direction, double offset, double vr_width, double vr_hight) {
         init(4);
@@ -151,7 +151,7 @@ public class CheckPolygon extends Check {
      * @param x 坐标点
      * @param z 坐标点
      */
-    private void add(double x, double z) {
+    public void add(double x, double z) {
         add(pointCount, x, z);
         pointCount++;
     }
@@ -161,7 +161,7 @@ public class CheckPolygon extends Check {
      * @param x     坐标点
      * @param z     坐标点
      */
-    private void add(int index, double x, double z) {
+    public void add(int index, double x, double z) {
         if (0 <= index && index < pointXs.length) {
             pointXs[index] = ConvertUtil.double4(x);
             pointZs[index] = ConvertUtil.double4(z);
@@ -288,34 +288,4 @@ public class CheckPolygon extends Check {
         }
         return trString;
     }
-
-    public static void main(String[] args) {
-        Vector3 pos = Vector3.clone(2.5, 0, 4);
-        Vector3 tar = Vector3.clone(2.0, 0, 4);
-
-        double dir = MoveUtil.getATan360(pos.getX(), pos.getZ(), tar.getX(), tar.getZ());
-        int TIMEPERIOD = 80;
-        /*计算移动次数*/
-        int moveCount = (1000 / TIMEPERIOD) + (1000 % TIMEPERIOD > 0 ? 1 : 0);
-        /*计算每一次移动的距离*/
-        float height = 6 * 1f / moveCount;// 每帧飞行的距离
-
-        Vector vectorBy360Atan = MoveUtil.getVectorBy360Atan(dir);
-        System.out.println(vectorBy360Atan.toString());
-        /*计算朝向位移量*/
-        Vector3 translation = Vector3.clone0();
-        translation.x += vectorBy360Atan.getDir_x() * MoveUtil.getV12XD(height, vectorBy360Atan.getAtan());
-        translation.z += vectorBy360Atan.getDir_z() * MoveUtil.getV12ZD(height, vectorBy360Atan.getAtan());
-        CheckPolygon checkPolygon = new CheckPolygon(pos);
-        checkPolygon.initRectangle(dir, 0, 3, height);
-        checkPolygon.setId(1);
-        checkPolygon.setTranslationCount(moveCount);
-        checkPolygon.setTranslation(translation);
-        do {
-            System.out.println(checkPolygon.toString());
-            System.out.print(checkPolygon.isInPolygon(tar) + "-----");
-            System.out.println(checkPolygon.contains(tar, 5));
-        } while (!checkPolygon.move());
-    }
-
 }
