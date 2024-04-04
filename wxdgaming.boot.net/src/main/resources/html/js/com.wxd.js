@@ -215,6 +215,12 @@ const wxd = {
         });
     },
 
+    /** 查询url参数 */
+    urlData: function (key) {
+        let map = new wxd.Map().loadTopSearch().loadSearch();
+        return map.get(key);
+    },
+
     /** 键值对存储 */
     Map: class {
         nodes = {};
@@ -876,7 +882,26 @@ ${text}
                 wxd.message.tips_init_child(element);
             });
         },
+    },
 
+    load: function (url, width, height) {
+        if (wxd.isNull(width)) {
+            width = "650px;"
+        }
+        if (wxd.isNull(height)) {
+            height = "450px;"
+        }
+        let load = `
+<div style="position: absolute;width: 100%;height: 100%;left: 0;top: 0;background: rgba(28,28,28,0.31);">
+    <div style="position: relative;width: ${width};height: ${height};left: 50%;top: 50%;transform: translate(-50%, -50%);background: whitesmoke;border-radius: 15px;z-index: 99;display: block;box-sizing: border-box;">
+        <object data="${url}" style="width: 100%;height: 100%;border-radius: 15px;display: block;box-sizing: border-box;"></object>
+        <span title="关闭" onclick="$(this).parent().parent().remove();"
+              style="position: absolute;top:5px;right: 5px;width: 15px;height: 15px; background: #f85802;border-radius: 15px;z-index: 999;cursor: pointer;">
+                    </span>
+    </div>
+</div>
+        `;
+        $("body").append(load);
     }
 }
 

@@ -8,10 +8,15 @@ class QueryMap {
     constructor() {
     }
 
-    /**
-     * 从 url 参数加载
-     */
+    /** 从 url 参数加载  */
     loadUrl() {
+        let query = location.search.substring(1);
+        this.actionUrl(query);
+        return this;
+    }
+
+    /** 从 url 参数加载  */
+    loadTopUrl() {
         let query = top.location.search.substring(1);
         this.actionUrl(query);
         return this;

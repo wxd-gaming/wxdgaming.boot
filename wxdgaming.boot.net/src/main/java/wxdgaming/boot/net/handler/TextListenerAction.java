@@ -11,6 +11,7 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ExecutorLog;
+import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.auth.SignCheck;
 import wxdgaming.boot.net.controller.TextMappingRecord;
@@ -83,8 +84,12 @@ class TextListenerAction extends Event {
                 if (type instanceof Class<?> clazz) {
                     if (clazz.getName().equals(ObjMap.class.getName())) {
                         params[i] = putData;
-                    } else if (clazz.isAssignableFrom(session.getClass())) {
-                        params[i] = session;
+                    } else if (Session.class.isAssignableFrom(clazz)) {
+                        if (clazz.isAssignableFrom(session.getClass())) {
+                            params[i] = session;
+                        } else {
+                            throw new RuntimeException("listener " + listener + ", session error 需要 " + clazz.getSimpleName() + ", 当前：" + session.getClass().getSimpleName());
+                        }
                     } else {
                         /*实现注入*/
                         Param annotation = parameter.getAnnotation(Param.class);

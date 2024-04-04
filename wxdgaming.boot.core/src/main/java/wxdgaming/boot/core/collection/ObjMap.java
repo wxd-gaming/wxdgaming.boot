@@ -2,6 +2,7 @@ package wxdgaming.boot.core.collection;
 
 import com.alibaba.fastjson.util.TypeUtils;
 import wxdgaming.boot.core.format.data.Data2Json;
+import wxdgaming.boot.core.lang.ConvertUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.io.Serializable;
@@ -76,7 +77,7 @@ public class ObjMap extends LinkedHashMap<Object, Object> implements Map<Object,
     public <R> R parseObject(Object key, Class<R> rClass) {
         final String o = getString(key);
         if (o == null) return null;
-        return FastJsonUtil.parse(o, rClass);
+        return (R) ConvertUtil.changeType(o, rClass);
     }
 
     public <R> R getObject(Object key) {
