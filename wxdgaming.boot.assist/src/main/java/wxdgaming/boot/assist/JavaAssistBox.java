@@ -19,6 +19,8 @@ public class JavaAssistBox {
         return System.getProperty("java.class.path");
     }
 
+    public static JavaAssistBox DefaultJavaAssistBox = JavaAssistBox.of();
+
     public static JavaAssistBox of() {
         return new JavaAssistBox();
     }
@@ -28,13 +30,14 @@ public class JavaAssistBox {
     private JavaAssistBox() {
     }
 
-    public ClassPool build() {
+    public ClassPool build(ClassLoader classLoader) {
         final ClassPool classPool = new ClassPool(null);
         classPool.appendSystemPath();
         try {
             classPool.insertClassPath("./class");
-            classPool.appendClassPath(javaClassPath());
-        } catch (NotFoundException e) {
+            classPool.appendClassPath(new LoaderClassPath(classLoader));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return classPool;
     }
@@ -55,8 +58,8 @@ public class JavaAssistBox {
         private final CtClass ctClass;
         private final ClassPool classPool;
 
-        private JavaAssist(ClassPool classPool, CtClass ctClass, ClassLoader classLoader) {
-            super(classLoader);
+        private JavaAssist(ClassPool classPool, CtClass ctClass, ClassLoader parent) {
+            super(parent);
             this.classPool = classPool;
             this.ctClass = ctClass;
         }
@@ -210,7 +213,7 @@ public class JavaAssistBox {
 
     public JavaAssist editClass(String clazzName, ClassLoader classLoader) {
         try {
-            ClassPool classPool = build();
+            ClassPool classPool = build(classLoader);
             CtClass tmp = classPool.get(clazzName);
             return new JavaAssist(classPool, tmp, classLoader);
         } catch (Exception e) {
@@ -225,7 +228,7 @@ public class JavaAssistBox {
 
     public JavaAssist extendSuperclass(Class<?> superclass, ClassLoader classLoader) {
         try {
-            ClassPool classPool = build();
+            ClassPool classPool = build(classLoader);
             CtClass tmp = classPool.makeClass(superclass.getName() + "Impl" + ATOMIC_INTEGER.incrementAndGet());
             tmp.setSuperclass(classPool.get(superclass.getName()));
             return new JavaAssist(classPool, tmp, classLoader);
@@ -241,7 +244,7 @@ public class JavaAssistBox {
 
     public JavaAssist implInterfaces(String className, ClassLoader classLoader, Class<?>... interfaces) {
         try {
-            ClassPool classPool = build();
+            ClassPool classPool = build(classLoader);
             CtClass tmp = classPool.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
             for (Class<?> aClass : interfaces) {
                 tmp.addInterface(classPool.get(aClass.getName()));
@@ -259,7 +262,7 @@ public class JavaAssistBox {
 
     public JavaAssist create(String className, ClassLoader classLoader) {
         try {
-            ClassPool classPool = build();
+            ClassPool classPool = build(classLoader);
             CtClass tmp = classPool.makeClass(className + "Impl" + ATOMIC_INTEGER.incrementAndGet());
             return new JavaAssist(classPool, tmp, classLoader);
         } catch (Exception e) {

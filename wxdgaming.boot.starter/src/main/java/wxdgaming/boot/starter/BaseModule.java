@@ -4,7 +4,14 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.exception.Throw;
+import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.ReflectContext;
+import wxdgaming.boot.net.controller.ann.ProtoController;
+import wxdgaming.boot.net.controller.ann.TextController;
+import wxdgaming.boot.starter.action.ActionConfig;
+import wxdgaming.boot.starter.config.Config;
+import wxdgaming.boot.starter.i.IConfigInit;
 
 /**
  * 基础模块
@@ -20,8 +27,7 @@ abstract class BaseModule extends AbstractModule {
     protected final Class[] classes;
 
     public BaseModule(ReflectContext reflectContext) {
-        this.reflectContext = reflectContext;
-        this.classes = new Class[0];
+        this(reflectContext, new Class[0]);
     }
 
     public BaseModule(ReflectContext reflectContext, Class... classes) {
@@ -53,16 +59,40 @@ abstract class BaseModule extends AbstractModule {
         binder().requireExactBindingAnnotations();
         //binder().disableCircularProxies();/*禁用循环依赖*/
 
+        reflectContext.withAnnotated(Config.class).forEach(content -> {
+            try {
+                Object o = ActionConfig.action(content.getCls());
+                if (o != null) {
+                    if (o instanceof IConfigInit) {
+                        ((IConfigInit) o).configInit();
+                    }
+                    Class clazz = o.getClass();
+                    bindSingleton(clazz, o);
+                }
+            } catch (Throwable throwable) {
+                throw Throw.as(throwable);
+            }
+        });
+
+        reflectContext
+                .classStream()
+                .filter(c ->
+                        AnnUtil.ann(c, Singleton.class) != null
+                                || AnnUtil.ann(c, TextController.class) != null
+                                || AnnUtil.ann(c, ProtoController.class) != null
+                )
+                .forEach(this::bindSingleton);
+
         try {
             for (Class aClass : classes) {
                 bindSingleton(aClass);
             }
             bind();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected abstract BaseModule bind() throws Exception;
+    protected abstract BaseModule bind() throws Throwable;
 
 }

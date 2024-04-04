@@ -3,6 +3,7 @@ package wxdgaming.boot.net.controller;
 
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.function.Consumer4;
+import wxdgaming.boot.agent.function.ConsumerE4;
 import wxdgaming.boot.agent.function.FunctionE2;
 import wxdgaming.boot.agent.system.LambdaUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
@@ -28,11 +29,8 @@ import java.util.stream.Stream;
  **/
 public class MappingFactory {
 
-    public static JavaAssistBox javaAssistBox = JavaAssistBox.of();
     public static boolean Print_Java_Assist_Code = false;
     public static boolean OUT_FILE_Java_Assist_Code = false;
-
-    public static Consumer4<ProtoMappingProxy, AtomicReference<Object>, Object, Object[]> Proto_Mapping_Proxy = ProtoMappingProxy::proxy;
 
     /** text mapping submit 监听 */
     public static FunctionE2<Session, Event, Boolean> TextMappingSubmitBefore = null;
@@ -50,11 +48,44 @@ public class MappingFactory {
         if (service == null) service = FINAL_DEFAULT;
 
         /*通过lambda 对象 创建一个代理实例，比反射效果好*/
-        LambdaUtil.LambdaMapping lambdaMapping = LambdaUtil.createDelegate(instance, method, Proto_Mapping_Proxy);
+        JavaAssistBox.JavaAssist javaAssist = JavaAssistBox.DefaultJavaAssistBox.extendSuperclass(
+                ProtoMappingProxy.class,
+                instance.getClass().getClassLoader()
+        );
+
+        javaAssist.importPackage(ProtoMappingProxy.class);
+        javaAssist.importPackage(instance.getClass());
+        javaAssist.importPackage(method.getParameterTypes()[0]);
+        javaAssist.importPackage(method.getParameterTypes()[1]);
+
+
+        String strCode = """
+                    public void proxy(Object instance, Object session, Object msg) throws Throwable {
+                        ((%s) instance).%s(
+                                (%s) session,
+                                (%s) msg
+                        );
+                    }
+                """.formatted(
+                instance.getClass().getName(),
+                method.getName(),
+                method.getParameterTypes()[0].getName(),
+                method.getParameterTypes()[1].getName()
+        );
+
+        if (Print_Java_Assist_Code)
+            LogbackUtil.logger().warn("\n创建代理\n{}", strCode);
+        javaAssist.createMethod(strCode);
+        if (LogbackUtil.logger().isDebugEnabled())
+            javaAssist.writeFile("target/out_assist_code");
+        ProtoMappingProxy protoMappingProxy = javaAssist.toInstance();
+        javaAssist.getCtClass().defrost();
+        javaAssist.getCtClass().detach();
+
         PROTO_MAP.put(
                 service,
                 messageId,
-                new ProtoMappingRecord(service, remarks, messageId, lambdaMapping.getMapping(), instance, method)
+                new ProtoMappingRecord(service, remarks, messageId, protoMappingProxy, instance, method)
         );
 
     }
@@ -68,7 +99,7 @@ public class MappingFactory {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        JavaAssistBox.JavaAssist javaAssist = javaAssistBox.extendSuperclass(
+        JavaAssistBox.JavaAssist javaAssist = JavaAssistBox.DefaultJavaAssistBox.extendSuperclass(
                 TextMappingProxy.class,
                 instance.getClass().getClassLoader()
         );
@@ -102,7 +133,7 @@ public class MappingFactory {
                         || double.class.equals(parameterType)) {
                     throw new RuntimeException(instance.getClass().getName() + "." + method.getName() + ", 参数：类型请使用引用类型不要使用值类型 例如 int 改为 Integer");
                 }
-                stringBuilder.append(String.format("        (%s) params[%s]", parameterType.getSimpleName(), i));
+                stringBuilder.append(String.format("        (%s) params[%s]", parameterType.getName(), i));
                 javaAssist.importPackage(parameterType);
             }
         }

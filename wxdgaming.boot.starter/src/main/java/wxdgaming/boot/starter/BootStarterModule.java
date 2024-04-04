@@ -25,7 +25,7 @@ class BootStarterModule extends BaseModule {
         super(reflectContext, classes);
     }
 
-    protected BootStarterModule bind() throws Exception {
+    protected BootStarterModule bind() throws Throwable {
         Record2<String, InputStream> inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "boot.xml");
         System.out.println("读取文件目录：" + inputStream.t1());
         BootConfig bootConfig = XmlUtil.fromXml(inputStream.t2(), BootConfig.class);

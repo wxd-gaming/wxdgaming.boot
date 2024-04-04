@@ -4,8 +4,7 @@ package wxdgaming.boot.convert;
 import wxdgaming.boot.agent.LocalShell;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.agent.loader.ClassBytesLoader;
-import wxdgaming.boot.agent.loader.JavaCoderCompile;
+import wxdgaming.boot.agent.loader.*;
 import wxdgaming.boot.batis.excel.ExcelRead2Json;
 
 import javax.swing.*;
@@ -87,10 +86,10 @@ public class MainForm implements Serializable {
         try {
             final JavaCoderCompile javaCoderCompile = new JavaCoderCompile();
             javaCoderCompile.compilerJava(scripts.getPath());
-            final ClassBytesLoader classBytesLoader = javaCoderCompile.builderClassLoader();
-            final Collection<Class<?>> classes = classBytesLoader.getLoadClassMap().values();
+            ClassDirLoader classDirLoader = javaCoderCompile.classLoader(this.getClass().getClassLoader(), "target/bin", true);
+            Collection<Class<?>> values = classDirLoader.getLoadClassMap().values();
             List<AddMenu> addMenus = new ArrayList<>();
-            for (Class<?> aClass : classes) {
+            for (Class<?> aClass : values) {
                 final Constructor<?> constructor = aClass.getConstructor();
                 final AddMenu instance = (AddMenu) constructor.newInstance();
                 addMenus.add(instance);

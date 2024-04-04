@@ -28,7 +28,7 @@ public class LambdaTest implements Serializable {
 
 
     @Test
-    public void g() throws Exception {
+    public void g() throws Throwable {
         LambdaTest lambdaTest = new LambdaTest();
         ConsumerE0 t1 = LambdaTest::t1;
         ConsumerE1<String> t2 = lambdaTest::t2;

@@ -115,7 +115,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
     public <R> R jedis(int dbIndex, FunctionE<Jedis, R> jedisRFunction) {
         try (Jedis jedis = getJedis(dbIndex)) {
             return jedisRFunction.apply(jedis);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }
@@ -127,7 +127,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
     public void consumer(int dbIndex, ConsumerE1<Jedis> consumerJedis) {
         try (Jedis jedis = getJedis(dbIndex)) {
             consumerJedis.accept(jedis);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }
@@ -146,7 +146,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                 consumerPipeline.accept(pipelined);
                 pipelined.sync();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }
@@ -162,7 +162,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                 pipelined.sync();
                 return ret.get();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }
@@ -177,7 +177,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                 R ret = pipelineFunctionE.apply(pipelined);
                 return ret;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }

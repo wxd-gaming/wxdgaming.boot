@@ -136,7 +136,7 @@ interface RedisSet {
                 try {
                     // 业务处理
                     lockCall.accept(jedis);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                 } finally {
                     // 判断是不是当前线程加的锁,是才释放
                     if (uni_request_id.equals(jedis.get(key_resource_id))) {

@@ -1,6 +1,7 @@
 package wxdgaming.boot.agent.loader;
 
 
+import jdk.internal.loader.BootLoader;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.LoggerFactory;
@@ -9,13 +10,11 @@ import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 
-import java.io.File;
-import java.io.Serializable;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.*;
+import java.net.*;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 指定 class 目录加载
@@ -105,11 +104,7 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
     protected final Map<String, ClassInfo> loadClassInfoMap = new TreeMap<>();
 
     public ClassDirLoader() {
-        this(Thread.currentThread().getContextClassLoader());
-    }
-
-    public ClassDirLoader(ClassLoader parent) {
-        this(new URL[0], parent);
+        this(Thread.currentThread().getContextClassLoader(), new URL[0]);
     }
 
     /** 存放class的目录 */
@@ -136,7 +131,11 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
         action(url);
     }
 
-    public ClassDirLoader(URL[] urls, ClassLoader parent) {
+    public ClassDirLoader(ClassLoader parent) {
+        this(parent, new URL[0]);
+    }
+
+    public ClassDirLoader(ClassLoader parent, URL... urls) {
         super(urls, parent);
         for (URL url : urls) {
             action(url);
@@ -145,10 +144,21 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
         System.out.println("class loader jdk_version：" + jdkVersion.getCurVersionString());
     }
 
+    public ClassDirLoader(ClassLoader parent, String... urls) {
+        super(new URL[0], parent);
+        for (String url : urls) {
+            addURL(url);
+        }
+        JDKVersion jdkVersion = JDKVersion.runTimeJDKVersion();
+        System.out.println("class loader jdk_version：" + jdkVersion.getCurVersionString());
+    }
+
     /** 可以添加资源文件夹 */
-    public void addURL(String url) {
+    public void addURL(String... urls) {
         try {
-            this.addURL(new File(url).toURI().toURL());
+            for (String url : urls) {
+                this.addURL(new File(url).toURI().toURL());
+            }
         } catch (Exception e) {
             throw Throw.as(e);
         }
@@ -240,6 +250,102 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
             loadAll();
         }
         return loadClassInfoMap;
+    }
+
+    @Override public InputStream getResourceAsStream(String name) {
+        if (loadClassInfoMap.containsKey(name)) {
+            try {
+                return new ByteArrayInputStream(loadClassInfoMap.get(name).getLoadClassBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return super.getResourceAsStream(name);
+    }
+
+    @Override public URL findResource(String name) {
+        if (loadClassInfoMap.containsKey(name)) {
+            try {
+                return URL.of(
+                        new URI(name.replace(".", "/")),
+                        new ResourceURLStreamHandler(new ByteArrayInputStream(loadClassInfoMap.get(name).getLoadClassBytes()))
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return super.findResource(name);
+    }
+
+    @Override public Enumeration<URL> findResources(String name) throws IOException {
+        List<URL> list = loadClassInfoMap
+                .values()
+                .stream()
+                .filter(v -> v.getLoadClassClassName().startsWith(name))
+                .map(v -> {
+                    try {
+                        String fileName = v.getLoadClassClassName().replace('.', '/') + ".class";
+                        return Paths.get(fileName).toUri().toURL();
+                        //return URL.of(Paths.get(fileName).toUri(), new ResourceURLStreamHandler(new ByteArrayInputStream(v.getLoadClassBytes())));
+                        //return URL.of(
+                        //        new URI(v.getLoadClassClassName().replace(".", "/")),
+                        //        new ResourceURLStreamHandler(new ByteArrayInputStream(v.getLoadClassBytes()))
+                        //);
+                    } catch (Exception e) {
+                        throw new RuntimeException(v.getLoadClassClassName(), e);
+                    }
+                })
+                .toList();
+
+        if (!list.isEmpty()) {
+            Iterator<URL> collect = list.iterator();
+            return new Enumeration<URL>() {
+                @Override public boolean hasMoreElements() {
+                    return collect.hasNext();
+                }
+
+                @Override public URL nextElement() {
+                    return collect.next();
+                }
+            };
+        }
+        return super.findResources(name);
+    }
+
+    @Override protected URL findResource(String moduleName, String name) throws IOException {
+        return super.findResource(moduleName, name);
+    }
+
+    @Override public URL getResource(String name) {
+        return super.getResource(name);
+    }
+
+    @Override public Enumeration<URL> getResources(String name) throws IOException {
+        return super.getResources(name);
+    }
+
+
+    protected static final class ResourceURLStreamHandler extends URLStreamHandler {
+
+        private final InputStream inputStream;
+
+        public ResourceURLStreamHandler(InputStream inputStream) {
+            this.inputStream = inputStream;
+        }
+
+        @Override
+        protected URLConnection openConnection(URL u) {
+            return new URLConnection(u) {
+                @Override
+                public void connect() {
+                }
+
+                @Override
+                public InputStream getInputStream() throws IOException {
+                    return inputStream;
+                }
+            };
+        }
     }
 
 }

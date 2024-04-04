@@ -3,6 +3,9 @@ package wxdgaming.boot.batis.sql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.exception.Throw;
+import wxdgaming.boot.agent.function.ConsumerE1;
+import wxdgaming.boot.agent.function.FunctionE;
+import wxdgaming.boot.agent.function.FunctionE2;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DataChecked;
 import wxdgaming.boot.core.collection.ObjMap;
@@ -42,18 +45,10 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
 
     String getConnectionString(String dbnameString);
 
-    interface Fun<T, R> {
-        R apply(T t) throws Exception;
-    }
-
-    interface Cum<T> {
-        void apply(T t) throws Exception;
-    }
-
-    default void stmtCum(Cum<PreparedStatement> call, String sql, Object... params) {
+    default void stmtCum(ConsumerE1<PreparedStatement> call, String sql, Object... params) {
         stmtFun(
                 preparedStatement -> {
-                    call.apply(preparedStatement);
+                    call.accept(preparedStatement);
                     return null;
                 },
                 sql,
@@ -66,7 +61,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
      *
      * @return 数据库连接对象
      */
-    default <R> R stmtFun(Fun<PreparedStatement, R> call, String sql, Object... params) {
+    default <R> R stmtFun(FunctionE<PreparedStatement, R> call, String sql, Object... params) {
         MarkTimer markTimer = MarkTimer.build();
         // 获取数据库连接对象
         R apply;

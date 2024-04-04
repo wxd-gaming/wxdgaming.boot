@@ -82,7 +82,7 @@ public class ReadZipFile implements Serializable, Closeable {
                     byte[] bytes = unzipFile(z);
                     try {
                         call.accept(z.getName(), bytes);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         throw Throw.as(e);
                     }
                 });
@@ -96,7 +96,7 @@ public class ReadZipFile implements Serializable, Closeable {
                     InputStream inputStream = unzipFileStream(z);
                     try {
                         call.accept(z.getName(), inputStream);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         throw Throw.as(e);
                     }
                 });

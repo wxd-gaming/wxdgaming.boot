@@ -71,7 +71,7 @@ public class TemplatePack {
             try {
                 this.dirTemplatePack.setDirectoryForTemplateLoading(new File(dir));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw Throw.as(e);
             }
         } else {
             this.dirTemplatePack = null;

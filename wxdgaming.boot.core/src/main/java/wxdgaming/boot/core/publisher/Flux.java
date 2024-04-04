@@ -1,6 +1,7 @@
 package wxdgaming.boot.core.publisher;
 
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.core.threading.IExecutorServices;
@@ -175,7 +176,7 @@ public record Flux<T>(CompletableFuture<Collection<T>> completableFuture) {
         try {
             return completableFuture.get();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw Throw.as(e);
         }
     }
 
@@ -183,7 +184,7 @@ public record Flux<T>(CompletableFuture<Collection<T>> completableFuture) {
         try {
             return completableFuture.get(timeout, unit);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw Throw.as(e);
         }
     }
 }

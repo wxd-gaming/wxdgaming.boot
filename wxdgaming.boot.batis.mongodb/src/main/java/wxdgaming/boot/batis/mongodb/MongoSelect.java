@@ -8,6 +8,7 @@ import org.bson.BsonInt32;
 import org.bson.BsonInt64;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.ConsumerE1;
 
 import java.util.ArrayList;
@@ -335,8 +336,8 @@ interface MongoSelect {
             Document document = iterator.next();
             try {
                 call.accept(document);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            } catch (Throwable e) {
+                throw Throw.as(e);
             }
         }
     }
@@ -400,8 +401,8 @@ interface MongoSelect {
             Document document = iterator.next();
             try {
                 call.accept(document);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            } catch (Throwable e) {
+                throw Throw.as(e);
             }
         }
     }

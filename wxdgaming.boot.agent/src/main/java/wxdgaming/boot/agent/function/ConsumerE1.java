@@ -7,6 +7,6 @@ package wxdgaming.boot.agent.function;
 @FunctionalInterface
 public interface ConsumerE1<T> extends SerializableLambda {
 
-    void accept(T t) throws Exception;
+    void accept(T t) throws Throwable;
 
 }

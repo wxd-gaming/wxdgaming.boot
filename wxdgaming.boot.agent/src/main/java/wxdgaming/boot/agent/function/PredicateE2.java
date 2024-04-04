@@ -7,6 +7,6 @@ package wxdgaming.boot.agent.function;
 @FunctionalInterface
 public interface PredicateE2<T1, T2> extends SerializableLambda {
 
-    boolean test(T1 t1, T2 t2) throws Exception;
+    boolean test(T1 t1, T2 t2) throws Throwable;
 
 }

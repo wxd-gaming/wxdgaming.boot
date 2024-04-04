@@ -11,6 +11,6 @@ package wxdgaming.boot.agent.function;
 @FunctionalInterface
 public interface STVFunction2<T, P1, P2> extends SerializableLambda {
 
-    void apply(P1 p1, P2 p2) throws Exception;
+    void apply(P1 p1, P2 p2) throws Throwable;
 
 }

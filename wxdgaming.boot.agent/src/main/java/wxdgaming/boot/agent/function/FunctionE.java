@@ -9,6 +9,6 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface FunctionE<T, R> extends Serializable {
 
-    R apply(T t) throws Exception;
+    R apply(T t) throws Throwable;
 
 }

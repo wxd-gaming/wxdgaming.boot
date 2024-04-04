@@ -23,7 +23,7 @@ public class ObjectFactory implements Serializable {
         final R object = getObject(bean);
         try {
             consumer.accept(object);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         } finally {
             returnObject(object);
@@ -35,7 +35,7 @@ public class ObjectFactory implements Serializable {
         final T object = getObject(bean);
         try {
             return function.apply(object);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         } finally {
             returnObject(object);

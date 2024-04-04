@@ -1,9 +1,17 @@
 package wxdgaming.boot.net.controller;
 
-import java.util.concurrent.atomic.AtomicReference;
+import wxdgaming.boot.net.SocketSession;
+import wxdgaming.boot.net.handler.SocketCoderHandler;
+import wxdgaming.boot.net.message.Rpc;
 
-public interface ProtoMappingProxy {
+public abstract class ProtoMappingProxy {
 
-    void proxy(AtomicReference<Object> out, Object instance, Object[] params);
+    public void proxy(Object instance, Object session, Object msg) throws Throwable {
+        ((SocketCoderHandler) instance).executor(
+                (SocketSession) session,
+                0,
+                (Rpc.ReqRemote) msg
+        );
+    }
 
 }

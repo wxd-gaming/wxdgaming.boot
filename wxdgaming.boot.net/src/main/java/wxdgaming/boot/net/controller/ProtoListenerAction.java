@@ -45,8 +45,7 @@ public final class ProtoListenerAction extends Event {
     @Override public void onEvent() throws Exception {
         try {
             Object bean = mapping.instance();
-            AtomicReference<Object> out = new AtomicReference<>();
-            mapping.mapping().proxy(out, bean, new Object[]{session, message});
+            mapping.mapping().proxy(bean, session, message);
         } catch (Throwable throwable) {
             throwable = Throw.filterInvoke(throwable);
             GlobalUtil.exception("\n" + this.toString(), throwable);

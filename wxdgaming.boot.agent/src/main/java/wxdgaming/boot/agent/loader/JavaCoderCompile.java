@@ -169,40 +169,85 @@ public class JavaCoderCompile {
      * 导出文件
      *
      * @param outPath 路径
-     * @return
-     * @throws IOException
      */
-    public JavaCoderCompile outPutFile(String outPath) throws Exception {
+    public JavaCoderCompile outPutFile(String outPath, boolean forceClear) {
+        if (forceClear) {
+            FileUtil.del(outPath);
+        }
         final Map<String, byte[]> stringMap = toBytesMap();
+        LogbackUtil.logger().info("输出 class文件 目录：{} 数量：{}", outPath, stringMap.size());
         FileWriteUtil.writeClassFile(outPath, stringMap);
+        LogbackUtil.logger().info("输出 class文件 目录：{} 数量：{}", outPath, stringMap.size());
         return this;
     }
 
-    /**
-     * 当前编译器，所有类的加载器
-     */
-    public ClassBytesLoader builderClassLoader() {
-        return new ClassBytesLoader(toBytesMap());
-    }
-
-    public ClassBytesLoader builderClassLoader(ClassLoader parent) {
-        return new ClassBytesLoader(toBytesMap(), parent);
+    /** 当前编译器，所有类的加载器 */
+    public ClassDirLoader classLoader() {
+        return classLoader(this.parentClassLoader, "target/classes", true);
     }
 
     /**
-     * 编译后所有的类
+     * 当前编译器，所有类的加载器，通过输出到目录，重新得到完整的类加载
      *
+     * @param forceClear 强制覆盖目录
      * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-04 23:31
      */
-    public Map<String, byte[]> toBytesMap() {
-        return javaFileManager().getClassFileObjectLoader().toBytesMap();
+    public ClassDirLoader classLoader(boolean forceClear) {
+        return classLoader(this.parentClassLoader, "target/classes", forceClear);
     }
 
     /**
-     * 获取所有的编译后的class
+     * 当前编译器，所有类的加载器，通过输出到目录，重新得到完整的类加载
+     *
+     * @param outClassPath 文件所在的目录
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-04 23:31
      */
+    public ClassDirLoader classLoader(String outClassPath) {
+        return classLoader(this.parentClassLoader, outClassPath, true);
+    }
+
+    /**
+     * 当前编译器，所有类的加载器，通过输出到目录，重新得到完整的类加载
+     *
+     * @param outClassPath class文件输出的目录
+     * @param forceClear   强制覆盖目录
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-04 23:31
+     */
+    public ClassDirLoader classLoader(String outClassPath, boolean forceClear) {
+        return classLoader(this.parentClassLoader, outClassPath, forceClear);
+    }
+
+    /**
+     * 当前编译器，所有类的加载器，通过输出到目录，重新得到完整的类加载
+     *
+     * @param parent       class的父级
+     * @param outClassPath class文件输出的目录
+     * @param forceClear   强制覆盖目录
+     * @return
+     * @throws Exception
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-04 23:21
+     */
+    public ClassDirLoader classLoader(ClassLoader parent, String outClassPath, boolean forceClear) {
+        outPutFile(outClassPath, forceClear);
+        return new ClassDirLoader(parent, outClassPath);
+    }
+
+
+    /** 编译后所有的类 */
+    public Map<String, byte[]> toBytesMap() {
+        return javaFileManager().getClassFileObjectLoader().getClassFileMap();
+    }
+
+    /** 获取所有的编译后的class */
     public Collection<ClassInfo> toAllClass() {
-        return builderClassLoader().getLoadClassInfoMap().values();
+        return javaFileManager().getClassFileObjectLoader().getLoadClassInfoMap().values();
     }
 
 }

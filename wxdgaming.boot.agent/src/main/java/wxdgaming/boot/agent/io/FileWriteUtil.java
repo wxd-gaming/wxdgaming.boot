@@ -111,7 +111,7 @@ public class FileWriteUtil implements Serializable {
         }
         try (OutputStream out = Files.newOutputStream(file.toPath(), openOptions)) {
             call.accept(out);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }
@@ -124,12 +124,12 @@ public class FileWriteUtil implements Serializable {
      */
     public static void writeClassFile(String outPath, Map<String, byte[]> stringMap) {
         final File file_dir = new File(outPath);
-        file_dir.mkdirs();
+        boolean mkdirs = file_dir.mkdirs();
         for (Map.Entry<String, byte[]> stringEntry : stringMap.entrySet()) {
             final String replace = stringEntry.getKey().replace(".", "/");
             final File file = new File(outPath + "/" + replace + ".class");
             writeBytes(file, stringEntry.getValue());
-            log.warn("output file :" + FileUtil.getCanonicalPath(file));
+            log.warn("output file：{}", FileUtil.getCanonicalPath(file));
         }
     }
 

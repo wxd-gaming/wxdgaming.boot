@@ -11,6 +11,6 @@ package wxdgaming.boot.agent.function;
 @FunctionalInterface
 public interface SLFunction2<P1, P2, R> extends SerializableLambda {
 
-    R apply(P1 p1, P2 p2) throws Exception;
+    R apply(P1 p1, P2 p2) throws Throwable;
 
 }

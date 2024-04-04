@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.agent.function.Consumer1;
 import wxdgaming.boot.agent.system.AnnUtil;
-import wxdgaming.boot.agent.system.LambdaUtil;
+import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.GlobalUtil;
@@ -19,6 +18,7 @@ import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * cron 表达式时间触发器
@@ -34,6 +34,8 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
 
     private String name;
     private int index;
+    private final Object instance;
+    private final Method method;
     private ScheduledProxy scheduledProxy;
     /** 和method是互斥的 */
     private Runnable scheduledTask;
@@ -47,9 +49,29 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
         super(method);
+        this.instance = instance;
+        this.method = method;
+        JavaAssistBox.JavaAssist javaAssist = JavaAssistBox.DefaultJavaAssistBox.extendSuperclass(
+                ScheduledProxy.class,
+                instance.getClass().getClassLoader()
+        );
 
-        Consumer1<ScheduledProxy> proxy = ScheduledProxy::proxy;
-        scheduledProxy = LambdaUtil.createDelegate(instance, method, proxy).getMapping();
+        javaAssist.importPackage(AtomicReference.class);
+        javaAssist.importPackage(ScheduledProxy.class);
+        javaAssist.importPackage(instance.getClass());
+
+        String formatted = """
+                    public void proxy(Object ins) throws Throwable {
+                        ((%s)ins).%s();
+                    }
+                """
+                .formatted(instance.getClass().getName(), method.getName());
+        //System.out.println(formatted);
+        javaAssist.createMethod(formatted);
+
+        scheduledProxy = javaAssist.toInstance();
+        javaAssist.getCtClass().defrost();
+        javaAssist.getCtClass().detach();
 
         if (StringUtil.notEmptyOrNull(scheduled.name())) {
             this.name = "[scheduled-job]" + scheduled.name();
@@ -88,66 +110,15 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
      * <p> 年 1970 - 2199
      */
     public ScheduledInfo(Runnable scheduledTask, String scheduledName, String scheduled, boolean scheduleAtFixedRate) {
+        this.instance = null;
+        this.method = null;
         this.scheduledTask = scheduledTask;
         this.name = "[timer-job]" + scheduledTask.getClass() + "-" + scheduledName;
 
         this.index = 999999;
         this.scheduleAtFixedRate = scheduleAtFixedRate;
-    }
 
-    protected void action(TreeSet<Integer> set, String actionStr, int min, int max) {
-
-        if ("*".equals(actionStr) || "?".equals(actionStr)) {
-        } else if (actionStr.contains("-")) {
-            String[] split = actionStr.split("-");
-            int start = Integer.parseInt(split[0]);
-            int end = Integer.parseInt(split[1]);
-            if (start < min) {
-                throw new RuntimeException(actionStr + " 起始值 小于最小值：" + min);
-            }
-            if (max < start) {
-                throw new RuntimeException(actionStr + " 起始值 超过最大值：" + max);
-            }
-            if (end < min) {
-                throw new RuntimeException(actionStr + " 结束值 小于最小值：" + min);
-            }
-            if (max < end) {
-                throw new RuntimeException(actionStr + " 结束值 超过最大值：" + max);
-            }
-            if (start > end) {
-                throw new RuntimeException(actionStr + " 起始值 大于 结束值" + max);
-            }
-            for (int i = start; i < end; i++) {
-                set.add(i);
-            }
-        } else if (actionStr.contains("/")) {
-            String[] split = actionStr.split("/");
-            if (!"*".equals(split[0]) && !"?".equals(split[0])) {
-                min = Integer.valueOf(split[0]);
-            }
-            int intv = Integer.parseInt(split[1]);
-
-            for (int i = min; i <= max; i++) {
-                if (i % intv == 0) {
-                    set.add(i);
-                }
-            }
-
-        } else if (actionStr.contains(",") || actionStr.contains("，")) {
-            String[] split = actionStr.split("[,，]");
-            for (String s : split) {
-                final int of = Integer.parseInt(s);
-                if (min > of) {
-                    throw new RuntimeException(actionStr + " 起始值 " + of + " 小于最小值：" + min);
-                }
-                if (of > max) {
-                    throw new RuntimeException(actionStr + " 起始值 " + of + " 超过最大值：" + max);
-                }
-                set.add(of);
-            }
-        } else {
-            set.add(Integer.valueOf(actionStr));
-        }
+        cronExpress = new CronExpress(scheduled, TimeUnit.SECONDS, 0);
     }
 
     public void job(int second, int minute, int hour, int dayOfWeek, int dayOfMonth, int month, int year) {
@@ -177,7 +148,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
     @Override public void onEvent() {
         try {
             if (scheduledProxy != null) {
-                scheduledProxy.proxy();
+                scheduledProxy.proxy(instance);
             } else {
                 scheduledTask.run();
             }

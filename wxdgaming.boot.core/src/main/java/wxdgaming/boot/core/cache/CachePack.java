@@ -156,7 +156,7 @@ public class CachePack<K, V> implements Serializable {
         return linkedHashMap;
     }
 
-    public void forEach(ConsumerE2<K, V> each) throws Exception {
+    public void forEach(ConsumerE2<K, V> each) throws Throwable {
         for (Map.Entry<K, CacheValue<V>> entry : cacheValues.entrySet()) {
             each.accept(entry.getKey(), entry.getValue().getValue());
         }
@@ -243,7 +243,7 @@ public class CachePack<K, V> implements Serializable {
         }
         try {
             this.getUnload().accept(v, logs);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             log.error(logs + " -> " + this.cacheName + ", key=" + k + ", 移除缓存异常", ex);
         }
 

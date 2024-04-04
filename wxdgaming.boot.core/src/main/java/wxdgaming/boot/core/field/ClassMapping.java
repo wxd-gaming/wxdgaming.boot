@@ -608,7 +608,7 @@ public class ClassMapping implements Serializable {
                 Object fieldValue = field.getFieldValue(object);
                 call.accept(fieldName, fieldValue);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }

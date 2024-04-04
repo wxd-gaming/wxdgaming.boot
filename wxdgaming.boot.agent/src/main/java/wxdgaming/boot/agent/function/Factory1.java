@@ -13,5 +13,5 @@ public interface Factory1<T1, R> {
      *
      * @return a result
      */
-    R get(T1 t1) throws Exception;
+    R get(T1 t1) throws Throwable;
 }

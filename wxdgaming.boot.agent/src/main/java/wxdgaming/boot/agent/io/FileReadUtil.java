@@ -134,7 +134,7 @@ public class FileReadUtil implements Serializable {
                     break;
                 call.accept(line);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw Throw.as(e);
         }
     }

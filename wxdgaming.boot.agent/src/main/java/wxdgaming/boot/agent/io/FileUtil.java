@@ -241,9 +241,10 @@ public class FileUtil implements Serializable {
      * @param file
      */
     public static void del(File file) {
-        walk(file).forEach(f -> {
+        Stream<File> walk = walk(file);
+        walk.forEach(f -> {
             boolean delete = f.delete();
-            log().info("删除{}：{}, {}", file.isFile() ? "文件" : "文件夹", file.getName(), delete);
+            log().info("删除{}：{}, {}", f.isFile() ? "文件" : "文件夹", f.getName(), delete);
         });
     }
 

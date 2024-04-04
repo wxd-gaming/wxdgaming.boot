@@ -59,7 +59,7 @@ public abstract class EventBusBase extends IocSubContext implements IBeanInit {
         scripts(scriptClass, scriptId).forEach(script -> {
             try {
                 consumer.accept(script);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("scriptClass={}, key={}", script.getClass(), scriptId, e);
             }
         });

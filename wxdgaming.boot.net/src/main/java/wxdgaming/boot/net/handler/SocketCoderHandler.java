@@ -212,7 +212,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
             try {
                 Boolean apply = MappingFactory.TextMappingSubmitBefore.apply(session, listenerAction);
                 if (Boolean.FALSE.equals(apply)) return;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
@@ -272,7 +272,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 if (Boolean.FALSE.equals(apply)) {
                     return;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
