@@ -884,7 +884,7 @@ ${text}
         },
     },
 
-    load: function (url, width, height) {
+    load: function (url, width, height, parent) {
         if (wxd.isNull(width)) {
             width = "650px;"
         }
@@ -897,11 +897,14 @@ ${text}
         <object data="${url}" style="width: 100%;height: 100%;border-radius: 15px;display: block;box-sizing: border-box;"></object>
         <span title="关闭" onclick="$(this).parent().parent().remove();"
               style="position: absolute;top:5px;right: 5px;width: 15px;height: 15px; background: #f85802;border-radius: 15px;z-index: 999;cursor: pointer;">
-                    </span>
+        </span>
     </div>
 </div>
         `;
-        $("body").append(load);
+
+        if (wxd.isNull(parent)) parent = document.body;
+        $(parent).append(load);
+
     }
 }
 

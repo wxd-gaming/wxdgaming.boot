@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public abstract class DataRepository<DM extends EntityTable, DW extends DataWrapper<DM>> implements Serializable {
 
-    protected ConcurrentMap<String, DbBean> beanMap = new ConcurrentHashMap<>();
+    protected ConcurrentMap<String, DbBean<?, ?>> beanMap = new ConcurrentHashMap<>();
 
     /** 获取编译器 */
     public abstract DW dataBuilder();
@@ -32,19 +32,18 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
     /** 数据来源名字 */
     public abstract String dataName();
 
-    public <T extends DbBean, R> R getDbBean(Class<T> beanClazz, Object key) {
-        return (R) getDbBean(beanClazz).get(key);
+    public <B, T extends DbBean<B, ?>> B getDbBean(Class<T> beanClazz, Object key) {
+        return getDbBean(beanClazz).get(key);
     }
 
-    public <R extends DbBean> R getDbBean(Class<R> beanClazz) {
+    public <B, T extends DbBean<B, ?>> T getDbBean(Class<T> beanClazz) {
         Class<?> tClass = ReflectContext.getTClass(beanClazz);
         DM entityTable = dataBuilder().asEntityTable(tClass);
         return getDbBean(beanClazz, entityTable);
     }
 
-    public <R extends DbBean> R getDbBean(Class<R> beanClazz, DM entityTable) {
-        DbBean dbBean = beanMap.computeIfAbsent(entityTable.getTableName(), l -> load(beanClazz, entityTable));
-        return (R) dbBean;
+    public <B, T extends DbBean<B, ?>> T getDbBean(Class<T> beanClazz, DM entityTable) {
+        return (T) beanMap.computeIfAbsent(entityTable.getTableName(), l -> load(beanClazz, entityTable));
     }
 
     /** 实现重新加载配置 */
@@ -139,9 +138,9 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
         writerTitle(stringAppend, 2);
     }
 
-    public <R extends DbBean> R load(Class<R> beanClazz, DM entityTable) {
+    public <B, T extends DbBean<B, ?>> T load(Class<T> beanClazz, DM entityTable) {
         try {
-            R dbBean = beanClazz.getDeclaredConstructor().newInstance();
+            T dbBean = beanClazz.getDeclaredConstructor().newInstance();
             dbBean.setDataMapping(entityTable);
             dbBean.setModelList(readDbList(entityTable));
             dbBean.initDb();
@@ -153,7 +152,7 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
 
     public abstract List readDbList(DM entityTable) throws Exception;
 
-    protected void addReloadMsg(StringBuilder out, DM entityTable, DbBean dbBean) {
+    protected void addReloadMsg(StringBuilder out, DM entityTable, DbBean<?, ?> dbBean) {
         if (out != null) {
             out
                     .append("|").append(StringUtil.padRight(String.valueOf(dbBean.dbSize()), 10, ' ')).append("\t")

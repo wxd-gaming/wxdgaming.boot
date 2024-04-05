@@ -45,7 +45,7 @@ public class JsonDataRepository extends DataRepository<JsonEntityTable, JsonData
         return "Json Data：" + path;
     }
 
-    @Override public <R extends DbBean> R load(Class<R> beanClazz, JsonEntityTable entityTable) {
+    @Override public <B, T extends DbBean<B, ?>> T load(Class<T> beanClazz, JsonEntityTable entityTable) {
         return super.load(beanClazz, entityTable);
     }
 
