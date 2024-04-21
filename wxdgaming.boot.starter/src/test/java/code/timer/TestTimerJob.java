@@ -9,7 +9,7 @@ import wxdgaming.boot.core.timer.CronExpress;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.core.timer.ScheduledInfo;
 import wxdgaming.boot.core.timer.ann.Scheduled;
-import wxdgaming.boot.starter.Starter;
+import wxdgaming.boot.starter.AppContext;
 import wxdgaming.boot.starter.service.ScheduledService;
 
 import java.io.Serializable;
@@ -27,12 +27,12 @@ public class TestTimerJob implements Serializable {
 
 
     public static void main(String[] args) throws Throwable {
-        Starter.startBoot(TestTimerJob.class);
-        ScheduledService scheduledService = Starter.curIocInjector().getInstance(ScheduledService.class);
+        AppContext.boot(TestTimerJob.class);
+        ScheduledService scheduledService = AppContext.context().getInstance(ScheduledService.class);
         List<ScheduledInfo> jobList = scheduledService.getJobList();
         ScheduledInfo scheduledInfo = new ScheduledInfo(() -> System.out.println("test"), "测试动态注入", "*/1", false);
         jobList.add(scheduledInfo);
-        Starter.start(true, 1, "");
+        AppContext.start(true, 1, "");
     }
 
     @Test

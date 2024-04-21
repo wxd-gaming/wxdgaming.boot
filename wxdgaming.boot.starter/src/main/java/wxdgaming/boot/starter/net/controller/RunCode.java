@@ -9,7 +9,7 @@ import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 import wxdgaming.boot.net.web.hs.HttpSession;
-import wxdgaming.boot.starter.Starter;
+import wxdgaming.boot.starter.AppContext;
 
 import java.util.Collection;
 import java.util.Map;
@@ -42,7 +42,7 @@ public interface RunCode {
                     String params = putData.getString("params");
                     LogbackUtil.logger().info("run code " + aClass.getName() + "， params " + params);
                     PostCodeRun newInstance = (PostCodeRun) aClass.getDeclaredConstructor().newInstance();
-                    newInstance.setIocInjector(Starter.curIocInjector());
+                    newInstance.setIocInjector(AppContext.context());
                     RunResult result = newInstance.run(params);
                     httpSession.responseText(result.toJson());
                     return;

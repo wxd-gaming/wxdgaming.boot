@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class LNum extends ObjectBaseLock implements Serializable {
 
-    private volatile long num = 0;
+    protected volatile long num = 0;
 
     public LNum() {
     }

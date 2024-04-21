@@ -12,6 +12,7 @@ import wxdgaming.boot.starter.batis.*;
 import wxdgaming.boot.starter.service.*;
 
 import java.io.InputStream;
+import java.util.function.Consumer;
 
 /**
  * 基础模块
@@ -21,8 +22,8 @@ import java.io.InputStream;
  **/
 class BootStarterModule extends BaseModule {
 
-    public BootStarterModule(ReflectContext reflectContext, Class... classes) {
-        super(reflectContext, classes);
+    public BootStarterModule(ReflectContext reflectContext, Consumer<? super BaseModule> onConfigure) {
+        super(reflectContext, onConfigure);
     }
 
     protected BootStarterModule bind() throws Throwable {

@@ -13,6 +13,8 @@ import wxdgaming.boot.starter.action.ActionConfig;
 import wxdgaming.boot.starter.config.Config;
 import wxdgaming.boot.starter.i.IConfigInit;
 
+import java.util.function.Consumer;
+
 /**
  * 基础模块
  *
@@ -24,15 +26,11 @@ import wxdgaming.boot.starter.i.IConfigInit;
 abstract class BaseModule extends AbstractModule {
 
     protected final ReflectContext reflectContext;
-    protected final Class[] classes;
+    protected final Consumer<? super BaseModule> onConfigure;
 
-    public BaseModule(ReflectContext reflectContext) {
-        this(reflectContext, new Class[0]);
-    }
-
-    public BaseModule(ReflectContext reflectContext, Class... classes) {
+    public BaseModule(ReflectContext reflectContext, Consumer<? super BaseModule> onConfigure) {
         this.reflectContext = reflectContext;
-        this.classes = classes;
+        this.onConfigure = onConfigure;
     }
 
     public BaseModule bindSingleton(Class<?> clazz) {
@@ -57,7 +55,7 @@ abstract class BaseModule extends AbstractModule {
     protected final void configure() {
         binder().requireExplicitBindings();
         binder().requireExactBindingAnnotations();
-        //binder().disableCircularProxies();/*禁用循环依赖*/
+        // binder().disableCircularProxies();/*禁用循环依赖*/
 
         reflectContext.withAnnotated(Config.class).forEach(content -> {
             try {
@@ -84,8 +82,8 @@ abstract class BaseModule extends AbstractModule {
                 .forEach(this::bindSingleton);
 
         try {
-            for (Class aClass : classes) {
-                bindSingleton(aClass);
+            if (onConfigure != null) {
+                onConfigure.accept(this);
             }
             bind();
         } catch (Throwable e) {

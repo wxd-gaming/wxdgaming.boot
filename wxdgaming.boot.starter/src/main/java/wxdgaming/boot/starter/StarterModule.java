@@ -1,14 +1,8 @@
 package wxdgaming.boot.starter;
 
-import com.google.inject.Singleton;
-import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.ReflectContext;
-import wxdgaming.boot.net.controller.ann.ProtoController;
-import wxdgaming.boot.net.controller.ann.TextController;
-import wxdgaming.boot.starter.action.ActionConfig;
-import wxdgaming.boot.starter.config.Config;
-import wxdgaming.boot.starter.i.IConfigInit;
+
+import java.util.function.Consumer;
 
 /**
  * 基础模块
@@ -18,12 +12,26 @@ import wxdgaming.boot.starter.i.IConfigInit;
  **/
 class StarterModule extends BaseModule {
 
-    public StarterModule(ReflectContext reflectContext, Class... classes) {
-        super(reflectContext, classes);
+    public StarterModule(ReflectContext reflectContext, Consumer<? super BaseModule> onConfigure) {
+        super(reflectContext, onConfigure);
     }
 
     protected StarterModule bind() {
         return this;
     }
 
+    @Override public StarterModule bindSingleton(Class<?> clazz) {
+        super.bindSingleton(clazz);
+        return this;
+    }
+
+    @Override public <T> StarterModule bindSingleton(Class<T> father, Class<? extends T> son) {
+        super.bindSingleton(father, son);
+        return this;
+    }
+
+    @Override public <B> StarterModule bindSingleton(Class<B> clazz, B instance) {
+        super.bindSingleton(clazz, instance);
+        return this;
+    }
 }

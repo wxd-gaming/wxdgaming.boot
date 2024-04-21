@@ -37,34 +37,55 @@ import java.util.stream.Stream;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-12-11 19:11
  **/
-public class Starter {
+public class AppContext {
 
     private static volatile IocContext mainIocInjector = null;
     private static volatile IocContext childIocInjector = null;
 
-    public static IocContext curIocInjector() {
+    /** 获取当前容器，如果有子容器拿到的就是子容器 */
+    public static IocContext context() {
         if (childIocInjector == null) return mainIocInjector;
         return childIocInjector;
     }
 
-    public static void startBoot(Class... startClasses) {
+    public static IocContext boot(Class<?>... startClasses) {
         final String[] packages = Arrays.stream(startClasses)
                 .map(v -> v.getPackage().getName())
                 .toArray(String[]::new);
-        startBoot(packages);
+        return boot(packages);
     }
 
-    public static void startBoot(String... packages) {
+    public static IocContext boot(String... packages) {
         LogbackUtil.setLogbackConfig();
+        if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");
+
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            /*全局未捕获线程异常*/
+            @Override public void uncaughtException(Thread t, Throwable e) {
+                try {
+                    System.out.println(t);
+                    e.printStackTrace(System.out);
+                } catch (Throwable t0) {}
+            }
+        });
+
+        GlobalUtil.exceptionCall = new Consumer2<Object, Throwable>() {
+            @Override public void accept(Object o, Throwable throwable) {
+                if (StringUtil.emptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
+                    logger().error("{}", o, throwable);
+                else
+                    FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
+            }
+        };
+
         Set<String> packages1 = SetOf.asSet(packages);
         String[] array = packages1.toArray(new String[0]);
-        if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");
         ReflectContext.Builder builder = ReflectContext.Builder.of(array);
         try {
             ReflectContext reflectContext = builder.build();
 
             List<BaseModule> list = Stream.concat(
-                            Stream.of(new BootStarterModule(reflectContext), new StarterModule(reflectContext)),
+                            Stream.of(new BootStarterModule(reflectContext, null), new StarterModule(reflectContext, null)),
                             reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
                                     return v
@@ -75,79 +96,18 @@ public class Starter {
                                 }
                             })
                     )
-                    .map(v -> (BaseModule) v)
                     .toList();
 
             Injector injector = Guice.createInjector(Stage.PRODUCTION, list);
             mainIocInjector = injector.getInstance(IocMainContext.class);
             iocInitBean(mainIocInjector, reflectContext);
-            JvmUtil.addShutdownHook(() -> {
-                logger().info("------------------------------停服信号处理------------------------------");
-                {
-                    STVFunction1<Object, IShutdownBefore> shutdownBefore = IShutdownBefore::shutdownBefore;
-                    curIocInjector().beanStream(IShutdownBefore.class, shutdownBefore).forEach(object -> {
-                        try {
-                            logger().info("shutdownBefore：{} {}", object.getClass(), object.toString());
-                            object.shutdownBefore();
-                        } catch (Throwable e) {
-                            throw Throw.as(object.getClass().getName() + ".shutdown()", e);
-                        }
-                    });
-                }
-                {
-                    STVFunction1<Object, IShutdown> shutdown = IShutdown::shutdown;
-                    curIocInjector().beanStream(IShutdown.class, shutdown).forEach(object -> {
-                        try {
-                            logger().info("shutdown：{} {}", object.getClass(), object.toString());
-                            object.shutdown();
-                        } catch (Throwable e) {
-                            throw Throw.as(object.getClass().getName() + ".shutdown()", e);
-                        }
-                    });
-                }
-                {
-                    STVFunction1<Object, IShutdownEnd> shutdown = IShutdownEnd::shutdownEnd;
-                    curIocInjector().beanStream(IShutdownEnd.class, shutdown).forEach(object -> {
-                        try {
-                            logger().info("shutdownEnd：{} {}", object.getClass(), object.toString());
-                            object.shutdownEnd();
-                        } catch (Throwable e) {
-                            throw Throw.as(object.getClass().getName() + ".shutdown()", e);
-                        }
-                    });
-                }
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                }
-                logger().info("------------------------------停服处理结束------------------------------");
-                JvmUtil.halt(0);
-            });
             logger().info("主容器初始化完成：{}", mainIocInjector.hashCode());
-
-            Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                /*全局未捕获线程异常*/
-                @Override public void uncaughtException(Thread t, Throwable e) {
-                    try {
-                        System.out.println(t);
-                        e.printStackTrace(System.out);
-                    } catch (Throwable t0) {}
-                }
-            });
-
-            GlobalUtil.exceptionCall = new Consumer2<Object, Throwable>() {
-                @Override public void accept(Object o, Throwable throwable) {
-                    if (StringUtil.emptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
-                        logger().error("{}", o, throwable);
-                    else
-                        FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
-                }
-            };
-
+            return mainIocInjector;
         } catch (Throwable throwable) {
             logger().error("启动失败", throwable);
             JvmUtil.halt(-1);
         }
+        return null;
     }
 
     public static IocContext createChildInjector(ReflectContext reflectContext) {
@@ -157,8 +117,14 @@ public class Starter {
     public static IocContext createChildInjector(IocContext parentContext, ReflectContext reflectContext) {
         try {
 
+            StarterModule starterModule = new StarterModule(reflectContext, baseModule -> {
+                baseModule
+                        .bindSingleton(IocSubContext.class)
+                        .bindSingleton(IocContext.class, IocSubContext.class)
+                ;
+            });
             List<BaseModule> modules = Stream.concat(
-                            Stream.of(new StarterModule(reflectContext, IocSubContext.class)),
+                            Stream.of(starterModule),
                             reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
                                     return v
@@ -169,7 +135,6 @@ public class Starter {
                                 }
                             })
                     )
-                    .map(v -> (BaseModule) v)
                     .toList();
 
             Injector injector = parentContext.getInjector().createChildInjector(modules);
@@ -189,8 +154,7 @@ public class Starter {
         }
 
         /*todo fastjson 注册 protoBuff 处理 处理配置类*/
-        reflectContext.classStream()
-                .forEach(ProtobufMessageSerializerFastJson::action);
+        reflectContext.classStream().forEach(ProtobufMessageSerializerFastJson::action);
 
         /*处理定时器资源*/
         ActionTimer.action(context, reflectContext);
@@ -216,11 +180,11 @@ public class Starter {
     public static void start(boolean debug, int serverId, String serverName, String... extInfos) {
         {
             ConsumerE2<IStart, IocContext> startFun = IStart::start;
-            curIocInjector().forEachBean(IStart.class, startFun, throwable -> JvmUtil.halt(-1), curIocInjector());
+            context().forEachBean(IStart.class, startFun, throwable -> JvmUtil.halt(-1), context());
         }
         {
             ConsumerE2<IStartEnd, IocContext> startEndFun = IStartEnd::startEnd;
-            curIocInjector().forEachBean(IStartEnd.class, startEndFun, throwable -> JvmUtil.halt(-1), curIocInjector());
+            context().forEachBean(IStartEnd.class, startEndFun, throwable -> JvmUtil.halt(-1), context());
         }
         Executors.getDefaultExecutor().scheduleAtFixedDelay(
                 () -> {
@@ -232,6 +196,48 @@ public class Starter {
                 },
                 30, 30, TimeUnit.SECONDS
         );
+        JvmUtil.addShutdownHook(() -> {
+            logger().info("------------------------------停服信号处理------------------------------");
+            {
+                STVFunction1<Object, IShutdownBefore> shutdownBefore = IShutdownBefore::shutdownBefore;
+                context().beanStream(IShutdownBefore.class, shutdownBefore).forEach(object -> {
+                    try {
+                        logger().info("shutdownBefore：{} {}", object.getClass(), object.toString());
+                        object.shutdownBefore();
+                    } catch (Throwable e) {
+                        throw Throw.as(object.getClass().getName() + ".shutdown()", e);
+                    }
+                });
+            }
+            {
+                STVFunction1<Object, IShutdown> shutdown = IShutdown::shutdown;
+                context().beanStream(IShutdown.class, shutdown).forEach(object -> {
+                    try {
+                        logger().info("shutdown：{} {}", object.getClass(), object.toString());
+                        object.shutdown();
+                    } catch (Throwable e) {
+                        throw Throw.as(object.getClass().getName() + ".shutdown()", e);
+                    }
+                });
+            }
+            {
+                STVFunction1<Object, IShutdownEnd> shutdown = IShutdownEnd::shutdownEnd;
+                context().beanStream(IShutdownEnd.class, shutdown).forEach(object -> {
+                    try {
+                        logger().info("shutdownEnd：{} {}", object.getClass(), object.toString());
+                        object.shutdownEnd();
+                    } catch (Throwable e) {
+                        throw Throw.as(object.getClass().getName() + ".shutdown()", e);
+                    }
+                });
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+            }
+            logger().info("------------------------------停服处理结束------------------------------");
+            JvmUtil.halt(0);
+        });
         print(debug, serverId, serverName, extInfos);
     }
 
@@ -256,7 +262,7 @@ public class Starter {
     }
 
     static Logger logger() {
-        return LoggerFactory.getLogger(Starter.class);
+        return LoggerFactory.getLogger(AppContext.class);
     }
 
 }

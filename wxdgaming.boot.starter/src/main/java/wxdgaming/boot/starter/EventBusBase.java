@@ -1,5 +1,7 @@
 package wxdgaming.boot.starter;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.function.ConsumerE1;
@@ -9,6 +11,7 @@ import wxdgaming.boot.starter.i.IBeanInit;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 /**
@@ -17,9 +20,19 @@ import java.util.stream.Stream;
  **/
 @Slf4j
 @Getter
-public abstract class EventBusBase extends IocSubContext implements IBeanInit {
+public abstract class EventBusBase implements IBeanInit, ContextAction {
 
-    final ConcurrentTable<String, Serializable, List<IScript<? extends Serializable>>> listTable = new ConcurrentTable<>();
+    @Inject protected IocContext iocContext;
+
+    protected final ConcurrentTable<String, Serializable, List<IScript<? extends Serializable>>> listTable = new ConcurrentTable<>();
+
+    @Override public Injector getInjector() {
+        return iocContext.getInjector();
+    }
+
+    @Override public ConcurrentHashMap<String, List<Object>> getIocBeanMap() {
+        return iocContext.getIocBeanMap();
+    }
 
     /**
      * bean初始化调用的，即便是热更新也会调用，会优先处理ioc注入
@@ -29,7 +42,6 @@ public abstract class EventBusBase extends IocSubContext implements IBeanInit {
     @Override public void beanInit(IocContext iocContext) throws Exception {
 
     }
-
 
     /** 获取所有脚本 */
     public <Key extends Serializable, S extends IScript<Key>> Stream<S> scripts(Class<S> scriptClass, Key scriptId) {
