@@ -12,6 +12,17 @@ import java.io.Serializable;
 public class Code implements Serializable {
 
     @Test
+    public void bit() {
+        System.out.println(0b0);
+        System.out.println(0b1);
+        System.out.println(0b0_1111);
+        /*高位到低位*/
+        System.out.println(0b0_1111_1111);
+        System.out.println(0b0_0111_1111);
+        System.out.println(0b1_1111_1110);
+    }
+
+    @Test
     public void bigFlag() {
         final BitFlag bitFlag = new BitFlag();
         /*添加标记*/

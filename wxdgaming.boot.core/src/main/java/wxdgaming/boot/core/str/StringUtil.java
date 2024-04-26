@@ -290,8 +290,8 @@ public class StringUtil {
         if (chs == null || chs.length == 0) {
             return null;
         }
-        List<String> listIn = new ArrayList();
-        List<List<String>> listOut = new ArrayList();
+        List<String> listIn = new ArrayList<>();
+        List<List<String>> listOut = new ArrayList<>();
         for (int i = 1; i <= chs.length; i++) {
             combine(chs, 0, i, listIn, listOut);
         }
@@ -430,7 +430,7 @@ public class StringUtil {
             int tis0 = selectStr0(oldStr, str, indexofc);
             int tis1 = selectStr1(oldStr, str, indexofc);
             /*寻找最大概率*/
-            int tis = tis0 > tis1 ? tis0 : tis1;
+            int tis = Math.max(tis0, tis1);
             if (maxPro < tis) {
                 maxPro = tis;
             }
