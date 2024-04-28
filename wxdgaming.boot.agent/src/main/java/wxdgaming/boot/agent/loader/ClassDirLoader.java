@@ -1,7 +1,6 @@
 package wxdgaming.boot.agent.loader;
 
 
-import jdk.internal.loader.BootLoader;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 指定 class 目录加载

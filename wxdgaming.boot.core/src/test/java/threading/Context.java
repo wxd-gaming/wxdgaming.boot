@@ -1,8 +1,8 @@
 package threading;
 
-import com.sh.game.basic.collection.ConcurrentObjMap;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.core.collection.concurrent.ConcurrentObjMap;
 
 import java.util.Map;
 
