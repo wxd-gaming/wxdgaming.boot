@@ -475,14 +475,51 @@ public class MyClock {
         return localDateTime.getDayOfYear();
     }
 
-    /** 验证时间数值是不是今天 */
-    public static boolean isSameDay(long time) {
-        return isSameDay(millis(), time);
+    /**
+     * 验证是否是同一天
+     *
+     * @param targetTime 目标时间和当前时间做比较，凌晨结算
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-28 17:11
+     */
+    public static boolean isSameDay(long targetTime) {
+        return isSameDay(millis(), targetTime, 0);
     }
 
-    /** 判断两个时间是否在同一天 */
-    public static boolean isSameDay(long time1, long time2) {
-        return countDays(time1, time2) == 0;
+    /**
+     * 验证是否是同一天
+     *
+     * @param sourceTime 需要对比的时间,相当于当前时间
+     * @param targetTime 目标时间和对比时间做比较，凌晨结算
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-28 17:11
+     */
+    public static boolean isSameDay(long sourceTime, long targetTime) {
+        return isSameDay(sourceTime, targetTime, 0);
+    }
+
+    /**
+     * 验证是否是同一天
+     *
+     * @param sourceTime 需要对比的时间,相当于当前时间
+     * @param targetTime 目标时间和对比时间做比较
+     * @param checkHour  检查的时间,确切的小时,比如凌晨5点到第二天凌晨5点
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-04-28 17:11
+     */
+    public static boolean isSameDay(long sourceTime, long targetTime, int checkHour) {
+        long startTime = dayOfStartMillis(sourceTime);
+        if (checkHour != 0) {
+            /*说明有小时偏移*/
+            startTime += TimeUnit.HOURS.toMillis(checkHour);
+        }
+        if (sourceTime < startTime) {
+            /*说明是上一天时间*/
+            startTime -= TimeUnit.HOURS.toMillis(24);
+        }
+        long endTime = startTime + TimeUnit.HOURS.toMillis(24);
+        // System.out.println(TimeUtil.timeFormat0(startTime) + " - " + TimeUtil.timeFormat0(targetTime) + " - " + TimeUtil.timeFormat0(endTime));
+        return startTime <= targetTime && targetTime < endTime;
     }
 
     public static boolean isSameWeek(long time) {
