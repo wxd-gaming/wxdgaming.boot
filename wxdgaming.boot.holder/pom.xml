@@ -17,6 +17,11 @@
             <artifactId>wxdgaming.boot.agent</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+            <version>5.4.1</version>
+        </dependency>
     </dependencies>
 
 </project>
