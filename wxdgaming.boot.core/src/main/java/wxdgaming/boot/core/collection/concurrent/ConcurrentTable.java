@@ -38,22 +38,25 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
     public ConcurrentTable(Map<K1, Map<K2, V>> m) {
         this(m.size() + 10);
         for (Map.Entry<K1, Map<K2, V>> entry : m.entrySet()) {
-            putAll(entry.getKey(), entry.getValue());
+            put(entry.getKey(), entry.getValue());
         }
     }
 
-    public ConcurrentTable<K1, K2, V> putAll(K1 k1, Map<K2, V> m) {
-        row(k1).putAll(m);
-        return this;
+    public V put(K1 k1, K2 k2, V v) {
+        return row(k1).put(k2, v);
+    }
+
+    public V putIfAbsent(K1 k1, K2 k2, V v) {
+        return row(k1).putIfAbsent(k2, v);
+    }
+
+    public void put(K1 k1, Map<K2, V> m) {
+        nodes.put(k1, new ConcurrentHashMap<>(m));
     }
 
     public ConcurrentTable<K1, K2, V> append(K1 k1, K2 k2, V v) {
         row(k1).put(k2, v);
         return this;
-    }
-
-    public V put(K1 k1, K2 k2, V v) {
-        return row(k1).put(k2, v);
     }
 
     /** 行 */
@@ -144,6 +147,10 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
             }
         }
         return remove;
+    }
+
+    public void clear() {
+        nodes.clear();
     }
 
 }

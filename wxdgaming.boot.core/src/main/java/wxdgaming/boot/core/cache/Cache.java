@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.function.Consumer2;
 import wxdgaming.boot.agent.function.Function1;
+import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.lang.Tuple2;
 import wxdgaming.boot.core.lang.Tuple3;
 import wxdgaming.boot.core.threading.Executors;
@@ -37,7 +38,9 @@ import java.util.concurrent.TimeUnit;
 @Accessors(chain = true)
 public class Cache<K, V> {
 
-    protected final ConcurrentHashMap<K, Tuple3<V, Long, Long>> kv = new ConcurrentHashMap<>();
+    protected final ConcurrentTable<Integer, K, Tuple3<V, Long, Long>> kv = new ConcurrentTable<>();
+    /** hash桶,通过hash分区 */
+    private int hashArea = 0;
     /** 加载 */
     protected Function1<K, V> loader;
     /** 移除监听 */
@@ -51,7 +54,7 @@ public class Cache<K, V> {
     /** 心跳监听 */
     protected Consumer2<K, V> heartListener;
 
-    protected Tuple3<V, Long, Long> build(V v) {
+    protected Tuple3<V, Long, Long> buildValue(V v) {
         Tuple3<V, Long, Long> tuple = new Tuple3<>(v, -1L, -1L);
         if (this.expireAfterWrite > 0L) {
             tuple.setCenter(MyClock.millis() + this.expireAfterWrite);
@@ -62,6 +65,15 @@ public class Cache<K, V> {
         return tuple;
     }
 
+    protected int hashKey(K k) {
+        int i = k.hashCode();
+        int h = 0;
+        if (hash > 0) {
+            h = i % hash;
+        }
+        return h;
+    }
+
     /** 如果获取缓存没有，可以根据加载,失败回抛出异常 */
     public V get(K k) {
         return get(k, loader);
@@ -69,13 +81,15 @@ public class Cache<K, V> {
 
     /** 如果获取缓存没有，可以根据加载,失败回抛出异常 */
     public V get(K k, Function1<K, V> load) {
-        Tuple3<V, Long, Long> tuple = this.kv.computeIfAbsent(k, l -> {
+        int hk = hashKey(k);
+
+        Tuple3<V, Long, Long> tuple = this.kv.computeIfAbsent(hk, k, l -> {
             V apply = null;
             if (load != null) {
                 apply = load.apply(l);
             }
             if (apply == null) return null;
-            return build(apply);
+            return buildValue(apply);
         });
 
         if (tuple != null) {
@@ -90,7 +104,8 @@ public class Cache<K, V> {
 
     /** 获取数据，如果没有数据返回null */
     public V getIfPresent(K k) {
-        Tuple3<V, Long, Long> tuple = this.kv.get(k);
+        int hk = hashKey(k);
+        Tuple3<V, Long, Long> tuple = this.kv.get(hk, k);
         if (tuple != null) {
             if (this.expireAfterAccess > 0L) {
                 tuple.setCenter(MyClock.millis() + this.expireAfterAccess);
@@ -103,17 +118,20 @@ public class Cache<K, V> {
 
     /** 添加缓存 */
     public void put(K k, V v) {
-        this.kv.put(k, build(v));
+        int hk = hashKey(k);
+        this.kv.put(hk, k, buildValue(v));
     }
 
     /** 添加缓存 */
     public void putIfAbsent(K k, V v) {
-        this.kv.putIfAbsent(k, build(v));
+        int hk = hashKey(k);
+        this.kv.putIfAbsent(hk, k, buildValue(v));
     }
 
     /** 过期 */
     public V invalidate(K k) {
-        return Optional.ofNullable(this.kv.remove(k)).map(Tuple2::getLeft).orElse(null);
+        int hk = hashKey(k);
+        return Optional.ofNullable(this.kv.remove(hk, k)).map(Tuple2::getLeft).orElse(null);
     }
 
     /** 过期 */
@@ -126,23 +144,27 @@ public class Cache<K, V> {
         Executors.getDefaultExecutor().scheduleAtFixedDelay(
                 () -> {
                     long now = MyClock.millis();
-                    Iterator<Map.Entry<K, Tuple3<V, Long, Long>>> iterator = kv.entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry<K, Tuple3<V, Long, Long>> next = iterator.next();
-                        K key = next.getKey();
-                        Tuple3<V, Long, Long> value = next.getValue();
-                        if (value.getCenter() > 0 && value.getCenter() < now) {
-                            iterator.remove();
-                            if (removalListener != null) {
-                                removalListener.accept(key, value.getLeft());
-                            } else {
-                                log.info("缓存过期：{}", key);
+                    for (Map.Entry<Integer, ConcurrentHashMap<K, Tuple3<V, Long, Long>>> next : kv.entrySet()) {
+                        Integer hk = next.getKey();
+                        ConcurrentHashMap<K, Tuple3<V, Long, Long>> nextValue = next.getValue();
+                        Iterator<Map.Entry<K, Tuple3<V, Long, Long>>> entryIterator = nextValue.entrySet().iterator();
+                        while (entryIterator.hasNext()) {
+                            Map.Entry<K, Tuple3<V, Long, Long>> entryNext = entryIterator.next();
+                            K key = entryNext.getKey();
+                            Tuple3<V, Long, Long> value = entryNext.getValue();
+                            if (value.getCenter() > 0 && value.getCenter() < now) {
+                                entryIterator.remove();
+                                if (removalListener != null) {
+                                    removalListener.accept(key, value.getLeft());
+                                } else {
+                                    log.info("缓存过期：{}", key);
+                                }
+                                continue;
                             }
-                            continue;
-                        }
-                        if (heartTime > 0 && heartListener != null && value.getRight() < now) {
-                            heartListener.accept(key, value.getLeft());
-                            value.setRight(now + heartTime);
+                            if (heartTime > 0 && heartListener != null && value.getRight() < now) {
+                                heartListener.accept(key, value.getLeft());
+                                value.setRight(now + heartTime);
+                            }
                         }
                     }
                 },
