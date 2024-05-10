@@ -68,8 +68,8 @@ public class Cache<K, V> {
     protected int hashKey(K k) {
         int i = k.hashCode();
         int h = 0;
-        if (hash > 0) {
-            h = i % hash;
+        if (hashArea > 0) {
+            h = i % hashArea;
         }
         return h;
     }
@@ -180,6 +180,8 @@ public class Cache<K, V> {
     }
 
     public static class CacheBuilder<K, V> {
+        /** hash桶,通过hash分区 */
+        private int hashArea = 0;
         private Function1<K, V> loader;
         private Consumer2<K, V> removalListener;
         private long expireAfterAccess;
@@ -188,6 +190,12 @@ public class Cache<K, V> {
         private Consumer2<K, V> heartListener;
 
         CacheBuilder() {
+        }
+
+        /** hash桶,通过hash分区 */
+        public CacheBuilder<K, V> hashArea(int hashArea) {
+            this.hashArea = hashArea;
+            return this;
         }
 
         /** 加载 */
@@ -252,6 +260,7 @@ public class Cache<K, V> {
 
         public Cache<K, V> build() {
             return new Cache<K, V>()
+                    .setHashArea(hashArea)
                     .setLoader(loader)
                     .setRemovalListener(removalListener)
                     .setExpireAfterAccess(expireAfterAccess)
