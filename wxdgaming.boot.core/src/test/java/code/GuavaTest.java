@@ -27,8 +27,8 @@ public class GuavaTest {
         LoadingCache<Long, String> build = CacheBuilder.newBuilder()
                 .initialCapacity(100)
                 .concurrencyLevel(8)
-                .expireAfterAccess(10, TimeUnit.SECONDS)/*访问后过期时间 和 写入过期互斥*/
-                // .expireAfterWrite(10, TimeUnit.SECONDS)/*写入过期时间 和 访问过期互斥 */
+                // .expireAfterAccess(10, TimeUnit.SECONDS)/*访问后过期时间 和 写入过期互斥*/
+                .expireAfterWrite(10, TimeUnit.SECONDS)/*写入过期时间 和 访问过期互斥 */
                 .refreshAfterWrite(5, TimeUnit.SECONDS)/*设置缓存，这个位置可以用来重新加载数据库*/
                 .removalListener(new RemovalListener<Long, String>() {
                     @Override public void onRemoval(RemovalNotification<Long, String> notification) {
@@ -47,7 +47,7 @@ public class GuavaTest {
                 });
 
         build.put(1L, "1");
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             System.out.println(i + " - " + build.getIfPresent(1L));
             Thread.sleep(1000);
         }
