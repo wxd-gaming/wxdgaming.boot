@@ -5,8 +5,8 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.zip.GzipUtil;
-import wxdgaming.boot.core.cache.CachePack;
 import wxdgaming.boot.core.format.UniqueID;
+import wxdgaming.boot.core.lang.Cache;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.str.StringUtil;
@@ -31,11 +31,11 @@ import java.util.function.Consumer;
 @Accessors(chain = true)
 public class RpcEvent {
 
-    public static final CachePack<Long, RpcEvent> RPC_REQUEST_CACHE_PACK = new CachePack<Long, RpcEvent>()
-            .setUnload((requestSync, s) -> {})
-            .setCacheName("rpc-sync")
-            .setCacheSurvivalTime(30000)
-            .setCacheIntervalTime(1000);
+    public static final Cache<Long, RpcEvent> RPC_REQUEST_CACHE_PACK = Cache.<Long, RpcEvent>builder()
+            .cacheName("rpc-sync")
+            .expireAfterWrite(30000)
+            .delay(1000)
+            .build();
 
     public static String RPC_TOKEN = "5cb703a024e54648a70da85890ed7dbb";
     /** 默认的等待时间 单位 毫秒 */
@@ -143,7 +143,7 @@ public class RpcEvent {
     public String get(long timeoutMillis) {
         if (!res) {
             this.rpcId = RPC_ID_FORMAT.next();
-            RPC_REQUEST_CACHE_PACK.addCache(this.getRpcId(), this);
+            RPC_REQUEST_CACHE_PACK.put(this.getRpcId(), this);
             send();
             Boolean poll = null;
             try {

@@ -56,7 +56,7 @@ public interface Sign<S extends Session> {
                 "." + StringUtil.getRandomString(4) +
                 "." + (System.currentTimeMillis() / 1000);
 
-        AuthModule.AUTH_CACHE_PACK.addCache(token, auth);
+        AuthModule.AUTH_CACHE_PACK.put(token, auth);
 
         return token;
     }

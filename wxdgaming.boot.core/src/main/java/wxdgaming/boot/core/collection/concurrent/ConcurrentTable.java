@@ -153,4 +153,8 @@ public class ConcurrentTable<K1, K2, V> implements Serializable, Data2Json {
         nodes.clear();
     }
 
+    public long size() {
+        return nodes.values().stream().mapToInt(ConcurrentHashMap::size).sum();
+    }
+
 }

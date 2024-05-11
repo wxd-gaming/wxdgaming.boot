@@ -1,7 +1,7 @@
 package code;
 
 import org.junit.Test;
-import wxdgaming.boot.core.cache.Cache;
+import wxdgaming.boot.core.lang.Cache;
 
 import java.util.concurrent.TimeUnit;
 

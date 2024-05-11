@@ -3,7 +3,7 @@
 // (powered by FernFlower decompiler)
 //
 
-package wxdgaming.boot.core.cache;
+package wxdgaming.boot.core.lang;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,9 +12,8 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.function.Consumer2;
 import wxdgaming.boot.agent.function.Function1;
+import wxdgaming.boot.agent.function.Function2;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
-import wxdgaming.boot.core.lang.Tuple2;
-import wxdgaming.boot.core.lang.Tuple3;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.core.timer.MyClock;
 
@@ -39,12 +38,13 @@ import java.util.concurrent.TimeUnit;
 public class Cache<K, V> {
 
     protected final ConcurrentTable<Integer, K, Tuple3<V, Long, Long>> kv = new ConcurrentTable<>();
+    private String cacheName;
     /** hash桶,通过hash分区 */
     private int hashArea = 0;
     /** 加载 */
     protected Function1<K, V> loader;
-    /** 移除监听 */
-    protected Consumer2<K, V> removalListener;
+    /** 移除监听, 如果返回 false 者不会删除 */
+    protected Function2<K, V, Boolean> removalListener;
     /** 读取过期时间 */
     protected long expireAfterAccess;
     /** 写入过期时间 */
@@ -56,13 +56,21 @@ public class Cache<K, V> {
 
     protected Tuple3<V, Long, Long> buildValue(V v) {
         Tuple3<V, Long, Long> tuple = new Tuple3<>(v, -1L, -1L);
-        if (this.expireAfterWrite > 0L) {
-            tuple.setCenter(MyClock.millis() + this.expireAfterWrite);
-        }
-        if (heartTime > 0) {
-            tuple.setRight(MyClock.millis() + this.heartTime);
-        }
+        refresh(tuple);
         return tuple;
+    }
+
+    protected void refresh(Tuple3<V, Long, Long> tuple) {
+        long now = MyClock.millis();
+        if (this.expireAfterWrite > 0L && tuple.getCenter() < now) {
+            tuple.setCenter(now + this.expireAfterWrite);
+        }
+        if (this.expireAfterAccess > 0L && tuple.getCenter() < now) {
+            tuple.setCenter(now + this.expireAfterAccess);
+        }
+        if (heartTime > 0 && tuple.getRight() < now) {
+            tuple.setRight(now + this.heartTime);
+        }
     }
 
     protected int hashKey(K k) {
@@ -139,7 +147,20 @@ public class Cache<K, V> {
         this.kv.clear();
     }
 
+    public long cacheSize() {
+        return kv.size();
+    }
+
     protected Cache() {
+        this(100);
+    }
+
+    /**
+     * 构建缓存容器
+     *
+     * @param delay 缓存容器check间隔时间
+     */
+    protected Cache(long delay) {
 
         Executors.getDefaultExecutor().scheduleAtFixedDelay(
                 () -> {
@@ -152,24 +173,32 @@ public class Cache<K, V> {
                             Map.Entry<K, Tuple3<V, Long, Long>> entryNext = entryIterator.next();
                             K key = entryNext.getKey();
                             Tuple3<V, Long, Long> value = entryNext.getValue();
-                            if (value.getCenter() > 0 && value.getCenter() < now) {
-                                entryIterator.remove();
-                                if (removalListener != null) {
-                                    removalListener.accept(key, value.getLeft());
-                                } else {
-                                    log.info("缓存过期：{}", key);
-                                }
-                                continue;
-                            }
+
                             if (heartTime > 0 && heartListener != null && value.getRight() < now) {
                                 heartListener.accept(key, value.getLeft());
                                 value.setRight(now + heartTime);
                             }
+
+                            if (value.getCenter() > 0 && value.getCenter() < now) {
+                                if (removalListener != null) {
+                                    Boolean apply = removalListener.apply(key, value.getLeft());
+                                    if (Boolean.TRUE.equals(apply)) {
+                                        entryIterator.remove();
+                                    } else {
+                                        refresh(value);
+                                        log.info("缓存过期：{} 移除失败", key);
+                                    }
+                                } else {
+                                    entryIterator.remove();
+                                    log.info("缓存过期：{}", key);
+                                }
+                                continue;
+                            }
                         }
                     }
                 },
-                100,
-                100,
+                10_000,
+                delay,
                 TimeUnit.MILLISECONDS
         );
 
@@ -180,16 +209,31 @@ public class Cache<K, V> {
     }
 
     public static class CacheBuilder<K, V> {
+        private String cacheName;
+        /** 缓存容器check间隔时间 */
+        private long delay = 100;
         /** hash桶,通过hash分区 */
         private int hashArea = 0;
         private Function1<K, V> loader;
-        private Consumer2<K, V> removalListener;
+        private Function2<K, V, Boolean> removalListener;
         private long expireAfterAccess;
         private long expireAfterWrite;
         private long heartTime;
         private Consumer2<K, V> heartListener;
 
         CacheBuilder() {
+        }
+
+        /** 缓存容器名字 */
+        public CacheBuilder<K, V> cacheName(String cacheName) {
+            this.cacheName = cacheName;
+            return this;
+        }
+
+        /** 缓存容器check间隔时间 */
+        public CacheBuilder<K, V> delay(long delay) {
+            this.delay = delay;
+            return this;
         }
 
         /** hash桶,通过hash分区 */
@@ -205,7 +249,7 @@ public class Cache<K, V> {
         }
 
         /** 移除监听 */
-        public CacheBuilder<K, V> removalListener(Consumer2<K, V> removalListener) {
+        public CacheBuilder<K, V> removalListener(Function2<K, V, Boolean> removalListener) {
             this.removalListener = removalListener;
             return this;
         }
@@ -259,7 +303,8 @@ public class Cache<K, V> {
         }
 
         public Cache<K, V> build() {
-            return new Cache<K, V>()
+            return new Cache<K, V>(delay)
+                    .setCacheName(cacheName)
                     .setHashArea(hashArea)
                     .setLoader(loader)
                     .setRemovalListener(removalListener)
@@ -270,4 +315,11 @@ public class Cache<K, V> {
         }
 
     }
+
+    @Override public String toString() {
+        return "Cache{" +
+                "cacheName='" + cacheName + '\'' +
+                '}';
+    }
+
 }

@@ -3,8 +3,8 @@ package wxdgaming.boot.net.auth;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import lombok.Getter;
 import wxdgaming.boot.agent.system.AnnUtil;
-import wxdgaming.boot.core.cache.CachePack;
 import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.lang.Cache;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.net.Session;
@@ -23,10 +23,11 @@ import java.util.Optional;
 public class AuthModule {
 
     /** 秘钥管理器 */
-    public static final CachePack<String, IAuth> AUTH_CACHE_PACK = new CachePack<String, IAuth>()
-            .setCacheName("权限秘钥管理器")
-            .setCacheIntervalTime(60 * 1000)
-            .setCacheSurvivalTime(60 * 60 * 1000);
+    public static final Cache<String, IAuth> AUTH_CACHE_PACK = Cache.<String, IAuth>builder()
+            .cacheName("权限秘钥管理器")
+            .heartTime(60 * 1000)
+            .expireAfterAccess(60 * 60 * 1000)
+            .build();
 
     /** 优先验证最高权限token */
     public static boolean checkAuthorization(String userName, ObjMap putData) {
@@ -44,7 +45,7 @@ public class AuthModule {
             return RunResult.error(100, annotation.authTips()).toJson();
 
         // 验证签名
-        IAuth auth = AUTH_CACHE_PACK.cache(token);
+        IAuth auth = AUTH_CACHE_PACK.getIfPresent(token);
         if (auth == null) {
             auth = SignConfig.get().optToken(token).orElse(null);
         }

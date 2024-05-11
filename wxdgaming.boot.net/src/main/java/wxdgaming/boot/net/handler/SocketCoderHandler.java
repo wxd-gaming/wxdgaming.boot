@@ -80,9 +80,9 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 );
                 session.addReadCount();
             } else {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("剩余可读长度：", tmpByteBuf.readableBytes(), ", 不足：", len, ", ", this.toString());
-//                }
+                //                if (log.isDebugEnabled()) {
+                //                    log.debug("剩余可读长度：", tmpByteBuf.readableBytes(), ", 不足：", len, ", ", this.toString());
+                //                }
                 /*重新设置读取进度*/
                 tmpByteBuf.resetReaderIndex();
                 break;
@@ -159,7 +159,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     if (resSyncMessage.getGzip() == 1) {
                         params = GzipUtil.unGzip2String(params);
                     }
-                    RpcEvent syncrequest = RpcEvent.RPC_REQUEST_CACHE_PACK.cache(resSyncMessage.getRpcId());
+                    RpcEvent syncrequest = RpcEvent.RPC_REQUEST_CACHE_PACK.getIfPresent(resSyncMessage.getRpcId());
                     if (syncrequest != null) {
                         syncrequest.response(resSyncMessage.getParams());
                     } else {
