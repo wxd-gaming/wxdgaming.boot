@@ -89,8 +89,20 @@ public class Cache<K, V> {
 
     /** 如果获取缓存没有，可以根据加载,失败回抛出异常 */
     public V get(K k, Function1<K, V> load) {
-        int hk = hashKey(k);
+        V ifPresent = getIfPresent(k, load);
+        if (ifPresent == null) {
+            throw new NullPointerException(String.valueOf(k) + " cache null");
+        }
+        return ifPresent;
+    }
 
+    /** 获取数据，如果没有数据返回null */
+    public V getIfPresent(K k) {
+        return getIfPresent(k, loader);
+    }
+
+    public V getIfPresent(K k, Function1<K, V> load) {
+        int hk = hashKey(k);
         Tuple3<V, Long, Long> tuple = this.kv.computeIfAbsent(hk, k, l -> {
             V apply = null;
             if (load != null) {
@@ -99,21 +111,6 @@ public class Cache<K, V> {
             if (apply == null) return null;
             return buildValue(apply);
         });
-
-        if (tuple != null) {
-            if (this.expireAfterAccess > 0L) {
-                tuple.setCenter(MyClock.millis() + this.expireAfterAccess);
-            }
-            return tuple.getLeft();
-        } else {
-            throw new NullPointerException(String.valueOf(k) + " cache null");
-        }
-    }
-
-    /** 获取数据，如果没有数据返回null */
-    public V getIfPresent(K k) {
-        int hk = hashKey(k);
-        Tuple3<V, Long, Long> tuple = this.kv.get(hk, k);
         if (tuple != null) {
             if (this.expireAfterAccess > 0L) {
                 tuple.setCenter(MyClock.millis() + this.expireAfterAccess);

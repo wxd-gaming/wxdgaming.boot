@@ -120,8 +120,7 @@ public class JvmUtil {
             System.out.println("进程退出倒计时：" + kk + " 秒");
             try {
                 Thread.sleep(1000);
-            } catch (Exception e) {
-            }
+            } catch (Exception ignore) {}
         }
         System.out.println("进程退出：" + status);
         Runtime.getRuntime().halt(status);
