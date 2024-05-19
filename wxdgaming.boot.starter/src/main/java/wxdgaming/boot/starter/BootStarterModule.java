@@ -65,10 +65,10 @@ class BootStarterModule extends BaseModule {
         };
 
         {
-            action.accept(TsService.class, bootConfig.getServer());
-            action.accept(TsService1.class, bootConfig.getServer1());
-            action.accept(TsService2.class, bootConfig.getServer2());
-            action.accept(TsService3.class, bootConfig.getServer3());
+            action.accept(TsService.class, bootConfig.getTcpSocket());
+            action.accept(TsService1.class, bootConfig.getTcpSocket1());
+            action.accept(TsService2.class, bootConfig.getTcpSocket2());
+            action.accept(TsService3.class, bootConfig.getTcpSocket3());
         }
         {
             action.accept(HsService.class, bootConfig.getHttp());
@@ -77,10 +77,10 @@ class BootStarterModule extends BaseModule {
             action.accept(HsService3.class, bootConfig.getHttp3());
         }
         {
-            action.accept(WsService.class, bootConfig.getWsserver());
-            action.accept(WsService1.class, bootConfig.getWsserver1());
-            action.accept(WsService2.class, bootConfig.getWsserver2());
-            action.accept(WsService3.class, bootConfig.getWsserver3());
+            action.accept(WsService.class, bootConfig.getWebSocket());
+            action.accept(WsService1.class, bootConfig.getWebSocket1());
+            action.accept(WsService2.class, bootConfig.getWebSocket2());
+            action.accept(WsService3.class, bootConfig.getWebSocket3());
         }
         {
             dbAction.accept(MysqlService.class, bootConfig.getMysql());

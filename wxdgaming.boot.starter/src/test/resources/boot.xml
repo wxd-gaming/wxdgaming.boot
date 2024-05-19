@@ -7,7 +7,7 @@
     <defaultExecutor coreSize="2" maxSize="4"/>
     <!-- 逻辑线程池 -->
     <logicExecutor coreSize="8" maxSize="16"/>
-    <server>
+    <tcpSocket>
         <name>g1</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
@@ -15,8 +15,8 @@
         <sslProtocolType></sslProtocolType>
         <jks></jks>
         <jksPwd></jksPwd>
-    </server>
-    <wsserver>
+    </tcpSocket>
+    <webSocket>
         <name>default</name>
         <host>*</host>
         <wanIp>127.0.0.1</wanIp>
@@ -25,7 +25,7 @@
         <jks></jks>
         <jksPwd></jksPwd>
         <headers/>
-    </wsserver>
+    </webSocket>
     <http>
         <name>default</name>
         <host>*</host>
@@ -39,32 +39,36 @@
         <resourcesPath></resourcesPath>
         <headers>
             <!-- 跨域支持 -->
-            <header key="Access-Control-Allow-Origin" value="*"/>
-            <header key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
-            <header key="Access-Control-Allow-Credentials" value="true"/>
-            <header key="Access-Control-Allow-Headers"
+            <KV key="Access-Control-Allow-Origin" value="*"/>
+            <KV key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
+            <KV key="Access-Control-Allow-Credentials" value="true"/>
+            <KV key="Access-Control-Allow-Headers"
                     value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
             <!-- 添加缓存 -->
-<!--            <header key="pragma" value="private"/>-->
-<!--            <header key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>-->
-<!--            <header key="cache-control" value="max-age=36000"/>-->
+            <!--            <KV key="pragma" value="private"/>-->
+            <!--            <KV key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>-->
+            <!--            <KV key="cache-control" value="max-age=36000"/>-->
         </headers>
     </http>
-<!--    <mysql>-->
-<!--        <name>default</name>-->
-<!--        <show_sql>true</show_sql>-->
-<!--        <connectionPool>true</connectionPool>-->
-<!--        <batchSizeThread>2</batchSizeThread>-->
-<!--        <dbHost>127.0.0.1</dbHost>-->
-<!--        <dbPort>3306</dbPort>-->
-<!--        <dbBase>test3</dbBase>-->
-<!--        <dbUser>root</dbUser>-->
-<!--        <dbPwd>test</dbPwd>-->
-<!--    </mysql>-->
-<!--    <redis>-->
-<!--        <name>数据源1</name>-->
-<!--        <dbHost>127.0.0.1</dbHost>-->
-<!--        <dbPort>6379</dbPort>-->
-<!--        <dbPwd>test</dbPwd>-->
-<!--    </redis>-->
+    <!--    <mysql>-->
+    <!--        <name>default</name>-->
+    <!--        <show_sql>true</show_sql>-->
+    <!--        <connectionPool>true</connectionPool>-->
+    <!--        <batchSizeThread>2</batchSizeThread>-->
+    <!--        <dbHost>127.0.0.1</dbHost>-->
+    <!--        <dbPort>3306</dbPort>-->
+    <!--        <dbBase>test3</dbBase>-->
+    <!--        <dbUser>root</dbUser>-->
+    <!--        <dbPwd>test</dbPwd>-->
+    <!--    </mysql>-->
+    <!--    <redis>-->
+    <!--        <name>数据源1</name>-->
+    <!--        <dbHost>127.0.0.1</dbHost>-->
+    <!--        <dbPort>6379</dbPort>-->
+    <!--        <dbPwd>test</dbPwd>-->
+    <!--    </redis>-->
+
+    <other>
+        <KV key="a" value="a"/>
+    </other>
 </bootConfig>

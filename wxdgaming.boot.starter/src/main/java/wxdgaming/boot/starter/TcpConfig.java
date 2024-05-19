@@ -1,5 +1,6 @@
 package wxdgaming.boot.starter;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -22,20 +23,31 @@ import java.io.Serializable;
 public class TcpConfig extends ObjectBase implements Serializable {
 
     @Element(required = false)
+    @JSONField(ordinal = 1)
     private String name = "";
+    /** 外网ip */
     @Element(required = false)
-    private String host = "";
-    @Element(required = false)
+    @JSONField(ordinal = 2)
     private String wanIp = "0.0.0.0";
+    /** 内网ip */
     @Element(required = false)
+    @JSONField(ordinal = 3)
+    private String host = "";
+    /** 监听端口 */
+    @Element(required = false)
+    @JSONField(ordinal = 4)
     private int port = 0;
     @Element(required = false)
+    @JSONField(ordinal = 5)
     private String sslProtocolType = null;
     @Element(required = false)
+    @JSONField(ordinal = 6)
     private String jks = "";
     @Element(required = false)
+    @JSONField(ordinal = 7)
     private String jksPwd = "";
     @Element(required = false)
+    @JSONField(ordinal = 8)
     private String serviceClassName = null;
 
     public SslProtocolType sslProtocolType() throws Exception {

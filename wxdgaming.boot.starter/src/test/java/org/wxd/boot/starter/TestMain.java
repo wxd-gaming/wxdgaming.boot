@@ -2,6 +2,7 @@ package org.wxd.boot.starter;
 
 
 import wxdgaming.boot.starter.AppContext;
+import wxdgaming.boot.starter.BootConfig;
 
 /**
  * 启动项目
@@ -17,6 +18,9 @@ public class TestMain {
         System.out.println(XmlUtil.toXml(bootConfig));*/
         AppContext.boot(TestMain.class/*其实这里需要包含的包名*/);
         AppContext.start(true, 1, "test");
+
+        BootConfig instance = AppContext.context().getInstance(BootConfig.class);
+        System.out.println(instance);
     }
 
 }

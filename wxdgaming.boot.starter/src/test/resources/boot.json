@@ -1,0 +1,96 @@
+{
+  "defaultExecutor": {
+    "coreSize": 2,
+    "maxSize": 4
+  },
+  "vtExecutor": {
+    "coreSize": 100,
+    "maxSize": 200
+  },
+  "logicExecutor": {
+    "coreSize": 4,
+    "maxSize": 8
+  },
+  "tcpSocket": {
+    "name": "",
+    "wanIp": "0.0.0.0",
+    "host": "",
+    "port": 0,
+    "sslProtocolType": "",
+    "jks": "",
+    "jksPwd": "",
+    "serviceClassName": ""
+  },
+  "webSocket": {
+    "name": "",
+    "wanIp": "0.0.0.0",
+    "host": "",
+    "port": 0,
+    "sslProtocolType": "",
+    "jks": "",
+    "jksPwd": "",
+    "serviceClassName": "",
+    "resourcesPath": "",
+    "headers": []
+  },
+  "http": {
+    "name": "",
+    "wanIp": "0.0.0.0",
+    "host": "",
+    "port": 0,
+    "sslProtocolType": "",
+    "jks": "",
+    "jksPwd": "",
+    "serviceClassName": "",
+    "resourcesPath": "",
+    "headers": [
+      {
+        "key": "1",
+        "value": "2"
+      }
+    ],
+    "needCache": false
+  },
+  "mysql": {
+    "name": "",
+    "show_sql": false,
+    "connectionPool": false,
+    "createDbBase": true,
+    "batchSizeThread": 0,
+    "dbHost": "",
+    "dbPort": 0,
+    "dbBase": "",
+    "dbUser": "",
+    "dbPwd": ""
+  },
+  "mongodb": {
+    "name": "",
+    "show_sql": false,
+    "connectionPool": false,
+    "createDbBase": true,
+    "batchSizeThread": 0,
+    "dbHost": "",
+    "dbPort": 0,
+    "dbBase": "",
+    "dbUser": "",
+    "dbPwd": ""
+  },
+  "redis": {
+    "name": "",
+    "show_sql": false,
+    "connectionPool": false,
+    "createDbBase": true,
+    "batchSizeThread": 0,
+    "dbHost": "",
+    "dbPort": 0,
+    "dbBase": "",
+    "dbUser": "",
+    "dbPwd": ""
+  },
+  "other": [
+    {
+      "key": "a",
+      "value": "a"
+    }
+  ]
+}

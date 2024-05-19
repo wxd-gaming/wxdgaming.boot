@@ -4,7 +4,7 @@ import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.net.web.hs.HttpServer;
 import wxdgaming.boot.starter.HttpConfig;
 import wxdgaming.boot.starter.IocContext;
-import wxdgaming.boot.starter.WebConfig;
+import wxdgaming.boot.starter.KV;
 import wxdgaming.boot.starter.i.IShutdown;
 import wxdgaming.boot.starter.i.IStart;
 
@@ -28,7 +28,7 @@ public class HsService extends HttpServer implements IStart, IShutdown {
                 .initBootstrap();
 
         if (config.getHeaders() != null && !config.getHeaders().isEmpty()) {
-            for (WebConfig.Header header : config.getHeaders()) {
+            for (KV header : config.getHeaders()) {
                 getHeaderMap().put(header.getKey(), header.getValue());
             }
         }

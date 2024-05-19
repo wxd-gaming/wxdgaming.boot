@@ -1,13 +1,14 @@
 package wxdgaming.boot.starter;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import org.simpleframework.xml.*;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.core.lang.ObjectBase;
+
+import java.util.ArrayList;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -19,76 +20,109 @@ import wxdgaming.boot.core.lang.ObjectBase;
 @Root
 public class BootConfig extends ObjectBase {
 
+    @JSONField(ordinal = 1)
     @Element(required = false)
-    private ThreadPool defaultExecutor = new ThreadPool(2, 4);
+    private ThreadConfig defaultExecutor = new ThreadConfig(2, 4);
     /** 虚拟线程配置 */
+    @JSONField(ordinal = 2)
     @Element(required = false)
-    private ThreadPool vtExecutor = new ThreadPool(100, 200);
+    private ThreadConfig vtExecutor = new ThreadConfig(100, 200);
+    @JSONField(ordinal = 3)
     @Element(required = false)
-    private ThreadPool logicExecutor = new ThreadPool(4, 8);
+    private ThreadConfig logicExecutor = new ThreadConfig(4, 8);
 
+    @JSONField(ordinal = 101)
     @Element(required = false)
-    private TcpConfig server = new TcpConfig();
+    private TcpConfig tcpSocket = new TcpConfig();
+    @JSONField(ordinal = 102)
     @Element(required = false)
-    private TcpConfig server1 = new TcpConfig();
+    private TcpConfig tcpSocket1 = new TcpConfig();
+    @JSONField(ordinal = 103)
     @Element(required = false)
-    private TcpConfig server2 = new TcpConfig();
+    private TcpConfig tcpSocket2 = new TcpConfig();
+    @JSONField(ordinal = 104)
     @Element(required = false)
-    private TcpConfig server3 = new TcpConfig();
+    private TcpConfig tcpSocket3 = new TcpConfig();
+    @JSONField(ordinal = 201)
     @Element(required = false)
-    private WebConfig wsserver = new WebConfig();
+    private WebConfig webSocket = new WebConfig();
+    @JSONField(ordinal = 202)
     @Element(required = false)
-    private WebConfig wsserver1 = new WebConfig();
+    private WebConfig webSocket1 = new WebConfig();
+    @JSONField(ordinal = 203)
     @Element(required = false)
-    private WebConfig wsserver2 = new WebConfig();
+    private WebConfig webSocket2 = new WebConfig();
+    @JSONField(ordinal = 204)
     @Element(required = false)
-    private WebConfig wsserver3 = new WebConfig();
+    private WebConfig webSocket3 = new WebConfig();
+    @JSONField(ordinal = 301)
     @Element(required = false)
     private HttpConfig http = new HttpConfig();
+    @JSONField(ordinal = 302)
     @Element(required = false)
     private HttpConfig http1 = new HttpConfig();
+    @JSONField(ordinal = 303)
     @Element(required = false)
     private HttpConfig http2 = new HttpConfig();
+    @JSONField(ordinal = 304)
     @Element(required = false)
     private HttpConfig http3 = new HttpConfig();
+    @JSONField(ordinal = 500)
     @Element(required = false)
     private DbConfig mysql = new DbConfig();
+    @JSONField(ordinal = 501)
     @Element(required = false)
     private DbConfig mysql1 = new DbConfig();
+    @JSONField(ordinal = 502)
     @Element(required = false)
     private DbConfig mysql2 = new DbConfig();
+    @JSONField(ordinal = 503)
     @Element(required = false)
     private DbConfig mysql3 = new DbConfig();
+    @JSONField(ordinal = 600)
     @Element(required = false)
     private DbConfig mongodb = new DbConfig();
+    @JSONField(ordinal = 601)
     @Element(required = false)
     private DbConfig mongodb1 = new DbConfig();
+    @JSONField(ordinal = 602)
     @Element(required = false)
     private DbConfig mongodb2 = new DbConfig();
+    @JSONField(ordinal = 603)
     @Element(required = false)
     private DbConfig mongodb3 = new DbConfig();
+    @JSONField(ordinal = 700)
     @Element(required = false)
     private DbConfig redis = new DbConfig();
+    @JSONField(ordinal = 701)
     @Element(required = false)
     private DbConfig redis1 = new DbConfig();
+    @JSONField(ordinal = 702)
     @Element(required = false)
     private DbConfig redis2 = new DbConfig();
+    @JSONField(ordinal = 703)
     @Element(required = false)
     private DbConfig redis3 = new DbConfig();
+    /** 其他特殊配置 */
+    @JSONField(ordinal = 9999)
+    @ElementList(required = false)
+    private ArrayList<KV> other = new ArrayList<>();
 
     @Getter
     @Setter
-    public static class ThreadPool extends ObjectBase {
+    public static class ThreadConfig extends ObjectBase {
 
         @Attribute
+        @JSONField(ordinal = 1)
         private int coreSize;
         @Attribute
+        @JSONField(ordinal = 2)
         private int maxSize;
 
-        public ThreadPool() {
+        public ThreadConfig() {
         }
 
-        public ThreadPool(int coreSize, int maxSize) {
+        public ThreadConfig(int coreSize, int maxSize) {
             this.coreSize = coreSize;
             this.maxSize = maxSize;
         }

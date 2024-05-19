@@ -1,5 +1,6 @@
 package wxdgaming.boot.starter;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 public class HttpConfig extends WebConfig implements Serializable {
 
     @Element(required = false)
+    @JSONField(ordinal = 301)
     private boolean needCache = false;
 
     public HttpConfig() {
@@ -60,7 +62,7 @@ public class HttpConfig extends WebConfig implements Serializable {
         return this;
     }
 
-    @Override public HttpConfig setHeaders(ArrayList<WebConfig.Header> headers) {
+    @Override public HttpConfig setHeaders(ArrayList<KV> headers) {
         super.setHeaders(headers);
         return this;
     }

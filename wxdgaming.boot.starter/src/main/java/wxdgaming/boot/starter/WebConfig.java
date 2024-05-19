@@ -1,12 +1,11 @@
 package wxdgaming.boot.starter;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
-import wxdgaming.boot.core.lang.ObjectBase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,9 +20,11 @@ import java.util.ArrayList;
 public class WebConfig extends TcpConfig implements Serializable {
 
     @Element(required = false)
+    @JSONField(ordinal = 100)
     private String resourcesPath = "";
     @ElementList(required = false)
-    private ArrayList<Header> headers = new ArrayList<>();
+    @JSONField(ordinal = 101)
+    private ArrayList<KV> headers = new ArrayList<>();
 
     public WebConfig() {
     }
@@ -61,16 +62,6 @@ public class WebConfig extends TcpConfig implements Serializable {
     @Override public WebConfig setHost(String host) {
         super.setHost(host);
         return this;
-    }
-
-    @Getter
-    @Setter
-    @Accessors(chain = true)
-    public static class Header extends ObjectBase {
-        @Attribute
-        private String key;
-        @Attribute
-        private String value;
     }
 
 }

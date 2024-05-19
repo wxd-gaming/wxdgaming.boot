@@ -1,10 +1,15 @@
 package code;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.system.ReflectContext;
+import wxdgaming.boot.core.str.xml.XmlUtil;
 import wxdgaming.boot.net.controller.ann.TextMapping;
+import wxdgaming.boot.starter.BootConfig;
+import wxdgaming.boot.starter.KV;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -53,5 +58,13 @@ public class Test4 {
 
     }
 
+    @Test
+    public void bootConfig() {
+        BootConfig bootConfig = new BootConfig();
+        bootConfig.getHttp().getHeaders().add(new KV("1", "2"));
+        bootConfig.getOther().add(new KV("a", "a"));
+        System.out.println(XmlUtil.toXml(bootConfig));
+        System.out.println(JSON.toJSONString(bootConfig, SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullListAsEmpty));
+    }
 
 }

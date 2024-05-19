@@ -1,5 +1,6 @@
 package wxdgaming.boot.batis;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -42,24 +43,34 @@ public class DbConfig extends ObjectBase implements Serializable, Cloneable {
     }
 
     /** 命名 */
+    @JSONField(ordinal = 1)
     private String name;
     /** 显示sql执行语句 */
+    @JSONField(ordinal = 2)
     private boolean show_sql = false;
     /** 链接池 */
+    @JSONField(ordinal = 3)
     private boolean connectionPool = false;
     /** 创建数据库 */
+    @JSONField(ordinal = 4)
     private boolean createDbBase = true;
     /** 批处理线程数 */
+    @JSONField(ordinal = 5)
     private int batchSizeThread;
     /** 数据库ip */
+    @JSONField(ordinal = 6)
     private String dbHost;
     /** 数据库端口 */
+    @JSONField(ordinal = 7)
     private int dbPort;
     /** 数据库名字 */
+    @JSONField(ordinal = 8)
     private String dbBase;
     /** 用户 */
+    @JSONField(ordinal = 9)
     private String dbUser;
     /** 密码 */
+    @JSONField(ordinal = 10)
     private String dbPwd;
 
     public DbConfig clone(String dbName) throws CloneNotSupportedException {
@@ -84,16 +95,16 @@ public class DbConfig extends ObjectBase implements Serializable, Cloneable {
         sb.append('}');
         return sb.toString();
     }
-//    @Override
-//    public String toString() {
-//        return new StringJoiner(", ", DbConfig.class.getSimpleName() + "[", "]")
-//                .add("name='" + name + "'")
-//                .add("show_sql=" + show_sql)
-//                .add("connectionPool=" + connectionPool)
-//                .add("batchSizeThread=" + batchSizeThread)
-//                .add("dbHost=" + dbHost + ":" + dbPort + "/" + dbBase)
-//                .add("dbUser='" + dbUser + "'")
-//                .toString();
-//    }
+    //    @Override
+    //    public String toString() {
+    //        return new StringJoiner(", ", DbConfig.class.getSimpleName() + "[", "]")
+    //                .add("name='" + name + "'")
+    //                .add("show_sql=" + show_sql)
+    //                .add("connectionPool=" + connectionPool)
+    //                .add("batchSizeThread=" + batchSizeThread)
+    //                .add("dbHost=" + dbHost + ":" + dbPort + "/" + dbBase)
+    //                .add("dbUser='" + dbUser + "'")
+    //                .toString();
+    //    }
 
 }
