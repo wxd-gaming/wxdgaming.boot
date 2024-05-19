@@ -12,6 +12,7 @@ import wxdgaming.boot.core.timer.ann.Scheduled;
 import wxdgaming.boot.starter.AppContext;
 import wxdgaming.boot.starter.service.ScheduledService;
 
+import javax.sound.midi.Soundbank;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
@@ -37,24 +38,26 @@ public class TestTimerJob implements Serializable {
 
     @Test
     public void tt() {
-//        tt0("0 0 8 20/1 * ?");
-//        System.out.println("==================================");
-//        tt0("0 0 0 8,18,28 * ? *");
-//        System.out.println("==================================");
-//        tt0("0 0 8 ? * 7 *");
-//        System.out.println("==================================");
-        tt0("0 0 * ? * ? ?");
+        //        tt0("0 0 8 20/1 * ?");
+        //        System.out.println("==================================");
+        //        tt0("0 0 0 8,18,28 * ? *");
+        //        System.out.println("==================================");
+        //        tt0("0 0 8 ? * 7 *");
+        //        System.out.println("==================================");
+        tt0("0 0 8 ? * ? ?");
         System.out.println("==================================");
         tt0("0 15 12,20 ? * ? ?");
         System.out.println("==================================");
     }
 
     public void tt0(String cron) {
-        CronExpress scheduledInfo = new CronExpress(cron, TimeUnit.SECONDS, 0);
+        CronExpress scheduledInfo = new CronExpress(cron, TimeUnit.MINUTES, 100);
+        System.out.println(scheduledInfo.getClass().getName() + " - " + scheduledInfo);
         long millis = MyClock.millis();
-        for (int i = 0; i < 5; i++) {
-            millis = scheduledInfo.findValidateTime(millis, 1000);
-            System.out.println(cron + " - 下次执行时间：" + MyClock.formatDate(millis) + " - 星期：" + MyClock.dayOfWeek(millis) + ", ");
+        for (int i = 0; i < 6; i++) {
+            long[] validateTime = scheduledInfo.findValidateTime(millis);
+            millis = validateTime[0];
+            System.out.println(cron + " - 下次执行时间：" + MyClock.formatDate(millis) + " - " + MyClock.formatDate(validateTime[1]) + " - 星期：" + MyClock.dayOfWeek(millis) + ", ");
         }
     }
 
@@ -101,23 +104,23 @@ public class TestTimerJob implements Serializable {
     }
 
     //    @Scheduled(value = "30")
-//    public void t1() {
-//        log.info("第 30 秒执行");
-//    }
-//
+    //    public void t1() {
+    //        log.info("第 30 秒执行");
+    //    }
+    //
     @Scheduled(value = "0 *")
     public void t3() {
         log.info("每分钟执行一次");
     }
-//
-//    @Scheduled(value = "0 */2")
-//    public void t4() {
-//        log.info("间隔 2 分钟执行一次");
-//    }
-//
-//    @Scheduled(value = "0 */2 15")
-//    public void t5() {
-//        log.info("下午三点 没两分钟执行一次");
-//    }
+    //
+    //    @Scheduled(value = "0 */2")
+    //    public void t4() {
+    //        log.info("间隔 2 分钟执行一次");
+    //    }
+    //
+    //    @Scheduled(value = "0 */2 15")
+    //    public void t5() {
+    //        log.info("下午三点 没两分钟执行一次");
+    //    }
 
 }

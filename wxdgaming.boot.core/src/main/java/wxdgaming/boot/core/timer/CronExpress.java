@@ -1,6 +1,9 @@
 package wxdgaming.boot.core.timer;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.core.lang.ObjectBase;
 import wxdgaming.boot.core.str.StringUtil;
 
 import java.util.Arrays;
@@ -14,14 +17,17 @@ import java.util.concurrent.TimeUnit;
  * @version: 2021-09-27 10:40
  **/
 @Slf4j
-public class CronExpress {
+public class CronExpress extends ObjectBase {
 
     /** 表达式 */
-    String cron;
+    @JSONField(ordinal = 1)
+    @Getter String cron;
     /** 时间需求 */
-    TimeUnit timeUnit;
+    @JSONField(ordinal = 2)
+    @Getter TimeUnit timeUnit;
     /** 偏移量 */
-    long duration;
+    @JSONField(ordinal = 3)
+    @Getter long duration;
 
     private transient int curSecond = -1;
     /** 配合持续时间使用 */
@@ -145,12 +151,12 @@ public class CronExpress {
     }
 
     /** 取下一次可用的时间 */
-    public long validateTimeAfter() {
+    public long[] validateTimeAfter() {
         return validateTimeAfter(MyClock.millis());
     }
 
     /** 取下一次可用的时间 */
-    public long validateTimeAfter(long time) {
+    public long[] validateTimeAfter(long time) {
         return findValidateTime(time, 1000);
     }
 
@@ -161,17 +167,17 @@ public class CronExpress {
 
     /** 获取下一次可用的格式化时间字符串 */
     public String validateDateAfter(long time) {
-        return MyClock.formatDate(validateTimeAfter(time));
+        return MyClock.formatDate(validateTimeAfter(time)[0]);
     }
 
     /** 取下一次可用的时间 */
-    public long validateOverTimeAfter() {
+    public long[] validateOverTimeAfter() {
         return validateTimeAfter(MyClock.millis());
     }
 
     /** 取下一次可用的时间 */
-    public long validateOverTimeAfter(long time) {
-        return validateTimeAfter(time) + this.offsetTime;
+    public long[] validateOverTimeAfter(long time) {
+        return validateTimeAfter(time);
     }
 
     /** 获取下一次可用的时间 持续结束时间 格式化字符串 */
@@ -181,16 +187,16 @@ public class CronExpress {
 
     /** 获取下一次可用的时间 持续结束时间 格式化字符串 */
     public String validateOverDateAfter(long time) {
-        return MyClock.formatDate(validateOverTimeAfter(time));
+        return MyClock.formatDate(validateOverTimeAfter(time)[1]);
     }
 
     /** 获取上一次可用的时间 */
-    public long validateTimeBefore() {
+    public long[] validateTimeBefore() {
         return validateTimeBefore(MyClock.millis());
     }
 
     /** 获取上一次可用的时间 */
-    public long validateTimeBefore(long time) {
+    public long[] validateTimeBefore(long time) {
         return findValidateTime(time, -1000);
     }
 
@@ -201,7 +207,7 @@ public class CronExpress {
 
     /** 获取上一次可用时间的格式化字符串 */
     public String validateDateBefore(long time) {
-        return MyClock.formatDate(validateTimeBefore(time));
+        return MyClock.formatDate(validateTimeBefore(time)[0]);
     }
 
     /** 获取上一次可用时间 持续结束时间 */
@@ -211,7 +217,7 @@ public class CronExpress {
 
     /** 获取上一次可用时间 持续结束时间 */
     public long validateOverTimeBefore(long time) {
-        return findValidateTime(time, -1000) + offsetTime;
+        return findValidateTime(time, -1000)[1];
     }
 
     /** 获取上一次可用时间 持续结束时间 的格式化字符串 */
@@ -224,6 +230,22 @@ public class CronExpress {
         return MyClock.formatDate(validateOverTimeBefore(time));
     }
 
+    /** 获取开启时间 */
+    public long[] findValidateTime() {
+        long now = MyClock.millis();
+        return findValidateTime(now);
+    }
+
+    public long[] findValidateTime(long now) {
+        long[] validateTime = findValidateTime(now, -1000);
+        if (validateTime != null) {
+            if (validateTime[0] <= now && now <= validateTime[1] + offsetTime) {
+                return validateTime;
+            }
+        }
+        return findValidateTime(now, 1000);
+    }
+
     /**
      * 获取开启时间
      *
@@ -231,7 +253,7 @@ public class CronExpress {
      * @param change 每一次变更的时间差查找上一次就是 -1000
      * @return
      */
-    public long findValidateTime(long time, long change) {
+    public long[] findValidateTime(long time, long change) {
         long seconds = TimeUnit.DAYS.toSeconds(30);
         for (int i = 0; i < seconds; i++) {
             int second = MyClock.getSecond(time);
@@ -242,11 +264,12 @@ public class CronExpress {
             int month = MyClock.getMonth(time);
             int year = MyClock.getYear(time);
             if (checkJob(second, minute, hour, dayOfWeek, dayOfMonth, month, year)) {
-                return time;
+                time = time / 1000 * 1000;
+                return new long[]{time, time + offsetTime};
             }
             time += change;
         }
-        return 0;
+        return null;
     }
 
     public boolean checkJob(int second, int minute, int hour, int dayOfWeek, int dayOfMonth, int month, int year) {
@@ -303,30 +326,4 @@ public class CronExpress {
         return true;
     }
 
-    public String getCron() {
-        return cron;
-    }
-
-    public CronExpress setCron(String cron) {
-        this.cron = cron;
-        return this;
-    }
-
-    public TimeUnit getTimeUnit() {
-        return timeUnit;
-    }
-
-    public CronExpress setTimeUnit(TimeUnit timeUnit) {
-        this.timeUnit = timeUnit;
-        return this;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public CronExpress setDuration(long duration) {
-        this.duration = duration;
-        return this;
-    }
 }

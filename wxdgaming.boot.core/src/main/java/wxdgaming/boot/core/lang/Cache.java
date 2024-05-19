@@ -101,6 +101,7 @@ public class Cache<K, V> {
         return getIfPresent(k, loader);
     }
 
+    /** 获取数据，如果没有数据返回null */
     public V getIfPresent(K k, Function1<K, V> load) {
         int hk = hashKey(k);
         Tuple3<V, Long, Long> tuple = this.kv.computeIfAbsent(hk, k, l -> {
