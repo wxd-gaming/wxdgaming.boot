@@ -114,24 +114,24 @@ public class StringUtil {
     public static final Pattern FilterLine1 = Pattern.compile("\n|\r|\t");
 
     public static void main(String[] args) throws Exception {
-//        System.out.println(padLeft("dd", 4, ' '));
-//        System.out.println(checkMatches("@ageagteyt", PATTERN_A_Z));
-//        String asStr = "伙伴资质";
-//        String newString = new String(asStr.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-//        System.out.println(newString + ", " + newString.length());
-//        System.out.println(checkMatches("id", PATTERN_Have_UUU));
-//        System.out.println(checkMatches("int(4)", PATTERN_Have_UUU));
-//        System.out.println(checkMatches("伙伴资质id", PATTERN_Have_UUU));
-//        System.out.println(checkMatches("伙伴资质属性类别", PATTERN_Have_UUU));
-//        System.out.println(StringUtil.convert_InBase64_ASE("token=1a45ab3830b340de80da75e124d246f2&cmd=reloadscript大发了书法家拉设计费拉束带结发离开", 3, 2));
-//        System.out.println(checkMatches("aofjoaifj", StringUtil.PATTERN_ABC_1));
-//        System.out.println(checkMatches("aofjoaifjp[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1));
-//        System.out.println(checkFind("aofjoaifjp.[[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1_1_1));
-//        System.out.println(checkFind("aofjoaifjp[[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1_1_1));
-//        System.out.println(checkFind("aofjoaifjp[[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1_1_1));
-//        System.out.println("数字 or 字母 or 下划线 " + StringUtil.replaceFilter("d阿德发发发委托__-——ASDGFsdfsdg方群刚#%#￥%&￥*￥@3453456548#￥%&%……（*）@￥【】[][", StringUtil.PATTERN_ABC_1));
-//        System.out.println("数字 or 字母 or 下划线 " + StringUtil.replaceFilter("d阿德发发发委托__-—'''—ASDGFsdfsdg方群刚#%#￥%&￥*￥@3453456548#￥%&%……（*）@￥【】[][", StringUtil.PATTERN_REPLACE_UUU));
-//        System.out.println("数字 or 字母 or 下划线 " + StringUtil.checkFind("撸猪哥）（", StringUtil.PATTERN_ABC_00_UUU));
+        //        System.out.println(padLeft("dd", 4, ' '));
+        //        System.out.println(checkMatches("@ageagteyt", PATTERN_A_Z));
+        //        String asStr = "伙伴资质";
+        //        String newString = new String(asStr.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
+        //        System.out.println(newString + ", " + newString.length());
+        //        System.out.println(checkMatches("id", PATTERN_Have_UUU));
+        //        System.out.println(checkMatches("int(4)", PATTERN_Have_UUU));
+        //        System.out.println(checkMatches("伙伴资质id", PATTERN_Have_UUU));
+        //        System.out.println(checkMatches("伙伴资质属性类别", PATTERN_Have_UUU));
+        //        System.out.println(StringUtil.convert_InBase64_ASE("token=1a45ab3830b340de80da75e124d246f2&cmd=reloadscript大发了书法家拉设计费拉束带结发离开", 3, 2));
+        //        System.out.println(checkMatches("aofjoaifj", StringUtil.PATTERN_ABC_1));
+        //        System.out.println(checkMatches("aofjoaifjp[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1));
+        //        System.out.println(checkFind("aofjoaifjp.[[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1_1_1));
+        //        System.out.println(checkFind("aofjoaifjp[[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1_1_1));
+        //        System.out.println(checkFind("aofjoaifjp[[喊嫒时代峰峻破案时点击发送", StringUtil.PATTERN_ABC_1_1_1));
+        //        System.out.println("数字 or 字母 or 下划线 " + StringUtil.replaceFilter("d阿德发发发委托__-——ASDGFsdfsdg方群刚#%#￥%&￥*￥@3453456548#￥%&%……（*）@￥【】[][", StringUtil.PATTERN_ABC_1));
+        //        System.out.println("数字 or 字母 or 下划线 " + StringUtil.replaceFilter("d阿德发发发委托__-—'''—ASDGFsdfsdg方群刚#%#￥%&￥*￥@3453456548#￥%&%……（*）@￥【】[][", StringUtil.PATTERN_REPLACE_UUU));
+        //        System.out.println("数字 or 字母 or 下划线 " + StringUtil.checkFind("撸猪哥）（", StringUtil.PATTERN_ABC_00_UUU));
         String str = "  ddd\t嗯嗯   服\ndfd\r\nddd  ";
         System.out.println(str);
         System.out.println(replaceLine(str));
@@ -278,6 +278,16 @@ public class StringUtil {
     /** 去掉换行符, 制表符和空格 */
     public static String replaceLine(String str) {
         return FilterLine.matcher(str).replaceAll("");
+    }
+
+    /** 清理utf8-bom信息 */
+    public static String clearUtf8Bom(String source) {
+        char headChar = source.charAt(0);
+        // 去除utf8-bom头
+        if (headChar == 65279) {
+            return source.substring(1);
+        }
+        return source;
     }
 
     /**
