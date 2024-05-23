@@ -24,20 +24,27 @@ public class HttpTest {
     @Test
     public void t1() throws Exception {
         String url;
-         url = "http://47.108.150.14:18800/sjcq/wanIp";
-        //url = "http://127.0.0.1:19000/test/ok";
-        // url = "http://47.108.150.14:18801/test/ok";
-        //url = "http://center.xiaw.net:18800/sjcq/wanIp";
+        // url = "http://192.168.11.84:8686/qj5.json";
+        //  url = "http://login.yzzl.dalangx.com/qj5.json";
+        // url = "http://login.yzzl.dalangx.com/login/s_h?uid=1&token=1";
+        url = "http://101.34.239.171:3000/login/s_h?uid=1&token=1";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
-        //url = "http://47.108.81.97:18001/index";
-        //url = "http://47.108.81.97:18881/";
-        //url = "https://www.baidu.com";
+        // url = "http://center.xiaw.net:18800/sjcq/wanIp";
+        // url = "http://47.108.81.97:18001/index";
+        // url = "http://47.108.81.97:18881/";
+        // url = "https://www.baidu.com";
         tv1(url, 1);
         tv1(url, 10);
-        //tv1(url, 50);
-        //tv1(url, 100);
-        //tv1(url, 500);
-        //tv1(url, 1000);
+        tv1(url, 50);
+        tv1(url, 100);
+        tv1(url, 500);
+
+        // url = "http://login.yzzl.dalangx.com/login/s_h?uid=1&token=1";
+        // tv1(url, 1);
+        // tv1(url, 10);
+        // tv1(url, 50);
+        // tv1(url, 100);
+        // tv1(url, 500);
     }
 
     public void tv1(String url, int testCount) throws Exception {
@@ -49,7 +56,14 @@ public class HttpTest {
         for (int i = 0; i < testCount; i++) {
             long n = System.nanoTime();
             AtomicInteger tmp = new AtomicInteger();
-            HttpBuilder.postMulti(url).putParams(ObjMap.build(1, 1)).timeout(1200).readTimeout(8000).logTime(5000).waringTime(5000).retry(2).asyncString()
+            HttpBuilder.postMulti(url)
+                    .putParams(ObjMap.build(1, 1))
+                    .timeout(1200)
+                    .readTimeout(8000)
+                    .logTime(5000)
+                    .waringTime(5000)
+                    .retry(2)
+                    .asyncString()
                     .subscribe(s -> {
                         allTime.addAndGet(System.nanoTime() - n);
                         source.incrementAndGet();
@@ -68,7 +82,8 @@ public class HttpTest {
         float v1 = (System.nanoTime() - l) / 10000 / 100f;
         float v = allTime.get() / 10000 / 100f;
         System.out.printf(
-                "HttpURLConnection - 请求 %4d 次, 完成 %4d 次, 异常：%4d 次, 耗时：%8.2f(累计耗时：%12.2f) ms, 平均：%8.2f ms, 吞吐：%8.2f/s%n",
+                "%s - 请求 %4d 次, 完成 %4d 次, 异常：%4d 次, 耗时：%8.2f(累计耗时：%12.2f) ms, 平均：%8.2f ms, 吞吐：%8.2f/s%n",
+                url,
                 testCount,
                 source.get(),
                 exCount.get(),

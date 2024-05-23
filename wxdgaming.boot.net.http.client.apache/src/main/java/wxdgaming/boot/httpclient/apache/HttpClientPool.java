@@ -8,15 +8,15 @@ import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
-import javax.net.ssl.*;
-import java.io.IOException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,7 +51,7 @@ public class HttpClientPool implements AutoCloseable {
                 for (HttpClientPool clientPool : CLIENT_POOLS) {
                     PoolingHttpClientConnectionManager mng = clientPool.getConnPoolMng();
                     mng.closeExpiredConnections();/*关闭异常链接*/
-//                    mng.closeIdleConnections(10, TimeUnit.SECONDS);/*关闭空闲链接*/
+                    //                    mng.closeIdleConnections(10, TimeUnit.SECONDS);/*关闭空闲链接*/
                 }
             } finally {
                 lock.unlock();
@@ -74,15 +74,15 @@ public class HttpClientPool implements AutoCloseable {
         System.out.println("初始化定时器检测http池化异常链接");
     }
 
-//    private static final HttpClientPool HTTP_CLIENT_POOL_THREAD_LOCAL = build(
-//            50,
-//            120,
-//            2 * 1000,
-//            2 * 1000,
-//            2 * 1000,
-//            10 * 1000,
-//            "TLS"
-//    );
+    //    private static final HttpClientPool HTTP_CLIENT_POOL_THREAD_LOCAL = build(
+    //            50,
+    //            120,
+    //            2 * 1000,
+    //            2 * 1000,
+    //            2 * 1000,
+    //            10 * 1000,
+    //            "TLS"
+    //    );
 
     public static HttpClientPool getDefault() {
         return HTTP_CLIENT_POOL_THREAD_LOCAL.get();
@@ -180,20 +180,9 @@ public class HttpClientPool implements AutoCloseable {
 
                     public void checkServerTrusted(X509Certificate[] xcs, String str) {}
                 };
+
                 sslContext.init(null, new TrustManager[]{tm}, null);
-                sslSocketFactory = new SSLConnectionSocketFactory(sslContext, new X509HostnameVerifier() {
-                    @Override
-                    public boolean verify(String s, SSLSession sslSession) {return true;}
-
-                    @Override
-                    public void verify(String host, SSLSocket ssl) throws IOException {}
-
-                    @Override
-                    public void verify(String host, X509Certificate cert) throws SSLException {}
-
-                    @Override
-                    public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {}
-                });
+                sslSocketFactory = new SSLConnectionSocketFactory(sslContext, (s, sslSession) -> true);
 
 
                 registry = RegistryBuilder.<ConnectionSocketFactory>create()
@@ -201,18 +190,18 @@ public class HttpClientPool implements AutoCloseable {
                         .register("https", sslSocketFactory)
                         .build();
 
-                //初始化http连接池
+                // 初始化http连接池
 
 
                 connPoolMng = new PoolingHttpClientConnectionManager(registry);
                 connPoolMng.setMaxTotal(max);
                 connPoolMng.setDefaultMaxPerRoute(core);
 
-                //初始化请求超时控制参数
+                // 初始化请求超时控制参数
                 RequestConfig requestConfig = RequestConfig.custom()
-                        .setConnectionRequestTimeout(connectionRequestTimeout) //从线程池中获取线程超时时间
-                        .setConnectTimeout(connectTimeOut) //连接超时时间
-                        .setSocketTimeout(readTimeout) //设置数据超时时间
+                        .setConnectionRequestTimeout(connectionRequestTimeout) // 从线程池中获取线程超时时间
+                        .setConnectTimeout(connectTimeOut) // 连接超时时间
+                        .setSocketTimeout(readTimeout) // 设置数据超时时间
                         .build();
 
 
@@ -222,8 +211,8 @@ public class HttpClientPool implements AutoCloseable {
 
                 HttpClientBuilder httpClientBuilder = HttpClients.custom()
                         .setConnectionManager(connPoolMng)
-//                        .evictExpiredConnections()/*关闭异常链接*/
-//                        .evictIdleConnections(10, TimeUnit.SECONDS)/*关闭空闲链接*/
+                        //                        .evictExpiredConnections()/*关闭异常链接*/
+                        //                        .evictIdleConnections(10, TimeUnit.SECONDS)/*关闭空闲链接*/
                         .setDefaultRequestConfig(requestConfig)
                         .setRetryHandler(new DefaultHttpRequestRetryHandler())
                         .setKeepAliveStrategy(connectionKeepAliveStrategy);
