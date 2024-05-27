@@ -14,9 +14,9 @@ import java.util.Map;
  **/
 @Slf4j
 @Getter
-public class Context extends ConcurrentObjMap {
+public class ThreadContext extends ConcurrentObjMap {
 
-    private static final ThreadLocal<Context> local = new InheritableThreadLocal<>();
+    private static final ThreadLocal<ThreadContext> local = new InheritableThreadLocal<>();
 
     /** 获取参数 */
     public static <T> T context(final Class<T> clazz) {
@@ -60,23 +60,23 @@ public class Context extends ConcurrentObjMap {
     }
 
     /** 获取参数 */
-    public static Context context() {
-        Context context = local.get();
-        if (context == null) {
-            context = new Context();
-            local.set(context);
+    public static ThreadContext context() {
+        ThreadContext threadContext = local.get();
+        if (threadContext == null) {
+            threadContext = new ThreadContext();
+            local.set(threadContext);
         }
-        return context;
+        return threadContext;
     }
 
     /** 设置参数 */
     public void set() {
-        local.set(new Context());
+        local.set(new ThreadContext());
     }
 
     /** 设置参数 */
-    public void set(Context context) {
-        local.set(context);
+    public void set(ThreadContext threadContext) {
+        local.set(threadContext);
     }
 
     /** 清理缓存 */
@@ -97,17 +97,17 @@ public class Context extends ConcurrentObjMap {
     /** 清理缓存初始化的时候自动 clone 当前线程上下文 */
     public static class ContextRunnable implements Runnable {
 
-        final Context context;
+        private final ThreadContext threadContext;
         private final Runnable task;
 
         public ContextRunnable(Runnable task) {
             this.task = task;
-            context = new Context(context());
+            threadContext = new ThreadContext(context());
         }
 
         @Override public void run() {
             try {
-                local.set(context);
+                local.set(threadContext);
                 task.run();
             } finally {
                 cleanup();
@@ -118,15 +118,15 @@ public class Context extends ConcurrentObjMap {
     /** 清理缓存初始化的时候自动 clone 当前线程上下文 */
     public static abstract class ContextEvent implements Runnable {
 
-        final Context context;
+        final ThreadContext threadContext;
 
         public ContextEvent() {
-            context = new Context(context());
+            threadContext = new ThreadContext(context());
         }
 
         @Override public void run() {
             try {
-                local.set(context);
+                local.set(threadContext);
                 onEvent();
             } finally {
                 cleanup();
@@ -137,10 +137,10 @@ public class Context extends ConcurrentObjMap {
 
     }
 
-    public Context() {
+    public ThreadContext() {
     }
 
-    public Context(Map m) {
+    public ThreadContext(Map m) {
         super(m);
     }
 

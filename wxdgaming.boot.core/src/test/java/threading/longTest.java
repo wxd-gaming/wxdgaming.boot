@@ -18,30 +18,30 @@ public class longTest {
 
     @Test
     public void t2() throws InterruptedException {
-        Context.putContentIfAbsent(new ReqContext().setRid(1));
-        Context.putContentIfAbsent("2", new ReqContext().setRid(2));
-        Object context = Context.context(ReqContext.class);
-        log.info("{} {}", context, Context.context("2"));
+        ThreadContext.putContentIfAbsent(new ReqContext().setRid(1));
+        ThreadContext.putContentIfAbsent("2", new ReqContext().setRid(2));
+        Object context = ThreadContext.context(ReqContext.class);
+        log.info("{} {}", context, ThreadContext.context("2"));
         t3();
-        new Thread(new Context.ContextRunnable(() -> {
-            Context.putContent("2", "ssss");
+        new Thread(new ThreadContext.ContextRunnable(() -> {
+            ThreadContext.putContent("2", "ssss");
             t3();
 
         })).start();
-        new Thread(new Context.ContextEvent() {
+        new Thread(new ThreadContext.ContextEvent() {
             @Override public void onEvent() {
                 t3();
             }
         }).start();
 
-        Context.cleanup("2");
+        ThreadContext.cleanup("2");
         new Thread(() -> t3()).start();
         Thread.sleep(1000);
     }
 
     public void t3() {
-        ReqContext context = Context.context(ReqContext.class);
-        log.info("{} {}", context, Context.context("2"));
+        ReqContext context = ThreadContext.context(ReqContext.class);
+        log.info("{} {}", context, ThreadContext.context("2"));
 
     }
 
