@@ -5,12 +5,14 @@ import com.carrotsearch.hppc.IntIntHashMap;
 import com.carrotsearch.hppc.LongLongHashMap;
 import com.carrotsearch.hppc.LongObjectHashMap;
 import org.junit.Test;
+import wxdgaming.boot.core.format.ByteFormat;
 import wxdgaming.boot.core.format.data.Data2Size;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -77,6 +79,54 @@ public class ObjSizeTest {
         LongLongHashMap long2 = new LongLongHashMap(1003);
         IntIntHashMap int2 = new IntIntHashMap(1003);
         IntArrayList int1 = new IntArrayList();
+    }
+
+
+    @Test
+    public void t33() {
+        List<Integer> sh0 = new ArrayList<>();
+        List<Integer> sh1 = new ArrayList<>(2);
+        sh0.add(1);
+        // sh0.add(1);
+        // sh0.add(1);
+        // sh1.add(1);
+        // sh1.add(1);
+        sh1.add(1);
+        System.out.println(Data2Size.totalSize0(sh0));
+        System.out.println(Data2Size.totalSize0(sh1));
+    }
+
+    @Test
+    public void t34() {
+        System.out.println(Data2Size.totalSize0(new ArrayList<String>()));
+        System.out.println(Data2Size.totalSize0(new ArrayList<String>(2)));
+        System.out.println(Data2Size.totalSize0(new ArrayList<String>(8)));
+        System.out.println(Data2Size.totalSize0(new ArrayList<String>(200)));
+    }
+
+    @Test
+    public void t35() {
+        A[] as = new A[1000 * 10000];
+        B[] bs = new B[1000 * 10000];
+
+        System.out.println(Data2Size.totalSizes0(as));
+        System.out.println(Data2Size.totalSizes0(bs));
+        for (int i = 0; i < as.length; i++) {
+            as[i] = new A();
+            bs[i] = new B();
+        }
+        System.out.println(new ByteFormat().addFlow(Data2Size.totalSize0(as)).toString(ByteFormat.FormatInfo.MB));
+        System.out.println(new ByteFormat().addFlow(Data2Size.totalSize0(bs)).toString(ByteFormat.FormatInfo.MB));
+    }
+
+    public class A {
+        int a = 2;
+        int b = 2;
+    }
+
+    public class B {
+        short a = 2;
+        short b = 2;
     }
 
 }

@@ -26,8 +26,8 @@ public class HttpTest {
         String url;
         // url = "http://192.168.11.84:8686/qj5.json";
         //  url = "http://login.yzzl.dalangx.com/qj5.json";
-        // url = "http://login.yzzl.dalangx.com/login/s_h?uid=1&token=1";
-        url = "http://101.34.239.171:3000/login/s_h?uid=1&token=1";
+        url = "http://login.yzzl.dalangx.com/login/s_h?uid=1&token=1";
+        // url = "http://101.34.239.171:3000/login/s_h?uid=1&token=1";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://center.xiaw.net:18800/sjcq/wanIp";
         // url = "http://47.108.81.97:18001/index";
