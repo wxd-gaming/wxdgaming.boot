@@ -3,7 +3,6 @@ package wxdgaming.boot.core.logback;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
-import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.timer.MyClock;
 
 import java.io.Serializable;
@@ -14,7 +13,6 @@ import java.io.Serializable;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2022-08-31 21:11
  **/
-@Slf4j
 public class LogbackResetTimeFilter extends Filter<LoggingEvent> implements Serializable {
 
     /**
