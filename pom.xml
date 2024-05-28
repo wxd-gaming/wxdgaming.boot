@@ -391,7 +391,15 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
+                    <staleMillis>1</staleMillis>
+                    <useIncrementalCompilation>true</useIncrementalCompilation>
+                    <fork>true</fork> <!-- 启用分离的编译进程 -->
+                    <meminitial>128m</meminitial> <!-- 编译器初始化内存大小 -->
+                    <maxmem>1624m</maxmem> <!-- 编译器最大可用内存 -->
                     <compilerArgs>
+                        <arg>-Xpkginfo:always</arg>
+                        <!-- 过期的方法的警告-->
+                        <arg>-Xlint:deprecation</arg>
                         <arg>--add-opens=java.base/java.lang=ALL-UNNAMED</arg>
                         <arg>--add-opens=java.base/java.util=ALL-UNNAMED</arg>
                         <arg>--add-exports=java.base/sun.security.pkcs=ALL-UNNAMED</arg>

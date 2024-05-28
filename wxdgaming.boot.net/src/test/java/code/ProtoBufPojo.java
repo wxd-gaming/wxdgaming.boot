@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,19 +28,36 @@ public class ProtoBufPojo {
     @Test
     public void readProtobuf() {
 
+    }
+
+    public void actionProtoFile(String outPath) {
         AtomicReference<BeanInfo> comment = new AtomicReference<>(new BeanInfo());
         AtomicBoolean start = new AtomicBoolean();
-        FileReadUtil.readLine(new File("src/main/proto/Rpc.proto"), StandardCharsets.UTF_8, line -> {
+
+        AtomicReference<String> packageName = new AtomicReference<>("");
+        TreeSet<String> imports = new TreeSet<>();
+        imports.add(Getter.class.getName());
+        imports.add(Setter.class.getName());
+        imports.add(ObjectBase.class.getName());
+        imports.add(Accessors.class.getName());
+        File file = new File(outPath);
+        FileReadUtil.readLine(file, StandardCharsets.UTF_8, line -> {
             if (StringUtil.emptyOrNull(line)) return;
             if (line.startsWith("//")) {
                 comment.get().comment = line.substring(2);
+            } else if (line.contains("java_package")) {
+                int i = line.indexOf("=");
+                int i1 = line.indexOf(";");
+                String trim = line.substring(i + 1, i1).trim().replace("\"", "");
+                trim += "." + file.getName().replace(".proto", "").trim().toLowerCase();
+                packageName.set(trim);
             } else if (line.startsWith("message")) {
                 String[] split = line.split(" ");
                 System.out.println("【" + split[1] + "】");
                 comment.get().className = split[1];
                 start.set(true);
             } else if (line.contains("}")) {
-                System.out.println(comment.get());
+                System.out.println(comment.get().classString(packageName.get(), imports));
                 comment.set(new BeanInfo());
                 start.set(false);
             } else {
@@ -53,6 +71,7 @@ public class ProtoBufPojo {
 
     @Getter
     public static class BeanInfo {
+
 
         private String className;
         private String comment;
@@ -77,9 +96,14 @@ public class ProtoBufPojo {
             }
         }
 
-        @Override public String toString() {
-
-            String to = "";
+        public String classString(String packageName, TreeSet<String> imports) {
+            String to = "package " + packageName + ";";
+            to += "\n";
+            for (String anImport : imports) {
+                to += "\nimport " + anImport;
+            }
+            to += "\n";
+            to += "\n";
             to += "\n/** " + comment + " */";
             to += "\n@Getter";
             to += "\n@Setter";
@@ -89,17 +113,19 @@ public class ProtoBufPojo {
                 to += "\n" + filedInfo.toString();
             }
             to += "\n";
-            to += "     public byte[] encode() {\n" +
-                    "            return SerializerUtil.encode(this);\n" +
-                    "        }\n" +
-                    "\n" +
-                    "        public " + className + " decode(byte[] bytes) {\n" +
-                    "            SerializerUtil.decode(bytes, this);\n" +
-                    "            return this;\n" +
-                    "        }";
+            to += "\n" +
+                    "   public byte[] encode() {\n" +
+                    "      return SerializerUtil.encode(this);\n" +
+                    "   }\n" +
+                    "   \n" +
+                    "   public " + className + " decode(byte[] bytes) {\n" +
+                    "      SerializerUtil.decode(bytes, this);\n" +
+                    "      return this;\n" +
+                    "   }";
             to += "\n}";
             return to;
         }
+
     }
 
     @Getter
