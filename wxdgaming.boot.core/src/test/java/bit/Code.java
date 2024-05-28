@@ -23,6 +23,16 @@ public class Code implements Serializable {
     }
 
     @Test
+    public void bit2() {
+        System.out.println(1 << 1);
+        System.out.println(1 << 2);
+        System.out.println(1 << 3);
+        System.out.println(1 << 4);
+        System.out.println((114 & (1 << 5)) >0);
+        System.out.println(1 << 6);
+    }
+
+    @Test
     public void bigFlag() {
         final BitFlag bitFlag = new BitFlag();
         /*添加标记*/

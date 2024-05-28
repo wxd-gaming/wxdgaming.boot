@@ -1,4 +1,4 @@
-package code;
+package pojo;
 
 
 import io.protostuff.LinkedBuffer;
