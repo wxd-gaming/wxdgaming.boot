@@ -16,6 +16,10 @@ public class MapOf implements Serializable {
         return Collections.EMPTY_MAP;
     }
 
+    public static boolean isEmpty(final Map map) {
+        return map == null || map.isEmpty();
+    }
+
     public static Map<Integer, Integer> asMap(int[][] ts) {
         Map<Integer, Integer> map = new LinkedHashMap<>();
         for (int[] t : ts) {
