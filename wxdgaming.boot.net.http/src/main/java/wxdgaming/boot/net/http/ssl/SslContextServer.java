@@ -78,6 +78,7 @@ public class SslContextServer implements Serializable {
         // 初始化此上下文
         // 参数一：认证的密钥      参数二：对等信任认证  参数三：伪随机数生成器 。 由于单向认证，服务端不用验证客户端，所以第二个参数为null
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        sslContext.getServerSessionContext().setSessionCacheSize(2);
         return sslContext;
     }
 
