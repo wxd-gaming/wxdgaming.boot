@@ -20,6 +20,14 @@ public class Code implements Serializable {
         System.out.println(0b0_1111_1111);
         System.out.println(0b0_0111_1111);
         System.out.println(0b1_1111_1110);
+
+
+        long x0 = 0b0000_1111_0000;
+        long x1 = 0b0001_1111_0000;
+        System.out.println(x0 + " - " + BitFlag.toString(x0));
+        System.out.println(x1 + " - " + BitFlag.toString(x1));
+        System.out.println(x0 & x1);
+
     }
 
     @Test
@@ -28,7 +36,7 @@ public class Code implements Serializable {
         System.out.println(1 << 2);
         System.out.println(1 << 3);
         System.out.println(1 << 4);
-        System.out.println((114 & (1 << 5)) >0);
+        System.out.println((114 & (1 << 5)) > 0);
         System.out.println(1 << 6);
     }
 
@@ -38,9 +46,13 @@ public class Code implements Serializable {
         /*添加标记*/
         bitFlag.addFlags(1, 2, 3).pint();
         /*测试分组互斥*/
-        bitFlag.addFlagRange(1, 10, 1).pint().addFlagRange(1, 10, 2).pint();
+        bitFlag
+                .addFlagRange(1, 10, 1).pint()
+                .addFlagRange(1, 10, 2).pint();
         /*测试分组互斥*/
-        bitFlag.addFlag(67).pint().addFlagRange(65, 128, 69).pint();
+        bitFlag
+                .addFlag(67).pint()
+                .addFlagRange(65, 128, 69).pint();
         /*分组范围内，有一个是真 即为真*/
         System.out.println(bitFlag.hasFlagRange(1, 64));
         System.out.println(bitFlag.flagCount());

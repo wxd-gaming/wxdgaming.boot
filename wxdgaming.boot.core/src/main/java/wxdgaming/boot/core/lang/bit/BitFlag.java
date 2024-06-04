@@ -222,13 +222,15 @@ public class BitFlag implements Serializable {
     public String toString() {
         String show = "";
         for (Long aLong : longs) {
-            show = StringUtil.padLeft(Long.toBinaryString(aLong), 64, '0') + show;
+            show = toBinaryString("", StringUtil.padLeft(Long.toBinaryString(aLong), 64, '0'))
+                    + (StringUtil.emptyOrNull(show) ? "" : "_")
+                    + show;
         }
-        return show;
+        return "0b" + show;
     }
 
     public static String toString(byte i) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder("0b");
         for (int j = 0; j < 8; j++) {
             sb.append((i & 1 << j) != 0 ? 1 : 0);
         }
@@ -236,15 +238,29 @@ public class BitFlag implements Serializable {
     }
 
     public static String toString(short i) {
-        return StringUtil.padLeft(Integer.toBinaryString(i), 16, '0');
+        String string = StringUtil.padLeft(Integer.toBinaryString(i), 16, '0');
+        return toBinaryString("0b", string);
     }
 
     public static String toString(int i) {
-        return StringUtil.padLeft(Integer.toBinaryString(i), 32, '0');
+        String string = StringUtil.padLeft(Integer.toBinaryString(i), 32, '0');
+        return toBinaryString("0b", string);
     }
 
     public static String toString(long l) {
-        return StringUtil.padLeft(Long.toBinaryString(l), 64, '0');
+        String string = StringUtil.padLeft(Long.toBinaryString(l), 64, '0');
+        return toBinaryString("0b", string);
+    }
+
+    private static String toBinaryString(String start, String str) {
+        StringBuilder stringBuilder = new StringBuilder(start);
+        for (int i = 1; i <= str.length(); i++) {
+            stringBuilder.append(str.charAt(i - 1));
+            if (i > 1 && i < str.length() && i % 4 == 0) {
+                stringBuilder.append("_");
+            }
+        }
+        return stringBuilder.toString();
     }
 
 }
