@@ -9,7 +9,7 @@
         <version>j21-003</version>
     </parent>
 
-    <artifactId>wxdgaming.boot.simple</artifactId>
+    <artifactId>wxdgaming.boot.net.http.service.simple</artifactId>
 
     <dependencies>
         <dependency>
