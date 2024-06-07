@@ -28,6 +28,7 @@
         <module>wxdgaming.boot.net.http.client.url</module>
         <module>wxdgaming.boot.net.http.service.simple</module>
         <module>wxdgaming.boot.starter</module>
+        <module>wxdgaming.boot.kotlin</module>
     </modules>
 
     <properties>
