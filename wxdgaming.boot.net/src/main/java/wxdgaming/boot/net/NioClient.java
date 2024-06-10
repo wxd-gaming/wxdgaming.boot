@@ -135,16 +135,13 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
         }
     }
 
-    public void connect() {
-        connect(this.getHost(), this.getPort());
+    /** 同步等待一个链接返回 */
+    public ChannelFuture connect() {
+        return connect(this.getHost(), this.getPort());
     }
 
-    /**
-     * 同步等待一个链接返回
-     *
-     * @return
-     */
-    public void connect(String host, int port) {
+    /** 同步等待一个链接返回 */
+    public ChannelFuture connect(String host, int port) {
         if (StringUtil.isNullOrEmpty(host)) {
             throw new RuntimeException("hostname = " + host);
         }
@@ -155,10 +152,11 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
             initBootstrap();
         }
         if (log.isDebugEnabled()) {
-            log.debug("发起链接 " + this.toString(host, port));
+            log.debug("发起链接 {}", this.toString(host, port));
         }
 
-        bootstrap.connect(host, port).addListener(new ChannelFutureListener() {
+        ChannelFuture future = bootstrap.connect(host, port);
+        future.addListener(new ChannelFutureListener() {
             @Override public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
                     log.debug("[{}] connect to [{}] success", name, future.channel());
@@ -167,7 +165,7 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
                 }
             }
         });
-
+        return future;
     }
 
     public abstract S newSession(String name, ChannelHandlerContext ctx);
@@ -190,10 +188,10 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
 
     public void shutdown() {
         if (bootstrap != null) {
-            log.warn("====={start}====服务关闭 " + this.toString() + "=================");
+            log.warn("====={start}====服务关闭 {}=================", this.toString());
             clearSession();
             bootstrap = null;
-            log.warn("====={end}======服务关闭 " + this.toString() + "=================");
+            log.warn("====={end}======服务关闭 {}=================", this.toString());
         }
     }
 

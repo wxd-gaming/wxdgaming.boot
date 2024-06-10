@@ -43,7 +43,7 @@
             <KV key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
             <KV key="Access-Control-Allow-Credentials" value="true"/>
             <KV key="Access-Control-Allow-Headers"
-                    value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
+                value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
             <!-- 添加缓存 -->
             <!--            <KV key="pragma" value="private"/>-->
             <!--            <KV key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>-->
