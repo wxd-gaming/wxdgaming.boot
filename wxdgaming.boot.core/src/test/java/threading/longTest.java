@@ -2,6 +2,7 @@ package threading;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import wxdgaming.boot.core.threading.ThreadContext;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)

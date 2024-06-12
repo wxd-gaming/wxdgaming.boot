@@ -1,4 +1,4 @@
-package threading;
+package wxdgaming.boot.core.threading;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
