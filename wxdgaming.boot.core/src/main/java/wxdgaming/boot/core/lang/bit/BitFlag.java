@@ -25,20 +25,30 @@ public class BitFlag implements Serializable {
 
     }
 
-    public BitFlag(int i) {
-
+    /**
+     * 构建flag的长度
+     *
+     * @param sizeLong 你需要几个long来存储
+     */
+    public BitFlag(int sizeLong) {
+        checkBounds(sizeLong - 1);
     }
 
     public BitFlag(long[] longs) {
         this.longs = longs;
     }
 
-    protected void checkBounds(int bound) {
-        bound++;
+    /**
+     * @param sizeLong 你需要几个long来存储
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-13 15:20
+     */
+    protected void checkBounds(int sizeLong) {
+        sizeLong++;
         if (longs == null) {
-            longs = new long[bound];
-        } else if (longs.length < bound) {
-            longs = Arrays.copyOf(this.longs, bound);
+            longs = new long[sizeLong];
+        } else if (longs.length < sizeLong) {
+            longs = Arrays.copyOf(this.longs, sizeLong);
         }
     }
 
@@ -58,11 +68,20 @@ public class BitFlag implements Serializable {
         if (index < 1) {
             throw new UnsupportedOperationException("index 大于 0");
         }
+        final int flag1 = (index - 1) % 64;
+        addFlag(index, 1L << flag1);
+        return this;
+    }
+
+    /** 追加覆盖 */
+    public BitFlag addFlag(int index, long value) {
+        if (index < 1) {
+            throw new UnsupportedOperationException("index 大于 0");
+        }
         index--;
         final int flag0 = index / 64;
-        final int flag1 = index % 64;
         checkBounds(flag0);
-        longs[flag0] = longs[flag0] | (1L << flag1);
+        longs[flag0] = longs[flag0] | value;
         return this;
     }
 
@@ -98,13 +117,6 @@ public class BitFlag implements Serializable {
         return this;
     }
 
-    /** 移除多个标记 */
-    public BitFlag removeFlags(int... indexes) {
-        for (int index : indexes) {
-            removeFlag(index);
-        }
-        return this;
-    }
 
     /** 移除分组标记，通常是连续位 */
     public BitFlag removeFlagRange(int groupStart, int groupEnd) {
@@ -116,16 +128,41 @@ public class BitFlag implements Serializable {
         return this;
     }
 
+    /** 移除多个标记 */
+    public BitFlag removeFlags(int... indexes) {
+        for (int index : indexes) {
+            removeFlag(index);
+        }
+        return this;
+    }
+
     /** 移除一个标记 */
     public BitFlag removeFlag(int index) {
         if (index < 1) {
             throw new UnsupportedOperationException("index 大于 0");
         }
+        final int flag1 = (index - 1) % 64;
+        removeFlag(index, 1L << flag1);
+        return this;
+    }
+
+    /**
+     * 移除一个标记
+     *
+     * @param index
+     * @param value 会对参数进行取反操作
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-13 14:09
+     */
+    public BitFlag removeFlag(int index, long value) {
+        if (index < 1) {
+            throw new UnsupportedOperationException("index 大于 0");
+        }
         index--;
         final int flag0 = index / 64;
-        final int flag1 = index % 64;
         checkBounds(flag0);
-        longs[flag0] = longs[flag0] & ~(1L << flag1);
+        longs[flag0] = longs[flag0] & ~value;
         return this;
     }
 
@@ -209,6 +246,25 @@ public class BitFlag implements Serializable {
         return this;
     }
 
+    public BitFlag clear() {
+        longs = null;
+        return this;
+    }
+
+    /**
+     * 重置当前对象
+     *
+     * @param sizeLong 你需要几个long来存储
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-13 15:19
+     */
+    public BitFlag reset(int sizeLong) {
+        longs = null;
+        checkBounds(sizeLong - 1);
+        return this;
+    }
+
     public long[] getLongs() {
         return longs;
     }
@@ -221,10 +277,12 @@ public class BitFlag implements Serializable {
     @Override
     public String toString() {
         String show = "";
-        for (Long aLong : longs) {
-            show = toBinaryString("", StringUtil.padLeft(Long.toBinaryString(aLong), 64, '0'))
-                    + (StringUtil.emptyOrNull(show) ? "" : "_")
-                    + show;
+        if (longs != null) {
+            for (Long aLong : longs) {
+                show = toBinaryString("", StringUtil.padLeft(Long.toBinaryString(aLong), 64, '0'))
+                        + (StringUtil.emptyOrNull(show) ? "" : "_")
+                        + show;
+            }
         }
         return "0b" + show;
     }
