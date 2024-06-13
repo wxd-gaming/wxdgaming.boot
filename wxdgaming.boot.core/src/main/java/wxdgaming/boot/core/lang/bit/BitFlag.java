@@ -16,7 +16,7 @@ public class BitFlag implements Serializable {
     /*
     & 真真的真，两个都是1就是1，
     | 有一个真就是真，
-    ~ 位取反
+    ~ 位取反 0变1 1变0
     ^ 一真一假得假，0和1得1，
      */
     private long[] longs = null;
