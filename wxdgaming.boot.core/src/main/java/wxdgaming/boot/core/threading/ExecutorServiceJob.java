@@ -20,6 +20,7 @@ class ExecutorServiceJob implements Runnable, Job {
     protected String runName = "";
     protected volatile String queueName = "";
     protected final Runnable task;
+    private final ThreadContext threadContext;
     protected volatile long initTaskTime;
     protected volatile long startExecTime;
     protected volatile Thread currentThread;
@@ -38,6 +39,7 @@ class ExecutorServiceJob implements Runnable, Job {
                     + "." + stackTraceElement.getMethodName()
                     + "():line：" + stackTraceElement.getLineNumber();
         }
+        threadContext = new ThreadContext(ThreadContext.context());
     }
 
     public void check(StringBuilder stringBuilder) {
@@ -89,7 +91,12 @@ class ExecutorServiceJob implements Runnable, Job {
         Executors.CurrentThread.set(this);
 
         try {
-            task.run();
+            ThreadContext.set(threadContext);
+            try {
+                task.run();
+            } finally {
+                ThreadContext.cleanup();
+            }
             float v = (System.nanoTime() - startExecTime) / 10000 / 100f;
             float v2 = (System.nanoTime() - initTaskTime) / 10000 / 100f;
 

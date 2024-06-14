@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  **/
 @Slf4j
 @Getter
-public final class VirtualThreadExecutors implements Executor {
+final class VirtualThreadExecutors implements Executor {
 
     final Thread.Builder.OfVirtual ofVirtual;
     final String name;
@@ -113,7 +113,7 @@ public final class VirtualThreadExecutors implements Executor {
     /** 准备关闭，不再接受新的任务 ,并且会等待当前队列任务全部执行完成 */
     public void shutdown() {
         this.shutdowning.set(true);
-        while (!isTerminated() && threadActivationCount.get() >0) {}
+        while (!isTerminated() && threadActivationCount.get() > 0) {}
         over();
     }
 

@@ -1,5 +1,6 @@
 package wxdgaming.boot.core.lang.bit;
 
+import lombok.Getter;
 import wxdgaming.boot.core.str.StringUtil;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.Arrays;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2022-05-11 12:08
  **/
+@Getter
 public class BitFlag implements Serializable {
 
     /*
@@ -263,10 +265,6 @@ public class BitFlag implements Serializable {
         longs = null;
         checkBounds(sizeLong - 1);
         return this;
-    }
-
-    public long[] getLongs() {
-        return longs;
     }
 
     public BitFlag setLongs(long[] longs) {

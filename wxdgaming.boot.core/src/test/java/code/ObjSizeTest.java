@@ -129,4 +129,39 @@ public class ObjSizeTest {
         short b = 2;
     }
 
+    @Test
+    public void t30() {
+        ArrayList<Boolean> b1 = new ArrayList<>();
+        ArrayList<Boolean> b2 = new ArrayList<>();
+        ArrayList<Boolean> b3 = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            b1.add(true);
+            b2.add(Boolean.valueOf(true));
+            b3.add(Boolean.TRUE);
+        }
+        System.out.println(Data2Size.totalSize0(b1));
+        System.out.println(Data2Size.totalSize0(b2));
+        System.out.println(Data2Size.totalSize0(b3));
+    }
+
+    @Test
+    public void t31() {
+        ArrayList<Tmp> tmps = new ArrayList<>();
+        for (int k = 0; k < 100; k++) {
+            Tmp tmp = new Tmp();
+            for (int i = 0; i < 10000; i++) {
+                tmp.h1.put(i, i);
+            }
+            System.out.println(Data2Size.totalSize0(tmp.h1));
+            System.out.println(Data2Size.totalSizes0(tmp) + " - " + Data2Size.totalSize0(tmp));
+            System.out.println("===========================================");
+            tmps.add(tmp);
+        }
+        System.out.println(Data2Size.totalSizes0(tmps) + " - " + Data2Size.totalSize0(tmps));
+    }
+
+    public static class Tmp {
+        HashMap<Integer, Object> h1 = new HashMap<>();
+    }
+
 }

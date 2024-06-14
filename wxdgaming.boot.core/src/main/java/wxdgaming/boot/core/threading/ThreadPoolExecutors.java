@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 @Slf4j
 @Getter
-public final class ThreadPoolExecutors implements Executor, Runnable {
+final class ThreadPoolExecutors implements Executor, Runnable {
 
     AtomicInteger threadSpeed = new AtomicInteger();
 

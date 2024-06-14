@@ -19,10 +19,9 @@ public class GlobalUtil {
     public static Consumer2<Object, Throwable> exceptionCall = null;
 
     public static void exception(Object msg, Throwable throwable) {
+        LogbackUtil.logger(3).error("{}", msg, throwable);
         if (exceptionCall != null) {
             exceptionCall.accept(msg, throwable);
-        } else {
-            LogbackUtil.logger(3).error("{}", msg, throwable);
         }
     }
 

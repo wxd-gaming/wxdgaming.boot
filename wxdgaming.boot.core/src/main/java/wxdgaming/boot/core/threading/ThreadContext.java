@@ -2,7 +2,7 @@ package wxdgaming.boot.core.threading;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.collection.concurrent.ConcurrentObjMap;
+import wxdgaming.boot.core.collection.ObjMap;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import java.util.Map;
  **/
 @Slf4j
 @Getter
-public class ThreadContext extends ConcurrentObjMap {
+public class ThreadContext extends ObjMap {
 
     private static final ThreadLocal<ThreadContext> local = new InheritableThreadLocal<>();
 
@@ -70,12 +70,12 @@ public class ThreadContext extends ConcurrentObjMap {
     }
 
     /** 设置参数 */
-    public void set() {
+    public static void set() {
         local.set(new ThreadContext());
     }
 
     /** 设置参数 */
-    public void set(ThreadContext threadContext) {
+    public static void set(ThreadContext threadContext) {
         local.set(threadContext);
     }
 
