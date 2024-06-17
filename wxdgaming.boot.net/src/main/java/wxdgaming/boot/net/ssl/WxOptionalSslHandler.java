@@ -47,6 +47,7 @@ public class WxOptionalSslHandler extends ByteToMessageDecoder implements Serial
         try {
             SSLEngine sslEngine = sslContext.createSSLEngine();
             sslEngine.setUseClientMode(false);/*false服务器模式*/
+            // sslEngine.setWantClientAuth(false);
             sslEngine.setNeedClientAuth(false);
             sslHandler = new WxSslHandler(sslEngine);
             ctx.pipeline().replace(this, newSslHandlerName(), sslHandler);

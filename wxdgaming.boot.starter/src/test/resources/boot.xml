@@ -32,8 +32,8 @@
         <wanIp>127.0.0.1</wanIp>
         <port>19000</port>
         <sslProtocolType></sslProtocolType>
-        <jks></jks>
-        <jksPwd></jksPwd>
+        <jks>jks/wxdtest-1.8.jks</jks>
+        <jksPwd>jks/wxdtest-1.8.jks.pwd</jksPwd>
         <serviceClassName>wxdgaming.boot.starter.service.HsService</serviceClassName>
         <needCache>true</needCache>
         <resourcesPath></resourcesPath>
