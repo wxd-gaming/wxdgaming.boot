@@ -15,8 +15,11 @@ import wxdgaming.boot.agent.function.Function1;
 import wxdgaming.boot.agent.function.Function2;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.threading.Executors;
+import wxdgaming.boot.core.threading.TimerJob;
 import wxdgaming.boot.core.timer.MyClock;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter(value = AccessLevel.PROTECTED)
 @Accessors(chain = true)
-public class Cache<K, V> {
+public class Cache<K, V> implements Closeable {
 
     protected final ConcurrentTable<Integer, K, Tuple3<V, Long, Long>> kv = new ConcurrentTable<>();
     private String cacheName;
@@ -153,6 +156,12 @@ public class Cache<K, V> {
         this(100);
     }
 
+    protected final TimerJob timerJob;
+
+    @Override public void close() throws IOException {
+        timerJob.cancel();
+    }
+
     /**
      * 构建缓存容器
      *
@@ -160,7 +169,7 @@ public class Cache<K, V> {
      */
     protected Cache(long delay) {
 
-        Executors.getDefaultExecutor().scheduleAtFixedDelay(
+        timerJob = Executors.getDefaultExecutor().scheduleAtFixedDelay(
                 () -> {
                     long now = MyClock.millis();
                     for (Map.Entry<Integer, ConcurrentHashMap<K, Tuple3<V, Long, Long>>> next : kv.entrySet()) {
