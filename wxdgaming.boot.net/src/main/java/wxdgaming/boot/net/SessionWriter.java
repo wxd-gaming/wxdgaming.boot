@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.core.i.ILock;
 import wxdgaming.boot.core.lang.ConvertUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.message.UpFileAccess;
 import wxdgaming.boot.net.util.ByteBufUtil;

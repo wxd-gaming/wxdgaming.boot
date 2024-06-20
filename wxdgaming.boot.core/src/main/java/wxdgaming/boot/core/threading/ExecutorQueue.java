@@ -2,7 +2,7 @@ package wxdgaming.boot.core.threading;
 
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.lang.LockBase;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;

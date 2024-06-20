@@ -24,7 +24,7 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DataChecked;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.timer.MyClock;
 

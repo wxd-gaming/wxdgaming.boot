@@ -2,7 +2,7 @@ package wxdgaming.boot.core.threading;
 
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
