@@ -95,33 +95,19 @@ public class ThreadContext extends ObjMap {
     }
 
     /** 清理缓存初始化的时候自动 clone 当前线程上下文 */
-    public static class ContextRunnable implements Runnable {
-
-        private final ThreadContext threadContext;
-        private final Runnable task;
-
-        public ContextRunnable(Runnable task) {
-            this.task = task;
-            threadContext = new ThreadContext(context());
-        }
-
-        @Override public void run() {
-            try {
-                local.set(threadContext);
-                task.run();
-            } finally {
-                cleanup();
-            }
-        }
-    }
-
-    /** 清理缓存初始化的时候自动 clone 当前线程上下文 */
+    @Getter
     public static abstract class ContextEvent implements Runnable {
 
         final ThreadContext threadContext;
+        private final StackTraceElement stackTraceElement;
+
+        protected ContextEvent(int stack) {
+            threadContext = new ThreadContext(context());
+            stackTraceElement = Thread.currentThread().getStackTrace()[stack];
+        }
 
         public ContextEvent() {
-            threadContext = new ThreadContext(context());
+            this(3);
         }
 
         @Override public void run() {
@@ -135,6 +121,24 @@ public class ThreadContext extends ObjMap {
 
         public abstract void onEvent();
 
+        @Override public String toString() {
+            return String.valueOf(stackTraceElement);
+        }
+    }
+
+    /** 清理缓存初始化的时候自动 clone 当前线程上下文 */
+    public static class ContextRunnable extends ContextEvent {
+
+        private final Runnable task;
+
+        public ContextRunnable(Runnable task) {
+            super(3);
+            this.task = task;
+        }
+
+        @Override public void onEvent() {
+            task.run();
+        }
     }
 
     public ThreadContext() {
