@@ -18,9 +18,10 @@ public class Code {
         ExecutorService executorService = Executors.newFixedThreadPool(6);
         ExecutorActor actor = new ExecutorActor("ss", executorService);
         for (int i = 0; i < 10; i++) {
+            ThreadContext.putContent("a", i);
             actor.publish(new ThreadContext.ContextEvent() {
                 @Override public void onEvent() {
-                    log.info("a -> " + this.toString());
+                    log.info("a -> {} {}", ThreadContext.context("a"), this.toString());
                     countDownLatch.countDown();
                 }
             });
