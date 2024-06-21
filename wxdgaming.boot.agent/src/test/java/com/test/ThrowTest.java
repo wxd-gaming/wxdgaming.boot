@@ -32,4 +32,13 @@ public class ThrowTest {
     public void t2() throws Exception {
         throw new Exception();
     }
+
+    @Test
+    public void t3() throws Exception {
+        System.out.println(Throw.ofString(new RuntimeException()));
+        System.out.println();
+        System.out.println(Throw.ofString(new RuntimeException(), false));
+        Thread.sleep(100);
+    }
+
 }
