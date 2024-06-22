@@ -1,8 +1,5 @@
 package wxdgaming.boot.agent.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
@@ -12,8 +9,6 @@ import java.lang.reflect.InvocationTargetException;
  **/
 public class Throw extends RuntimeException implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = LoggerFactory.getLogger(Throw.class);
     public static final StackTraceElement[] StackTraceEmpty = new StackTraceElement[0];
 
     public static RuntimeException as(Throwable throwable) {
@@ -44,23 +39,29 @@ public class Throw extends RuntimeException implements Serializable {
     }
 
     public static String ofString(Throwable throwable) {
+        return ofString(throwable, true);
+    }
+
+    public static String ofString(Throwable throwable, boolean appendLine) {
         StringBuilder stringBuilder = new StringBuilder();
-        ofString(stringBuilder, throwable);
+        ofString(stringBuilder, throwable, appendLine);
         return stringBuilder.toString();
     }
 
     /**
      * 处理错误日志的堆栈信息
      *
-     * @param stringBuilder
-     * @param throwable
+     * @param stringBuilder 带出
+     * @param throwable     需要处理的异常
+     * @param appendLine    是否使用换行符
      */
-    public static void ofString(StringBuilder stringBuilder, Throwable throwable) {
+    public static void ofString(StringBuilder stringBuilder, Throwable throwable, boolean appendLine) {
         if (throwable != null) {
 
-            ofString(stringBuilder, throwable.getCause());
+            ofString(stringBuilder, throwable.getCause(), appendLine);
 
-            stringBuilder.append("\n");
+            if (appendLine) stringBuilder.append("\n");
+            else stringBuilder.append("=>");
 
             if (!Throw.class.equals(throwable.getClass())) {
                 stringBuilder.append(throwable.getClass().getName());
@@ -73,18 +74,22 @@ public class Throw extends RuntimeException implements Serializable {
             } else {
                 stringBuilder.append("null");
             }
-            stringBuilder.append("\n");
+            if (appendLine) stringBuilder.append("\n");
+            else stringBuilder.append("=>");
             StackTraceElement[] stackTraces = throwable.getStackTrace();
-            ofString(stringBuilder, stackTraces);
-            stringBuilder.append("-----------------------------------------------------------------------------");
+            ofString(stringBuilder, stackTraces, appendLine);
+            if (appendLine)
+                stringBuilder.append("-----------------------------------------------------------------------------");
         }
     }
 
-    public static void ofString(StringBuilder stringBuilder, StackTraceElement[] stackTraces) {
+    public static void ofString(StringBuilder stringBuilder, StackTraceElement[] stackTraces, boolean appendLine) {
         for (StackTraceElement e : stackTraces) {
-            stringBuilder.append("    at ");
+            if (appendLine)
+                stringBuilder.append("    at ");
             ofString(stringBuilder, e);
-            stringBuilder.append("\n");
+            if (appendLine) stringBuilder.append("\n");
+            else stringBuilder.append("=>");
         }
     }
 
@@ -95,7 +100,7 @@ public class Throw extends RuntimeException implements Serializable {
     }
 
     public static void ofString(StringBuilder stringBuilder, StackTraceElement traceElement) {
-        stringBuilder.append(traceElement.getClassName()).append(".").append(traceElement.getMethodName())
+        stringBuilder.append(traceElement.getClassName()).append("#").append(traceElement.getMethodName())
                 .append("(").append(traceElement.getFileName()).append(":").append(traceElement.getLineNumber()).append(")");
     }
 

@@ -7,7 +7,7 @@ import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.net.http.HttpHeadNameType;

@@ -2,7 +2,8 @@ package wxdgaming.boot.core.threading2;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.core.threading.ThreadContext;
 
 import java.util.LinkedList;
 import java.util.concurrent.Executor;
@@ -17,16 +18,18 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 @Slf4j
 @Getter
-public class Actor implements Runnable {
+public class ExecutorActor implements Runnable {
 
     private final String name;
     private final Executor executor;
     private final ReentrantLock lock = new ReentrantLock();
-    private final AtomicBoolean push = new AtomicBoolean();
+    /** true 表示已经加入到 executor 执行器里面 */
+    private final AtomicBoolean executorPush = new AtomicBoolean();
+    /** 开始关闭 */
     private final AtomicBoolean close = new AtomicBoolean();
     private final LinkedList<Runnable> tasks = new LinkedList<>();
 
-    public Actor(String name, Executor executor) {
+    public ExecutorActor(String name, Executor executor) {
         this.name = name;
         this.executor = executor;
     }
@@ -37,17 +40,23 @@ public class Actor implements Runnable {
 
     public void closing() {
         close.set(true);
+        log.info("Actor {} is closing", name);
     }
 
     public void publish(Runnable command) {
         lock.lock();
         try {
             if (isClose()) throw new UnsupportedOperationException("executor queue closed");
-            tasks.add(command);
+            if (command instanceof ThreadContext.ContextEvent
+                    || command instanceof ThreadContext.ContextRunnable) {
+                tasks.add(command);
+            } else {
+                tasks.add(new ThreadContext.ContextRunnable(command));
+            }
         } finally {
             try {
-                if (!isClose() && !push.get()) {
-                    push.set(true);
+                if (!isClose() && !executorPush.get()) {
+                    executorPush.set(true);
                     this.executor.execute(this);
                 }
             } finally {
@@ -57,22 +66,23 @@ public class Actor implements Runnable {
     }
 
     @Override public final void run() {
-        Runnable poll = tasks.poll();
+        this.lock.lock();
+        Runnable poll = null;
         try {
+            poll = this.tasks.poll();
             if (poll != null) {
                 poll.run();
             }
-            lock.lock();
-            if (!isClose() && !tasks.isEmpty()) {
-                push.set(true);
+        } catch (Throwable throwable) {
+            GlobalUtil.exception(String.valueOf(poll), throwable);
+        } finally {
+            if (!isClose() && !this.tasks.isEmpty()) {
+                this.executorPush.set(true);
                 this.executor.execute(this);
             } else {
-                push.set(false);
+                this.executorPush.set(false);
             }
-        } catch (Throwable throwable) {
-            GlobalUtil.exception("", throwable);
-        } finally {
-            lock.unlock();
+            this.lock.unlock();
         }
     }
 

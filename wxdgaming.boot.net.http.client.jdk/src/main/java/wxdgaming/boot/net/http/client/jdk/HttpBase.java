@@ -5,7 +5,7 @@ import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 import wxdgaming.boot.net.http.HttpHeadNameType;
 import wxdgaming.boot.net.http.HttpHeadValueType;
 

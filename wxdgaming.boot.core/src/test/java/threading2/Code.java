@@ -1,7 +1,8 @@
 package threading2;
 
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.threading2.Actor;
+import wxdgaming.boot.core.threading.ThreadContext;
+import wxdgaming.boot.core.threading2.ExecutorActor;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -15,11 +16,14 @@ public class Code {
         CountDownLatch countDownLatch = new CountDownLatch(10);
 
         ExecutorService executorService = Executors.newFixedThreadPool(6);
-        Actor actor = new Actor("ss", executorService);
+        ExecutorActor actor = new ExecutorActor("ss", executorService);
         for (int i = 0; i < 10; i++) {
-            actor.publish(() -> {
-                log.info("a");
-                countDownLatch.countDown();
+            ThreadContext.putContent("a", i);
+            actor.publish(new ThreadContext.ContextEvent() {
+                @Override public void onEvent() {
+                    log.info("a -> {} {}", ThreadContext.context("a"), this.toString());
+                    countDownLatch.countDown();
+                }
             });
         }
         countDownLatch.await();

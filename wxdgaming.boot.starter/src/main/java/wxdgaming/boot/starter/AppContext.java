@@ -17,7 +17,7 @@ import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.ProtobufMessageSerializerFastJson;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.DumpUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.starter.action.ActionProtoController;

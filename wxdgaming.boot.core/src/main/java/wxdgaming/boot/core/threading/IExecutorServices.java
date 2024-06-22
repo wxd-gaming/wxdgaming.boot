@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 
 import java.util.List;
 import java.util.concurrent.*;

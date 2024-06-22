@@ -8,11 +8,9 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.core.system.GlobalUtil;
+import wxdgaming.boot.core.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.SocketSession;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * socket message 处理器

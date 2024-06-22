@@ -20,9 +20,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import wxdgaming.boot.net.http.ssl.SslContextServer;
+import wxdgaming.boot.net.http.ssl.SslProtocolType;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
@@ -49,8 +50,16 @@ public class HttpClientClassic {
             public void checkServerTrusted(X509Certificate[] xcs, String str) {}
         };
 
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[]{tm}, null);
+        // SSLContext sslContext = SSLContext.getInstance("TLS");
+        // sslContext.init(null, new TrustManager[]{tm}, null);
+
+        SSLContext sslContext = SslContextServer.sslContext(
+                SslProtocolType.SSL,
+                "jks/wxdtest-1.8.jks",
+                "jks/wxdtest-1.8.jks.pwd"
+        );
+        sslContext.getDefaultSSLParameters().setNeedClientAuth(false);
+
         SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, (s, sslSession) -> true);
 
 
@@ -85,7 +94,6 @@ public class HttpClientClassic {
 
         httpClientBuilder.setSSLContext(sslContext);
         httpClientBuilder.setSSLSocketFactory(sslSocketFactory);
-        CloseableHttpClient httpClient = httpClientBuilder.build();
 
         // 设置超时时间
         RequestConfig config = RequestConfig.custom()
@@ -95,19 +103,22 @@ public class HttpClientClassic {
                 .build();
 
 
-        try (CloseableHttpClient httpclient = httpClient) {
+        CloseableHttpClient httpClient = httpClientBuilder.build();
+
+        {
             // 创建一个get类型的http请求
-            HttpGet httpGet = new HttpGet("https://www.baidu.com/");
+            HttpGet httpGet = new HttpGet("https://127.0.0.1:19000/publicapi/index");
             httpGet.setConfig(config);
-            try (CloseableHttpResponse response1 = httpclient.execute(httpGet)) {
-                HttpEntity entity1 = response1.getEntity();
-                String string = new String(EntityUtils.toByteArray(entity1), StandardCharsets.UTF_8);
-                System.out.println(string);
-                EntityUtils.consume(entity1);
-            }
+            CloseableHttpResponse response1 = httpClient.execute(httpGet);
+            HttpEntity entity1 = response1.getEntity();
+            String string = new String(EntityUtils.toByteArray(entity1), StandardCharsets.UTF_8);
+            System.out.println(string);
+            EntityUtils.consume(entity1);
+        }
+        {
 
             // 创建一个post类型的http请求
-            HttpPost httpPost = new HttpPost("https://www.baidu.com/");
+            HttpPost httpPost = new HttpPost("https://127.0.0.1:19000/publicapi/index");
             httpPost.setConfig(config);
 
             List<NameValuePair> nvps = new ArrayList<>();
@@ -115,13 +126,11 @@ public class HttpClientClassic {
             nvps.add(new BasicNameValuePair("password", "12345"));
             // 这是一个form表单类型的数据格式，放入request body中
             httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
-
-            try (CloseableHttpResponse execute = httpclient.execute(httpPost)) {
-                HttpEntity entity1 = execute.getEntity();
-                String string = new String(EntityUtils.toByteArray(entity1), StandardCharsets.UTF_8);
-                System.out.println(string);
-                EntityUtils.consume(entity1);
-            }
+            CloseableHttpResponse execute = httpClient.execute(httpPost);
+            HttpEntity entity1 = execute.getEntity();
+            String string = new String(EntityUtils.toByteArray(entity1), StandardCharsets.UTF_8);
+            System.out.println(string);
+            EntityUtils.consume(entity1);
         }
     }
 }

@@ -1,4 +1,4 @@
-package wxdgaming.boot.core.system;
+package wxdgaming.boot.core;
 
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.function.Consumer2;
@@ -13,7 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  **/
 public class GlobalUtil {
 
+    /** 当前服务器的debug状态 */
     public static final AtomicBoolean DEBUG = new AtomicBoolean();
+    /** 停服关闭状态 */
     public static final AtomicBoolean SHUTTING = new AtomicBoolean();
 
     public static Consumer2<Object, Throwable> exceptionCall = null;
