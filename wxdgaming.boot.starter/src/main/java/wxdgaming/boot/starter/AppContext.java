@@ -190,7 +190,7 @@ public class AppContext {
                 () -> {
                     StringBuilder stringBuilder = new StringBuilder();
                     long freeMemory = DumpUtil.freeMemory(stringBuilder);
-                    if (freeMemory < BytesUnit.Mb.toBytes(300)) {
+                    if (logger().isDebugEnabled() || freeMemory < BytesUnit.Mb.toBytes(300)) {
                         logger().info(stringBuilder.toString());
                     }
                 },
