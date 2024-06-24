@@ -1,8 +1,8 @@
 package wxdgaming.boot.core.threading;
 
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.core.str.StringUtil;
 
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,8 +45,9 @@ class ExecutorServiceJob implements Runnable, Job {
     public void check(StringBuilder stringBuilder) {
 
         long warningTime = 5000;
-        if (task instanceof Event event) {
-            warningTime = event.getWarningTime();
+
+        if (task instanceof RunMonitor runMonitor) {
+            warningTime = runMonitor.getWarningTime();
         }
 
         long procc = (System.nanoTime() - startExecTime) / 10000 / 100;
@@ -101,24 +102,23 @@ class ExecutorServiceJob implements Runnable, Job {
             float v2 = (System.nanoTime() - initTaskTime) / 10000 / 100f;
 
             long logTime = 30;
+            long warningTime = 1000;
+
+            if (task instanceof ForkJoinTask) {
+                logTime = 300;
+                warningTime = 5000;
+            }
+
+            if (task instanceof RunMonitor runMonitor) {
+                logTime = runMonitor.getLogTime();
+                warningTime = runMonitor.getWarningTime();
+            }
 
             if (v > logTime) {
 
                 String msg = "执行：" + runName + ", 耗时：" + v + " ms, 创建到执行完成：" + v2 + " ms, 主队列剩余：" + iExecutorServices.queueSize();
                 if (StringUtil.notEmptyOrNull(queueName)) {
                     msg = "子队列：" + queueName + ", 剩余" + iExecutorServices.getExecutorQueueMap().get(queueName).size() + "; " + msg;
-                }
-
-                long warningTime = 1000;
-
-                if (task instanceof ForkJoinTask) {
-                    logTime = 300;
-                    warningTime = 5000;
-                }
-
-                if (task instanceof Event event) {
-                    logTime = event.getLogTime();
-                    warningTime = event.getWarningTime();
                 }
 
                 if (v > logTime || v2 > logTime) {

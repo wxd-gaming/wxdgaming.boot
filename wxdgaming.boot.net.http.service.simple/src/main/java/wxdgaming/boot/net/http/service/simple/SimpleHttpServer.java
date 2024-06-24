@@ -1,13 +1,15 @@
 package wxdgaming.boot.net.http.service.simple;
 
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsServer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.net.http.ssl.SslContextServer;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -66,24 +68,12 @@ public class SimpleHttpServer {
         SslProtocolType sslType = SslProtocolType.SSL;
         String jksPath = null;
         String jksPwdPath = null;
-        Executor executor = null;
-        HttpHandler handler;
+        HttpHandler handler = new MyHandler();
 
         public SimpleHttpServer build() {
             try {
 
-                if (executor == null) {
-                    executor = Executors.newFixedThreadPool(10);
-                }
-                HttpHandler tmp = new HttpHandler() {
-                    @Override public void handle(HttpExchange exchange) throws IOException {
-                        try {
-                            handler.handle(exchange);
-                        } catch (Exception e) {
-
-                        }
-                    }
-                };
+                Executor executor = Executors.newFixedThreadPool(3);
 
                 HttpsServer httpsServer = null;
                 if (sslPort > 0) {

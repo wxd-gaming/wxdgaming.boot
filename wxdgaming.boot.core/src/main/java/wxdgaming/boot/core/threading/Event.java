@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version: 2022-11-09 10:21
  **/
 @Getter
-public abstract class Event implements Runnable, IAssistMonitor {
+public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
 
     protected String taskInfoString = "";
     /** 输出日志的时间 */
