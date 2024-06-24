@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import wxdgaming.boot.core.threading.Executors;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Exchanger;
+
 /**
  * 线程测试
  *
@@ -78,5 +81,25 @@ public class Thread2 {
 
     @Override public int hashCode() {
         return super.hashCode();
+    }
+
+    @Test
+    public void t2() {
+        /*线程传递参数*/
+        Exchanger<String> exchanger = new Exchanger<>();
+        CompletableFuture.runAsync(() -> {
+            try {
+                System.out.println("我是A：" + exchanger.exchange("444"));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        CompletableFuture.runAsync(() -> {
+            try {
+                System.out.println("我是B：" + exchanger.exchange("555"));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
