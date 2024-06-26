@@ -1,6 +1,5 @@
 package com.test;
 
-import wxdgaming.boot.agent.function.Consumer1;
 import wxdgaming.boot.agent.system.LambdaUtil;
 import wxdgaming.boot.agent.system.MethodUtil;
 
@@ -22,9 +21,9 @@ public class methodTest {
         Class<?> clazz = SomeClass1.class;
         SomeClass1 someClass1 = new SomeClass1();
 
-        List<LambdaUtil.LambdaMapping<L1>> lambdaMappings = LambdaUtil.lambdaMappings(L1.class, someClass1, LoginSend.class);
-        for (LambdaUtil.LambdaMapping<L1> lambdaMapping : lambdaMappings) {
-            lambdaMapping.getMapping().l1();
+        List<LambdaUtil.Mapping<L1>> mappings = LambdaUtil.mappings(L1.class, someClass1, LoginSend.class);
+        for (LambdaUtil.Mapping<L1> mapping : mappings) {
+            mapping.getMapping().l1();
         }
 
         for (Method method : MethodUtil.allMethods(clazz)) {

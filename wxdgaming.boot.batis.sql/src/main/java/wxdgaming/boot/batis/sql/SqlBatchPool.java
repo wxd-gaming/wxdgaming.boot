@@ -9,7 +9,7 @@ import wxdgaming.boot.batis.DataBuilder;
 import wxdgaming.boot.batis.DataWrapper;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

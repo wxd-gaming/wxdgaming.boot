@@ -1,6 +1,5 @@
-package wxdgaming.boot.core;
+package wxdgaming.boot.agent;
 
-import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.function.Consumer2;
 
 import java.util.concurrent.atomic.AtomicBoolean;

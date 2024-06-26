@@ -15,7 +15,7 @@ import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.core.threading.ThreadInfo;

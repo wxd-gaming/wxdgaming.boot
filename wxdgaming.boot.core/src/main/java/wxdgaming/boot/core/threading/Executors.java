@@ -2,7 +2,7 @@ package wxdgaming.boot.core.threading;
 
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.core.lang.Tick;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 
 import java.io.Serializable;

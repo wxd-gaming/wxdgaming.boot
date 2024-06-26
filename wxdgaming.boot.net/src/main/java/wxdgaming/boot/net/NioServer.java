@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentHashSet;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.BytesUnit;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.ssl.WxOptionalSslHandler;

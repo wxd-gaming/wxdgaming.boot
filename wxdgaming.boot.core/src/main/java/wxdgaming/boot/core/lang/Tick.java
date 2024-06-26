@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.lang;
 
 import lombok.Getter;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.timer.MyClock;
 
 import java.util.concurrent.TimeUnit;

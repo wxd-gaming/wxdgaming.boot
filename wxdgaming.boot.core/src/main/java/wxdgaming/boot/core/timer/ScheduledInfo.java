@@ -8,7 +8,7 @@ import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.ann.Scheduled;

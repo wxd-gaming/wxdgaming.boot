@@ -7,7 +7,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.internal.OutOfDirectMemoryError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.util.ByteBufUtil;

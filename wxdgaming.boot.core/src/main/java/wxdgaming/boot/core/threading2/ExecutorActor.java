@@ -2,7 +2,7 @@ package wxdgaming.boot.core.threading2;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.ThreadContext;
 
 import java.util.LinkedList;

@@ -8,7 +8,7 @@ import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.collection.ConvertCollection;
 import wxdgaming.boot.core.lang.LockBase;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.GlobalUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
