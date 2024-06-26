@@ -7,8 +7,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /***
  * 读取方法
@@ -17,6 +19,38 @@ import java.util.Map;
  */
 @Slf4j
 public class MethodUtil {
+
+    private static final Set<String> filterMethod = new HashSet<>();
+
+    static {
+        filterMethod.add("public java.lang.String java.lang.Object.toString()");
+        filterMethod.add("public boolean java.lang.Object.equals(java.lang.Object)");
+        filterMethod.add("public int java.lang.Object.hashCode()");
+        filterMethod.add("public native int java.lang.Object.hashCode()");
+        filterMethod.add("public final native void java.lang.Object.notify()");
+        filterMethod.add("public final native void java.lang.Object.notifyAll()");
+        filterMethod.add("public final void java.lang.Object.wait() throws java.lang.InterruptedException");
+        filterMethod.add("public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException");
+        filterMethod.add("public final void java.lang.Object.wait(long) throws java.lang.InterruptedException");
+        filterMethod.add("public final native java.lang.Class java.lang.Object.getClass()");
+    }
+
+    public static Set<Method> allMethods(Class<?> cls) {
+        Set<Method> sa1 = Set.of(cls.getMethods());
+        Set<Method> sa2 = Set.of(cls.getDeclaredMethods());
+
+        Set<Method> all = new HashSet<>();
+        all.addAll(sa1);
+        all.addAll(sa2);
+        all.removeIf(method -> {
+            if (filterMethod.contains(method.toString())) return true;
+            if ("toString".equals(method.getName()) && method.getParameterTypes().length == 0) return true;
+            if ("hashCode".equals(method.getName()) && method.getParameterTypes().length == 0) return true;
+            if ("equals".equals(method.getName()) && method.getParameterTypes().length == 1) return true;
+            return false;
+        });
+        return all;
+    }
 
     public static Method findMethod(Class<?> cls, String methodName) {
         return findMethod(false, cls, methodName);
@@ -63,7 +97,7 @@ public class MethodUtil {
         Map<String, Method> stringMethodTreeMap = readAllMethods0(cls);
         Map<String, Method> fmmap = new LinkedHashMap<>();
         for (Method method : stringMethodTreeMap.values()) {
-//            System.out.println(method.getName() + ", " + method.hashCode());
+            //            System.out.println(method.getName() + ", " + method.hashCode());
             if (!readStatic && Modifier.isStatic(method.getModifiers())) {
                 /*非静态*/
                 continue;

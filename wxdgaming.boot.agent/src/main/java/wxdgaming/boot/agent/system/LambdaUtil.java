@@ -1,14 +1,19 @@
 package wxdgaming.boot.agent.system;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.*;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.invoke.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author: Troy.Chen(無心道, 15388152619)
@@ -147,7 +152,7 @@ public class LambdaUtil implements Serializable {
      * @param object 需要代理的对象
      * @param serializableLambda 代理映射接口
      */
-    public static void findDelegate(Object object, SerializableLambda serializableLambda, Consumer1<LambdaMapping> call) {
+    public static <M> void findDelegate(Object object, SerializableLambda serializableLambda, Consumer1<LambdaMapping<M>> call) {
         Class inClass = serializableLambda.ofClass();
         Method inMethod = serializableLambda.ofMethod();
         findDelegate(inClass, inMethod, object, call);
@@ -161,7 +166,7 @@ public class LambdaUtil implements Serializable {
      * @param inMethod 代理映射方法
      * @param call     回调
      */
-    public static void findDelegate(Class inClass, Method inMethod, Object object, Consumer1<LambdaMapping> call) {
+    public static <M> void findDelegate(Class<M> inClass, Method inMethod, Object object, Consumer1<LambdaMapping<M>> call) {
         try {
             Type[] genericParameterTypes = inMethod.getGenericParameterTypes();
             Class<?> objectClass = object.getClass();
@@ -181,7 +186,11 @@ public class LambdaUtil implements Serializable {
                 }
                 if (source) {
                     LambdaMapping delegate = createDelegate(inClass, inMethod, object, method);
-                    call.accept(delegate);
+                    try {
+                        call.accept(delegate);
+                    } catch (Throwable throwable) {
+                        throw Throw.as(inClass + " - " + inMethod + " - " + object + " - " + method, throwable);
+                    }
                 }
             }
         } catch (Throwable throwable) {
@@ -196,7 +205,7 @@ public class LambdaUtil implements Serializable {
      * @param method             需要代理的对象
      * @param serializableLambda 代理映射接口
      */
-    public static LambdaMapping createDelegate(Object object, Method method, SerializableLambda serializableLambda) {
+    public static <M> LambdaMapping<M> createDelegate(Object object, Method method, SerializableLambda serializableLambda) {
         Class inClass = serializableLambda.ofClass();
         Method inMethod = serializableLambda.ofMethod();
         return createDelegate(inClass, inMethod, object, method);
@@ -210,7 +219,7 @@ public class LambdaUtil implements Serializable {
      * @param object   需要代理的对象
      * @param method   需要代理的对象
      */
-    public static LambdaMapping createDelegate(Class inClass, Method inMethod, Object object, Method method) {
+    public static <M> LambdaMapping<M> createDelegate(Class<M> inClass, Method inMethod, Object object, Method method) {
         try {
             /*获取方法对象 委托*/
             MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -227,33 +236,72 @@ public class LambdaUtil implements Serializable {
             Object invokeExact = metafactory.getTarget().bindTo(object).invoke();
             return new LambdaMapping(object, method, invokeExact);
         } catch (Throwable throwable) {
-            throw Throw.as(throwable);
+            throw Throw.as(inClass + " - " + inMethod + " - " + object + " - " + method, throwable);
         }
     }
 
-    public static final class LambdaMapping {
+    @Getter
+    public static final class LambdaMapping<M> {
 
         private final Object instance;
         private final Method method;
-        private final Object mapping;
+        /** 映射的代理对象 */
+        private final M mapping;
 
-        private LambdaMapping(Object instance, Method method, Object mapping) {
+        private LambdaMapping(Object instance, Method method, M mapping) {
             this.instance = instance;
             this.method = method;
             this.mapping = mapping;
         }
 
-        public <R> R getInstance() {
+        /** 原始对象 */
+        public <R> R instance() {
             return (R) instance;
         }
 
-        public Method getMethod() {
-            return method;
-        }
+    }
 
-        public <R> R getMapping() {
-            return (R) mapping;
+    /**
+     * 把对象方法包含指定注解改为接口映射
+     *
+     * @param clsProxy   需要映射的接口
+     * @param ins        需要查找代理的对象原始类
+     * @param annotation 需要查找的注解
+     * @param <M>        接口约束
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-26 11:06
+     */
+    public static <M> List<LambdaMapping<M>> lambdaMappings(Class<M> clsProxy, Object ins, Class<? extends Annotation> annotation) {
+        Set<Method> methods = MethodUtil.allMethods(clsProxy);
+        Method proxyMethod = methods.iterator().next();
+        return lambdaMappings(clsProxy, proxyMethod, ins, annotation);
+    }
+
+    /**
+     * 把对象方法包含指定注解改为接口映射
+     *
+     * @param clsProxy    需要映射的接口
+     * @param proxyMethod 需要映射的接口方法
+     * @param ins         需要查找代理的对象原始类
+     * @param annotation  需要查找的注解
+     * @param <M>         接口约束
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-26 11:06
+     */
+    public static <M> List<LambdaUtil.LambdaMapping<M>> lambdaMappings(Class<M> clsProxy, Method proxyMethod, Object ins, Class<? extends Annotation> annotation) {
+        Class<?> cls = ins.getClass();
+        Set<Method> methods = MethodUtil.allMethods(cls);
+        List<LambdaUtil.LambdaMapping<M>> lambdaMappings = new ArrayList<>();
+        for (Method method : methods) {
+            Annotation methodAnnotation = method.getAnnotation(annotation);
+            if (methodAnnotation != null) {
+                LambdaUtil.LambdaMapping<M> delegate = LambdaUtil.createDelegate(clsProxy, proxyMethod, ins, method);
+                lambdaMappings.add(delegate);
+            }
         }
+        return lambdaMappings;
     }
 
 }
