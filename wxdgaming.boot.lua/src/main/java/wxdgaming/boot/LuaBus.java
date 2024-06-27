@@ -13,6 +13,7 @@ import wxdgaming.boot.agent.lang.Record2;
 
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 /**
@@ -24,28 +25,79 @@ import java.util.stream.Stream;
 @Slf4j
 public class LuaBus {
 
+    @Getter private static final ConcurrentHashMap<String, Object> lua_data = new ConcurrentHashMap<>();
     @Getter @Setter private static LuaBus ins = null;
 
-    public static LuaBus build(ClassLoader classLoader, String package_name) {
+    public static LuaBus buildFromResources(ClassLoader classLoader, String package_name) {
         LuaBus luaBus = new LuaBus();
         luaBus.loadResources(classLoader, package_name);
         return luaBus;
     }
 
-    @Getter private final Globals globals = JsePlatform.standardGlobals();
+    public static LuaBus buildFromDirs(String dir) {
+        LuaBus luaBus = new LuaBus();
+        luaBus.loadDirs(dir);
+        return luaBus;
+    }
 
-    LuaBus() {}
+    @Getter private final Globals globals;
 
-    public LuaBus loadString(String luaString) {
-        globals.load(luaString);
+    LuaBus() {
+        globals = JsePlatform.standardGlobals();
+        set("logbackUtil", log);
+        set("lua_data", lua_data);
+    }
+
+    /**
+     * 从 lua 字符加载
+     *
+     * @param luaString
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:11
+     */
+    public LuaValue loadString(String luaString) {
+        return globals.load(luaString).call();
+    }
+
+    /**
+     * 从文件加载lua
+     *
+     * @param lua_file lua文件路径
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:11
+     */
+    public LuaValue loadFile(String lua_file) {
+        if (log.isDebugEnabled()) {
+            log.debug("find lua script {}", lua_file);
+        }
+        return globals.loadfile(lua_file).call();
+    }
+
+    /**
+     * 通过文件夹加载 .lua .LUA
+     *
+     * @param dir 文件夹
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 15:52
+     */
+    public LuaBus loadDirs(String dir) {
+        FileUtil.walkFiles(dir, ".lua", ".LUA")
+                .forEach(lua_file -> loadFile(lua_file.getPath()));
         return this;
     }
 
-    public LuaBus loadFile(String lua_file) {
-        globals.loadfile(lua_file);
-        return this;
-    }
-
+    /**
+     * 从 jar 包资源文件加载
+     *
+     * @param classLoader  指定 classloader
+     * @param package_name 指定加载的目录
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:12
+     */
     public LuaBus loadResources(ClassLoader classLoader, String package_name) {
         try {
             Stream<Record2<String, InputStream>> record2Stream = FileUtil.resourceStreams(classLoader, package_name);
@@ -55,9 +107,7 @@ public class LuaBus {
                         log.debug("find lua script {}", item.t1());
                     }
                     String lua_script = FileReadUtil.readString(item.t2());
-                    globals
-                            .load(lua_script)/*加载文件*/
-                            .call()/*执行*/;
+                    loadString(lua_script);
                 }
             });
         } catch (Exception e) {
@@ -66,31 +116,58 @@ public class LuaBus {
         return this;
     }
 
+    /**
+     * 设置全局变量
+     *
+     * @param key   存储变量名
+     * @param value 变量的值
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:13
+     */
     public LuaBus set(String key, int value) {
         globals.set(key, value);
         return this;
     }
 
+    /**
+     * 设置全局变量
+     *
+     * @param key   存储变量名
+     * @param value 变量的值
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:13
+     */
     public LuaBus set(String key, String value) {
         globals.set(key, value);
         return this;
     }
 
+    /**
+     * 设置全局变量
+     *
+     * @param key   存储变量名
+     * @param value 变量的值
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:13
+     */
     public LuaBus set(String key, Object value) {
         globals.set(key, CoerceJavaToLua.coerce(value));
         return this;
     }
 
     /**
-     * 查找方法
+     * 查找 lua 虚拟机的对象
      *
-     * @param method_name 方法名称
+     * @param lua_key 查找的 key值 或者 方法名称
      * @return
      * @author: Troy.Chen(無心道, 15388152619)
      * @version: 2024-06-27 10:17
      */
-    public LuaValue get(String method_name) {
-        return globals.get(method_name).call();/*方法名称*/
+    public LuaValue get(String lua_key) {
+        return globals.get(lua_key).call();/*方法名称*/
     }
 
     public LuaValue exec(String method_name) {

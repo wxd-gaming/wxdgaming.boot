@@ -1,21 +1,38 @@
 package wxdgaming.boot;
 
+import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.LuaValue;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 
+@Slf4j
 public class Main {
 
     protected static LuaBus luaBus = null;
 
+    static int forCount = 5000;
+
+    public interface T {
+        int t1 = 1;
+    }
+
     public static void main(String[] args) throws Exception {
-        System.out.println(System.currentTimeMillis());
-        luaBus = LuaBus.build(Thread.currentThread().getContextClassLoader(), "script/");
+        System.out.println(System.currentTimeMillis() + " - " + System.getProperty("user.dir"));
+        // luaBus = LuaBus.buildFromResources(Thread.currentThread().getContextClassLoader(), "script/");
+        luaBus = LuaBus.buildFromDirs("src/main/lua");
         luaBus.set("objVar", 1);
         Thread.sleep(1000);
         testString();
-        testFile();
-        Thread.sleep(10000);
+        test("t3");
+        Thread.sleep(3000);
+        test("t3");
+        Thread.sleep(3000);
+        test("t4");
+        Thread.sleep(3000);
+        test("t4");
+        Thread.sleep(3000);
+
     }
 
     public static void testString() throws Exception {
@@ -30,13 +47,21 @@ public class Main {
 
     }
 
-    public static void testFile() throws Exception {
-
-        for (int i = 0; i < 50; i++) {
-            luaBus.exec("t2", i + " - " + String.valueOf(System.currentTimeMillis()));
-            luaBus.execUserdataAsync("t3", new M(i));
+    public static void test(String method_name) throws Exception {
+        CountDownLatch countDownLatch = new CountDownLatch(forCount);
+        long l = System.currentTimeMillis();
+        for (int i = 0; i < forCount; i++) {
+            // luaBus.exec("t2", i + " - " + String.valueOf(System.currentTimeMillis()));
+            luaBus.execUserdataAsync(method_name, new M(i))
+                    .thenApply((value) -> {
+                        // log.info("{}", value);
+                        countDownLatch.countDown();
+                        return null;
+                    });
         }
-
+        countDownLatch.await();
+        long l1 = System.currentTimeMillis() - l;
+        System.out.println(l1);
     }
 
     public static class M {
@@ -45,6 +70,10 @@ public class Main {
 
         public M(int i) {
             this.i = i;
+        }
+
+        public void log_info(String msg) {
+            log.info(msg);
         }
 
         public int index() {
