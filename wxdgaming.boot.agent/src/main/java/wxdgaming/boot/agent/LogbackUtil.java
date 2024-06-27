@@ -45,12 +45,20 @@ public class LogbackUtil {
         LoggerFactory.getLogger("root").info("--------------- init end ---------------");
     }
 
+    public static void info(String str) {
+        logger(3).info(str);
+    }
+
     public static Logger logger() {
         return logger(3);
     }
 
     public static Logger logger(int stack) {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stack];
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        if (stack >= stackTrace.length) {
+            stack = stackTrace.length - 1;
+        }
+        StackTraceElement stackTraceElement = stackTrace[stack];
         return LoggerFactory.getLogger(stackTraceElement.getClassName());
     }
 

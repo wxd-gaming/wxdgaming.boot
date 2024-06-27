@@ -29,6 +29,7 @@
         <module>wxdgaming.boot.net.http.service.simple</module>
         <module>wxdgaming.boot.starter</module>
         <module>wxdgaming.boot.kotlin</module>
+        <module>wxdgaming.boot.lua</module>
     </modules>
 
     <properties>
