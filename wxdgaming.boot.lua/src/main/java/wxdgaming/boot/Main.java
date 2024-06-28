@@ -22,21 +22,24 @@ public class Main {
         // luaBus = LuaBus.buildFromResources(Thread.currentThread().getContextClassLoader(), "script/");
         luaBus = LuaBus.buildFromDirs("src/main/lua");
         luaBus.set("objVar", 1);
-        Thread.sleep(1000);
+        Thread.sleep(5000);
+        luaBus.forExecTry("t1");
+        Thread.sleep(5000);
         testString();
-        test("t3");
-        Thread.sleep(3000);
-        test("t3");
-        Thread.sleep(3000);
-        test("t4");
-        Thread.sleep(3000);
-        test("t4");
-        Thread.sleep(3000);
+        // test("t3");
+        // Thread.sleep(3000);
+        // test("t3");
+        // Thread.sleep(3000);
+        // test("t4");
+        // Thread.sleep(3000);
+        // test("t4");
+        // Thread.sleep(3000);
 
     }
 
     public static void testString() throws Exception {
-        LuaValue chunk = luaBus.getGlobals().load("print(\"holle world \" .. tostring(os.time()))");
+        LuaValue chunk = luaBus.globalPoolNew("main")
+                .loadString("print(\"holle world \" .. tostring(os.time()))");
         for (int i = 0; i < 1; i++) {
             CompletableFuture.runAsync(() -> chunk.call())
                     .exceptionally(ex -> {
