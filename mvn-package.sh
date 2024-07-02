@@ -7,5 +7,5 @@ export PATH=$JAVA_HOME/bin:$PATH
 # 打印出Java版本信息以验证设置是否成功
 java -version
 #cd /mnt/e/work/engine712-server
-mvn clean package -Dmaven.test.skip=true
+mvn clean kotlin:compile package -Dmaven.test.skip=true -pl wxdgaming.boot.kotlin -am
 

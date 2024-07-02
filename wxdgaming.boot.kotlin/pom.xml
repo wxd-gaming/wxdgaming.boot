@@ -11,10 +11,6 @@
 
     <artifactId>wxdgaming.boot.kotlin</artifactId>
 
-    <properties>
-        <kotlin.version>2.0.0</kotlin.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
@@ -69,29 +65,45 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <useUniqueVersions>false</useUniqueVersions>
+                            <!-- 加载主要运行类 -->
+                            <mainClass>wxdgaming.boot.kotlin.SSS</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- https://gitee.com/roseboy/classfinal -->
+                <groupId>net.roseboy</groupId>
+                <artifactId>classfinal-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <password>000000</password><!--加密打包之后pom.xml会被删除，不用担心在jar包里找到此密码-->
+                    <packages>wxdgaming.boot.kotlin</packages>
+                    <!--                    <cfgfiles>application.yml</cfgfiles>-->
+                    <!--                    <excludes>org.spring</excludes>-->
+                    <!--                    <libjars>a.jar,b.jar</libjars>-->
+                </configuration>
                 <executions>
                     <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
+                            <goal>classFinal</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <jvmTarget>21</jvmTarget>
-                </configuration>
             </plugin>
+
         </plugins>
     </build>
 

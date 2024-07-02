@@ -3,12 +3,12 @@ package wxdgaming.boot.kotlin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import wxdgaming.boot.agent.LogbackUtil
 import wxdgaming.boot.core.timer.MyClock
 import wxdgaming.boot.net.http.client.url.HttpBuilder
 
 
 fun main() {
+    T2().sum(1, 2)
     repeat(4) {
         var nowOfMills = MyClock.millis()
         javaLaunch2(100)
