@@ -65,9 +65,39 @@
     <build>
         <plugins>
             <plugin>
+                <!--kotlin-maven-plugin 编译插件必须在 maven-compiler-plugin 插件的前面-->
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <!-- 这个模式才能在开始编译java前编译kotlin-->
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <!-- 这个模式才能在开始编译java前编译kotlin-->
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>${java.version}</jvmTarget>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -86,22 +116,13 @@
                 <!-- https://gitee.com/roseboy/classfinal -->
                 <groupId>net.roseboy</groupId>
                 <artifactId>classfinal-maven-plugin</artifactId>
-                <version>1.2.1</version>
                 <configuration>
-                    <password>000000</password><!--加密打包之后pom.xml会被删除，不用担心在jar包里找到此密码-->
+                    <password>#</password><!--加密打包之后pom.xml会被删除，不用担心在jar包里找到此密码-->
                     <packages>wxdgaming.boot.kotlin</packages>
                     <!--                    <cfgfiles>application.yml</cfgfiles>-->
                     <!--                    <excludes>org.spring</excludes>-->
                     <!--                    <libjars>a.jar,b.jar</libjars>-->
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>classFinal</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>
