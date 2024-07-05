@@ -270,10 +270,11 @@ public class ReflectContext {
                         if (url != null) {
                             String type = url.getProtocol();
                             String urlPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8);
-                            if (type.equals("file")) {
+                            System.out.println(type + " - " + urlPath);
+                            if ("file".equals(type) /* || "resource".equals(type) */) {
                                 String dir = urlPath.substring(0, urlPath.lastIndexOf(packagePath));
                                 findClassByFile(dir, urlPath, consumer);
-                            } else if (type.equals("jar") || type.equals("zip")) {
+                            } else if ("jar".equals(type) || "zip".equals(type)) {
                                 findClassByJar(urlPath, consumer);
                             }
                         } else {
