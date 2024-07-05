@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.loader.ClassDirLoader;
+import wxdgaming.boot.agent.loader.RemoteClassLoader;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -254,6 +255,13 @@ public class ReflectContext {
                         }
                     }
                 }
+
+                if (classLoader instanceof RemoteClassLoader remoteClassLoader) {
+                    remoteClassLoader
+                            .classStream(v -> v.startsWith(packageName))
+                            .forEach(consumer);
+                }
+
                 Enumeration<URL> resources = classLoader.getResources(packagePath);
                 if (resources != null) {
                     URL url = null;
@@ -338,7 +346,7 @@ public class ReflectContext {
          * @param jarPath jar文件路径
          */
         private void findClassByJar(String jarPath, Consumer<Class<?>> consumer) {
-
+            if (jarPath.startsWith("http://") || jarPath.startsWith("https://")) return;
             String[] jarInfo = jarPath.split("!");
             String jarFilePath = jarInfo[0].substring(jarInfo[0].indexOf("/"));
             String packagePath = jarInfo[1].substring(1);
