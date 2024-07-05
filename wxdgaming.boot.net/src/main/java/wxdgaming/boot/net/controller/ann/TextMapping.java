@@ -26,6 +26,9 @@ public @interface TextMapping {
     /** 需要的权限 */
     int needAuth() default 0;
 
+    /** 不允许匹配路径 true 默认是在路径/xx/xx */
+    boolean match() default false;
+
     /** 权限不足提示 */
     String authTips() default "权限认证失败";
 

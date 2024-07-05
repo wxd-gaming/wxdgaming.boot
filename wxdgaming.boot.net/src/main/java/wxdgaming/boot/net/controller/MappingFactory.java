@@ -2,10 +2,7 @@ package wxdgaming.boot.net.controller;
 
 
 import wxdgaming.boot.agent.LogbackUtil;
-import wxdgaming.boot.agent.function.Consumer4;
-import wxdgaming.boot.agent.function.ConsumerE4;
 import wxdgaming.boot.agent.function.FunctionE2;
-import wxdgaming.boot.agent.system.LambdaUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.threading.Event;
@@ -95,7 +92,7 @@ public class MappingFactory {
         if (service == null) service = FINAL_DEFAULT;
 
         /*通过lambda 对象 创建一个代理实例，比反射效果好*/
-        //LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, text_proxy);
+        // LambdaUtil.LambdaMapping delegate = LambdaUtil.createDelegate(instance, method, text_proxy);
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -170,6 +167,16 @@ public class MappingFactory {
         TextMappingRecord mapping = TEXT_MAP.get(service, path);
         if (mapping == null) {
             mapping = TEXT_MAP.get(FINAL_DEFAULT, path);
+        }
+        if (mapping == null) {
+            /*如果找不到对应的url，实现匹配路径*/
+            mapping = TEXT_MAP.values()
+                    .stream()
+                    .flatMap(v -> v.values().stream())
+                    .filter(v -> v.textMapping().match())
+                    .filter(v -> path.startsWith(v.path()))
+                    .findFirst()
+                    .orElse(null);
         }
         return mapping;
     }

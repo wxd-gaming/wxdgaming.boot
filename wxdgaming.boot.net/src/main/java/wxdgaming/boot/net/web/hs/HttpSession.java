@@ -167,6 +167,16 @@ public class HttpSession extends Session implements Serializable {
     }
 
     /** HttpContentType.html 回复 http 请求 */
+    public void response(HttpResponseStatus status, String res) {
+        HttpServer.response(this, HttpVersion.HTTP_1_1, status, HttpHeadValueType.Html, res.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** HttpContentType.html 回复 http 请求 */
+    public void response(HttpResponseStatus status, byte[] bytes) {
+        HttpServer.response(this, HttpVersion.HTTP_1_1, status, HttpHeadValueType.Html, bytes);
+    }
+
+    /** HttpContentType.html 回复 http 请求 */
     public void response(HttpVersion httpVersion, HttpResponseStatus status, HttpHeadValueType httpHeadValueType, byte[] bytes) {
         HttpServer.response(this, httpVersion, status, httpHeadValueType, bytes);
     }
