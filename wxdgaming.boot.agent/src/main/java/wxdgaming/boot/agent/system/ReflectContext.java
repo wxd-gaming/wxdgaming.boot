@@ -270,7 +270,7 @@ public class ReflectContext {
                         if (url != null) {
                             String type = url.getProtocol();
                             String urlPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8);
-                            System.out.println(type + " - " + urlPath);
+                            // System.out.println(type + " - " + urlPath);
                             if ("file".equals(type) /* || "resource".equals(type) */) {
                                 String dir = urlPath.substring(0, urlPath.lastIndexOf(packagePath));
                                 findClassByFile(dir, urlPath, consumer);

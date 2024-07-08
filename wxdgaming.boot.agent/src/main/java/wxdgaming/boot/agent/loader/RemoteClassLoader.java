@@ -1,16 +1,18 @@
 package wxdgaming.boot.agent.loader;
 
 import lombok.Getter;
+import wxdgaming.boot.agent.system.ReflectContext;
 
 import javax.tools.JavaFileObject;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -24,37 +26,56 @@ import java.util.zip.ZipInputStream;
 @Getter
 public class RemoteClassLoader extends URLClassLoader {
 
+    public static void main(String[] args) {
+        RemoteClassLoader remoteClassLoader = RemoteClassLoader.build(
+                RemoteClassLoader.class.getClassLoader(),
+                "http://localhost/qj5/a.jar",
+                "http://localhost/qj5/b.jar"
+        );
+
+        ReflectContext.Builder
+                .of(remoteClassLoader, "gvm").build()
+                .classStream()
+                .forEach(c -> System.out.println("读取资源：" + c));
+
+    }
+
     public static RemoteClassLoader build(ClassLoader parent, String... urls) {
         try {
             URL[] _ruls = new URL[urls.length];
-            ArrayList<String> resources = new ArrayList<>();
-            ArrayList<String> classResources = new ArrayList<>();
+            HashMap<String, byte[]> resources = new HashMap<>();
+            HashMap<String, byte[]> classResources = new HashMap<>();
             for (int i = 0, urlsLength = urls.length; i < urlsLength; i++) {
                 String url = urls[i];
                 URI uri = URI.create(url);
                 _ruls[i] = uri.toURL();
-                try (ZipInputStream zipInputStream = new ZipInputStream(uri.toURL().openStream())) {
+
+                try (InputStream in = uri.toURL().openStream(); ZipInputStream zipInputStream = new ZipInputStream(in)) {
                     ZipEntry nextEntry = null;
                     while ((nextEntry = zipInputStream.getNextEntry()) != null) {
-                        resources.add(nextEntry.getName());
+                        /* todo 读取的资源字节可以做解密操作 */
+                        byte[] extra = zipInputStream.readNBytes((int) nextEntry.getSize());
+                        resources.put(nextEntry.getName(), extra);
                         // System.out.println("resource：" + nextEntry.getName());
                         if (!nextEntry.isDirectory() && nextEntry.getName().endsWith(JavaFileObject.Kind.CLASS.extension)) {
                             String replace = nextEntry.getName()
                                     .replace("\\", "/")
                                     .replace("/", ".");
                             replace = replace.substring(0, replace.length() - JavaFileObject.Kind.CLASS.extension.length());
-                            classResources.add(replace);
-                            // System.out.println("class：" + replace);
+                            classResources.put(replace, extra);
+                            System.out.println("class：" + replace + " - " + extra.length);
                         }
                     }
+                    int available1 = in.available();
+                    System.out.println("剩余可以用：" + available1);
                 }
             }
 
             return new RemoteClassLoader(
                     _ruls,
                     parent,
-                    Collections.unmodifiableList(resources),
-                    Collections.unmodifiableList(classResources)
+                    Collections.unmodifiableMap(resources),
+                    Collections.unmodifiableMap(classResources)
             );
 
         } catch (Exception e) {
@@ -62,10 +83,12 @@ public class RemoteClassLoader extends URLClassLoader {
         }
     }
 
-    private final List<String> classResources;
-    private final List<String> resources;
+    /** 读取资源文件的字节流 */
+    private final Map<String, byte[]> classResources;
+    /** 读取资源文件的字节流 */
+    private final Map<String, byte[]> resources;
 
-    public RemoteClassLoader(URL[] urls, ClassLoader parent, List<String> resources, List<String> classResources) {
+    public RemoteClassLoader(URL[] urls, ClassLoader parent, Map<String, byte[]> resources, Map<String, byte[]> classResources) {
         super(urls, parent);
         this.resources = resources;
         this.classResources = classResources;
@@ -76,7 +99,7 @@ public class RemoteClassLoader extends URLClassLoader {
     }
 
     public Stream<Class<?>> classStream(Predicate<String> test) {
-        Stream<String> stream = classResources.stream();
+        Stream<String> stream = classResources.keySet().stream();
         if (test != null) {
             stream = stream.filter(test);
         }
@@ -89,12 +112,32 @@ public class RemoteClassLoader extends URLClassLoader {
         });
     }
 
+    @Override public Class<?> loadClass(String name) throws ClassNotFoundException {
+        System.out.println("loadClass：" + name);
+        try {
+            return super.loadClass(name);
+        } catch (ClassNotFoundException ignore) {
+            return findClass(name);
+        }
+    }
+
+    @Override public Class<?> findClass(String name) throws ClassNotFoundException {
+        System.out.println("findClass：" + name);
+        if (classResources.containsKey(name)) {
+            byte[] bytes = classResources.get(name);
+            System.out.println(name + " - " + bytes.length);
+            Class<?> defineClass = super.defineClass(null, bytes, 0, bytes.length);
+            return defineClass;
+        }
+        return super.findClass(name);
+    }
+
     public List<Class<?>> classes() {
         return classes(null);
     }
 
     public List<Class<?>> classes(Predicate<String> test) {
-        return classStream(test).collect(Collectors.toUnmodifiableList());
+        return classStream(test).toList();
     }
 
 }
