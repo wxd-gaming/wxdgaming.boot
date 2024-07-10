@@ -1,14 +1,18 @@
 package wxdgaming.boot.agent.system;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.exception.Throw;
+import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.loader.ClassDirLoader;
 import wxdgaming.boot.agent.loader.RemoteClassLoader;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.net.URL;
@@ -214,6 +218,24 @@ public class ReflectContext {
         private boolean filterAbstract = true;
         /** 过滤掉枚举类 */
         private boolean filterEnum = true;
+        /** graalvm 打包需要 resources.json */
+        private ArrayList<String> resources = null;
+
+        /** graalvm 打包需要 resources.json */
+        public ArrayList<String> getResources() {
+            if (resources == null) {
+                InputStream resourceAsStream = classLoader.getResourceAsStream("resources.json");
+                if (resourceAsStream != null) {
+                    byte[] bytes = FileReadUtil.readBytes(resourceAsStream);
+                    String string = new String(bytes, StandardCharsets.UTF_8);
+                    resources = JSON.parseObject(string, new TypeReference<ArrayList<String>>() {});
+                }
+            }
+            if (resources == null) {
+                resources = new ArrayList<>();
+            }
+            return resources;
+        }
 
         private Builder(ClassLoader classLoader, String[] packageNames) {
             this.classLoader = classLoader;
@@ -270,12 +292,22 @@ public class ReflectContext {
                         if (url != null) {
                             String type = url.getProtocol();
                             String urlPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8);
-                            // System.out.println(type + " - " + urlPath);
-                            if ("file".equals(type) /* || "resource".equals(type) */) {
-                                String dir = urlPath.substring(0, urlPath.lastIndexOf(packagePath));
-                                findClassByFile(dir, urlPath, consumer);
-                            } else if ("jar".equals(type) || "zip".equals(type)) {
-                                findClassByJar(urlPath, consumer);
+                            switch (type) {
+                                case "file" -> {
+                                    String dir = urlPath.substring(0, urlPath.lastIndexOf(packagePath));
+                                    findClassByFile(dir, urlPath, consumer);
+                                }
+                                case "jar", "zip" -> findClassByJar(urlPath, consumer);
+                                case "resource" -> {
+                                    /* graalvm 打包需要 */
+                                    getResources()
+                                            .stream()
+                                            .filter(v -> v.startsWith(packageName))
+                                            .forEach(v -> {
+                                                loadClass(v, consumer);
+                                            });
+                                }
+                                case null, default -> System.out.println("未知类型：" + type + " - " + urlPath);
                             }
                         } else {
                             findClassByJars(
