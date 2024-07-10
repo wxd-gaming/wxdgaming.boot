@@ -1,5 +1,6 @@
 package wxdgaming.boot.holder;
 
+import sun.reflect.ReflectionFactory;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.loader.ClassDirLoader;
 
@@ -19,6 +20,7 @@ import java.net.MalformedURLException;
 public class Holder {
 
     public static void main(String[] args) throws Exception {
+
         new Thread(() -> {
             loadJar(new String[]{"target/s1"});
         }).start();
@@ -45,6 +47,13 @@ public class Holder {
             server.getClassLoader(instance);
             /** 父 load null 表示需要做到类的绝对隔离 */
             ClassDirLoader classDirLoader = new ClassDirLoader((ClassLoader) null);
+
+            String classpath = System.getProperty("java.class.path");
+            String[] split = classpath.split(File.pathSeparator);
+            for (String string : split) {
+                System.out.println(string);
+            }
+
             /**把jar 需要的引用 lib 里面的jar包全部加载 */
             FileUtil.walk("target/lib", ".jar").forEach(jar -> {
                 try {

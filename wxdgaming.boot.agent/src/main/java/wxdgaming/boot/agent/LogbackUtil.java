@@ -45,23 +45,6 @@ public class LogbackUtil {
         LoggerFactory.getLogger("root").info("--------------- init end ---------------");
     }
 
-    public static void info(String str) {
-        logger(3).info(str);
-    }
-
-    public static Logger logger() {
-        return logger(3);
-    }
-
-    public static Logger logger(int stack) {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        if (stack >= stackTrace.length) {
-            stack = stackTrace.length - 1;
-        }
-        StackTraceElement stackTraceElement = stackTrace[stack];
-        return LoggerFactory.getLogger(stackTraceElement.getClassName());
-    }
-
     /** 强制设置logback 配置目录 */
     public static void setLogbackConfig() {
         String key = "logback.configurationFile";
@@ -109,4 +92,20 @@ public class LogbackUtil {
                 .forEach((logger) -> logger.setLevel(loggerLevel));
     }
 
+    public static void info(String str) {
+        logger(3).info(str);
+    }
+
+    public static Logger logger() {
+        return logger(3);
+    }
+
+    public static Logger logger(int stack) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        if (stack >= stackTrace.length) {
+            stack = stackTrace.length - 1;
+        }
+        StackTraceElement stackTraceElement = stackTrace[stack];
+        return LoggerFactory.getLogger(stackTraceElement.getClassName());
+    }
 }
