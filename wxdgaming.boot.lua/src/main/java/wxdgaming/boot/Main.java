@@ -2,6 +2,8 @@ package wxdgaming.boot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.VarArgFunction;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -22,18 +24,59 @@ public class Main {
         // luaBus = LuaBus.buildFromResources(Thread.currentThread().getContextClassLoader(), "script/");
         luaBus = LuaBus.buildFromDirs("src/main/lua");
         luaBus.set("objVar", 1);
-        Thread.sleep(5000);
+        /*注册函数*/
+        luaBus.set("testfun0", new VarArgFunction() {
+
+            @Override public Varargs onInvoke(Varargs args) {
+                /*参数的数量*/
+                int narg = args.narg();
+                System.out.println(narg + " - " + args.toString());
+                return LuaValue.valueOf("无参");
+            }
+        });
+        /*注册函数*/
+        luaBus.set("testfun1", new VarArgFunction() {
+
+            @Override public Varargs onInvoke(Varargs args) {
+                /*参数的数量*/
+                int narg = args.narg();
+                LuaValue checkvalue = args.checkvalue(1);
+                System.out.println(narg + " - " + args.toString());
+                return LuaValue.valueOf("testfun1");
+            }
+        });
+
+        /*注册函数*/
+        luaBus.set("testfun2", new VarArgFunction() {
+
+            @Override public Varargs onInvoke(Varargs args) {
+                /*参数的数量*/
+                int narg = args.narg();
+                LuaValue v1 = args.checkvalue(1);
+                LuaValue v2 = args.checkvalue(2);
+                System.out.println(narg + " - " + args.toString());
+                return LuaValue.valueOf("testfun2");
+            }
+        });
+
+        Thread.sleep(500);
         luaBus.forExecTry("t1");
-        Thread.sleep(5000);
+        Thread.sleep(500);
         testString();
-        // test("t3");
-        // Thread.sleep(3000);
-        // test("t3");
-        // Thread.sleep(3000);
-        // test("t4");
-        // Thread.sleep(3000);
-        // test("t4");
-        // Thread.sleep(3000);
+
+
+        test("t3");
+        Thread.sleep(3000);
+        test("t3");
+        Thread.sleep(3000);
+        test("t4");
+        Thread.sleep(3000);
+        test("t4");
+        Thread.sleep(3000);
+        test("t2_2");
+        Thread.sleep(3000);
+        test("t2_2");
+        Thread.sleep(3000);
 
     }
 
@@ -64,7 +107,7 @@ public class Main {
         }
         countDownLatch.await();
         long l1 = System.currentTimeMillis() - l;
-        System.out.println(l1);
+        System.out.println("执行：" + method_name + ", " + forCount + " 次, 耗时：" + l1 + " ms");
     }
 
     public static class M {

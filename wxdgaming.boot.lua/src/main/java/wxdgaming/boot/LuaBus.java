@@ -5,8 +5,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.JsePlatform;
+import org.luaj.vm2.compiler.LuaC;
+import org.luaj.vm2.lib.*;
+import org.luaj.vm2.lib.jse.*;
+import org.luaj.vm2.luajc.LuaJC;
 import wxdgaming.boot.agent.function.Predicate2;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
@@ -152,6 +154,19 @@ public class LuaBus {
         protected GlobalPool(String name) {
             this.name = name;
             this.globals = JsePlatform.standardGlobals();
+
+            this.globals.load(new JseBaseLib());
+            this.globals.load(new PackageLib());
+            this.globals.load(new Bit32Lib());
+            this.globals.load(new TableLib());
+            this.globals.load(new StringLib());
+            this.globals.load(new CoroutineLib());
+            this.globals.load(new JseMathLib());
+            this.globals.load(new JseIoLib());
+            this.globals.load(new JseOsLib());
+            this.globals.load(new LuajavaLib());
+            LuaC.install(this.globals);
+            LuaJC.install(this.globals);
             set("logbackUtil", log);
             set("lua_data", lua_data);
         }
@@ -169,6 +184,19 @@ public class LuaBus {
         }
 
         /**
+         * 从 lua 字符加载
+         *
+         * @param luaString 脚本字符
+         * @param chunkname 别名，报错的时候标记，
+         * @return
+         * @author: Troy.Chen(無心道, 15388152619)
+         * @version: 2024-06-27 16:11
+         */
+        public LuaValue loadString(String luaString, String chunkname) {
+            return globals.load(luaString, chunkname);
+        }
+
+        /**
          * 从文件加载lua
          *
          * @param lua_file lua文件路径
@@ -180,7 +208,9 @@ public class LuaBus {
             if (log.isDebugEnabled()) {
                 log.debug("find lua script {}", lua_file);
             }
-            return globals.loadfile(lua_file).call();
+            String string = FileReadUtil.readString(lua_file);
+            /* chunkname 是别名 用于标记那一段代码出错*/
+            return loadString(string, lua_file).call();
         }
 
         /**
@@ -358,6 +388,20 @@ public class LuaBus {
     }
 
     /**
+     * 设置全局变量
+     *
+     * @param key              存储变量名
+     * @param valueArgFunction 变量的值
+     * @return
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-06-27 16:13
+     */
+    public LuaBus set(String key, VarArgFunction valueArgFunction) {
+        globalPools.values().forEach(g -> g.set(key, valueArgFunction));
+        return this;
+    }
+
+    /**
      * 查找 lua 虚拟机的对象
      *
      * @param lua_key 查找的 key值 或者 方法名称
@@ -366,19 +410,37 @@ public class LuaBus {
      * @version: 2024-06-27 10:17
      */
     public LuaValue get(String lua_key) {
+        for (GlobalPool value : globalPools.values()) {
+            LuaValue luaValue = value.get(lua_key);
+            if (luaValue != null) {
+                return luaValue;
+            }
+        }
         return null;
     }
 
     public LuaValue exec(String method_name) {
-        return null;
+        LuaValue luaValue = get(method_name);
+        if (luaValue != null) {
+            return luaValue.call();
+        }
+        throw new NullPointerException("method_name=" + method_name);
     }
 
     public LuaValue exec(String method_name, String val1) {
-        return null;
+        LuaValue luaValue = get(method_name);
+        if (luaValue != null) {
+            return luaValue.call(val1);
+        }
+        throw new NullPointerException("method_name=" + method_name);
     }
 
     public LuaValue execUserdata(String method_name, Object val1) {
-        return null;
+        LuaValue luaValue = get(method_name);
+        if (luaValue != null) {
+            return luaValue.call(CoerceJavaToLua.coerce(val1));
+        }
+        throw new NullPointerException("method_name=" + method_name);
     }
 
     public CompletableFuture<LuaValue> execAsync(String method_name) {
