@@ -5,9 +5,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.compiler.LuaC;
-import org.luaj.vm2.lib.*;
-import org.luaj.vm2.lib.jse.*;
+import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.JsePlatform;
 import org.luaj.vm2.luajc.LuaJC;
 import wxdgaming.boot.agent.function.Predicate2;
 import wxdgaming.boot.agent.io.FileReadUtil;
@@ -154,18 +154,6 @@ public class LuaBus {
         protected GlobalPool(String name) {
             this.name = name;
             this.globals = JsePlatform.standardGlobals();
-
-            this.globals.load(new JseBaseLib());
-            this.globals.load(new PackageLib());
-            this.globals.load(new Bit32Lib());
-            this.globals.load(new TableLib());
-            this.globals.load(new StringLib());
-            this.globals.load(new CoroutineLib());
-            this.globals.load(new JseMathLib());
-            this.globals.load(new JseIoLib());
-            this.globals.load(new JseOsLib());
-            this.globals.load(new LuajavaLib());
-            LuaC.install(this.globals);
             LuaJC.install(this.globals);
             set("logbackUtil", log);
             set("lua_data", lua_data);
