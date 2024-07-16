@@ -64,19 +64,21 @@ public class Main {
         Thread.sleep(500);
         testString();
 
+        luaBus.forExecTry("login");
+        Thread.sleep(500);
 
-        test("t3");
-        Thread.sleep(3000);
-        test("t3");
-        Thread.sleep(3000);
-        test("t4");
-        Thread.sleep(3000);
-        test("t4");
-        Thread.sleep(3000);
-        test("t2_2");
-        Thread.sleep(3000);
-        test("t2_2");
-        Thread.sleep(3000);
+        // test("t3");
+        // Thread.sleep(3000);
+        // test("t3");
+        // Thread.sleep(3000);
+        // test("t4");
+        // Thread.sleep(3000);
+        // test("t4");
+        // Thread.sleep(3000);
+        // test("t2_2");
+        // Thread.sleep(3000);
+        // test("t2_2");
+        // Thread.sleep(3000);
 
     }
 
