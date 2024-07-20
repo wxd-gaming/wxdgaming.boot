@@ -30,6 +30,7 @@
         <module>wxdgaming.boot.starter</module>
         <module>wxdgaming.boot.kotlin</module>
         <module>wxdgaming.boot.lua</module>
+        <module>wxdgaming.boot.logbus</module>
     </modules>
 
     <properties>

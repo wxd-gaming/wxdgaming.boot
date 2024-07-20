@@ -146,6 +146,20 @@ public class ReflectContext {
         return classWithAnnotated(annotation, predicate).map(Content::new);
     }
 
+    /** 所有添加了这个注解的类 */
+    public Stream<Method> withMethodAnnotated(Class<? extends Annotation> annotation) {
+        return withMethodAnnotated(annotation, null);
+    }
+
+    /** 所有添加了这个注解的类 */
+    public Stream<Method> withMethodAnnotated(Class<? extends Annotation> annotation, Predicate<Method> predicate) {
+        Stream<Method> methodStream = stream().flatMap(info -> info.methodsWithAnnotated(annotation));
+        if (predicate != null) {
+            methodStream = methodStream.filter(predicate);
+        }
+        return methodStream;
+    }
+
     @Getter
     public static class Content<T> {
 

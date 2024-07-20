@@ -22,6 +22,7 @@ import java.util.List;
 @Getter
 public class SplitCollection<E> extends LockBase implements Serializable, Data2Json {
 
+    /** 切割块大小 */
     private final int splitOrg;
     private final boolean linked;
     private volatile int size = 0;

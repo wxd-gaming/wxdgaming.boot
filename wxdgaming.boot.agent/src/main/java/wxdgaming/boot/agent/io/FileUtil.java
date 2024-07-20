@@ -267,7 +267,9 @@ public class FileUtil implements Serializable {
         if (absoluteFile.isDirectory()) {
             absoluteFile.mkdirs();
         } else {
-            absoluteFile.getParentFile().mkdirs();
+            File parentFile = absoluteFile.getParentFile();
+            if (parentFile != null)
+                parentFile.mkdirs();
         }
     }
 

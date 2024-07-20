@@ -1,5 +1,6 @@
 package wxdgaming.boot.batis.sql;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
@@ -198,6 +199,41 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         DM entityTable = asEntityTable(model);
         String sqlStr = entityTable.getReplaceSql(model);
         return executeUpdate(entityTable, model, sqlStr);
+    }
+
+    /**
+     * mysql 特有的方式 replace into 如果之前没有数据就是插入，如果有数据就是更新
+     * <p>注意表必须是有主键字段或者唯一字段，否则会出现重复数据
+     */
+    public int replaceBatch(List<?> models) {
+        if (models == null || models.isEmpty()) return -1;
+        Object model = models.getFirst();
+        DM entityTable = asEntityTable(model);
+        String sqlStr = entityTable.getReplaceSql(model);
+        MarkTimer markTimer = MarkTimer.build();
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement stmt = connection.prepareStatement(sqlStr)) {
+                for (Object o : models) {
+                    setPreparedParams(stmt, entityTable, o);
+                    stmt.addBatch();
+                    stmt.clearParameters();
+                }
+                int size = Arrays.stream(stmt.executeBatch()).sum();
+                connection.commit();
+                float execTime = markTimer.execTime();
+                if (getSqlDao().getDbConfig().isShow_sql()) {
+                    log.info("\n" + sqlStr + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                } else if (execTime > 10000) {
+                    log.warn("\n" + sqlStr + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                }
+                return size;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (Exception e) {
+            throw Throw.as(sqlStr, e);
+        }
     }
 
     protected int executeUpdate(DM entityTable, Object model, String sqlStr) {
