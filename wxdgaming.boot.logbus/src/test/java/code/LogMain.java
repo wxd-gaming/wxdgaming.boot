@@ -24,7 +24,9 @@ public class LogMain {
     public void l1() throws IOException {
 
         LogService logService = new LogService();
+
         logService.getMysqlDataHelper().createTable(LoginLog.class);
+        logService.getMysqlDataHelper().createTable(LoginRoleLog.class);
 
         System.out.println("准备好了可以敲入回车测试");
         System.in.read();
@@ -36,8 +38,17 @@ public class LogMain {
                     .setTime(MyClock.millis())
                     .setIp("127.0.0.2")
             );
-        }
 
+            logService.push(new LoginRoleLog()
+                    .setUid(System.nanoTime())
+                    .setAccount("test")
+                    .setRole(System.currentTimeMillis())
+                    .setTime(MyClock.millis())
+                    .setIp("127.0.0.2")
+            );
+
+        }
+        new RuntimeException("生产日志完成").printStackTrace(System.err);
         System.in.read();
 
     }
@@ -50,6 +61,21 @@ public class LogMain {
         @DbColumn(key = true)
         private long uid;
         private String account;
+        @DbColumn(index = true)
+        private long time;
+        private String ip;
+
+    }
+
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    public static class LoginRoleLog extends ObjectBase implements ILog {
+
+        @DbColumn(key = true)
+        private long uid;
+        private String account;
+        private long role;
         @DbColumn(index = true)
         private long time;
         private String ip;

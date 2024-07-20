@@ -15,6 +15,7 @@ import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.core.timer.MyClock;
 
 import java.io.File;
+import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -58,8 +59,8 @@ public class LogService extends LockBase {
 
         executorServices = Executors.newExecutorServices(
                 "log-service",
-                corePoolSize + 1,
-                corePoolSize + 1
+                corePoolSize + 4,/*TODO ???*/
+                corePoolSize + 4
         );
 
         executorServices.scheduleAtFixedDelay(() -> {
@@ -83,7 +84,7 @@ public class LogService extends LockBase {
                             long andIncrement = atomicLong.getAndIncrement();
                             /*每一次计算线程处理逻辑*/
                             long index = andIncrement % corePoolSize;
-
+                            /*把日志先写入文件*/
                             File target = base_path.resolve(Paths.get(String.valueOf(index), key, System.nanoTime() + ".log")).toFile();
 
                             String jsonWriteType = FastJsonUtil.toJsonWriteType(e);
@@ -106,11 +107,18 @@ public class LogService extends LockBase {
                                 /*TODO ???*/
                                 return;
                             }
+
+                            {
+                                /*数数, 日志中心服*/
+                                /* httpclient .sendFile(file) */
+                            }
                             String readString = FileReadUtil.readString(file);
                             List<ILog> iLogs = FastJsonUtil.parseArray(readString, ILog.class);
                             /*TODO 批量入库这里不在异步*/
-                            mysqlDataHelper.replaceBatch(iLogs);
+                            int i1 = mysqlDataHelper.replaceBatch(iLogs);
+                            /* i1<0 */
                             file.delete();
+                            /*todo 如果处理出现异常如何处理*/
                         });
                     },
                     66, 66, TimeUnit.MILLISECONDS
