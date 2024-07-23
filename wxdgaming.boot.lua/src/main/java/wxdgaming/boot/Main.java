@@ -67,6 +67,16 @@ public class Main {
         luaBus.forExecTry("login");
         Thread.sleep(500);
 
+        luaBus.forExecTry("t2_2", (file, value) -> {
+            System.out.println(value);
+        });
+        Thread.sleep(500);
+
+        luaBus.forExecTry("t2_2", 1, (file, value) -> {
+            System.out.println(value);
+        });
+        Thread.sleep(500);
+
         // test("t3");
         // Thread.sleep(3000);
         // test("t3");
