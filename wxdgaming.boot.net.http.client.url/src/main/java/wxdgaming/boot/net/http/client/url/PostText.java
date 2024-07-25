@@ -48,9 +48,6 @@ public class PostText extends Post<PostText> {
     @Override protected void writeTextParams(StreamWriter outWriter) throws Exception {
         if (StringUtil.notEmptyOrNull(this.response.postText)) {
             outWriter.write(this.response.postText);
-            if (log.isDebugEnabled()) {
-                log.debug("http send：" + this.response.postText);
-            }
         }
     }
 

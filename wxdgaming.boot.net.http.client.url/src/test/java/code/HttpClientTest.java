@@ -40,4 +40,30 @@ public class HttpClientTest {
 
     }
 
+    @Test
+    public void t3() throws Exception {
+        for (int i = 0; i < 100; i++) {
+
+            String url = "http://127.0.0.1:18801/onlyoffice/callback";
+            String json = "{\n" +
+                    "    \"changesurl\": \"https://documentserver/url-to-changes.zip\",\n" +
+                    "    \"forcesavetype\": 0,\n" +
+                    "    \"history\": {\n" +
+                    "        \"changes\": \"changes\",\n" +
+                    "        \"serverVersion\": \"serverVersion\"\n" +
+                    "    },\n" +
+                    "    \"filetype\": \"docx\",\n" +
+                    "    \"key\": \"Khirz6zTPdfd7\",\n" +
+                    "    \"status\": 6,\n" +
+                    "    \"url\": \"http://127.0.0.1:18801/onlyoffice/callback/url-to-changes.zip\",\n" +
+                    "    \"users\": [\"6d5a81d0\"],\n" +
+                    "    \"userdata\": \"sample userdata\"\n" +
+                    "}";
+            HttpBuilder.postJson(url, json)
+                    .asyncString(bodyString -> log.info(bodyString));
+
+        }
+        Thread.sleep(3000);
+    }
+
 }

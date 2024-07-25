@@ -473,7 +473,7 @@ public class HttpServer extends NioServer<HttpSession> {
     /**
      * {@code key=value&key=value&key=value&key=value&key=value}
      */
-    public static Map queryStringMap(String queryString) {
+    public static ObjMap queryStringMap(String queryString) {
         ObjMap paramsMap = new ObjMap();
         queryStringMap(paramsMap, queryString);
         return paramsMap;

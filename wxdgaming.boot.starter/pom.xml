@@ -14,17 +14,17 @@
     <dependencies>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
             <artifactId>wxdgaming.boot.agent</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
             <artifactId>wxdgaming.boot.assist</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
