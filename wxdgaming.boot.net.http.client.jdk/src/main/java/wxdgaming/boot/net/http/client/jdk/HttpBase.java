@@ -1,11 +1,11 @@
 package wxdgaming.boot.net.http.client.jdk;
 
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.net.http.HttpHeadNameType;
 import wxdgaming.boot.net.http.HttpHeadValueType;
 
@@ -56,7 +56,7 @@ public abstract class HttpBase<H extends HttpBase> {
         header(HttpHeadNameType.Content_Type, HttpHeadValueType.Application);
         header(HttpHeadNameType.Accept_Encoding, HttpHeadValueType.Gzip);
         header("user-agent", "java.org.wxd j21");
-        response = new Response(this, url);
+        response = new Response<>((H) this, url);
     }
 
     protected HttpRequest.Builder builder() {

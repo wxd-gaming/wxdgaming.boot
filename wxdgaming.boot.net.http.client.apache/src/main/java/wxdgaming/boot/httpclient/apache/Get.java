@@ -1,5 +1,6 @@
 package wxdgaming.boot.httpclient.apache;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
@@ -12,15 +13,8 @@ import java.io.IOException;
  * @author: Troy.Chen(無心道, 15388152619)
  * @version: 2023-04-28 16:02
  **/
-public class Get extends HttpClientBuilder {
-
-    public static Get of(String uriPath) {
-        return new Get(HttpClientPool.getDefault(), uriPath);
-    }
-
-    public static Get of(HttpClientPool httpClientPool, String uriPath) {
-        return new Get(httpClientPool, uriPath);
-    }
+@Slf4j
+public class Get extends HttpBase<Get> {
 
     public Get(HttpClientPool httpClientPool, String uriPath) {
         super(httpClientPool, uriPath);
@@ -28,15 +22,13 @@ public class Get extends HttpClientBuilder {
 
     @Override public void request0() throws IOException {
         HttpGet get = createGet();
-        response = httpClientPool.getCloseableHttpClient().execute(get);
-        HttpEntity entity = response.getEntity();
-        bodys = EntityUtils.toByteArray(entity);
+        if (log.isDebugEnabled()) {
+            log.info("send url={}", url());
+        }
+        response.httpResponse = httpClientPool.getCloseableHttpClient().execute(get);
+        HttpEntity entity = response.httpResponse.getEntity();
+        response.bodys = EntityUtils.toByteArray(entity);
         EntityUtils.consume(entity);
-    }
-
-    @Override public Get addHeader(String headerKey, String HeaderValue) {
-        super.addHeader(headerKey, HeaderValue);
-        return this;
     }
 
 }

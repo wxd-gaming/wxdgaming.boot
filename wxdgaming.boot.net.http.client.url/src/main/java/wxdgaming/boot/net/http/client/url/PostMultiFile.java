@@ -25,11 +25,11 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class PostFile extends PostMulti {
+public class PostMultiFile extends PostMulti {
 
     protected final List<File> uploadFiles = new ArrayList<>();
 
-    public PostFile(String uriPath) {
+    public PostMultiFile(String uriPath) {
         super(uriPath);
         this.reqHttpMethod = "POST";
         this.contentType = HttpHeadValueType.Multipart;
@@ -72,27 +72,27 @@ public class PostFile extends PostMulti {
         }
     }
 
-    public PostFile addFile(File file) {
+    public PostMultiFile addFile(File file) {
         this.uploadFiles.add(file);
         return this;
     }
 
-    @Override public PostFile setUrlEncoder(boolean urlEncoder) {
+    @Override public PostMultiFile setUrlEncoder(boolean urlEncoder) {
         super.setUrlEncoder(urlEncoder);
         return this;
     }
 
-    @Override public PostFile setReqMap(ObjMap reqMap) {
+    @Override public PostMultiFile setReqMap(ObjMap reqMap) {
         super.setReqMap(reqMap);
         return this;
     }
 
-    @Override public PostFile putParams(Object key, Object value) {
+    @Override public PostMultiFile putParams(Object key, Object value) {
         super.putParams(key, value);
         return this;
     }
 
-    @Override public PostFile putParams(Map map) {
+    @Override public PostMultiFile putParams(Map map) {
         super.putParams(map);
         return this;
     }

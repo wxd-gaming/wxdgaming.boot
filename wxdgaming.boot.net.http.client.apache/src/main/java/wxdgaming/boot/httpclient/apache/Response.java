@@ -1,17 +1,16 @@
-package wxdgaming.boot.net.http.client.jdk;
+package wxdgaming.boot.httpclient.apache;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.net.http.HttpHeadNameType;
 
-import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,7 +26,8 @@ public final class Response<H extends HttpBase> {
     final H httpBase;
     final String uriPath;
     String postText = null;
-    HttpResponse<byte[]> httpResponse;
+    protected CloseableHttpResponse httpResponse;
+    protected byte[] bodys = null;
 
     Response(H httpBase, String uriPath) {
         this.httpBase = httpBase;
@@ -35,23 +35,20 @@ public final class Response<H extends HttpBase> {
     }
 
     public String getHeader(String header) {
-        return this.httpResponse.headers().firstValue(header).orElse("");
-    }
-
-    public Map<String, List<String>> getHeaders() {
-        return this.httpResponse.headers().map();
+        return Optional.ofNullable(this.httpResponse.getFirstHeader(header))
+                .map(NameValuePair::getValue)
+                .orElse(null);
     }
 
     public int responseCode() {
-        return httpResponse.statusCode();
+        return httpResponse.getStatusLine().getStatusCode();
     }
 
     public byte[] body() {
-        byte[] body = httpResponse.body();
         if ("gzip".equalsIgnoreCase(getHeader(HttpHeadNameType.Content_Encoding.getValue()))) {
-            return GzipUtil.unGZip(body);
+            return GzipUtil.unGZip(bodys);
         }
-        return body;
+        return bodys;
     }
 
     public String bodyString() {

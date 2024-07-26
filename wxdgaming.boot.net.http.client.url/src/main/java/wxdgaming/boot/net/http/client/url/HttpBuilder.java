@@ -38,12 +38,12 @@ public final class HttpBuilder {
         return new PostMulti(url).putParams(map);
     }
 
-    public static PostFile postFile(String url, Map map) {
-        return new PostFile(url).putParams(map);
+    public static PostMultiFile postFile(String url, Map map) {
+        return new PostMultiFile(url).putParams(map);
     }
 
-    public static PostFile postFile(String url, File file) {
-        return new PostFile(url).addFile(file);
+    public static PostMultiFile postFile(String url, File file) {
+        return new PostMultiFile(url).addFile(file);
     }
 
 }

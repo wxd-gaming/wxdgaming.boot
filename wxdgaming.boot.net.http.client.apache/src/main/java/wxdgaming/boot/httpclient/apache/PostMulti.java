@@ -11,6 +11,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.util.EntityUtils;
 import wxdgaming.boot.net.http.HttpDataAction;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,15 +20,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class PostMulti extends HttpClientBuilder {
-
-    public static PostMulti of(String uriPath) {
-        return new PostMulti(HttpClientPool.getDefault(), uriPath);
-    }
-
-    public static PostMulti of(HttpClientPool httpClientPool, String uriPath) {
-        return new PostMulti(httpClientPool, uriPath);
-    }
+public class PostMulti extends HttpBase<PostMulti> {
 
     private ContentType contentType = ContentType.MULTIPART_FORM_DATA;
     private HashMap<Object, Object> objMap = new HashMap<>();
@@ -40,19 +33,28 @@ public class PostMulti extends HttpClientBuilder {
         HttpPost httpRequestBase = createPost();
         if (!objMap.isEmpty()) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.setContentType(contentType);
             for (Map.Entry<Object, Object> objectObjectEntry : objMap.entrySet()) {
-                builder.addTextBody(String.valueOf(objectObjectEntry.getKey()), String.valueOf(objectObjectEntry.getValue()), contentType);
+                String key = String.valueOf(objectObjectEntry.getKey());
+                if (objectObjectEntry.getValue() instanceof File file) {
+                    builder.addBinaryBody(key, file);
+                    builder.addTextBody(file.getName() + "_lastModified", file.lastModified() + "");
+                } else if (objectObjectEntry.getValue() instanceof byte[] bytes) {
+                    builder.addBinaryBody(key, bytes);
+                } else {
+                    builder.addTextBody(key, String.valueOf(objectObjectEntry.getValue()));
+                }
             }
             HttpEntity build = builder.build();
             httpRequestBase.setEntity(build);
             if (log.isDebugEnabled()) {
                 String s = new String(readBytes(build));
-                log.info("send {}", s);
+                log.info("send url={}\n{}", url(), s);
             }
         }
-        response = httpClientPool.getCloseableHttpClient().execute(httpRequestBase);
-        HttpEntity entity = response.getEntity();
-        bodys = EntityUtils.toByteArray(entity);
+        response.httpResponse = httpClientPool.getCloseableHttpClient().execute(httpRequestBase);
+        HttpEntity entity = response.httpResponse.getEntity();
+        response.bodys = EntityUtils.toByteArray(entity);
         EntityUtils.consume(entity);
     }
 
@@ -62,8 +64,7 @@ public class PostMulti extends HttpClientBuilder {
     }
 
     public PostMulti addParams(Object name, Object value) {
-        addParams(name, value, true);
-        return this;
+        return addParams(name, value, true);
     }
 
     public PostMulti addParams(Object name, Object value, boolean urlEncode) {
@@ -75,26 +76,11 @@ public class PostMulti extends HttpClientBuilder {
         return this;
     }
 
-    public PostMulti addParams(Map map, boolean urlEncode) {
-        Map<Object, Object> tmp = map;
-        for (Map.Entry<Object, Object> entry : tmp.entrySet()) {
+    public PostMulti addParams(Map<?, ?> map, boolean urlEncode) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
             addParams(entry.getKey(), entry.getValue(), urlEncode);
         }
         return this;
     }
 
-    @Override public PostMulti setConnectionRequestTimeout(int connectionRequestTimeout) {
-        super.setConnectionRequestTimeout(connectionRequestTimeout);
-        return this;
-    }
-
-    @Override public PostMulti setConnectTimeOut(int connectTimeOut) {
-        super.setConnectTimeOut(connectTimeOut);
-        return this;
-    }
-
-    @Override public PostMulti setReadTimeout(int readTimeout) {
-        super.setReadTimeout(readTimeout);
-        return this;
-    }
 }

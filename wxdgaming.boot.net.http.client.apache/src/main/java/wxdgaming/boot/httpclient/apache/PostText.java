@@ -21,15 +21,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class PostText extends HttpClientBuilder {
-
-    public static PostText of(String uriPath) {
-        return new PostText(HttpClientPool.getDefault(), uriPath);
-    }
-
-    public static PostText of(HttpClientPool httpClientPool, String uriPath) {
-        return new PostText(httpClientPool, uriPath);
-    }
+public class PostText extends HttpBase<PostText> {
 
     private ContentType contentType = ContentType.APPLICATION_FORM_URLENCODED;
     private String params = "";
@@ -45,12 +37,12 @@ public class PostText extends HttpClientBuilder {
             httpRequestBase.setEntity(stringEntity);
             if (log.isDebugEnabled()) {
                 String s = new String(readBytes(stringEntity));
-                log.info("send {}", s);
+                log.info("send url={}\n{}", url(), s);
             }
         }
-        response = httpClientPool.getCloseableHttpClient().execute(httpRequestBase);
-        HttpEntity entity = response.getEntity();
-        bodys = EntityUtils.toByteArray(entity);
+        response.httpResponse = httpClientPool.getCloseableHttpClient().execute(httpRequestBase);
+        HttpEntity entity = response.httpResponse.getEntity();
+        response.bodys = EntityUtils.toByteArray(entity);
         EntityUtils.consume(entity);
     }
 
@@ -60,8 +52,7 @@ public class PostText extends HttpClientBuilder {
     }
 
     public PostText addParams(Object name, Object value) {
-        addParams(name, value, true);
-        return this;
+        return addParams(name, value, true);
     }
 
     public PostText addParams(Object name, Object value, boolean urlEncode) {
@@ -82,18 +73,11 @@ public class PostText extends HttpClientBuilder {
         return this;
     }
 
-    public PostText setParams(ContentType contentType, String params) {
-        this.contentType = contentType;
-        this.params = params;
-        return this;
+    public PostText setParams(Map<?, ?> map) {
+        return setParams(map, true);
     }
 
-    public PostText setParams(Map map) {
-        setParams(map, true);
-        return this;
-    }
-
-    public PostText setParams(Map map, boolean urlEncode) {
+    public PostText setParams(Map<?, ?> map, boolean urlEncode) {
         if (urlEncode) {
             this.params = HttpDataAction.httpDataEncoder(map);
         } else {
@@ -102,24 +86,17 @@ public class PostText extends HttpClientBuilder {
         return this;
     }
 
-    public PostText setParamsJson(Map map) {
-        this.contentType = ContentType.APPLICATION_JSON;
-        this.params = JSON.toJSONString(map);
-        return this;
+    public PostText setParamsJson(Map<?, ?> map) {
+        return setParamsJson(JSON.toJSONString(map));
     }
 
-    @Override public PostText setConnectionRequestTimeout(int connectionRequestTimeout) {
-        super.setConnectionRequestTimeout(connectionRequestTimeout);
-        return this;
+    public PostText setParamsJson(String params) {
+        return setParams(ContentType.APPLICATION_JSON, params);
     }
 
-    @Override public PostText setConnectTimeOut(int connectTimeOut) {
-        super.setConnectTimeOut(connectTimeOut);
-        return this;
-    }
-
-    @Override public PostText setReadTimeout(int readTimeout) {
-        super.setReadTimeout(readTimeout);
+    public PostText setParams(ContentType contentType, String params) {
+        this.contentType = contentType;
+        this.params = params;
         return this;
     }
 }

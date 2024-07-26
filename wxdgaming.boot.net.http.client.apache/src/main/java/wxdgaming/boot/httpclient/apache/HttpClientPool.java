@@ -13,13 +13,14 @@ import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import wxdgaming.boot.agent.function.Function1;
+import wxdgaming.boot.core.lang.Cache;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -30,62 +31,31 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 public class HttpClientPool implements AutoCloseable {
 
-    private static final ArrayList<HttpClientPool> CLIENT_POOLS = new ArrayList<>();
-
-    private static final ThreadLocal<HttpClientPool> HTTP_CLIENT_POOL_THREAD_LOCAL = ThreadLocal.withInitial(() ->
-            build(
-                    5,
-                    10,
-                    2 * 1000,
-                    2 * 1000,
-                    2 * 1000,
-                    10 * 1000,
-                    "TLS"
-            )
-    );
-
-    private static final Runnable TIMER_RUNNABLE = new Runnable() {
-        @Override public void run() {
-            lock.lock();
-            try {
-                for (HttpClientPool clientPool : CLIENT_POOLS) {
-                    PoolingHttpClientConnectionManager mng = clientPool.getConnPoolMng();
-                    mng.closeExpiredConnections();/*关闭异常链接*/
-                    //                    mng.closeIdleConnections(10, TimeUnit.SECONDS);/*关闭空闲链接*/
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-    };
+    public static final ReentrantLock lock = new ReentrantLock();
+    protected static final Cache<String, HttpClientPool> HTTP_CLIENT_CACHE;
 
     static {
-        /*注册定时器*/
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(2000);
-                    TIMER_RUNNABLE.run();
-                } catch (Exception e) {
-                    e.printStackTrace(System.out);
-                }
-            }
-        }).start();
-        System.out.println("初始化定时器检测http池化异常链接");
+        HTTP_CLIENT_CACHE = Cache.<String, HttpClientPool>builder().cacheName("http-client")
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .delay(TimeUnit.MINUTES.toMillis(1))
+                .loader((Function1<String, HttpClientPool>) s -> build(
+                        50,
+                        120,
+                        2 * 1000,
+                        2 * 1000,
+                        2 * 1000,
+                        10 * 1000,
+                        "TLS"
+                ))
+                .build();
     }
 
-    //    private static final HttpClientPool HTTP_CLIENT_POOL_THREAD_LOCAL = build(
-    //            50,
-    //            120,
-    //            2 * 1000,
-    //            2 * 1000,
-    //            2 * 1000,
-    //            10 * 1000,
-    //            "TLS"
-    //    );
-
     public static HttpClientPool getDefault() {
-        return HTTP_CLIENT_POOL_THREAD_LOCAL.get();
+        return HTTP_CLIENT_CACHE.get("0");
+    }
+
+    public static HttpClientPool getDefault(String key) {
+        return HTTP_CLIENT_CACHE.get(key);
     }
 
     /***
@@ -105,7 +75,6 @@ public class HttpClientPool implements AutoCloseable {
         return httpClientPool;
     }
 
-    public static final ReentrantLock lock = new ReentrantLock();
     private SSLContext sslContext;
     private X509TrustManager tm;
     private SSLConnectionSocketFactory sslSocketFactory;
@@ -120,9 +89,11 @@ public class HttpClientPool implements AutoCloseable {
     private int readTimeout;
     private int keepAliveTimeout;
     private String sslProtocol;
-    @Getter private AtomicLong resetNumber = new AtomicLong();
 
-    public HttpClientPool(int core, int max, int connectionRequestTimeout, int connectTimeOut, int readTimeout, int keepAliveTimeout, String sslProtocol) {
+    public HttpClientPool(int core, int max,
+                          int connectionRequestTimeout, int connectTimeOut, int readTimeout,
+                          int keepAliveTimeout,
+                          String sslProtocol) {
         this.core = core;
         this.max = max;
         this.connectionRequestTimeout = connectionRequestTimeout;
@@ -130,7 +101,7 @@ public class HttpClientPool implements AutoCloseable {
         this.readTimeout = readTimeout;
         this.keepAliveTimeout = keepAliveTimeout;
         this.sslProtocol = sslProtocol;
-        this.build(resetNumber.get());
+        this.build();
     }
 
     public CloseableHttpClient getCloseableHttpClient() {
@@ -147,30 +118,17 @@ public class HttpClientPool implements AutoCloseable {
             if (this.connPoolMng != null) {
                 this.connPoolMng.shutdown();
             }
-        } catch (Exception e) {}
+        } catch (Exception ignore) {}
         try {
             if (this.closeableHttpClient != null) {
                 this.closeableHttpClient.close();
             }
-        } catch (Exception e) {}
-        lock.lock();
-        try {
-            CLIENT_POOLS.remove(this);
-        } finally {
-            lock.unlock();
-        }
+        } catch (Exception ignore) {}
     }
 
-    public void build(long resetCount) {
-
+    public void build() {
         lock.lock();
         try {
-
-            if (resetCount < resetNumber.get()) {
-                return;
-            }
-            resetNumber.incrementAndGet();
-
             try {
                 sslContext = SSLContext.getInstance(sslProtocol);
                 tm = new X509TrustManager() {
@@ -220,13 +178,6 @@ public class HttpClientPool implements AutoCloseable {
                 httpClientBuilder.setSSLContext(sslContext);
                 httpClientBuilder.setSSLSocketFactory(sslSocketFactory);
                 closeableHttpClient = httpClientBuilder.build();
-
-                lock.lock();
-                try {
-                    CLIENT_POOLS.add(this);
-                } finally {
-                    lock.unlock();
-                }
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
