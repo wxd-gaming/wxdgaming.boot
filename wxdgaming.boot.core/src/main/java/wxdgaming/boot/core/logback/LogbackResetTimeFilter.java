@@ -17,7 +17,7 @@ public class LogbackResetTimeFilter extends Filter<LoggingEvent> implements Seri
 
     /**
      * <!-- 过滤重设时间，一般是当调试服务器或者调试活动的时候手动改时间需要触发 -->
-     * <filter class="org.wxd.boot.logback.LogbackResetTimeFilter">
+     * <filter class="wxdgaming.boot.core.logback.LogbackResetTimeFilter">
      * <onMatch>ACCEPT</onMatch>
      * <onMismatch>DENY</onMismatch>
      * </filter>

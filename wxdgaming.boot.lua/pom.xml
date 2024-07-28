@@ -34,7 +34,7 @@
     <build>
         <resources>
             <resource>
-                <directory>src/test/resources</directory>
+                <directory>src/main/resources</directory>
             </resource>
             <resource>
                 <directory>src/main/lua</directory>
