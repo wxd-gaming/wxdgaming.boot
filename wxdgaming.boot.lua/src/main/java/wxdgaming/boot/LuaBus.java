@@ -1,10 +1,10 @@
 package wxdgaming.boot;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -118,6 +118,13 @@ public class LuaBus {
         runTry(method, CoerceJavaToLua.coerce(data), consumer);
     }
 
+    /**
+     * @param method   方法名字
+     * @param data     数据
+     * @param consumer
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-07-29 10:51
+     */
     public void runTry(String method, LuaValue data, BiConsumer<String, LuaValue> consumer) {
         predicateTry(method, (name, luaValue) -> {
             LuaValue ret = luaValue.call(data);
@@ -422,6 +429,41 @@ public class LuaBus {
         throw new NullPointerException("method_name=" + method_name);
     }
 
+    public LuaValue exec(String method_name, Object... params) {
+        LuaValue luaValue = get(method_name);
+        if (luaValue != null) {
+            LuaValue[] luaValues = convert(params);
+            Varargs invoke = luaValue.invoke(luaValues);
+            if (invoke != null && invoke != LuaValue.NIL && invoke.narg() > 0) {
+                return invoke.arg1();
+            }
+            return null;
+        }
+        throw new NullPointerException("method_name=" + method_name);
+    }
+
+    /**
+     * @param method   需要调用的方法
+     * @param consumer 执行回调
+     * @param params   具体参数
+     * @author: Troy.Chen(無心道, 15388152619)
+     * @version: 2024-07-29 10:55
+     */
+    public void forExec(String method, BiConsumer<String, LuaValue> consumer, Object... params) {
+        LuaValue[] luaValues = convert(params);
+        for (Map.Entry<String, GlobalPool> poolEntry : globalPools.entrySet()) {
+            LuaValue luaValue = poolEntry.getValue().get(method);
+            if (luaValue != null) {
+                Varargs invoke = luaValue.invoke(luaValues);
+                LuaValue ret = null;
+                if (invoke != null && invoke != LuaValue.NIL && invoke.narg() > 0) {
+                    ret = invoke.arg1();
+                }
+                consumer.accept(poolEntry.getKey(), ret);
+            }
+        }
+    }
+
     public LuaValue execUserdata(String method_name, Object val1) {
         LuaValue luaValue = get(method_name);
         if (luaValue != null) {
@@ -454,6 +496,14 @@ public class LuaBus {
                     log.error("", ex);
                     return null;
                 });
+    }
+
+    public LuaValue[] convert(Object... params) {
+        LuaValue[] luaValues = new LuaValue[params.length];
+        for (int i = 0; i < params.length; i++) {
+            luaValues[i] = CoerceJavaToLua.coerce(params[i]);
+        }
+        return luaValues;
     }
 
 }
