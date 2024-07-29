@@ -34,7 +34,6 @@ import java.util.stream.Stream;
 public class LuaBus {
 
     @Getter private static final ConcurrentHashMap<String, Object> lua_data = new ConcurrentHashMap<>();
-    @Getter @Setter private static LuaBus ins = null;
 
     public static LuaBus buildFromResources(ClassLoader classLoader, String package_name) {
         LuaBus luaBus = new LuaBus();
