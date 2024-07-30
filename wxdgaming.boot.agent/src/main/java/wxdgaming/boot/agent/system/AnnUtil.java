@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * 注解帮助类
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-06-11 11:17
  **/
 public class AnnUtil {

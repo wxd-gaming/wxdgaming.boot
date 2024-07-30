@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
  * <p>
  * 初始化敏感词库，将敏感词加入到HashMap中，构建DFA算法模型
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-07 18:17
  **/
 public class KeyWord {

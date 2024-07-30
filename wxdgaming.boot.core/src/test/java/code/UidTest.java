@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * id生成测试
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-11-23 17:18
  **/
 public class UidTest {

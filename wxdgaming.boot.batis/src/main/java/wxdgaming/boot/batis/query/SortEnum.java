@@ -1,7 +1,7 @@
 package wxdgaming.boot.batis.query;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-11-08 14:45
  **/
 public enum SortEnum {

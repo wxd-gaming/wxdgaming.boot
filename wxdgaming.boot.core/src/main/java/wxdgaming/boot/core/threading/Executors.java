@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 默认线程池
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-09-28 14:22
  **/
 public final class Executors implements Serializable {

@@ -12,7 +12,7 @@
 // /**
 //  * 集群模式
 //  *
-//  * @author: Troy.Chen(無心道, 15388152619)
+//  * @author: wxd-gaming(無心道, 15388152619)
 //  * @version: 2021-09-22 18:11
 //  **/
 // public class SqlColonyHelper implements Serializable {

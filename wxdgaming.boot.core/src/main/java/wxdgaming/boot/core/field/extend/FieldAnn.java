@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * 属性注解，标注类型匹配
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
 @Documented

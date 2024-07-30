@@ -7,7 +7,7 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
 /**
  * 用户rpc同步体
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-11-01 16:58
  **/
 @NoArgsConstructor

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- @author: Troy.Chen(無心道, 15388152619) -->
+<!-- @author: wxd-gaming(無心道, 15388152619) -->
 <bootConfig>
     <!-- 虚拟线程池 -->
     <vtExecutor coreSize="100" maxSize="200"/>

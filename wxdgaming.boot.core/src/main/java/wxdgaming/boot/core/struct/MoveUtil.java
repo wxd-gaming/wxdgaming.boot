@@ -6,7 +6,7 @@ import straightedge.geom.Vector3;
 /**
  * 移动和工具辅助函数
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-04 19:23
  */
 public class MoveUtil {

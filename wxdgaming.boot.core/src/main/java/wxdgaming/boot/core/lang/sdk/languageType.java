@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
 public final class languageType implements Serializable, Cloneable, Comparable {

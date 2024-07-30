@@ -7,7 +7,7 @@ import wxdgaming.boot.core.format.data.Data2Json;
 /**
  * 测试日志记录
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-08-08 12:47
  **/
 public class TRecord {

@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * 自定义随机数
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-05 11:14
  **/
 @Slf4j

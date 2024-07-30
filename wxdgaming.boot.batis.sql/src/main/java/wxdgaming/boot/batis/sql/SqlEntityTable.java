@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-07-30 14:36
  **/
 public class SqlEntityTable extends EntityTable implements Serializable {

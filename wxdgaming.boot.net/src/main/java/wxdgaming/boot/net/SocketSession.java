@@ -14,7 +14,7 @@ import wxdgaming.boot.net.util.ByteBufUtil;
 /**
  * socket session对象
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-28 10:28
  **/
 @Slf4j

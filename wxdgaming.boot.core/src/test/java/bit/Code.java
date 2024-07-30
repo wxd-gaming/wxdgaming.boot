@@ -6,7 +6,7 @@ import wxdgaming.boot.core.lang.bit.BitFlag;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-11 11:58
  **/
 public class Code implements Serializable {

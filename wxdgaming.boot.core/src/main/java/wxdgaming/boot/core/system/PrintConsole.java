@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 控制输出
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-10-28 11:01
  **/
 public interface PrintConsole {

@@ -19,7 +19,7 @@ import wxdgaming.boot.net.http.HttpHeadValueType;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-08-25 09:50
  **/
 @Slf4j

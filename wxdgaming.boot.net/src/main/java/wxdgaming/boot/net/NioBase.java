@@ -10,7 +10,7 @@ import wxdgaming.boot.core.lang.LockBase;
 /**
  * 基于 netty 实现 通信基类
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-06-01 11:01
  **/
 @Slf4j

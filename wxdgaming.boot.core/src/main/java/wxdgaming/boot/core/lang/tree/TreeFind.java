@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-07-20 20:34
  **/
 interface TreeFind<E> {

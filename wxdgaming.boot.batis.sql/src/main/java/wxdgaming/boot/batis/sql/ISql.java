@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-06 16:46
  **/
 public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> {

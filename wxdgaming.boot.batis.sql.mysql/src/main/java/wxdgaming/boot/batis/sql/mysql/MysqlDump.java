@@ -6,7 +6,7 @@ import wxdgaming.boot.batis.DbConfig;
 /**
  * dump工具
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-12-23 12:09
  **/
 public class MysqlDump {

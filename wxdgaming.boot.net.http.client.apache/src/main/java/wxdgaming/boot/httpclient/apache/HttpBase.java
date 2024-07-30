@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 /**
  * http构建协议
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-04-28 12:44
  **/
 @Slf4j

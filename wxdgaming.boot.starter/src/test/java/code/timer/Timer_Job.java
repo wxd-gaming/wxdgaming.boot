@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-03-03 09:17
  **/
 @Slf4j

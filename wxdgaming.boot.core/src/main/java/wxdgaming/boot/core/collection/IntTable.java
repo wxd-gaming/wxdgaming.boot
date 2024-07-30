@@ -10,7 +10,7 @@ import java.util.function.Function;
  * 非线程安全的集合
  *
  * @param <V>
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-10-09 10:08
  */
 public class IntTable<V> {

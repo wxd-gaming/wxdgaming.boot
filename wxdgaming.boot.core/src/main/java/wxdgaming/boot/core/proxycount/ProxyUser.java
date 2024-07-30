@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * 代理统计用户
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-04-08 16:12
  **/
 @Getter

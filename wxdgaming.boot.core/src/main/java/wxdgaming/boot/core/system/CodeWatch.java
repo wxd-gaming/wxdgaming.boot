@@ -3,7 +3,7 @@ package wxdgaming.boot.core.system;
 /**
  * 代码时钟
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-10-25 12:32
  **/
 public class CodeWatch {

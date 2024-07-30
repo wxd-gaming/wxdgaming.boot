@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * 反射解析 class 结构体
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-14 11:57
  **/
 @Slf4j

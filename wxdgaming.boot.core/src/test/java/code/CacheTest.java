@@ -6,7 +6,7 @@ import wxdgaming.boot.core.lang.Cache;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-05-10 19:47
  **/
 public class CacheTest {

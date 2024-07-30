@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-17 12:08
  **/
 interface RedisGet {

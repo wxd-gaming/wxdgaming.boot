@@ -13,7 +13,7 @@ import java.util.Collection;
 /**
  * 解析处理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-07-24 19:19
  **/
 public class MappingTextAction {

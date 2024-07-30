@@ -6,7 +6,7 @@ import straightedge.geom.Vector3;
 /**
  * 扇形
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-04 19:23
  */
 @Slf4j

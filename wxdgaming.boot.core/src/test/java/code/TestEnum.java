@@ -6,7 +6,7 @@ import wxdgaming.boot.core.lang.IEnum;
 import java.util.Map;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-04-24 10:21
  **/
 public enum TestEnum implements IEnum {

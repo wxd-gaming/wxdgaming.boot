@@ -13,7 +13,7 @@ import java.util.function.Function;
 /**
  * 通用类型list
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-06-14 23:35
  **/
 public class ObjList extends ArrayList<Object> implements Serializable, List<Object>, Data2Json {

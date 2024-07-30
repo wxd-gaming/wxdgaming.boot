@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 /**
  * 属性辅助类
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
 @Slf4j

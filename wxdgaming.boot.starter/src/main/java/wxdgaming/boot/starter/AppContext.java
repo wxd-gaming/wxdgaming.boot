@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 /**
  * 启动器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-11 19:11
  **/
 public class AppContext {

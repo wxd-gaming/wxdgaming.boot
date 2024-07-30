@@ -7,7 +7,7 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
 import java.util.Map;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-06-17 10:41
  **/
 public interface CheckSaveCode {

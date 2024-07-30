@@ -12,7 +12,7 @@ package wxdgaming.boot.batis.sql.mysql;// package org.wxd.boot.batis.sql.mysql;
 // import java.util.Properties;
 //
 // /**
-//  * @author: Troy.Chen(無心道, 15388152619)
+//  * @author: wxd-gaming(無心道, 15388152619)
 //  * @version: 2021-12-06 17:31
 //  **/
 // @Slf4j

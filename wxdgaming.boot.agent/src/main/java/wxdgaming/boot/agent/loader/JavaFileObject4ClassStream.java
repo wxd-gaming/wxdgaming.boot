@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.net.URI;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-08-10 10:55
  **/
 public class JavaFileObject4ClassStream extends SimpleJavaFileObject {

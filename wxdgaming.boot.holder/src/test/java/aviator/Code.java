@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * 规则模板
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-05-09 21:05
  **/
 public class Code {

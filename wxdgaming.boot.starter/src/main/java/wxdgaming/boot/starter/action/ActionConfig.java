@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 /**
  * config处理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-04-15 08:54
  **/
 @Slf4j

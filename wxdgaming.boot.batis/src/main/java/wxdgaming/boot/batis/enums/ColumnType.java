@@ -3,7 +3,7 @@ package wxdgaming.boot.batis.enums;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-13 17:14
  **/
 public enum ColumnType implements Serializable {

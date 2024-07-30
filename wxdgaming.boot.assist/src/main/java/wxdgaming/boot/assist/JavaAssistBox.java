@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * javassist 代码编辑器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-06 20:07
  **/
 @Getter
@@ -45,7 +45,7 @@ public class JavaAssistBox {
     /**
      * 回调
      *
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-01-05 21:16
      **/
     public interface Call<T> {

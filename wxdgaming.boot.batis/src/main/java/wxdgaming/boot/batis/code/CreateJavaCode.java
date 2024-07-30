@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-18 00:01
  **/
 @Slf4j
@@ -101,7 +101,7 @@ public class CreateJavaCode implements Serializable, ICreateCode {
         stringAppend.write("/**").write("\n");
         stringAppend.write(" * excel 构建").write(entityTable.getTableComment()).write("\n");
         stringAppend.write(" *").write("\n");
-        stringAppend.write(" * @author: Troy.Chen(無心道, 15388152619)").write("\n");
+        stringAppend.write(" * @author: wxd-gaming(無心道, 15388152619)").write("\n");
         stringAppend.write(" * @version: 2021/01/14 09:50").write("\n");
         stringAppend.write(" **/").write("\n");
         stringAppend.write("@Getter").write("\n");
@@ -146,7 +146,7 @@ public class CreateJavaCode implements Serializable, ICreateCode {
         stringAppend.write("/**").write("\n");
         stringAppend.write(" * excel 构建").write(entityTable.getTableComment()).write("\n");
         stringAppend.write(" *").write("\n");
-        stringAppend.write(" * @author: Troy.Chen(無心道, 15388152619)").write("\n");
+        stringAppend.write(" * @author: wxd-gaming(無心道, 15388152619)").write("\n");
         stringAppend.write(" * @version: 2021/01/14 09:50").write("\n");
         stringAppend.write(" **/").write("\n");
         stringAppend.write("@Getter").write("\n");
@@ -178,7 +178,7 @@ public class CreateJavaCode implements Serializable, ICreateCode {
         stringAppend.write("/**").write("\n");
         stringAppend.write(" * excel 构建").write(entityTable.getTableComment()).write("\n");
         stringAppend.write(" *").write("\n");
-        stringAppend.write(" * @author: Troy.Chen(無心道, 15388152619)").write("\n");
+        stringAppend.write(" * @author: wxd-gaming(無心道, 15388152619)").write("\n");
         stringAppend.write(" * @version: 2021/01/14 09:50").write("\n");
         stringAppend.write(" **/").write("\n");
         stringAppend.write("@Getter").write("\n");

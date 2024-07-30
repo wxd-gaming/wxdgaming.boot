@@ -6,7 +6,7 @@ import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.net.message.RpcEvent;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-30 09:18
  **/
 interface SessionRpc extends ByteBufWrapper {

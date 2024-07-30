@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * HmacSHA256算法
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-06-30 11:16
  **/
 public class HmacSHA256Util implements Serializable {

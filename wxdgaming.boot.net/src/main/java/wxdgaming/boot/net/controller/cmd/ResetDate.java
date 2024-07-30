@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * 重置时间
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-21 19:11
  **/
 public interface ResetDate {

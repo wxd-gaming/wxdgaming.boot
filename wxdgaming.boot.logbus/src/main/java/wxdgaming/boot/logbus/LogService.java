@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 日志服务
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-07-20 15:13
  **/
 @Slf4j

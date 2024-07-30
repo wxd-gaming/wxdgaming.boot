@@ -4,7 +4,7 @@ import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.threading.Executors;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-30 19:02
  **/
 public class QosTest {

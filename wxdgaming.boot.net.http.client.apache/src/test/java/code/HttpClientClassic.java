@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * HttpClient用法演示
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-05-24 14:02
  */
 public class HttpClientClassic {

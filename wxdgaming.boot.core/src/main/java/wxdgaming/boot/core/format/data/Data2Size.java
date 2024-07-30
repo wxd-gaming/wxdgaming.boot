@@ -5,7 +5,7 @@ import org.openjdk.jol.info.GraphLayout;
 /**
  * 数据大小
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-08-29 15:39
  **/
 public interface Data2Size {

@@ -16,7 +16,7 @@ import java.util.Collection;
 /**
  * 尚未完善的数据集合
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
 @Slf4j

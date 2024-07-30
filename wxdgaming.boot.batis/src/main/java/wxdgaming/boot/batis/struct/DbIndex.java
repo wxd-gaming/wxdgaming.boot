@@ -5,7 +5,7 @@ import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.core.str.StringUtil;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-10-21 13:47
  **/
 public interface DbIndex {

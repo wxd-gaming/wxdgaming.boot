@@ -20,7 +20,7 @@ package wxdgaming.boot.core.str.json;// package org.wxd.str.json;
 ///**
 // * fastjson 处理proto buf的序列化和反序列化
 // *
-// * @author: Troy.Chen(無心道, 15388152619)
+// * @author: wxd-gaming(無心道, 15388152619)
 // * @version: 2022-04-09 17:50
 // **/
 // public class ProtobufMessageSerializerJackson {

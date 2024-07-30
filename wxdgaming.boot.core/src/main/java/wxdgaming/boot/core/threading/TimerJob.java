@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 定时器任务
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-11-10 23:04
  **/
 @Setter

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-06 16:55
  **/
 interface SqlSelect<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> extends SqlExecute<DM, DW> {

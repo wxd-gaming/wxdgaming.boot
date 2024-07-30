@@ -7,7 +7,7 @@ import wxdgaming.boot.batis.sql.SqlEntityTable;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-21 10:15
  **/
 public class MysqlDataWrapper extends SqlDataWrapper<SqlEntityTable> implements Serializable {

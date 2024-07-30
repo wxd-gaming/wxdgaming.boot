@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * 时间统计，用于定时更新，比如体力恢复
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-11 10:47
  **/
 @Getter

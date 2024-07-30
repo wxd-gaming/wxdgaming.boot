@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-11-05 17:51
  **/
 @Slf4j
@@ -301,7 +301,7 @@ public class LambdaUtil implements Serializable {
      * @param annotation 需要查找的注解
      * @param <M>        接口约束
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-26 11:06
      */
     public static <M> List<Mapping<M>> mappings(Class<M> clsProxy, Object ins, Class<? extends Annotation> annotation) {
@@ -319,7 +319,7 @@ public class LambdaUtil implements Serializable {
      * @param annotation  需要查找的注解
      * @param <M>         接口约束
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-26 11:06
      */
     public static <M> List<Mapping<M>> mappings(Class<M> clsProxy, Method proxyMethod, Object ins, Class<? extends Annotation> annotation) {

@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.lang.keyword;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-07 18:20
  **/
 public enum KeyWordMatchType {

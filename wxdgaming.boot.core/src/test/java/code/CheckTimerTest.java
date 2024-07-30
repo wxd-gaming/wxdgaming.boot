@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * 测试时间检查
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-18 18:04
  **/
 public class CheckTimerTest {

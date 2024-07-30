@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * 文件辅助
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-08-18 14:40
  **/
 public class FileUtil implements Serializable {

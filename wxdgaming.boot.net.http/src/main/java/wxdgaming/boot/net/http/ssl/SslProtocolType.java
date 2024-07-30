@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * ssl版本协议
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-11 14:30
  **/
 public enum SslProtocolType implements Serializable {

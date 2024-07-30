@@ -9,7 +9,7 @@ package proxy.code;//package com.cqd.proxy.test;
 //import java.util.Map;
 //
 ///**
-// * @author: Troy.Chen(無心道, 15388152619)
+// * @author: wxd-gaming(無心道, 15388152619)
 // * @version: 2021-08-19 09:23
 // **/
 //public class A_proxy_ty05648 extends com.cqd.proxy.test.A implements Serializable, com.cqd.proxy.IProxy {

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 /**
  * 通信安全集合
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-21 21:07
  **/
 public class ChannelQueue<E extends SocketSession> extends LockBase {

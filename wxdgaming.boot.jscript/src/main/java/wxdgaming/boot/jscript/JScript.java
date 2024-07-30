@@ -8,7 +8,7 @@ import wxdgaming.boot.agent.io.FileUtil;
 import java.io.File;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-02-09 17:23
  **/
 public class JScript {

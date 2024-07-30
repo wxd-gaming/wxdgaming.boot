@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 /**
  * 基于 netty tcp server 服务
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-08-19 10:49
  */
 @Slf4j

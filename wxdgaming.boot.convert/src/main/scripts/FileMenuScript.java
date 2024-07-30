@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-19 13:37
  **/
 public class FileMenuScript implements Serializable, AddMenu {

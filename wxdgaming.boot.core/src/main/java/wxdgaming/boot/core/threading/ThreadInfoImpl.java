@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * 异步化处理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-04 19:23
  **/
 public class ThreadInfoImpl {

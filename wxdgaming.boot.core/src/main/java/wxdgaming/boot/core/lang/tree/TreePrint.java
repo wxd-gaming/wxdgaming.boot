@@ -3,7 +3,7 @@ package wxdgaming.boot.core.lang.tree;
 import java.util.*;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-07-20 20:39
  **/
 interface TreePrint<E> {

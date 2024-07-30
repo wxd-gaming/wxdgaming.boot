@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * 基于 java 原生的http协议支持
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-10-13 12:22
  **/
 @Slf4j

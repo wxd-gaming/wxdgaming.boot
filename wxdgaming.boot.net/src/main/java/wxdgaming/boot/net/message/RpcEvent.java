@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * 同步等待结果
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-28 20:51
  **/
 @Slf4j

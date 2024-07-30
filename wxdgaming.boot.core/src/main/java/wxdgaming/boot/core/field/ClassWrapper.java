@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * class解析
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-14 12:00
  **/
 public class ClassWrapper implements Serializable {

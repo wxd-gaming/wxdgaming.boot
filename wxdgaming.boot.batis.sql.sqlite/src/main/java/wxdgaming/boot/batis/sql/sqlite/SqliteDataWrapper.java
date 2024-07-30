@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-21 10:15
  **/
 public class SqliteDataWrapper extends SqlDataWrapper<SqlEntityTable> implements Serializable {

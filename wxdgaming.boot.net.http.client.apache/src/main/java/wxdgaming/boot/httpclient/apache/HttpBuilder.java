@@ -5,7 +5,7 @@ import org.apache.http.entity.ContentType;
 import java.io.File;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-07-26 15:37
  **/
 public class HttpBuilder {

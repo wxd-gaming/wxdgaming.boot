@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * tcp session 管理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-24 15:31
  **/
 public class TcpSession extends SocketSession implements Serializable {

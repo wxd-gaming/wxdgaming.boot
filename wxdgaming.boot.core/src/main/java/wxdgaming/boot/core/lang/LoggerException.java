@@ -4,7 +4,7 @@ package wxdgaming.boot.core.lang;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-12-26 10:22
  **/
 public class LoggerException extends RuntimeException implements Serializable {

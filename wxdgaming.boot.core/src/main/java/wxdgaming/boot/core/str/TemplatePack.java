@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * ftl 模板
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-12-19 21:38
  **/
 @Slf4j

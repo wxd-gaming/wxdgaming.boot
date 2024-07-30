@@ -15,7 +15,7 @@ import java.util.function.Function;
  * <p>
  * key和value均是object
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-11 14:09
  **/
 public class ConcurrentObjMap extends ConcurrentHashMap<Object, Object> implements Map<Object, Object>, ConcurrentMap<Object, Object>, Data2Json, Cloneable, Serializable {

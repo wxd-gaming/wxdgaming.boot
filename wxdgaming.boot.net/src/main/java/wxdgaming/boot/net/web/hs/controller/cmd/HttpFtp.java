@@ -16,7 +16,7 @@ import wxdgaming.boot.net.web.hs.util.FtpFileUtil;
 import java.io.File;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-07-02 22:28
  **/
 public interface HttpFtp {

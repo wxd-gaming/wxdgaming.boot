@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * 同时 支持 websocket、tcp、http 并且兼容 ssl
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-08-25 09:43
  **/
 @Slf4j

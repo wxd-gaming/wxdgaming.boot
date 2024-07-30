@@ -15,7 +15,7 @@ import wxdgaming.boot.net.SocketSession;
 /**
  * socket message 处理器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-08-05 14:22
  */
 @Slf4j

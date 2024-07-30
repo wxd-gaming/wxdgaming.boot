@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 /**
  * 反射解析 class 的属性字段
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-14 11:54
  **/
 public class FieldMapping {

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * session管理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-28 16:18
  **/
 public interface SessionRepository<S extends SocketSession> {

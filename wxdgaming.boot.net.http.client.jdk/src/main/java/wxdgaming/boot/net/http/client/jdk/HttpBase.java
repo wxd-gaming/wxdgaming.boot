@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * 基于 java 原生的http
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-16 11:39
  **/
 @Slf4j

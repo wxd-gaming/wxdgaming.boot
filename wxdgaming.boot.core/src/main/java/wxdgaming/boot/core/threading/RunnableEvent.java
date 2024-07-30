@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 /**
  * 任务类
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-12 19:15
  **/
 public final class RunnableEvent extends Event {

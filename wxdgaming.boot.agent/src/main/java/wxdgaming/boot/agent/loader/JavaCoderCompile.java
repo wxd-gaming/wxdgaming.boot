@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * java 文件编译
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  **/
 public class JavaCoderCompile {
@@ -191,7 +191,7 @@ public class JavaCoderCompile {
      *
      * @param forceClear 强制覆盖目录
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-04-04 23:31
      */
     public ClassDirLoader classLoader(boolean forceClear) {
@@ -203,7 +203,7 @@ public class JavaCoderCompile {
      *
      * @param outClassPath 文件所在的目录
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-04-04 23:31
      */
     public ClassDirLoader classLoader(String outClassPath) {
@@ -216,7 +216,7 @@ public class JavaCoderCompile {
      * @param outClassPath class文件输出的目录
      * @param forceClear   强制覆盖目录
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-04-04 23:31
      */
     public ClassDirLoader classLoader(String outClassPath, boolean forceClear) {
@@ -231,7 +231,7 @@ public class JavaCoderCompile {
      * @param forceClear   强制覆盖目录
      * @return
      * @throws Exception
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-04-04 23:21
      */
     public ClassDirLoader classLoader(ClassLoader parent, String outClassPath, boolean forceClear) {

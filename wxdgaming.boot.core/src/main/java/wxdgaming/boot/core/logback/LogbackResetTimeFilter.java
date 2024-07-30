@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * 为了同步修改日志记录的时间
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-08-31 21:11
  **/
 public class LogbackResetTimeFilter extends Filter<LoggingEvent> implements Serializable {

@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * @param path     路由
  * @param instance 实例
  * @param method   方法
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-12 20:13
  */
 public record TextMappingRecord(TextMapping textMapping,

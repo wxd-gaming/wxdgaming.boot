@@ -1,7 +1,7 @@
 package wxdgaming.boot.agent;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-11-01 16:16
  **/
 public enum JDKVersion {

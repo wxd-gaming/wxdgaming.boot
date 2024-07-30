@@ -7,7 +7,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCounted;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-06-22 16:25
  **/
 public class ByteBufUtil {

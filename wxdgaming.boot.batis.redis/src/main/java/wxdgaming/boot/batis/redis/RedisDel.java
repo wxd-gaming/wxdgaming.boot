@@ -8,7 +8,7 @@ import redis.clients.jedis.Pipeline;
 import java.util.Set;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-17 12:02
  **/
 interface RedisDel {

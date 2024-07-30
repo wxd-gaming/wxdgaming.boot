@@ -11,7 +11,7 @@ import wxdgaming.boot.core.lang.ObjectBase;
 import java.util.ArrayList;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-12 20:53
  **/
 @Getter

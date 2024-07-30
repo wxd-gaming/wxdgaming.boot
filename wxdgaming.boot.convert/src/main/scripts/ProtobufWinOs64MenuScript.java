@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-19 13:54
  **/
 public class ProtobufWinOs64MenuScript implements Serializable, AddMenu {

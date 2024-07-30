@@ -3,7 +3,7 @@ package wxdgaming.boot.batis.redis;
 import redis.clients.jedis.Jedis;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-17 12:05
  **/
 interface RedisExist {

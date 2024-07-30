@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * ftl 模版测试
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-03-16 11:41
  **/
 public class FtlTest {

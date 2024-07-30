@@ -11,7 +11,7 @@ package wxdgaming.boot.core.str.json;// package org.wxd.str.json;
 // import java.util.concurrent.ConcurrentHashMap;
 //
 ///**
-// * @author: Troy.Chen(無心道, 15388152619)
+// * @author: wxd-gaming(無心道, 15388152619)
 // * @version: 2022-04-20 18:25
 // **/
 // public class JacksonJavaTypeImpl {

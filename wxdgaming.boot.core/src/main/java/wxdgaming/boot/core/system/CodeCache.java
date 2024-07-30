@@ -13,7 +13,7 @@ import java.lang.management.ManagementFactory;
 /**
  * 基于JMX在运行时查看codeCache使用情况
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-02-03 14:48
  **/
 public class CodeCache {

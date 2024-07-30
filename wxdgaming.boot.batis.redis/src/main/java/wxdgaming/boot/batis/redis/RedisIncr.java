@@ -5,7 +5,7 @@ import redis.clients.jedis.Jedis;
 /**
  * redis自增的序列
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-17 12:03
  **/
 public interface RedisIncr {

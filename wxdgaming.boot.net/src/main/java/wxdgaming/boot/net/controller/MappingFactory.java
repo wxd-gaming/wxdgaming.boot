@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 /**
  * 映射工程
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-12 20:06
  **/
 public class MappingFactory {

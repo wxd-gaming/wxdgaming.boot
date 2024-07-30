@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * 元素替换
  * ,后面加入的元素是会替换前面的元素
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-02-16 10:46
  **/
 @Getter

@@ -9,7 +9,7 @@ import wxdgaming.boot.starter.IocContext;
 /**
  * 远程执行
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-08-18 17:06
  **/
 @Slf4j

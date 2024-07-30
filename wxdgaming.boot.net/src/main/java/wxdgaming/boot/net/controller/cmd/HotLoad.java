@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * 热更新
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-21 19:07
  **/
 public interface HotLoad {

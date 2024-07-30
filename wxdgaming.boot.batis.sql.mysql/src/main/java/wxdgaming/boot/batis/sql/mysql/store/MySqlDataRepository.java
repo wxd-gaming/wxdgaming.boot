@@ -11,7 +11,7 @@ import wxdgaming.boot.batis.store.DataRepository;
 import java.util.List;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-19 17:51
  **/
 @Getter

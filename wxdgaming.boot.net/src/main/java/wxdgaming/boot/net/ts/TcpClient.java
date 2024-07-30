@@ -13,7 +13,7 @@ import wxdgaming.boot.net.handler.SocketChannelHandler;
 /**
  * 客户端链接管理器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-08-19 10:49
  */
 @Slf4j

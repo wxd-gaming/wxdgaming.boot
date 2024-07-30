@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * <p>
  * 直接线程池，每一个任务都会new Virtual Thread
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-10-31 20:36
  **/
 @Slf4j

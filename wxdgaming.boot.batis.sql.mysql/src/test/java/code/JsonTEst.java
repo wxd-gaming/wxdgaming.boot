@@ -12,7 +12,7 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
 /**
  * E
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-06-13 19:38
  **/
 public class JsonTEst {

@@ -10,7 +10,7 @@ package wxdgaming.boot.core.str.json;// package org.wxd.str.json;
 ///**
 // * 通过把对象解析字段转化成json
 // *
-// * @author: Troy.Chen(無心道, 15388152619)
+// * @author: wxd-gaming(無心道, 15388152619)
 // * @version: 2021-07-02 10:36
 // **/
 // public class Object2JsonFieldType {

@@ -7,7 +7,7 @@ import wxdgaming.boot.assist.*;
 /**
  * assist 字节码测试
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-06 10:17
  **/
 @Slf4j

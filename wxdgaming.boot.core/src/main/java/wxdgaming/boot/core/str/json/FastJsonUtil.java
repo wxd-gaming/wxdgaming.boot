@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-04-21 10:09
  **/
 public class FastJsonUtil {

@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * 基于 HttpURLConnection 信息请求
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-11-15 12:34
  **/
 @Slf4j

@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-28 16:48
  **/
 @Getter

@@ -15,7 +15,7 @@ import java.util.List;
  * 块集合
  * <p> 非线程安全的
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-10-25 12:05
  **/
 @Slf4j

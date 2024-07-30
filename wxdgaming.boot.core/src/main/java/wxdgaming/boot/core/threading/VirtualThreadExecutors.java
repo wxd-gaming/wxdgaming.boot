@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * 直接线程池，每一个任务都会new Virtual Thread
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-04-27 10:34
  **/
 @Slf4j

@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * 线程执行器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-10-31 20:36
  **/
 @Slf4j

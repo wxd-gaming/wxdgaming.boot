@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-10-29 10:16
  **/
 public class Throw extends RuntimeException implements Serializable {

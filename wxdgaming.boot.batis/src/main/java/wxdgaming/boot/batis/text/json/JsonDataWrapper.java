@@ -6,7 +6,7 @@ import wxdgaming.boot.batis.text.TextDataWrapper;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-19 15:45
  **/
 public class JsonDataWrapper extends TextDataWrapper<JsonEntityTable> implements Serializable {

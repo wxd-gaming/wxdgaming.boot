@@ -6,7 +6,7 @@ import wxdgaming.boot.starter.AppContext;
 /**
  * 通过 {@link AppContext#start(boolean, int, String, String...)}，特别注意热更新是不调用
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-09-28 12:06
  **/
 public interface IStart {

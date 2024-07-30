@@ -12,7 +12,7 @@ import wxdgaming.boot.net.web.hs.HttpSession;
 /**
  * 公共
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-13 18:50
  **/
 @TextController

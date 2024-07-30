@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * fpt文件管理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-07-02 22:24
  **/
 public class FtpFileUtil implements Serializable {

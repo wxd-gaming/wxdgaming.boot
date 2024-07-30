@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * 执行源码
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-21 19:08
  **/
 public interface RunCode {

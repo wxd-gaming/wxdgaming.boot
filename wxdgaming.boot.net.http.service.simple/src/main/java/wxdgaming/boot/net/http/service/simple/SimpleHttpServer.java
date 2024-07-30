@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 /**
  * 简易 http 服务器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-23 18:10
  **/
 @Getter

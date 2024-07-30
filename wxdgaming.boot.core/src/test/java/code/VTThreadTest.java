@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 测试虚拟锁
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-18 09:47
  **/
 @Slf4j

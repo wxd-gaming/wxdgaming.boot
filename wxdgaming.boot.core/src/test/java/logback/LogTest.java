@@ -13,7 +13,7 @@ import java.io.InputStream;
 /**
  * 测试logback动态配置
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-27 14:28
  **/
 @Slf4j

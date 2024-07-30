@@ -3,7 +3,7 @@ package wxdgaming.boot.agent.function;
 /**
  * 创建
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-25 15:11
  **/
 public interface Factory2<T1, T2, R> {

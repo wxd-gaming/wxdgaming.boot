@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- @author: Troy.Chen(無心道, 15388152619) -->
+<!-- @author: wxd-gaming(無心道, 15388152619) -->
 <signConfig>
     <sign class="wxdgaming.boot.net.auth.SignUser" userName="root" token="566dca81bdc2ee0db1e427d79630b905">
         <auth>1</auth>

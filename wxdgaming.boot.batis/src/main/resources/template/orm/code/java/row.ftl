@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * excel 构建 ${tableComment}
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: ${.now?string("yyyy-MM-dd HH:mm:ss")}
  **/
 @Getter

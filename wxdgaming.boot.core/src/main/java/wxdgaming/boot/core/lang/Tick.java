@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 定时器处理，间隔多少心跳什么的
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-13 10:26
  **/
 @Getter

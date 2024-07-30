@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.StringJoiner;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-03-03 16:08
  **/
 public class Code implements Serializable {

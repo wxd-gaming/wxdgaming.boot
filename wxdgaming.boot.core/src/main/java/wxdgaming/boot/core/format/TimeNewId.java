@@ -7,7 +7,7 @@ import wxdgaming.boot.core.lang.LockBase;
  * <p>每一秒最少99万个
  * <p>gen 的值越小 每一秒生成的id越多
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-03-13 20:31
  **/
 public class TimeNewId extends LockBase {

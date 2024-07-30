@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * sql 数据库 数据映射装填器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-16 10:16
  **/
 @Slf4j

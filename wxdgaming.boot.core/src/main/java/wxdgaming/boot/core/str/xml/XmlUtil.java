@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-07-29 10:33
  */
 public class XmlUtil {
@@ -31,7 +31,7 @@ public class XmlUtil {
         if (serializer == null) {
             String formatHead = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
             formatHead += "\n";
-            formatHead += "<!-- @author: Troy.Chen(無心道, 15388152619) -->";
+            formatHead += "<!-- @author: wxd-gaming(無心道, 15388152619) -->";
             Format format = new Format(formatHead);
             serializer = new Persister(format);
             SIMPLE_XM_LOCAL.set(serializer);

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 /**
  * 大数字管理器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-09-12 10:28
  **/
 public class Bigint extends BigintFinal implements Serializable, Cloneable, Comparable<BigintFinal> {

@@ -10,7 +10,7 @@ import wxdgaming.boot.net.web.hs.HttpSession;
 /**
  * http 登录验证
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-21 19:36
  **/
 public interface HttpSign extends Sign<HttpSession> {

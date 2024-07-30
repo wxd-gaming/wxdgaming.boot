@@ -8,7 +8,7 @@ import wxdgaming.boot.core.lang.rank.RedisRankScore;
 /**
  * 排行榜测试
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-11-27 11:51
  **/
 public class RankTest {

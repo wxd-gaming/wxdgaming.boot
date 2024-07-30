@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 线程测试
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-05-29 21:31
  **/
 @Slf4j

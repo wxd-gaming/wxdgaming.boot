@@ -16,7 +16,7 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-21 19:13
  **/
 public interface HttpUpload {

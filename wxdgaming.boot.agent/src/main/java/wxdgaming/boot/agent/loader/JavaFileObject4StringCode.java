@@ -9,7 +9,7 @@ import java.io.StringReader;
 import java.net.URI;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-08-10 10:56
  **/
 public class JavaFileObject4StringCode extends SimpleJavaFileObject {

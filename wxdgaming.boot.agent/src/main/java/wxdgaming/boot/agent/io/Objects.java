@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * 数据对象合并
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-07-29 10:33
  */
 public class Objects {

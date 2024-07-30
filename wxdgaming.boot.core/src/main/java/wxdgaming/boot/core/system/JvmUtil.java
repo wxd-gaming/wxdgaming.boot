@@ -11,7 +11,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-02 15:07
  **/
 public class JvmUtil {

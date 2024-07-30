@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 代码语言
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-05-18 15:14
  **/
 public enum CodeLan implements IEnum {

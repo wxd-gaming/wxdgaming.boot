@@ -9,7 +9,7 @@ import wxdgaming.boot.core.threading.ThreadContext;
 /**
  * 线程shutdown测试
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-12 19:05
  **/
 public class ShutdownTest {

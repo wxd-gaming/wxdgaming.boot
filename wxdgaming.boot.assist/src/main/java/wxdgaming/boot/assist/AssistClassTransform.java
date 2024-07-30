@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 包装类，可以通过字节码增加
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-01-05 20:49
  **/
 public class AssistClassTransform implements ClassFileTransformer {

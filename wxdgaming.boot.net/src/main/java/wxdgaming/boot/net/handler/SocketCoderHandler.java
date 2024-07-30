@@ -31,7 +31,7 @@ import java.io.Serializable;
 /**
  * socket 编解码器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-08-05 14:22
  */
 public interface SocketCoderHandler<S extends SocketSession> extends Serializable {

@@ -9,7 +9,7 @@ import wxdgaming.boot.batis.EntityTable;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-04-16 11:26
  **/
 public class MongoEntityTable extends EntityTable implements Serializable {

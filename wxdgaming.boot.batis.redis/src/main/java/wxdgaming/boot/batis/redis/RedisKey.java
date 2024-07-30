@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * redis模型
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-08-24 10:54
  **/
 public class RedisKey implements Serializable {

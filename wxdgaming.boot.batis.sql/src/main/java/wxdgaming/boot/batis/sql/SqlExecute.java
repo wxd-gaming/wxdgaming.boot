@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-06 16:40
  **/
 interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> extends ISql<DM, DW> {

@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 序列化处理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-06-16 16:55
  **/
 public interface DataSerialize extends DataMapping {

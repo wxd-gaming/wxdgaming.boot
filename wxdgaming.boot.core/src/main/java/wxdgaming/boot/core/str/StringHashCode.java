@@ -6,7 +6,7 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
 /**
  * 计算字符串的hashcode值
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-06-02 11:29
  **/
 public interface StringHashCode {

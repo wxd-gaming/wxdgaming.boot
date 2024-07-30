@@ -3,7 +3,7 @@ package wxdgaming.boot.core.system;
 /**
  * 字节格式化方案
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-11-05 10:34
  **/
 public enum BytesUnit {

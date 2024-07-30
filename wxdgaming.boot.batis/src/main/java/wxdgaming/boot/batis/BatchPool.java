@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 批量操作
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-05-20 16:32
  **/
 @Slf4j

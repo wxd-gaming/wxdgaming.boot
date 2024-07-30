@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.sql.Date;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-08-24 11:49
  **/
 interface ToDbValue {

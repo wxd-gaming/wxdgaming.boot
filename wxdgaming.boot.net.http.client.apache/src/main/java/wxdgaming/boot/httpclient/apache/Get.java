@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * 基于apache的http get 请求
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-04-28 16:02
  **/
 @Slf4j

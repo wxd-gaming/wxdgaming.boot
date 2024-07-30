@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 /**
  * lua 脚本 加载器 执行器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-06-27 10:10
  **/
 @Slf4j
@@ -50,7 +50,7 @@ public class LuaBus {
      *
      * @param base_dir 主目录
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-28 17:33
      */
     public static LuaBus buildFromDirs(String base_dir) {
@@ -122,7 +122,7 @@ public class LuaBus {
      * @param method   方法名字
      * @param data     数据
      * @param consumer
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-07-29 10:51
      */
     public void runTry(String method, LuaValue data, BiConsumer<String, LuaValue> consumer) {
@@ -170,7 +170,7 @@ public class LuaBus {
          *
          * @param luaString
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:11
          */
         public LuaValue loadString(String luaString) {
@@ -183,7 +183,7 @@ public class LuaBus {
          * @param luaString 脚本字符
          * @param chunkname 别名，报错的时候标记，
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:11
          */
         public LuaValue loadString(String luaString, String chunkname) {
@@ -195,7 +195,7 @@ public class LuaBus {
          *
          * @param lua_file lua文件路径
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:11
          */
         public LuaValue loadFile(String lua_file) {
@@ -212,7 +212,7 @@ public class LuaBus {
          *
          * @param dir 文件夹
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 15:52
          */
         public GlobalPool loadDirs(String dir, int maxDepth) {
@@ -227,7 +227,7 @@ public class LuaBus {
          * @param classLoader  指定 classloader
          * @param package_name 指定加载的目录
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:12
          */
         public GlobalPool loadResources(ClassLoader classLoader, String package_name) {
@@ -254,7 +254,7 @@ public class LuaBus {
          * @param key   存储变量名
          * @param value 变量的值
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:13
          */
         public GlobalPool set(String key, int value) {
@@ -268,7 +268,7 @@ public class LuaBus {
          * @param key   存储变量名
          * @param value 变量的值
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:13
          */
         public GlobalPool set(String key, String value) {
@@ -282,7 +282,7 @@ public class LuaBus {
          * @param key   存储变量名
          * @param value 变量的值
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 16:13
          */
         public GlobalPool set(String key, Object value) {
@@ -295,7 +295,7 @@ public class LuaBus {
          *
          * @param lua_key 查找的 key值 或者 方法名称
          * @return
-         * @author: Troy.Chen(無心道, 15388152619)
+         * @author: wxd-gaming(無心道, 15388152619)
          * @version: 2024-06-27 10:17
          */
         public LuaValue get(String lua_key) {
@@ -345,7 +345,7 @@ public class LuaBus {
      * @param key   存储变量名
      * @param value 变量的值
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-27 16:13
      */
     public LuaBus set(String key, int value) {
@@ -359,7 +359,7 @@ public class LuaBus {
      * @param key   存储变量名
      * @param value 变量的值
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-27 16:13
      */
     public LuaBus set(String key, String value) {
@@ -373,7 +373,7 @@ public class LuaBus {
      * @param key   存储变量名
      * @param value 变量的值
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-27 16:13
      */
     public LuaBus set(String key, Object value) {
@@ -387,7 +387,7 @@ public class LuaBus {
      * @param key              存储变量名
      * @param valueArgFunction 变量的值
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-27 16:13
      */
     public LuaBus set(String key, VarArgFunction valueArgFunction) {
@@ -400,7 +400,7 @@ public class LuaBus {
      *
      * @param lua_key 查找的 key值 或者 方法名称
      * @return
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-06-27 10:17
      */
     public LuaValue get(String lua_key) {
@@ -446,7 +446,7 @@ public class LuaBus {
      * @param method   需要调用的方法
      * @param consumer 执行回调
      * @param params   具体参数
-     * @author: Troy.Chen(無心道, 15388152619)
+     * @author: wxd-gaming(無心道, 15388152619)
      * @version: 2024-07-29 10:55
      */
     public void forExec(String method, BiConsumer<String, LuaValue> consumer, Object... params) {

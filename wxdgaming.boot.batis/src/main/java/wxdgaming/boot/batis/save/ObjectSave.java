@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-09-12 15:39
  **/
 public abstract class ObjectSave extends ObjectBaseLock implements CheckSaveCode {

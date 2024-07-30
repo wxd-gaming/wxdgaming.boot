@@ -3,7 +3,7 @@ package proxy.code;
 import java.io.Serializable;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-08-19 09:58
  **/
 public class A implements Serializable, IA {

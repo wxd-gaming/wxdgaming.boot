@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 /**
  * 处理定时器
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-04-16 11:12
  **/
 public class ActionTimer {

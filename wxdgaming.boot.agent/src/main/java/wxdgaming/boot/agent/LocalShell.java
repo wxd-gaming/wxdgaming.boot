@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 /**
  * 在本地执行命令行
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-12-04 09:56
  **/
 public class LocalShell implements Serializable {

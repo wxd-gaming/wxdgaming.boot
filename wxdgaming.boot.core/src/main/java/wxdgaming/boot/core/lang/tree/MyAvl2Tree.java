@@ -3,7 +3,7 @@ package wxdgaming.boot.core.lang.tree;
 /**
  * 自平衡二叉树
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-07-19 10:29
  **/
 public class MyAvl2Tree<E> extends My2Tree<E> {

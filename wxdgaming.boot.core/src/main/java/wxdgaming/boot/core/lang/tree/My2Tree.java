@@ -7,7 +7,7 @@ import java.util.TreeMap;
 /**
  * 二叉树
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-07-19 10:29
  **/
 public class My2Tree<E>

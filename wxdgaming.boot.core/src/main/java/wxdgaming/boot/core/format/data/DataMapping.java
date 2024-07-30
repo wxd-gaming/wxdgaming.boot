@@ -6,7 +6,7 @@ import wxdgaming.boot.core.field.ClassWrapper;
 import wxdgaming.boot.core.field.extend.FieldType;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-07-02 09:45
  **/
 public interface DataMapping {

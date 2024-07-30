@@ -18,7 +18,7 @@ import java.util.Collection;
 /**
  * fast json 自定义 {@link Message} 序列化处理
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-04-21 10:11
  **/
 public class ProtobufMessageSerializerFastJson implements ObjectSerializer, ObjectDeserializer {

@@ -13,7 +13,7 @@ import java.util.function.*;
 /**
  * 单数据异步编程
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-21 09:34
  **/
 @Slf4j

@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * google的cache
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-05-10 14:24
  **/
 @Slf4j

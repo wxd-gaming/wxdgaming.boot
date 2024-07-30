@@ -5,7 +5,7 @@ import org.junit.Test;
 import wxdgaming.boot.core.threading.ThreadContext;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-04-24 14:20
  **/
 @Slf4j

@@ -5,7 +5,7 @@ import wxdgaming.boot.agent.function.Function4;
 import wxdgaming.boot.agent.system.LambdaUtil;
 
 /**
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-04-14 18:01
  **/
 @Slf4j

@@ -9,7 +9,7 @@ import wxdgaming.boot.core.format.data.DataSerialize;
 /**
  * 实现一些序列号接口，重写 hashcode
  *
- * @author: Troy.Chen(無心道, 15388152619)
+ * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-09-12 15:39
  **/
 public abstract class ObjectBaseLock extends LockBase implements
