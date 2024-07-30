@@ -60,7 +60,7 @@ public class LuaBus {
 
         FileUtil.walkDirs(script_path.getPath(), 1).forEach(dir -> {
             if (dir.equals(script_path)) return;
-            System.out.println("加载功能模块目录：" + dir + " - " + dir.getName());
+            log.info("load lua module：{} - {}", dir, dir.getName());
             GlobalPool globalPool = luaBus.new GlobalPool(dir.getName());
             globalPool.loadDirs(dir.getPath(), 99);
             globalPool.loadDirs(base_dir + "/util", 99);
