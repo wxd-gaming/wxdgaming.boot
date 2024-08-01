@@ -9,10 +9,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentHashSet;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.BytesUnit;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.ssl.WxOptionalSslHandler;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class NioServer<S extends Session> extends NioBase implements Runnable {
+public abstract class NioServer<S extends Session> extends NioBase implements Runnable, AutoCloseable {
 
     protected ServerBootstrap bootstrap;
     protected Channel serverChannel;
@@ -103,9 +103,9 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 if (null == this.getHost()
                         || "".equals(this.getHost())
                         || "*".equals(this.getHost())
-//                        || "0.0.0.0".equals(this.getHost())
-//                        || "0.0.0.0.0.0.0.0".equals(this.getHost())/*ipv6*/
-//                        || "::".equals(this.getHost())/*ipv6*/
+                    //                        || "0.0.0.0".equals(this.getHost())
+                    //                        || "0.0.0.0.0.0.0.0".equals(this.getHost())/*ipv6*/
+                    //                        || "::".equals(this.getHost())/*ipv6*/
                 ) {
                     channelFuture = bootstrap.bind(this.getPort()).sync();
                 } else {
