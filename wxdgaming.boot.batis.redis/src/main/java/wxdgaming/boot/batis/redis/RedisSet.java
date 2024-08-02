@@ -1,12 +1,12 @@
 package wxdgaming.boot.batis.redis;
 
-import wxdgaming.boot.agent.function.ConsumerE1;
-import wxdgaming.boot.batis.DataWrapper;
-import wxdgaming.boot.batis.EntityTable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.params.SetParams;
+import wxdgaming.boot.agent.function.ConsumerE1;
+import wxdgaming.boot.batis.DataWrapper;
+import wxdgaming.boot.batis.EntityTable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +38,20 @@ interface RedisSet {
 
     default String set(String redisKey, Object value) {
         return set(0, redisKey, value);
+    }
+
+    /**
+     * 单键值对
+     *
+     * @param redisKey key
+     * @param value    存储的value
+     * @param seconds  多少秒之后过期
+     * @return
+     * @author: wxd-gaming(無心道, 15388152619)
+     * @version: 2024-08-02 10:25
+     */
+    default String set(String redisKey, Object value, long seconds) {
+        return set(0, redisKey, value, seconds);
     }
 
     default String set(int dbIndex, String redisKey, Object value) {
