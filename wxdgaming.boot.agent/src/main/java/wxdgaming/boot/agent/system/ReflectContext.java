@@ -146,7 +146,7 @@ public class ReflectContext {
         return classWithAnnotated(annotation, predicate).map(Content::new);
     }
 
-    /** 所有添加了这个注解的类 */
+    /** 所有bean里面的方法，添加了注解的 */
     public Stream<Method> withMethodAnnotated(Class<? extends Annotation> annotation) {
         return withMethodAnnotated(annotation, null);
     }
