@@ -42,6 +42,10 @@ public class HttpBuilder {
         return postText(HttpClientPool.getDefault(), uriPath);
     }
 
+    public static PostText postText(String uriPath, String param) {
+        return postText(HttpClientPool.getDefault(), uriPath).setParams(param);
+    }
+
     public static PostText postText(HttpClientPool httpClientPool, String uriPath) {
         return new PostText(httpClientPool, uriPath);
     }
