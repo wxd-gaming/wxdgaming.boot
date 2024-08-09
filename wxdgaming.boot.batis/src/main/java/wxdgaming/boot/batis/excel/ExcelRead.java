@@ -51,12 +51,12 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
     protected String[] excelPaths = null;
     protected String[] splitStrs = {"[,，]", "[:：]"};
 
-    public ExcelRead loadExcel() {
+    public ExcelRead<DM, DW> loadExcel() {
         return loadExcel("");
     }
 
     /** 读取excel文件读取字段的权限 server, client, all, no */
-    public ExcelRead loadExcel(String haveExtend) {
+    public ExcelRead<DM, DW> loadExcel(String haveExtend) {
         MarkTimer timerMark = MarkTimer.build();
         this.excelDataTableMap = new LinkedHashMap<>();
         List<File> excelFiles = new LinkedList<>();
@@ -87,7 +87,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
             for (Map.Entry<String, Workbook> entry : workbooks.entrySet()) {
                 readExcelRow(entry.getKey(), entry.getValue());
             }
-            log.info("表结构数量：" + excelDataTableMap.size() + ", " + timerMark.execTime2String());
+            log.info("表结构数量：{}, {}", excelDataTableMap.size(), timerMark.execTime2String());
         } finally {
             for (Workbook workbook : workbooks.values()) {
                 try {
@@ -103,8 +103,8 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
     /**
      * 读取表头
      */
-    protected ExcelRead readExcelHead(String excelFile, Workbook workbook,
-                                      String haveExtend) {
+    protected ExcelRead<DM, DW> readExcelHead(String excelFile, Workbook workbook,
+                                              String haveExtend) {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             /*只读取第一个*/
             Sheet sheet = workbook.getSheetAt(i);
@@ -115,7 +115,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                     || sheetName.contains("@")
                     || sheetName.contains("$")
                     || !sheetName.startsWith("q_")) {
-                log.debug("Excel文件不能解析：" + excelFile + ", sheetName=" + sheetName + " - 需要是 q_ 开头 sheet name 才能解析");
+                log.debug("Excel文件不能解析：{}, sheetName={} - 需要是 q_ 开头 sheet name 才能解析", excelFile, sheetName);
                 continue;
             }
 
@@ -132,11 +132,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                     || rowDataName == null
                     || rowDataDesc == null
                     || rowDataExtend == null) {
-                log.info(
-                        "文件：" + excelFile
-                                + " sheetName " + sheetName
-                                + " 表头数据不合法无法解析"
-                );
+                log.info("文件：{} sheetName {} 表头数据不合法无法解析", excelFile, sheetName);
                 continue;
             }
 
@@ -148,13 +144,15 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                 entityTable = createDataStruct();
             } else {
                 if (entityTable.getColumns().size() != lastCellNum) {
-                    log.info("Excel文件数据列不一致：\n"
-                            + "新文件：" + excelFile
-                            + ", sheetName=" + sheetName
-                            + ", 数据列：" + lastCellNum
-                            + "\n原文件：" + entityTable.getTableComment()
-                            + ", sheetName=" + entityTable.getTableName()
-                            + ", 数据列：" + entityTable.getColumns().size());
+                    log.info(
+                            "Excel文件数据列不一致：\n新文件：{}, sheetName={}, 数据列：{}\n原文件：{}, sheetName={}, 数据列：{}",
+                            excelFile,
+                            sheetName,
+                            lastCellNum,
+                            entityTable.getTableComment(),
+                            entityTable.getTableName(),
+                            entityTable.getColumns().size()
+                    );
                 }
             }
 
@@ -173,14 +171,11 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
             }
             if (!entityTable.getColumns().isEmpty()) {
                 excelDataTableMap.put(entityTable.getTableName(), entityTable);
-//                log.info("Excel文件解析完成：" + excelFile
-//                        + ", sheetName=" + sheetName
-//                        + ", 数据列：" + entityTable.getColumns().size());
+                //                log.info("Excel文件解析完成：" + excelFile
+                //                        + ", sheetName=" + sheetName
+                //                        + ", 数据列：" + entityTable.getColumns().size());
             } else {
-                log.info(
-                        "可能 是不需要处理的 Excel 文件：" + excelFile
-                                + ", sheetName=" + sheetName
-                );
+                log.info("可能 是不需要处理的 Excel 文件：{}, sheetName={}", excelFile, sheetName);
             }
         }
         return this;
@@ -344,9 +339,10 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                 }
                 entityTable.getRows().add(rowMap);
             }
-            log.info("Excel文件解析完成：" + excelFile + ", sheetName=" + sheetName +
-                    ", 数据列：" + entityTable.getColumns().size() +
-                    ", 数量行：" + entityTable.getRows().size());
+            log.info(
+                    "Excel文件解析完成：{}, sheetName={}, 数据列：{}, 数量行：{}",
+                    excelFile, sheetName, entityTable.getColumns().size(), entityTable.getRows().size()
+            );
         }
     }
 
