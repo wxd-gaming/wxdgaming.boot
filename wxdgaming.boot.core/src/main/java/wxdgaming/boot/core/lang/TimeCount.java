@@ -48,8 +48,6 @@ public class TimeCount implements Serializable {
      * @param num    数量
      * @param millis 毫秒数
      */
-    public record CountItem(long num, long millis) {
-
-    }
+    public record CountItem(long num, long millis) {}
 
 }
