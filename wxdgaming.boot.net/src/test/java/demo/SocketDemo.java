@@ -7,6 +7,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.http.ssl.SslContextServer;
@@ -31,6 +32,20 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class SocketDemo {
 
+    @Test
+    public void test() throws InterruptedException {
+        WebSocketClient<WebSession> socketClient = new WebSocketClient<>()
+                .setHost("127.0.0.1")
+                .setPort(18001)
+                .setUrlSuffix("websocket")
+                .setOnOpen(webSession -> {
+                    webSession.writeAndFlush("ws test");
+                    webSession.writeBytes("ws test bytes".getBytes(StandardCharsets.UTF_8), true);
+                });
+        socketClient.connect().syncUninterruptibly();
+        Thread.sleep(3000);
+    }
+
     public static void main(String[] args) throws Exception {
 
         new Thread(() -> {
@@ -42,7 +57,7 @@ public class SocketDemo {
         {
             WebSocketClient<WebSession> socketClient = new WebSocketClient<>()
                     .setHost("127.0.0.1")
-                    .setPort(10001)
+                    .setPort(18001)
                     .setUrlSuffix("ws")
                     .setOnOpen(webSession -> {
                         webSession.writeAndFlush("ws test");

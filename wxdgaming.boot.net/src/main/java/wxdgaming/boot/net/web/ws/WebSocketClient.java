@@ -16,14 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.core.system.BytesUnit;
-import wxdgaming.boot.net.http.ssl.SslContextClient;
-import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.NioClient;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.auth.IAuth;
 import wxdgaming.boot.net.auth.SignConfig;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
+import wxdgaming.boot.net.http.ssl.SslContextClient;
+import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.ssl.WxSslHandler;
 import wxdgaming.boot.net.web.CookiePack;
 
@@ -125,7 +125,6 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
         pipeline.addLast(
                 new HttpClientCodec(),/*将请求与应答消息编码或者解码为HTTP消息*/
                 new HttpObjectAggregator((int) BytesUnit.Mb.toBytes(64)),/*接受完整的http消息 64mb*/
-//                WebSocketClientCompressionHandler.INSTANCE,
                 new ChunkedWriteHandler(),/*用于大数据的分区传输*/
                 new WSCSocketChannelHandler(this.toString(), handshaker)/*自定义的业务handler*/
         );
@@ -230,12 +229,10 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
                 } else {
                     try {
                         ctx.disconnect();
-                    } catch (Exception e) {
-                    }
+                    } catch (Exception ignore) {}
                     try {
                         ctx.close();
-                    } catch (Exception e) {
-                    }
+                    } catch (Exception ignore) {}
                 }
             } finally {
                 super.channelUnregistered(ctx);
