@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
@@ -18,7 +19,7 @@ public class LocalShell implements Serializable {
 
     static boolean windowsOs;
     static String initProcess;
-    static Charset charset = Charset.forName("utf-8");
+    static Charset charset = StandardCharsets.UTF_8;
 
     static {
         String property = System.getProperty("os.name");
