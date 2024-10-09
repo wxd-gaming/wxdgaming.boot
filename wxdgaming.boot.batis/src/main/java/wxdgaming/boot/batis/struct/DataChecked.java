@@ -8,11 +8,7 @@ package wxdgaming.boot.batis.struct;
  **/
 public interface DataChecked {
 
-    /**
-     * 用于配置的检测和初始化
-     *
-     * @throws Exception
-     */
+    /** 用于配置的检测和初始化 */
     default void initAndCheck() throws Exception {
     }
 

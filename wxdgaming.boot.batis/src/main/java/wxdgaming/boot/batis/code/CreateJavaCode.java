@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.batis.struct.DataChecked;
@@ -16,6 +15,7 @@ import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.field.ClassMapping;
 import wxdgaming.boot.core.field.ClassWrapper;
+import wxdgaming.boot.core.str.TemplatePack;
 
 import java.io.File;
 import java.io.Serializable;
@@ -39,10 +39,9 @@ public class CreateJavaCode implements Serializable, ICreateCode {
         if (!savePath.endsWith("/")) {
             savePath += "/";
         }
-        String tmpPath = savePath + packageName.replace(".", "/") + "/";
 
         ObjMap parse = new ObjMap();
-        parse.put("packageName", "po");
+        parse.put("packageName", packageName);
         parse.put("tableName", entityTable.getTableName());
         parse.put("tableComment", entityTable.getTableComment());
         parse.put("codeClassName", entityTable.getCodeClassName());
@@ -55,31 +54,32 @@ public class CreateJavaCode implements Serializable, ICreateCode {
         }
         parse.put("columns", columns);
 
-//        StreamBuilder stringAppend = new StreamBuilder(1024);
+        //        StreamBuilder stringAppend = new StreamBuilder(1024);
 
+        String tmpPath = savePath + packageName.replace(".", "/") + "/";
         File file;
         {
             file = new File(tmpPath + "bean/mapping/" + entityTable.getCodeClassName() + "Mapping.java");
             templatePack.ftl2File("bean-mapping.ftl", parse, file.getPath());
-//            createCodeMapping(stringAppend, entityTable, packageName);
-//            FileWriteUtil.writeBytes(file, stringAppend.toBytes());
+            //            createCodeMapping(stringAppend, entityTable, packageName);
+            //            FileWriteUtil.writeBytes(file, stringAppend.toBytes());
             log.info("生成 映射 文件：" + entityTable.getTableComment() + ", " + entityTable.getTableName() + ", " + FileUtil.getCanonicalPath(file));
         }
         file = new File(tmpPath + "bean/" + entityTable.getCodeClassName() + "Bean.java");
         if (!file.exists()) {
             templatePack.ftl2File("bean.ftl", parse, file.getPath());
-//            stringAppend.clear();
-//            createCodeBean(stringAppend, entityTable, packageName);
-//            FileWriteUtil.writeBytes(file, stringAppend.toBytes());
+            //            stringAppend.clear();
+            //            createCodeBean(stringAppend, entityTable, packageName);
+            //            FileWriteUtil.writeBytes(file, stringAppend.toBytes());
             log.info("生成 扩展 文件：" + entityTable.getTableComment() + ", " + entityTable.getTableName() + ", " + FileUtil.getCanonicalPath(file));
         }
 
         file = new File(tmpPath + "factory/" + entityTable.getCodeClassName() + "Factory.java");
         if (!file.exists()) {
             templatePack.ftl2File("factory.ftl", parse, file.getPath());
-//            stringAppend.clear();
-//            createCodeFactory(stringAppend, entityTable, packageName);
-//            FileWriteUtil.writeBytes(file, stringAppend.toBytes());
+            //            stringAppend.clear();
+            //            createCodeFactory(stringAppend, entityTable, packageName);
+            //            FileWriteUtil.writeBytes(file, stringAppend.toBytes());
             log.info("生成 工厂 文件：" + entityTable.getTableComment() + ", " + entityTable.getLogTableName() + "Factory, " + FileUtil.getCanonicalPath(file));
         }
     }
