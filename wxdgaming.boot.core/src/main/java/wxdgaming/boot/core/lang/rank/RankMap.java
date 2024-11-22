@@ -4,7 +4,6 @@ import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.checkerframework.checker.units.qual.K;
 import wxdgaming.boot.agent.function.Consumer2;
 import wxdgaming.boot.agent.function.Predicate2;
 import wxdgaming.boot.core.format.data.Data2Json;
@@ -46,16 +45,15 @@ public class RankMap<V extends RankScore> implements Data2Json {
         return this;
     }
 
-    public V getOrNew(Object uid) {
+    public V getOrNew(String uid) {
         return getOrNew(uid, 0);
     }
 
-    public V getOrNew(Object uid, double score) {
-        String uKey = String.valueOf(uid);
-        return nodes.computeIfAbsent(uKey, l -> factory.createRankData(l, score));
+    public V getOrNew(String uid, double score) {
+        return nodes.computeIfAbsent(uid, l -> factory.createRankData(l, score));
     }
 
-    public V remove(Object k) {
+    public V remove(String k) {
         return nodes.remove(k);
     }
 
@@ -64,7 +62,7 @@ public class RankMap<V extends RankScore> implements Data2Json {
     }
 
     /** 累加分数 */
-    public V addScore(Object uid, double score) {
+    public V addScore(String uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -74,7 +72,7 @@ public class RankMap<V extends RankScore> implements Data2Json {
     }
 
     /** 设置分数 */
-    public V setScore(Object uid, double score) {
+    public V setScore(String uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -85,7 +83,7 @@ public class RankMap<V extends RankScore> implements Data2Json {
     }
 
     /** 设置分数，根据当前分数和记录分数对吧，取最大值 */
-    public V setScoreMax(Object uid, double score) {
+    public V setScoreMax(String uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -96,7 +94,7 @@ public class RankMap<V extends RankScore> implements Data2Json {
     }
 
     /** 设置分数，根据当前分数和记录分数对吧，取最小值 */
-    public V setScoreMin(Object uid, double score) {
+    public V setScoreMin(String uid, double score) {
         V v = getOrNew(uid);
         v.lock();
         try {
@@ -114,7 +112,7 @@ public class RankMap<V extends RankScore> implements Data2Json {
         return nodes.values().stream().sorted(comparator);
     }
 
-    public int rank(K uid) {
+    public int rank(String uid) {
         List<V> list = stream().toList();
         int rank = 0;
         for (V v : list) {
@@ -127,11 +125,11 @@ public class RankMap<V extends RankScore> implements Data2Json {
     }
 
     /** 查找分数 */
-    public Double scoreValue(K uid) {
+    public Double scoreValue(String uid) {
         return Optional.ofNullable(nodes.get(uid)).map(RankScore::getScore).orElse(0D);
     }
 
-    public Tuple2<Integer, Double> rankScoreValue(K uid) {
+    public Tuple2<Integer, Double> rankScoreValue(Object uid) {
         List<V> list = stream().toList();
         int rank = 0;
         for (V v : list) {
@@ -143,7 +141,7 @@ public class RankMap<V extends RankScore> implements Data2Json {
         return null;
     }
 
-    public Tuple2<Integer, V> rankScore(K uid) {
+    public Tuple2<Integer, V> rankScore(Object uid) {
         List<V> list = stream().toList();
         int rank = 0;
         for (V v : list) {
