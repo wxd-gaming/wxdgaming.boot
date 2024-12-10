@@ -44,12 +44,12 @@ public class FeishuPack extends Event {
         Executors.getDefaultExecutor().scheduleAtFixedDelay(this, 10, 10, TimeUnit.SECONDS);
     }
 
-    /** feiShuN通知 "<at user_id=\"458374gc\">子衣</at><at user_id=\"58bafc6e\">陆仕洋</at>" */
+    /** feiShuN通知 "<at user_id=\"xxx\">xx</at>" */
     public void asyncFeiShuNotice(String title, String content) {
         asyncFeiShuNotice(DefaultFeishuUrl, title, content);
     }
 
-    /** feiShuN通知 "<at user_id=\"458374gc\">子衣</at><at user_id=\"58bafc6e\">陆仕洋</at>" */
+    /** feiShuN通知 "<at user_id=\"xxx\">xx</at>" */
     public void asyncFeiShuNotice(String title, String content, Throwable throwable) {
         Integer integer = ThrowableCache.addException(throwable);
         if (integer != null) {
@@ -57,7 +57,7 @@ public class FeishuPack extends Event {
         }
     }
 
-    /** feiShuN通知 "<at user_id=\"458374gc\">子衣</at><at user_id=\"58bafc6e\">陆仕洋</at>" */
+    /** feiShuN通知 "<at user_id=\"xxx\">xx</at>" */
     public void asyncFeiShuNotice(String url, String title, String content, Throwable throwable) {
         Integer integer = ThrowableCache.addException(throwable);
         if (integer != null) {
@@ -65,7 +65,7 @@ public class FeishuPack extends Event {
         }
     }
 
-    /** feiShuN通知 "<at user_id=\"458374gc\">子衣</at><at user_id=\"58bafc6e\">陆仕洋</at>" */
+    /** feiShuN通知 "<at user_id=\"xxx\">xx</at>" */
     public void asyncFeiShuNotice(String url, String title, String content) {
         if (StringUtil.emptyOrNull(url) || StringUtil.emptyOrNull(title) || StringUtil.emptyOrNull(content)) return;
         lockBase.lock();
