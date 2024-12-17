@@ -16,11 +16,8 @@ public class RankTest {
     @Test
     public void stream() {
         RankMap<RankScore> rankMap = new RankMap<>();
-        rankMap.addScore(1L, 1);
-        rankMap.addScore(1L, 2);
-        rankMap.addScore(2L, 1);
-        rankMap.addScore(2L, 2);
-        rankMap.addScore(3L, RedisRankScore.scoreMax(3));
+        rankMap.addScore("1", 1);
+        rankMap.addScore("3", RedisRankScore.scoreMax(3));
         rankMap.getRange(RankScore.Sort, 0, 20).forEach(System.out::println);
         System.out.println("===================================");
         rankMap.getRange(RankScore.BreSort, 0, 20).forEach(System.out::println);

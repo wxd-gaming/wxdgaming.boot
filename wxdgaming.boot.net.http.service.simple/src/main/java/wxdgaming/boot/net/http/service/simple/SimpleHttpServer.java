@@ -69,11 +69,12 @@ public class SimpleHttpServer {
         String jksPath = null;
         String jksPwdPath = null;
         HttpHandler handler = new MyHandler();
+        Executor executor = Executors.newFixedThreadPool(3);
 
         public SimpleHttpServer build() {
             try {
 
-                Executor executor = Executors.newFixedThreadPool(3);
+
 
                 HttpsServer httpsServer = null;
                 if (sslPort > 0) {

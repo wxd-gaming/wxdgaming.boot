@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 public class MyHandler implements HttpHandler {
 
     @Override public void handle(HttpExchange exchange) throws IOException {
-        Executors.getDefaultExecutor().execute(new Event() {
+        Executors.getVTExecutor().execute(new Event() {
             @Override public long getLogTime() {
                 return 1;
             }
@@ -26,6 +26,7 @@ public class MyHandler implements HttpHandler {
                 for (int i = 0; i < k; i++) {
                     stringBuilder.append("i");
                 }
+                System.out.println("请求：" + exchange.toString() + " - thread：" + Thread.currentThread());
                 String ok = stringBuilder.toString();
                 byte[] bytes = ok.getBytes(StandardCharsets.UTF_8);
                 exchange.getResponseHeaders().set("content-type", "application/json");
