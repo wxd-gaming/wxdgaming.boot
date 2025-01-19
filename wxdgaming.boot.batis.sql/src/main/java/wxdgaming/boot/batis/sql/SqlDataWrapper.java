@@ -60,7 +60,7 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
     }
 
     public void buildSqlDropTable(StreamWriter stringAppend, String tableName) {
-        stringAppend.write("DROP TABLE if exists `" + tableName + "`;");
+        stringAppend.write("DROP TABLE `" + tableName + "`;");
     }
 
     public void buildSqlCreateTable(StreamWriter stringAppend, DM entityTable, String tableName, String tableComment) {
@@ -149,7 +149,7 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
      */
     public String buildColumnSqlString(EntityField entityField) {
         String sqlString = "`" + entityField.getColumnName() + "` "
-                + entityField.checkColumnType().formatString(entityField.getColumnLength());
+                           + entityField.checkColumnType().formatString(entityField.getColumnLength());
 
         if (entityField.isColumnKey() || !entityField.isColumnNullAble()) {
             sqlString += " NOT NULL";
@@ -236,7 +236,53 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
         streamWriter.write(";");
     }
 
-    public void newReplaceSql(DM entityTable) {
+    public String newInsertSql(DM entityTable) {
+        Collection<EntityField> columns = entityTable.getColumns();
+        // 这里如果不存在字段名就不需要创建了
+        if (columns == null || columns.isEmpty()) {
+            throw new UnsupportedOperationException("实体类：" + entityTable.getLogTableName() + " 没有任何字段，");
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("insert into `").append(entityTable.getTableName()).append("` (");
+        int i = 0;
+        for (EntityField column : columns) {
+            if (i > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("`").append(column.getColumnName()).append("`");
+            i++;
+        }
+        stringBuilder.append(") VALUES (");
+        for (int j = 0; j < columns.size(); j++) {
+            if (j > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("?");
+        }
+        stringBuilder.append(")");
+        return (stringBuilder.toString().trim());
+    }
+
+    public String newUpdateSql(DM entityTable) {
+        Collection<EntityField> columns = entityTable.getColumns();
+        // 这里如果不存在字段名就不需要创建了
+        if (columns == null || columns.isEmpty()) {
+            throw new UnsupportedOperationException("实体类：" + entityTable.getLogTableName() + " 没有任何字段，");
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("update `").append(entityTable.getTableName()).append("` set ");
+        int i = 0;
+        for (EntityField column : columns) {
+            if (i > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append("`").append(column.getColumnName()).append("`").append(" = ?");
+            i++;
+        }
+        return (stringBuilder.toString().trim());
+    }
+
+    public String newReplaceSql(DM entityTable) {
         Collection<EntityField> columns = entityTable.getColumns();
         // 这里如果不存在字段名就不需要创建了
         if (columns == null || columns.isEmpty()) {
@@ -260,7 +306,7 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
             stringBuilder.append("?");
         }
         stringBuilder.append(")");
-        entityTable.replaceSql = (stringBuilder.toString().trim());
+        return (stringBuilder.toString().trim());
     }
 
     /**
@@ -286,8 +332,8 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
         entityTable.selectSql = stringBuilder.toString().trim();
 
         entityTable.selectSortSql = stringBuilder.toString().trim()
-                + " order by `" + entityTable.getDataColumnKey().getColumnName() + "` "
-                + entityTable.getDataColumnKey().getSortType().name();
+                                    + " order by `" + entityTable.getDataColumnKey().getColumnName() + "` "
+                                    + entityTable.getDataColumnKey().getSortType().name();
 
         stringBuilder.append(" where `").append(entityTable.getDataColumnKey().getColumnName()).append("` = ?");
 

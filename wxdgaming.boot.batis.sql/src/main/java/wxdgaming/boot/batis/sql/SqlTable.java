@@ -71,7 +71,7 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
      * 删除表
      */
     default void dropTable(String tableName) {
-        executeUpdate("DROP TABLE IF EXISTS `" + tableName + "`;");
+        executeUpdate("DROP TABLE `" + tableName + "`;");
     }
 
     /**
@@ -85,6 +85,32 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
         }
         DM entityTable = getDataWrapper().asEntityTable(clazz);
         createTable(entityTable);
+    }
+
+    /**
+     * 创建表
+     *
+     * @param clazz
+     */
+    default void createTable(Class<?> clazz, String tableName) {
+        if (!getDataWrapper().checkClazz(clazz)) {
+            return;
+        }
+        DM entityTable = getDataWrapper().asEntityTable(clazz);
+        createTable(entityTable, tableName, entityTable.getTableComment());
+    }
+
+    /**
+     * 创建表
+     *
+     * @param clazz
+     */
+    default void createTable(Class<?> clazz, String tableName, String tableComment) {
+        if (!getDataWrapper().checkClazz(clazz)) {
+            return;
+        }
+        DM entityTable = getDataWrapper().asEntityTable(clazz);
+        createTable(entityTable, tableName, tableComment);
     }
 
     default void createTable(DM entityTable) {
@@ -104,7 +130,7 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
         final LinkedHashMap<String, ObjMap> tableColumns = getDbTableStructMap().get(tableName);
         if (tableColumns != null) {
             if (log.isDebugEnabled()) {
-                log.debug("数据库：" + getSqlDao().getDbBase() + " 表 " + tableName + " 已经存在, 开始检查字段结构");
+                log.debug("数据库：{} 表 {} 已经存在, 开始检查字段结构", getSqlDao().getDbBase(), tableName);
             }
             LinkedHashMap<String, EntityField> columnMap = entityTable.getColumnMap();
             EntityField upField = null;

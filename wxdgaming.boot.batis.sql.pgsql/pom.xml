@@ -9,7 +9,7 @@
         <version>j21-003</version>
     </parent>
 
-    <artifactId>wxdgaming.boot.batis.sql.mysql</artifactId>
+    <artifactId>wxdgaming.boot.batis.sql.pgsql</artifactId>
 
     <dependencies>
         <dependency>
@@ -37,8 +37,8 @@
             <artifactId>HikariCP</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
 

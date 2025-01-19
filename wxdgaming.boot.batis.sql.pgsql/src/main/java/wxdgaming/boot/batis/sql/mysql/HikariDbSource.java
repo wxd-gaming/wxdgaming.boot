@@ -9,11 +9,11 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * HikariDataSource
+ * pgsql HikariConfig
  *
  * @author: wxd-gaming(無心道, 15388152619)
- * @version: 2023-12-11 10:45
- **/
+ * @version: 2025-01-18 20:13
+ */
 public class HikariDbSource extends DbSource {
 
     private final HikariDataSource hikariDataSource;
@@ -25,14 +25,14 @@ public class HikariDbSource extends DbSource {
         config.setUsername(DB_USER);
         config.setPassword(DB_PASSWORD);
         config.setAutoCommit(false);
-        config.setPoolName("wxd.db");
+        config.setPoolName("wxdgaming.db");
         config.setConnectionTimeout(2000);
         config.setIdleTimeout(TimeUnit.MINUTES.toMillis(10));
         config.setValidationTimeout(TimeUnit.SECONDS.toMillis(10));
         config.setKeepaliveTime(TimeUnit.MINUTES.toMillis(3));/*连接存活时间，这个值必须小于 maxLifetime 值。*/
         config.setMaxLifetime(TimeUnit.MINUTES.toMillis(6));/*池中连接最长生命周期。*/
         config.setMinimumIdle(6);/*池中最小空闲连接数，包括闲置和使用中的连接。*/
-        config.setMaximumPoolSize(20);/*池中最大连接数，包括闲置和使用中的连接。*/
+        config.setMaximumPoolSize(100);/*池中最大连接数，包括闲置和使用中的连接。*/
         config.setConnectionTestQuery("SELECT 1");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");

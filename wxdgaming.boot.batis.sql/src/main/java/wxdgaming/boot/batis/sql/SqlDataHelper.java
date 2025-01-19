@@ -29,14 +29,14 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         extends DataHelper<DM, DW>
         implements SqlExecute<DM, DW>, SqlTable<DM, DW>, SqlSelect<DM, DW>, SqlDel<DM, DW> {
 
-    private SqlBatchPool batchPool = null;
+    protected SqlBatchPool batchPool = null;
     /** 数据库集合 */
-    private List<String> dbBaseList = new ArrayList<>();
+    protected List<String> dbBaseList = new ArrayList<>();
 
     /** 数据库表和表说明备注 */
-    private Map<String, String> dbTableMap = new LinkedHashMap<>();
+    protected Map<String, String> dbTableMap = new LinkedHashMap<>();
     /** 数据库，数据结构 */
-    private Map<String, LinkedHashMap<String, ObjMap>> dbTableStructMap = new LinkedHashMap<>();
+    protected Map<String, LinkedHashMap<String, ObjMap>> dbTableStructMap = new LinkedHashMap<>();
 
     protected SqlDataHelper() {
     }
@@ -138,22 +138,22 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         if (dbTableStructMap.isEmpty()) {
             String sql =
                     "SELECT" +
-                            "    TABLE_NAME," +
-                            "    COLUMN_NAME," +
-                            "    ORDINAL_POSITION," +
-                            "    COLUMN_DEFAULT," +
-                            "    IS_NULLABLE," +
-                            "    DATA_TYPE," +
-                            "    CHARACTER_MAXIMUM_LENGTH," +
-                            "    NUMERIC_PRECISION," +
-                            "    NUMERIC_SCALE," +
-                            "    COLUMN_TYPE," +
-                            "    COLUMN_KEY," +
-                            "    EXTRA," +
-                            "    COLUMN_COMMENT \n" +
-                            "FROM information_schema.`COLUMNS`\n" +
-                            "WHERE table_schema= ? \n" +
-                            "ORDER BY TABLE_NAME, ORDINAL_POSITION;";
+                    "    TABLE_NAME," +
+                    "    COLUMN_NAME," +
+                    "    ORDINAL_POSITION," +
+                    "    COLUMN_DEFAULT," +
+                    "    IS_NULLABLE," +
+                    "    DATA_TYPE," +
+                    "    CHARACTER_MAXIMUM_LENGTH," +
+                    "    NUMERIC_PRECISION," +
+                    "    NUMERIC_SCALE," +
+                    "    COLUMN_TYPE," +
+                    "    COLUMN_KEY," +
+                    "    EXTRA," +
+                    "    COLUMN_COMMENT \n" +
+                    "FROM information_schema.`COLUMNS`\n" +
+                    "WHERE table_schema= ? \n" +
+                    "ORDER BY TABLE_NAME, ORDINAL_POSITION;";
 
             final List<ObjMap> jsonObjects = this.query(sql, this.getDbBase());
             for (ObjMap jsonObject : jsonObjects) {
@@ -189,6 +189,84 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     /** 通过sql语句获得当前数据库名字 */
     public String dataBase() {
         return executeScalar("select database();", String.class);
+    }
+
+    /** insert */
+    public int insert(Object model) {
+        DM entityTable = asEntityTable(model);
+        String sqlStr = entityTable.getInsertSql(model);
+        return executeUpdate(entityTable, model, sqlStr);
+    }
+
+    /** insertBatch */
+    public int insertBatch(List<?> models) {
+        if (models == null || models.isEmpty()) return -1;
+        Object model = models.getFirst();
+        DM entityTable = asEntityTable(model);
+        String insertSql = entityTable.getInsertSql(model);
+        MarkTimer markTimer = MarkTimer.build();
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement stmt = connection.prepareStatement(insertSql)) {
+                for (Object o : models) {
+                    setPreparedParams(stmt, entityTable, o);
+                    stmt.addBatch();
+                    stmt.clearParameters();
+                }
+                int size = Arrays.stream(stmt.executeBatch()).sum();
+                connection.commit();
+                float execTime = markTimer.execTime();
+                if (getSqlDao().getDbConfig().isShow_sql()) {
+                    log.info("\n" + insertSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                } else if (execTime > 10000) {
+                    log.warn("\n" + insertSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                }
+                return size;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (Exception e) {
+            throw Throw.as(insertSql, e);
+        }
+    }
+
+    /** update */
+    public int update(Object model) {
+        DM entityTable = asEntityTable(model);
+        String sqlStr = entityTable.getUpdateSql(model);
+        return executeUpdate(entityTable, model, sqlStr);
+    }
+
+    /** updateBatch */
+    public int updateBatch(List<?> models) {
+        if (models == null || models.isEmpty()) return -1;
+        Object model = models.getFirst();
+        DM entityTable = asEntityTable(model);
+        String updateSql = entityTable.getUpdateSql(model);
+        MarkTimer markTimer = MarkTimer.build();
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement stmt = connection.prepareStatement(updateSql)) {
+                for (Object o : models) {
+                    setPreparedParams(stmt, entityTable, o);
+                    stmt.addBatch();
+                    stmt.clearParameters();
+                }
+                int size = Arrays.stream(stmt.executeBatch()).sum();
+                connection.commit();
+                float execTime = markTimer.execTime();
+                if (getSqlDao().getDbConfig().isShow_sql()) {
+                    log.info("\n" + updateSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                } else if (execTime > 10000) {
+                    log.warn("\n" + updateSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                }
+                return size;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+        } catch (Exception e) {
+            throw Throw.as(updateSql, e);
+        }
     }
 
     /**

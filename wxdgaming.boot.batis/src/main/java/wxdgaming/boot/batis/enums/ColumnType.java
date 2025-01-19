@@ -1,49 +1,56 @@
 package wxdgaming.boot.batis.enums;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 
 /**
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-13 17:14
  **/
+@Getter
 public enum ColumnType implements Serializable {
-    None("null"),
-    Bool("bit"),
-    Byte("tinyint(2)"),
-    Short("tinyint(2)"),
-    Int("int"),
-    Long("bigint"),
-    Float("float"),
-    Double("double"),
-    BigDecimal("varchar(255)"),
-    BigInteger("varchar(255)"),
+    None("null", "null"),
+    Bool("bit", "boo"),
+    Byte("tinyint(2)", "tinyint(2)"),
+    Short("tinyint(2)", "smallint"),
+    Int("int", "integer"),
+    Long("bigint", "bigint"),
+    Float("float", "float"),
+    Double("double", "double"),
+    BigDecimal("varchar(255)", "varchar(255)"),
+    BigInteger("varchar(255)", "varchar(255)"),
     /** gzip方式压缩存入数据 */
-    Blob("blob"),
+    Blob("blob", "blob"),
     /** gzip方式压缩存入数据 */
-    LongBlob("longblob"),
+    LongBlob("longblob", "longblob"),
     /** bigint 实际存储的是 utc 毫秒 */
-    Date("bigint"),
+    Date("bigint", "bigint"),
     /** varchar(%s) */
-    Varchar(true, "varchar(%S)"),
+    Varchar(true, "varchar(%S)", "varchar(%S)"),
     /** text */
-    Text("text"),
+    Text("text", "text"),
     /** longtext */
-    LongText("longtext"),
+    LongText("longtext", "longtext"),
     /** 数据库类型 longtext， 用 fastjson 的方式转化成字符串 */
-    Json("longtext"),
+    Json("json", "json"),
+    /** 数据库类型 longtext， 用 fastjson 的方式转化成字符串 */
+    Jsonb("json", "jsonb"),
     /** 数据库类型 longtext 用 fastjson 的方式转化成字符串，然后 gzip 压缩成 base64 字符串 */
-    JsonGzip("longtext"),
+    JsonGzip("longtext", "longtext"),
     ;
-    private boolean format;
-    private String typeName;
+    private final boolean format;
+    private final String mysqlTypeName;
+    private final String pgsqlTypeName;
 
-    ColumnType(String typeName) {
-        this(false, typeName);
+    ColumnType(String mysqlTypeName, String pgsqlTypeName) {
+        this(false, mysqlTypeName, pgsqlTypeName);
     }
 
-    ColumnType(boolean format, String typeName) {
+    ColumnType(boolean format, String mysqlTypeName, String pgsqlTypeName) {
         this.format = format;
-        this.typeName = typeName;
+        this.mysqlTypeName = mysqlTypeName;
+        this.pgsqlTypeName = pgsqlTypeName;
     }
 
     public String formatString(int len) {
@@ -51,14 +58,24 @@ public enum ColumnType implements Serializable {
             if (len == 0) {
                 len = 255;
             }
-            return String.format(typeName, len);
+            return String.format(mysqlTypeName, len);
         }
-        return typeName;
+        return mysqlTypeName;
+    }
+
+    public String pgsqlFormatString(int len) {
+        if (format) {
+            if (len == 0) {
+                len = 255;
+            }
+            return String.format(pgsqlTypeName, len);
+        }
+        return pgsqlTypeName;
     }
 
     @Override
     public String toString() {
-        return typeName;
+        return mysqlTypeName;
     }
 
 }

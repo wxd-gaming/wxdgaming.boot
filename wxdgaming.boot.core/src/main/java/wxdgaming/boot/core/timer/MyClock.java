@@ -615,10 +615,10 @@ public class MyClock {
 
     public static long currentOffsetTimeMillis(int offsetDays, int hour, int minute, int second) {
         return millis()
-                + TimeUnit.DAYS.toMillis(offsetDays)
-                + TimeUnit.HOURS.toMillis(hour)
-                + TimeUnit.MINUTES.toMillis(minute)
-                + TimeUnit.SECONDS.toMillis(second);
+               + TimeUnit.DAYS.toMillis(offsetDays)
+               + TimeUnit.HOURS.toMillis(hour)
+               + TimeUnit.MINUTES.toMillis(minute)
+               + TimeUnit.SECONDS.toMillis(second);
     }
 
     /** 根据传入的年月日时分秒 返回一个毫秒数 */
@@ -815,8 +815,8 @@ public class MyClock {
     public static int dayOfSecond(long millis) {
         LocalDateTime localDateTime = localDateTime(millis);
         return (int) (TimeUnit.HOURS.toSeconds(localDateTime.getHour())
-                + TimeUnit.HOURS.toSeconds(localDateTime.getMinute())
-                + localDateTime.getSecond());
+                      + TimeUnit.MINUTES.toSeconds(localDateTime.getMinute())
+                      + localDateTime.getSecond());
     }
 
     /** 获取今天时间用分表示 */

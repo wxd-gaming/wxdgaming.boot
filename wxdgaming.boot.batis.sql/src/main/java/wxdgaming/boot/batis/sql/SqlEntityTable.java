@@ -19,6 +19,8 @@ public class SqlEntityTable extends EntityTable implements Serializable {
     protected String selectSortSql = null;
     /*带查询条件的*/
     protected String selectWhereSql = null;
+    protected String insertSql = null;
+    protected String updateSql = null;
     protected String replaceSql = null;
     protected String deleteSql = null;
     /** 通过注解{@code Sql}获取的sql语句 */
@@ -56,9 +58,7 @@ public class SqlEntityTable extends EntityTable implements Serializable {
         return selectSortSql;
     }
 
-    /**
-     * 带主键的 where 查询语句
-     */
+    /** 带主键的 where 查询语句 */
     public String getSelectWhereSql() {
         if (selectWhereSql == null) {
             dataBuilder.newSelectSql(this);
@@ -66,19 +66,31 @@ public class SqlEntityTable extends EntityTable implements Serializable {
         return selectWhereSql;
     }
 
-    /**
-     * replace into 语句可以替代 insert和update
-     */
+    /** insert */
+    public String getInsertSql(Object source) {
+        if (insertSql == null) {
+            insertSql = dataBuilder.newInsertSql(this);
+        }
+        return filterTable(insertSql, source);
+    }
+
+    /** update */
+    public String getUpdateSql(Object source) {
+        if (updateSql == null) {
+            updateSql = dataBuilder.newUpdateSql(this);
+        }
+        return filterTable(updateSql, source);
+    }
+
+    /** replace into 语句可以替代 insert和update */
     public String getReplaceSql(Object source) {
         if (replaceSql == null) {
-            dataBuilder.newReplaceSql(this);
+            replaceSql = dataBuilder.newReplaceSql(this);
         }
         return filterTable(replaceSql, source);
     }
 
-    /**
-     * 根据主键数据删除表
-     */
+    /** 根据主键数据删除表 */
     public String getDeleteSql(Object source) {
         if (deleteSql == null) {
             dataBuilder.newDeleteSql(this);
