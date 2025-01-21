@@ -1,8 +1,8 @@
 package wxdgaming.boot.core.threading;
 
 import org.slf4j.LoggerFactory;
-import wxdgaming.boot.core.lang.Tick;
 import wxdgaming.boot.agent.GlobalUtil;
+import wxdgaming.boot.core.lang.Tick;
 import wxdgaming.boot.core.system.JvmUtil;
 
 import java.io.Serializable;
@@ -259,12 +259,12 @@ public final class Executors implements Serializable {
             Tick tick = new Tick(1, 2, TimeUnit.MILLISECONDS);
             while (!GlobalUtil.SHUTTING.get()) {
                 try {
+                    tick.waitNext();
+                    relock.lock();
                     try {
-                        tick.waitNext();
-                        relock.lock();
-                        try {
-                            Iterator<TimerJob> iterator = timerJobs.iterator();
-                            while (iterator.hasNext()) {
+                        Iterator<TimerJob> iterator = timerJobs.iterator();
+                        while (iterator.hasNext()) {
+                            try {
                                 TimerJob next = iterator.next();
                                 if (next.IExecutorServices.isShutdown() || next.IExecutorServices.isTerminated()) {
                                     /*线程正在关闭不处理*/
@@ -280,12 +280,12 @@ public final class Executors implements Serializable {
                                         LoggerFactory.getLogger(this.getClass()).debug("线程{}执行时间到期，移除{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
                                     }
                                 }
+                            } catch (Throwable throwable) {
+                                GlobalUtil.exception("定时任务公共处理器", throwable);
                             }
-                        } finally {
-                            relock.unlock();
                         }
-                    } catch (Throwable throwable) {
-                        GlobalUtil.exception("定时任务公共处理器", throwable);
+                    } finally {
+                        relock.unlock();
                     }
                 } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
             }

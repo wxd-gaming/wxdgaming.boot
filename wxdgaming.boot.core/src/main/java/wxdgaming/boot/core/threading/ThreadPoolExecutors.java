@@ -137,7 +137,7 @@ final class ThreadPoolExecutors implements Executor, Runnable {
 
     @Override public void execute(Runnable command) {
         if (shutdowning.get() || terminating.get())
-            throw new RuntimeException("线程正在关闭");
+            throw new RuntimeException("线程正在关闭 "+String.valueOf(command));
         queue.add(command);
         checkThread();
     }

@@ -47,7 +47,7 @@ interface SqlSelect<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ex
 
     /** 获取现有数据量 */
     default long rowCount(String tableName, String whereSqlString, Object... args) {
-        String sqlString = "select count(1) usm from `" + tableName + "`";
+        String sqlString = "select count(1) usm from " + tableName;
         if (StringUtil.notEmptyOrNull(whereSqlString)) {
             sqlString += " where " + whereSqlString;
         }

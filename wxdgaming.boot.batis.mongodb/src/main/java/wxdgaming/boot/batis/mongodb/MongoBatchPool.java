@@ -39,8 +39,50 @@ public class MongoBatchPool extends BatchPool {
         return dataHelper.getDbConfig();
     }
 
+    /**
+     * 异步插入数据库，有队列等待
+     *
+     * @param obj 需要处理的对象
+     */
+    @Override public void replace(Object obj) {
+        DataBuilder dataBuilder = builder(obj);
+        Batch_Work thread = threads[dataBuilder.getIndex()];
+        thread.action(thread.getReplaceTaskQueue(), dataBuilder);
+    }
+
+    /**
+     * 异步插入数据库，有队列等待
+     *
+     * @param obj
+     */
+    @Override public void insert(Object obj) {
+        DataBuilder dataBuilder = builder(obj);
+        Batch_Work thread = threads[dataBuilder.getIndex()];
+        thread.action(thread.getReplaceTaskQueue(), dataBuilder);
+    }
+
+    /**
+     * 异步插入数据库，有队列等待
+     *
+     * @param obj
+     */
+    @Override public void update(Object obj) {
+        DataBuilder dataBuilder = builder(obj);
+        Batch_Work thread = threads[dataBuilder.getIndex()];
+        thread.action(thread.getReplaceTaskQueue(), dataBuilder);
+    }
+
+
+    @Override public int insertExec(String tableName, List<DataBuilder> values) throws Exception {
+        return 0;
+    }
+
+    @Override public int updateExec(String tableName, List<DataBuilder> values) throws Exception {
+        return 0;
+    }
+
     @Override
-    public int exec(String tableName, List<DataBuilder> values) throws Exception {
+    public int replaceExec(String tableName, List<DataBuilder> values) throws Exception {
         int i = 0;
         /*同一张表结构*/
         if (values != null && values.size() > 0) {

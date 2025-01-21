@@ -166,7 +166,7 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
             } catch (Exception e) {
                 if (e.getMessage().contains("utf8mb4")) {
                     DataHelper.DAOCHARACTER = "utf8";
-                    log.warn("数据库 " + database + " 不支持 utf8mb4 格式 重新用 utf8 字符集创建数据库", new RuntimeException());
+                    log.warn("数据库 {} 不支持 utf8mb4 格式 重新用 utf8 字符集创建数据库", database, new RuntimeException());
                     stringBuilder.setLength(0);
                     stringBuilder.append("CREATE DATABASE IF NOT EXISTS `")
                             .append(database.toLowerCase())
@@ -179,12 +179,12 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
                             .prepareStatement(stringBuilder.toString())
                             .executeUpdate() == 0;
                 } else {
-                    log.error("创建数据库 " + database, e);
+                    log.error("创建数据库 {}", database, e);
                 }
             } finally {
             }
         } catch (Exception e) {
-            log.error("创建数据库 " + database, e);
+            log.error("创建数据库 {}", database, e);
         }
         return false;
     }

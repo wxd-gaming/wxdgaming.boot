@@ -1,6 +1,5 @@
 package wxdgaming.boot.batis.sql;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
@@ -50,7 +49,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
 
     public SqlDataHelper initBatchPool(int batchThreadSize) {
         if (batchPool == null) {
-            this.batchPool = new SqlBatchPool(this, this.getDbBase() + "-BatchJob", batchThreadSize);
+            this.batchPool = new SqlBatchPool(this, batchThreadSize);
         } else {
             log.error("已经初始化了 db Batch Pool", new RuntimeException());
         }
@@ -166,24 +165,36 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         return dbTableStructMap;
     }
 
-    public void setPreparedParams(PreparedStatement statement, DataBuilder dataBuilder) throws Exception {
-        dataWrapper.setPreparedParams(statement, dataBuilder);
+    /** 适合insert */
+    public void setInsertParams(PreparedStatement statement, DataBuilder dataBuilder) throws Exception {
+        dataWrapper.setInsertParams(statement, dataBuilder);
     }
 
-    public void setPreparedParams(PreparedStatement statement, DM dataMapping, Object obj) throws Exception {
-        dataWrapper.setPreparedParams(statement, dataMapping, obj);
+    /** 适合insert */
+    public void setInsertParams(PreparedStatement statement, DM dataMapping, Object obj) throws Exception {
+        dataWrapper.setInsertParams(statement, dataMapping, obj);
+    }
+
+    /** 适合insert */
+    public void setUpdateParams(PreparedStatement statement, DataBuilder dataBuilder) throws Exception {
+        dataWrapper.setUpdateParams(statement, dataBuilder);
+    }
+
+    /** 适合insert */
+    public void setUpdateParams(PreparedStatement statement, DM dataMapping, Object obj) throws Exception {
+        dataWrapper.setUpdateParams(statement, dataMapping, obj);
     }
 
     @Override
     public void close() {
-        super.close();
         if (this.getBatchPool() != null) {
             try {
                 this.getBatchPool().close();
             } catch (Throwable throwable) {
-                log.error(this.toString() + " batch pool close", throwable);
+                log.error("{} batch pool close", this.toString(), throwable);
             }
         }
+        super.close();
     }
 
     /** 通过sql语句获得当前数据库名字 */
@@ -209,7 +220,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
             connection.setAutoCommit(false);
             try (PreparedStatement stmt = connection.prepareStatement(insertSql)) {
                 for (Object o : models) {
-                    setPreparedParams(stmt, entityTable, o);
+                    setInsertParams(stmt, entityTable, o);
                     stmt.addBatch();
                     stmt.clearParameters();
                 }
@@ -217,9 +228,9 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                 connection.commit();
                 float execTime = markTimer.execTime();
                 if (getSqlDao().getDbConfig().isShow_sql()) {
-                    log.info("\n" + insertSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                    log.info("\n{}\n 结果：{}, 耗时：{} ms", insertSql, size, execTime);
                 } else if (execTime > 10000) {
-                    log.warn("\n" + insertSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                    log.warn("\n{}\n 结果：{}, 耗时：{} ms", insertSql, size, execTime);
                 }
                 return size;
             } finally {
@@ -248,7 +259,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
             connection.setAutoCommit(false);
             try (PreparedStatement stmt = connection.prepareStatement(updateSql)) {
                 for (Object o : models) {
-                    setPreparedParams(stmt, entityTable, o);
+                    setUpdateParams(stmt, entityTable, o);
                     stmt.addBatch();
                     stmt.clearParameters();
                 }
@@ -256,9 +267,9 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                 connection.commit();
                 float execTime = markTimer.execTime();
                 if (getSqlDao().getDbConfig().isShow_sql()) {
-                    log.info("\n" + updateSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                    log.info("\n{}\n 结果：{}, 耗时：{} ms", updateSql, size, execTime);
                 } else if (execTime > 10000) {
-                    log.warn("\n" + updateSql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                    log.warn("\n{}\n 结果：{}, 耗时：{} ms", updateSql, size, execTime);
                 }
                 return size;
             } finally {
@@ -293,7 +304,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
             connection.setAutoCommit(false);
             try (PreparedStatement stmt = connection.prepareStatement(sqlStr)) {
                 for (Object o : models) {
-                    setPreparedParams(stmt, entityTable, o);
+                    setInsertParams(stmt, entityTable, o);
                     stmt.addBatch();
                     stmt.clearParameters();
                 }
@@ -301,9 +312,9 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                 connection.commit();
                 float execTime = markTimer.execTime();
                 if (getSqlDao().getDbConfig().isShow_sql()) {
-                    log.info("\n" + sqlStr + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                    log.info("\n{}\n 结果：{}, 耗时：{} ms", sqlStr, size, execTime);
                 } else if (execTime > 10000) {
-                    log.warn("\n" + sqlStr + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+                    log.warn("\n{}\n 结果：{}, 耗时：{} ms", sqlStr, size, execTime);
                 }
                 return size;
             } finally {
@@ -317,7 +328,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     protected int executeUpdate(DM entityTable, Object model, String sqlStr) {
         return stmtFun(
                 stmt -> {
-                    setPreparedParams(stmt, entityTable, model);
+                    setInsertParams(stmt, entityTable, model);
                     return stmt.executeUpdate();
                 },
                 sqlStr

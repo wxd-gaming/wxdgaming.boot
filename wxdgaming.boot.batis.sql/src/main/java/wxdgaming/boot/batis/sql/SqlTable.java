@@ -8,6 +8,7 @@ import wxdgaming.boot.core.collection.ObjMap;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -123,23 +124,30 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
         }
     }
 
+    /** 检测字段是否变更 */
+    default boolean columnTypeChange(EntityField newField, ObjMap oldField) {
+        return !Objects.equals(oldField.getString("DATA_TYPE").toLowerCase(), newField.getColumnType().getMysqlTypeName().toLowerCase());
+    }
+
     /**
      * 新建表返回true，如果不是返回false
      */
     default void createTable(DM entityTable, String tableName, String tableComment) {
         final LinkedHashMap<String, ObjMap> tableColumns = getDbTableStructMap().get(tableName);
         if (tableColumns != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("数据库：{} 表 {} 已经存在, 开始检查字段结构", getSqlDao().getDbBase(), tableName);
-            }
             LinkedHashMap<String, EntityField> columnMap = entityTable.getColumnMap();
             EntityField upField = null;
             for (EntityField entityField : columnMap.values()) {
                 String columnName = entityField.getColumnName();
-                if (!tableColumns.containsKey(columnName)) {
+                ObjMap objMap = tableColumns.get(columnName);
+                if (objMap == null) {
+                    String addColumn = getDataWrapper().buildAddColumn(tableName, entityField, upField);
+                    this.executeUpdate(addColumn);
+                    log.warn("表：{}，添加字段：{} comment:{}", tableName, entityField.getColumnName(), entityField.getColumnComment());
+                } else if (columnTypeChange(entityField, objMap)) {
                     String alterColumn = getDataWrapper().buildAlterColumn(tableName, entityField, upField);
                     this.executeUpdate(alterColumn);
-                    log.warn("表：{}，新增字段：{}({})", tableName, entityField.getColumnName(), entityField.getColumnComment());
+                    log.warn("表：{}，更新字段：{} comment:{}", tableName, entityField.getColumnName(), entityField.getColumnComment());
                 }
                 upField = entityField;
             }

@@ -1,6 +1,7 @@
 package wxdgaming.boot.batis;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 import java.util.Objects;
@@ -14,11 +15,16 @@ import java.util.Objects;
 @Getter
 public final class DataBuilder {
 
+    private final int index;
+    private final String tableName;
+    @Setter private String sql;
     private final Object data;
     private final EntityTable entityTable;
     private final Map<EntityField, Object> dataMap;
 
-    public DataBuilder(Object data, EntityTable entityTable, Map<EntityField, Object> dataMap) {
+    public DataBuilder(int index, String tableName, Object data, EntityTable entityTable, Map<EntityField, Object> dataMap) {
+        this.index = index;
+        this.tableName = tableName;
         this.data = data;
         this.entityTable = entityTable;
         this.dataMap = dataMap;

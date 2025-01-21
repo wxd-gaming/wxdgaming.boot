@@ -102,9 +102,9 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
         }
         float execTime = markTimer.execTime();
         if (getSqlDao().getDbConfig().isShow_sql()) {
-            log.info("\n" + sql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+            log.info("\n{}\n 结果：{}, 耗时：{} ms", sql, size, execTime);
         } else if (execTime > 10000) {
-            log.warn("\n" + sql + "\n 结果：" + size + ", 耗时：" + execTime + " ms");
+            log.warn("\n{}\n 结果：{}, 耗时：{} ms", sql, size, execTime);
         }
         return apply;
     }

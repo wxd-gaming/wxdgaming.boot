@@ -1,17 +1,19 @@
 package code;
 
+import code.pgsql.LogType;
 import code.pgsql.PgsqlLogTest;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.batis.DbConfig;
-import wxdgaming.boot.batis.sql.SqlEntityTable;
 import wxdgaming.boot.batis.sql.mysql.PgsqlDataHelper;
+import wxdgaming.boot.batis.sql.mysql.PgsqlEntityTable;
 import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.core.format.HexId;
 import wxdgaming.boot.core.lang.RandomUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -26,20 +28,23 @@ public class PgsqlTest {
     static HexId hexId = new HexId(1);
     static PgsqlDataHelper dataHelper;
 
-    @BeforeClass
-    public static void beforeClass() throws Exception {
+    @Before
+    @BeforeEach
+    public void beforeClass() {
+        if (dataHelper != null) return;
         DbConfig dbConfig = new DbConfig()
+                .setName("test")
                 .setShow_sql(true)
                 .setDbHost("192.168.137.10").setDbPort(5432)
                 .setDbBase("test3")
                 .setDbUser("postgres")
                 .setDbPwd("test")
                 .setConnectionPool(true)
-                .setBatchSizeThread(2)
+                .setBatchSizeThread(1)
                 .setCreateDbBase(true);
 
         dataHelper = new PgsqlDataHelper(dbConfig);
-
+        dataHelper.getBatchPool().setMaxCacheSize(100 * 10000);
         // dataHelper.checkDataBase(PgsqlTest.class.getClassLoader(), "code.pgsql");
 
 
@@ -50,27 +55,42 @@ public class PgsqlTest {
         build
                 .classWithAnnotated(DbTable.class)
                 .forEach(bean -> {
-                    SqlEntityTable entityTable = dataHelper.getDataWrapper().asEntityTable(bean);
+                    PgsqlEntityTable entityTable = dataHelper.getDataWrapper().asEntityTable(bean);
                     dataHelper.createTable(entityTable);
-                    System.out.println(entityTable.getUpdateSql(null));
                 });
+
+        for (LogType logType : LogType.values()) {
+            PgsqlLogTest mysqlLogTest = new PgsqlLogTest();
+            mysqlLogTest.setLogType(logType);
+            dataHelper.createTable(PgsqlLogTest.class, mysqlLogTest.getTableName());
+        }
 
     }
 
     @Test
-    public void insert_10w() {
+    public void insert_10w() throws Exception {
         insert(100);
     }
 
-    public void insert(int count) {
+    @Test
+    public void insert_1w() throws Exception {
+        insert(10);
+    }
+
+    @Test
+    public void insert_1000() throws Exception {
+        insert(1);
+    }
+
+    public void insert(int count) throws Exception {
         IntStream.range(0, count)
                 .parallel()
                 .forEach(k -> {
                     long nanoTime = System.nanoTime();
-                    List<PgsqlLogTest> logTests = new ArrayList<>();
                     for (int i = 0; i < 1000; i++) {
                         PgsqlLogTest logTest = new PgsqlLogTest()
                                 .setUid(hexId.newId())
+                                .setLogType(RandomUtils.random(LogType.values()))
                                 .setName(String.valueOf(i));
                         // logTest.setName2(String.valueOf(i));
                         // logTest.setName3(String.valueOf(i));
@@ -79,11 +99,30 @@ public class PgsqlTest {
                         // logTest.getSensors().put("c", RandomUtils.random(1, 10000));
                         // logTest.getSensors().put("d", RandomUtils.random(1, 10000));
                         // logTest.getSensors().put("e", new JSONObject().fluentPut("aa", String.valueOf(RandomUtils.random(1, 10000))));
-                        logTests.add(logTest);
+                        dataHelper.getBatchPool().insert(logTest);
                     }
-                    dataHelper.replaceBatch(logTests);
                     System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
                 });
+        while (dataHelper.getBatchPool().getCacheSize() > 0) {}
+        Thread.sleep(2000);
+    }
+
+    @Test
+    @RepeatedTest(5)
+    public void selectCount() {
+        long nanoTime = System.nanoTime();
+        long count = dataHelper.rowCount(PgsqlLogTest.class);
+        System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
+        System.out.println("select count=" + count);
+    }
+
+    @Test
+    public void selectList() {
+        long nanoTime = System.nanoTime();
+        List<PgsqlLogTest> pgsqlLogTests = dataHelper.queryEntities(PgsqlLogTest.class);
+        System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
+        System.out.println("select count=" + pgsqlLogTests.size());
+        pgsqlLogTests.forEach(System.out::println);
     }
 
 }

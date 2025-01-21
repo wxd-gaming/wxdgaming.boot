@@ -2,6 +2,7 @@ package wxdgaming.boot.batis.sql;
 
 
 import lombok.Getter;
+import lombok.Setter;
 import wxdgaming.boot.batis.EntityTable;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.LinkedHashMap;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-07-30 14:36
  **/
+@Setter
 public class SqlEntityTable extends EntityTable implements Serializable {
 
     protected SqlDataWrapper dataBuilder;
@@ -31,7 +33,7 @@ public class SqlEntityTable extends EntityTable implements Serializable {
     }
 
     protected String filterTable(String sqlStr, Object source) {
-        if (source != null && this.getSplitNumber() > 0) {
+        if (source != null) {
             String newTableName = tableName(source);
             return replaceTableName(sqlStr, newTableName);
         }

@@ -2,11 +2,10 @@ package wxdgaming.boot.batis.sql.mysql;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.batis.DataHelper;
 import wxdgaming.boot.batis.DbConfig;
+import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
-import wxdgaming.boot.batis.sql.SqlEntityTable;
 import wxdgaming.boot.core.collection.ObjMap;
 
 import java.sql.Connection;
@@ -15,6 +14,7 @@ import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * mysql 数据库
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Slf4j
 @Getter
-public class PgsqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapper<SqlEntityTable>> {
+public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrapper<PgsqlEntityTable>> {
 
     private DbSource dbSource = null;
     /** 初始化完成 */
@@ -40,7 +40,7 @@ public class PgsqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         this(PgsqlDataWrapper.Default, dbConfig);
     }
 
-    public PgsqlDataHelper(SqlDataWrapper<SqlEntityTable> dataBuilder, DbConfig dbConfig) {
+    public PgsqlDataHelper(SqlDataWrapper<PgsqlEntityTable> dataBuilder, DbConfig dbConfig) {
         super(dataBuilder, dbConfig);
         String connectionDriverName = "org.postgresql.Driver";
         if (!this.isInitOver()) {
@@ -80,7 +80,11 @@ public class PgsqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
 
     @Override
     public PgsqlDataHelper initBatchPool(int batchThreadSize) {
-        super.initBatchPool(batchThreadSize);
+        if (batchPool == null) {
+            this.batchPool = new PgsqlBatchPool(this, batchThreadSize);
+        } else {
+            log.error("已经初始化了 db Batch Pool", new RuntimeException());
+        }
         return this;
     }
 
@@ -208,7 +212,31 @@ public class PgsqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         return dbTableStructMap;
     }
 
-    @Override public void createTable(SqlEntityTable entityTable, String tableName, String tableComment) {
+    @Override public boolean columnTypeChange(EntityField newField, ObjMap oldField) {
+        return !Objects.equals(oldField.getString("column_type").toLowerCase(), newField.getColumnType().getPgsqlTypeName().toLowerCase());
+    }
+
+    @Override public void createTable(PgsqlEntityTable entityTable, String tableName, String tableComment) {
         super.createTable(entityTable, tableName, tableComment);
+        /*处理索引*/
+        LinkedHashMap<String, EntityField> columnMap = entityTable.getColumnMap();
+        for (EntityField entityField : columnMap.values()) {
+            if (entityField.isColumnIndex()) {
+                String keyName = tableName + "_" + entityField.getColumnName();
+                String checkIndexSql = "SELECT 1 as exists FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s';".formatted(tableName, keyName);
+                try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
+                    ResultSet resultSet = statement.executeQuery(checkIndexSql);
+                    if (resultSet.next()) {
+                        continue;
+                    }
+                } catch (Exception e) {
+                    log.error("pgsql 数据库 {} 索引 {}", getDbConfig().getDbBase(), keyName, e);
+                }
+                String alterColumn = getDataWrapper().buildAlterColumnIndex(tableName, entityField);
+
+                this.executeUpdate(alterColumn);
+                log.warn("pgsql 数据库 {}，新增索引：{}", getDbConfig().getDbBase(), keyName);
+            }
+        }
     }
 }

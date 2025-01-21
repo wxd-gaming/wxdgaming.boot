@@ -11,15 +11,15 @@ import java.io.Serializable;
 @Getter
 public enum ColumnType implements Serializable {
     None("null", "null"),
-    Bool("bit", "boo"),
-    Byte("tinyint(2)", "tinyint(2)"),
-    Short("tinyint(2)", "smallint"),
-    Int("int", "integer"),
-    Long("bigint", "bigint"),
+    Bool("bit", "bool"),
+    Byte("tinyint(2)", "int2"),
+    Short("tinyint(2)", "int2"),
+    Int("int", "int4"),
+    Long("bigint", "int8"),
     Float("float", "float"),
     Double("double", "double"),
-    BigDecimal("varchar(255)", "varchar(255)"),
-    BigInteger("varchar(255)", "varchar(255)"),
+    BigDecimal(true, "varchar", "varchar"),
+    BigInteger(true, "varchar", "varchar"),
     /** gzip方式压缩存入数据 */
     Blob("blob", "blob"),
     /** gzip方式压缩存入数据 */
@@ -27,7 +27,7 @@ public enum ColumnType implements Serializable {
     /** bigint 实际存储的是 utc 毫秒 */
     Date("bigint", "bigint"),
     /** varchar(%s) */
-    Varchar(true, "varchar(%S)", "varchar(%S)"),
+    Varchar(true, "varchar", "varchar"),
     /** text */
     Text("text", "text"),
     /** longtext */
@@ -58,7 +58,7 @@ public enum ColumnType implements Serializable {
             if (len == 0) {
                 len = 255;
             }
-            return String.format(mysqlTypeName, len);
+            return mysqlTypeName + "(%s)".formatted(len);
         }
         return mysqlTypeName;
     }

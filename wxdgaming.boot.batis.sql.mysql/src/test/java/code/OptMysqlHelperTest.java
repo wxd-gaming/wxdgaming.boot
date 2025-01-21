@@ -1,14 +1,21 @@
 package code;
 
 import code.bean.Account;
+import code.bean.LogType;
+import code.bean.MysqlLogTest;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.sql.mysql.MysqlDataHelper;
 import wxdgaming.boot.batis.struct.DbTable;
+import wxdgaming.boot.core.format.HexId;
+import wxdgaming.boot.core.lang.RandomUtils;
+
+import java.util.stream.IntStream;
 
 /**
  * 数据操作
@@ -19,23 +26,26 @@ import wxdgaming.boot.batis.struct.DbTable;
 @Slf4j
 public class OptMysqlHelperTest {
 
-    static MysqlDataHelper dbHelper;
+    static HexId hexId = new HexId(1);
+    static MysqlDataHelper dataHelper;
 
-    @BeforeClass
-    public static void beforeClass() throws Exception {
+    @Before
+    @BeforeEach
+    public void beforeClass() {
+        if (dataHelper != null) return;
         DbConfig dbConfig = new DbConfig()
                 .setShow_sql(true)
-                .setDbHost("127.0.0.1").setDbPort(3306)
-                .setDbBase("test")
+                .setDbHost("192.168.137.10").setDbPort(3306)
+                .setDbBase("log_test")
                 .setDbUser("root")
                 .setDbPwd("test")
                 .setConnectionPool(true)
-                .setBatchSizeThread(2)
+                .setBatchSizeThread(1)
                 .setCreateDbBase(true);
 
-        dbHelper = new MysqlDataHelper(dbConfig);
+        dataHelper = new MysqlDataHelper(dbConfig);
 
-        //dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
+        // dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
 
 
         ReflectContext build = ReflectContext.Builder
@@ -45,32 +55,52 @@ public class OptMysqlHelperTest {
         build
                 .classWithAnnotated(DbTable.class)
                 .forEach(bean -> {
-                    dbHelper.createTable(bean);
+                    dataHelper.createTable(bean);
                 });
 
-    }
+        for (LogType logType : LogType.values()) {
+            MysqlLogTest mysqlLogTest = new MysqlLogTest();
+            mysqlLogTest.setLogType(logType);
+            dataHelper.createTable(MysqlLogTest.class, mysqlLogTest.getTableName());
+        }
 
-    @AfterClass
-    public static void afterClass() throws Exception {
-        dbHelper.close();
     }
 
     @Test
-    public void t1() {
-        Account model = new Account()
-                .setUid(System.nanoTime())
-                .setCreateTime(System.currentTimeMillis())
-                .setAccountName(String.valueOf(System.currentTimeMillis()));
-        dbHelper.replace(model);
-        log.info("{}", model.toJson());
+    public void insert_1w() throws Exception {
+        insert(10);
+    }
+
+    public void insert(int count) throws Exception {
+        IntStream.range(0, count)
+                .parallel()
+                .forEach(k -> {
+                    long nanoTime = System.nanoTime();
+                    for (int i = 0; i < 1000; i++) {
+                        MysqlLogTest logTest = new MysqlLogTest()
+                                .setUid(hexId.newId())
+                                .setLogType(RandomUtils.random(LogType.values()))
+                                .setName(String.valueOf(i));
+                        logTest.getSensors().put("a", String.valueOf(RandomUtils.random(1, 10000)));
+                        logTest.getSensors().put("b", String.valueOf(RandomUtils.random(1, 10000)));
+                        logTest.getSensors().put("c", String.valueOf(RandomUtils.random(1, 10000)));
+                        logTest.getSensors().put("d", String.valueOf(RandomUtils.random(1, 10000)));
+                        logTest.getSensors().put("e", new JSONObject().fluentPut("aa", String.valueOf(RandomUtils.random(1, 10000))));
+                        dataHelper.getBatchPool().insert(logTest);
+                        dataHelper.getBatchPool().update(logTest);
+                    }
+                    System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
+                });
+        while (dataHelper.getBatchPool().getCacheSize() > 0) {}
+        Thread.sleep(2000);
     }
 
 
     @Test
     public void t2() {
 
-        Account account = dbHelper.queryEntity(Account.class, 2461572014600L);
-        dbHelper.rowCount(Account.class);
+        Account account = dataHelper.queryEntity(Account.class, 2461572014600L);
+        dataHelper.rowCount(Account.class);
         log.info("{}", account);
     }
 
@@ -81,7 +111,7 @@ public class OptMysqlHelperTest {
                     .setUid(System.nanoTime())
                     .setCreateTime(System.currentTimeMillis())
                     .setAccountName(String.valueOf(System.currentTimeMillis()));
-            dbHelper.getBatchPool().replace(model);
+            dataHelper.getBatchPool().replace(model);
             log.info("{}", model.toJson());
         }
         Thread.sleep(5000);
@@ -89,13 +119,13 @@ public class OptMysqlHelperTest {
 
     @Test
     public void t4() throws Exception {
-        dbHelper.outDb2File("target/db_bak");
+        dataHelper.outDb2File("target/db_bak");
         Thread.sleep(5000);
     }
 
     @Test
     public void t5() throws Exception {
-        dbHelper.inDb4File("target/db_bak/test/test-2024-03-10-20-31-20.zip", 200);
+        dataHelper.inDb4File("target/db_bak/test/test-2024-03-10-20-31-20.zip", 200);
         Thread.sleep(5000);
     }
 

@@ -6,6 +6,7 @@ import wxdgaming.boot.agent.io.FileWriteUtil;
 import wxdgaming.boot.batis.DataBuilder;
 import wxdgaming.boot.batis.DataWrapper;
 import wxdgaming.boot.batis.EntityField;
+import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.timer.MyClock;
@@ -103,7 +104,7 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
      * @param tableName
      * @param entityField
      */
-    public String buildAlterColumn(String tableName, EntityField entityField, EntityField upField) {
+    public String buildAddColumn(String tableName, EntityField entityField, EntityField upField) {
         String s = "ALTER TABLE `" + tableName + "` ADD " + buildColumnSqlString(entityField);
         if (upField != null) {
             s += " after `" + upField.getColumnName() + "`";
@@ -114,6 +115,16 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
         return s;
     }
 
+    /** 修改字段类型 */
+    public String buildAlterColumn(String tableName, EntityField entityField, EntityField upField) {
+        return "ALTER TABLE %s ALTER COLUMN %s TYPE %s"
+                .formatted(
+                        tableName,
+                        entityField.getColumnName(),
+                        entityField.checkColumnType().formatString(entityField.getColumnLength())
+                );
+    }
+
     /**
      * 删除字段
      *
@@ -122,8 +133,7 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
      * @return
      */
     public String buildDropColumn(String tableName, String columnName) {
-        String s = "ALTER TABLE `" + tableName + "` drop COLUMN `" + columnName + "`";
-        return s;
+        return "ALTER TABLE `" + tableName + "` drop COLUMN `" + columnName + "`";
     }
 
     /**
@@ -273,12 +283,14 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
         stringBuilder.append("update `").append(entityTable.getTableName()).append("` set ");
         int i = 0;
         for (EntityField column : columns) {
+            if (column.isColumnKey()) continue;
             if (i > 0) {
                 stringBuilder.append(", ");
             }
             stringBuilder.append("`").append(column.getColumnName()).append("`").append(" = ?");
             i++;
         }
+        stringBuilder.append(" where ").append(entityTable.getDataColumnKey().getColumnName()).append(" = ?");
         return (stringBuilder.toString().trim());
     }
 
@@ -353,7 +365,16 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
         entityTable.deleteSql = stringBuilder.toString().trim();
     }
 
-    public void setPreparedParams(PreparedStatement statement, DataBuilder dataBuilder) throws Exception {
+    /**
+     * insert 参数设置
+     *
+     * @param statement   参数构建器
+     * @param dataBuilder 数据
+     * @throws Exception
+     * @author: wxd-gaming(無心道, 15388152619)
+     * @version: 2025-01-21 16:41
+     */
+    public void setInsertParams(PreparedStatement statement, DataBuilder dataBuilder) throws Exception {
         int numIndex = 1;
         final Collection<EntityField> columns = dataBuilder.getEntityTable().getColumns();
         for (EntityField entityField : columns) {
@@ -364,12 +385,14 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
     }
 
     /**
+     * insert 参数设置
+     *
      * @param statement   参数构建器
      * @param obj         数据
      * @param entityTable 映射
      * @
      */
-    public void setPreparedParams(PreparedStatement statement, DM entityTable, Object obj) throws Exception {
+    public void setInsertParams(PreparedStatement statement, DM entityTable, Object obj) throws Exception {
         int numIndex = 1;
         final Collection<EntityField> columns = entityTable.getColumns();
         for (EntityField entityField : columns) {
@@ -377,6 +400,50 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
             setStmtParams(statement, numIndex, entityField, invoke);
             numIndex++;
         }
+    }
+
+    /**
+     * update 参数设置
+     *
+     * @param statement   参数构建器
+     * @param dataBuilder 数据
+     * @throws Exception
+     * @author: wxd-gaming(無心道, 15388152619)
+     * @version: 2025-01-21 16:41
+     */
+    public void setUpdateParams(PreparedStatement statement, DataBuilder dataBuilder) throws Exception {
+        int numIndex = 1;
+        EntityTable entityTable = dataBuilder.getEntityTable();
+        final Collection<EntityField> columns = entityTable.getColumns();
+        for (EntityField entityField : columns) {
+            if (entityField.isColumnKey()) continue;
+            Object invoke = dataBuilder.getDataMap().get(entityField);
+            statement.setObject(numIndex, invoke);
+            numIndex++;
+        }
+        Object invoke = dataBuilder.getDataMap().get(entityTable.getDataColumnKey());
+        statement.setObject(numIndex, invoke);
+    }
+
+    /**
+     * update 参数设置
+     *
+     * @param statement   参数构建器
+     * @param obj         数据
+     * @param entityTable 映射
+     * @
+     */
+    public void setUpdateParams(PreparedStatement statement, DM entityTable, Object obj) throws Exception {
+        int numIndex = 1;
+        final Collection<EntityField> columns = entityTable.getColumns();
+        for (EntityField entityField : columns) {
+            if (entityField.isColumnKey()) continue;
+            Object invoke = entityField.getFieldValue(obj);
+            setStmtParams(statement, numIndex, entityField, invoke);
+            numIndex++;
+        }
+        Object invoke = entityTable.getDataColumnKey().getFieldValue(obj);
+        statement.setObject(numIndex, invoke);
     }
 
     public void setStmtParams(PreparedStatement stmt, Integer numIndex, EntityField entityField, Object value) throws Exception {

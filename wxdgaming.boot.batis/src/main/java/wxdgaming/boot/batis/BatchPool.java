@@ -4,22 +4,23 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.collection.ConvertCollection;
-import wxdgaming.boot.core.lang.LockBase;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.core.threading.IExecutorServices;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 批量操作
@@ -31,14 +32,16 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class BatchPool extends LockBase implements AutoCloseable {
+public abstract class BatchPool implements AutoCloseable {
 
-    protected final DecimalFormat decimalFormat = new DecimalFormat("#0.0000");
+    protected final DecimalFormat decimalFormat4 = new DecimalFormat("#0.0000");
+    protected final DecimalFormat decimalFormat2 = new DecimalFormat("#0.00");
+    protected final DecimalFormat decimalFormat0 = new DecimalFormat("#0");
 
     /*总运行耗时*/
-    protected volatile long allOperTimes = 0;
+    protected AtomicLong allOperTimes = new AtomicLong();
     /*总操作数量*/
-    protected volatile long allOperSize = 0;
+    protected AtomicLong allOperSize = new AtomicLong();
     /*每一次获取数据的量*/
     protected volatile int batchSize = 2000;
     protected volatile int cacheSize = 0;
@@ -74,12 +77,7 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
 
     protected abstract DbConfig dbConfig();
 
-    /**
-     * 异步插入数据库，有队列等待
-     *
-     * @param obj
-     */
-    public void replace(Object obj) {
+    protected DataBuilder builder(Object obj) {
         final EntityTable entityTable = dataBuilder().asEntityTable(obj);
         String tableName = entityTable.tableName(obj);
         int index = 0;
@@ -89,19 +87,56 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
             index = StringUtil.hashIndex(fieldValue, true, threads.length);
         }
         Map<EntityField, Object> map = dataBuilder().toDbMap(obj);
-        DataBuilder dataBuilder = new DataBuilder(obj, entityTable, map);
-        threads[index].replace(tableName, dataBuilder);
+        return new DataBuilder(index, tableName, obj, entityTable, map);
+    }
+
+    /**
+     * 异步插入数据库，有队列等待
+     *
+     * @param obj 需要处理的对象
+     */
+    public void replace(Object obj) {
+        DataBuilder dataBuilder = builder(obj);
+        Batch_Work thread = threads[dataBuilder.getIndex()];
+        thread.action(thread.getReplaceLock(), thread.getReplaceTaskQueue(), dataBuilder);
+    }
+
+    /**
+     * 异步插入数据库，有队列等待
+     *
+     * @param obj
+     */
+    public void insert(Object obj) {
+        DataBuilder dataBuilder = builder(obj);
+        Batch_Work thread = threads[dataBuilder.getIndex()];
+        thread.action(thread.getInsertLock(), thread.getReplaceTaskQueue(), dataBuilder);
+    }
+
+    /**
+     * 异步插入数据库，有队列等待
+     *
+     * @param obj
+     */
+    public void update(Object obj) {
+        DataBuilder dataBuilder = builder(obj);
+        Batch_Work thread = threads[dataBuilder.getIndex()];
+        thread.action(thread.getUpdateLock(), thread.getReplaceTaskQueue(), dataBuilder);
     }
 
     volatile long lastTime = System.currentTimeMillis();
 
+    @Getter
     protected class Batch_Work extends Event implements AutoCloseable {
 
-        @Getter
         protected IExecutorServices executorServices;
 
-        @Getter
-        protected volatile HashMap<String, ConvertCollection<DataBuilder>> taskQueue = new HashMap<>();
+        final ReentrantLock replaceLock = new ReentrantLock();
+        final ReentrantLock insertLock = new ReentrantLock();
+        final ReentrantLock updateLock = new ReentrantLock();
+
+        protected volatile ConcurrentHashMap<String, ConvertCollection<DataBuilder>> replaceTaskQueue = new ConcurrentHashMap<>();
+        protected volatile ConcurrentHashMap<String, ConvertCollection<DataBuilder>> insertTaskQueue = new ConcurrentHashMap<>();
+        protected volatile ConcurrentHashMap<String, ConvertCollection<DataBuilder>> updateTaskQueue = new ConcurrentHashMap<>();
 
         public Batch_Work(String threadName, int i) {
             super(500, TimeUnit.SECONDS.toMillis(30));
@@ -113,25 +148,36 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
             return executorServices.getName();
         }
 
-        public void replace(String tableName, DataBuilder obj) {
-            lock();
+        public void action(ReentrantLock lock, Map<String, ConvertCollection<DataBuilder>> taskQueue, DataBuilder obj) {
+            lock.lock();
             try {
-
-                boolean add = taskQueue.computeIfAbsent(tableName, k -> new ConvertCollection<>())
-                        .add(obj);
+                ConvertCollection<DataBuilder> collection = taskQueue.computeIfAbsent(obj.getTableName(), k -> new ConvertCollection<>());
+                boolean add = collection.add(obj);
                 if (add) {
                     BatchPool.this.cacheSize++;
                 }
             } finally {
-                unlock();
+                lock.unlock();
             }
             if (BatchPool.this.cacheSize > BatchPool.this.maxCacheSize) {
-                log.error("当前待处理的数据缓存超过：" + BatchPool.this.cacheSize + ", tableName = " + tableName, new RuntimeException("数据缓存"));
+                log.error("当前待处理的数据缓存超过：{}, tableName = {}", BatchPool.this.cacheSize, obj.getTableName(), new RuntimeException("数据缓存"));
             }
         }
 
-        protected Map.Entry<String, ConvertCollection<DataBuilder>> copy() {
-            lock();
+        protected Map.Entry<String, ConvertCollection<DataBuilder>> copyReplaceTask() {
+            return copyTask(replaceLock, replaceTaskQueue);
+        }
+
+        protected Map.Entry<String, ConvertCollection<DataBuilder>> copyInsertTask() {
+            return copyTask(insertLock, insertTaskQueue);
+        }
+
+        protected Map.Entry<String, ConvertCollection<DataBuilder>> copyUpdateTask() {
+            return copyTask(updateLock, updateTaskQueue);
+        }
+
+        protected Map.Entry<String, ConvertCollection<DataBuilder>> copyTask(ReentrantLock lock, Map<String, ConvertCollection<DataBuilder>> taskQueue) {
+            lock.lock();
             try {
                 Iterator<Map.Entry<String, ConvertCollection<DataBuilder>>> iterator = taskQueue.entrySet().iterator();
                 Map.Entry<String, ConvertCollection<DataBuilder>> next = null;
@@ -142,7 +188,7 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
                 }
                 return next;
             } finally {
-                unlock();
+                lock.unlock();
             }
         }
 
@@ -150,7 +196,7 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
         public void close() throws InterruptedException {
             executorServices.shutdown();
             Thread.sleep(3000);
-            while (!taskQueue.isEmpty() || !executorServices.isQueueEmpty()) {
+            while (!replaceTaskQueue.isEmpty() || !executorServices.isQueueEmpty()) {
                 log.info("数据库异步处理!!!");
                 run();
             }
@@ -158,58 +204,97 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
 
         @Override public void onEvent() {
             final Thread currentThread = Thread.currentThread();
-            Map.Entry<String, ConvertCollection<DataBuilder>> copy = copy();
-            if (copy == null) {
-                return;
-            }
-            int i = 0;
+            int k = 0;
             final MarkTimer markTimer = MarkTimer.build();
             try {
-                final ConvertCollection<DataBuilder> copyValue = copy.getValue();
-                List<List<DataBuilder>> lists = copyValue.splitAndClear(batchSize);
-                for (List<DataBuilder> list : lists) {
-                    /*同一张表结构*/
-                    i += exec(copy.getKey(), list);
-                }
+                {
+                    Map.Entry<String, ConvertCollection<DataBuilder>> copy = copyReplaceTask();
+                    if (copy != null) {
+                        final ConvertCollection<DataBuilder> copyValue = copy.getValue();
+                        List<List<DataBuilder>> lists = copyValue.splitAndClear(batchSize);
+                        int r = 0;
+                        for (List<DataBuilder> list : lists) {
+                            /*同一张表结构*/
+                            r += replaceExec(copy.getKey(), list);
+                        }
 
+                        if (r == 0) {
+                            log.error("replace.size() = {}, oper = {}", copyValue.size(), k, new RuntimeException());
+                        }
+                        k += r;
+                    }
+                }
+                {
+                    Map.Entry<String, ConvertCollection<DataBuilder>> copy = copyInsertTask();
+                    if (copy != null) {
+                        final ConvertCollection<DataBuilder> copyValue = copy.getValue();
+                        List<List<DataBuilder>> lists = copyValue.splitAndClear(batchSize);
+                        int i = 0;
+                        for (List<DataBuilder> list : lists) {
+                            /*同一张表结构*/
+                            i += insertExec(copy.getKey(), list);
+                        }
+
+                        if (i == 0) {
+                            log.error("insert.size() = {}, oper = {}", copyValue.size(), k, new RuntimeException());
+                        }
+                        k += i;
+                    }
+                }
+                {
+                    Map.Entry<String, ConvertCollection<DataBuilder>> copy = copyUpdateTask();
+                    if (copy != null) {
+                        final ConvertCollection<DataBuilder> copyValue = copy.getValue();
+                        List<List<DataBuilder>> lists = copyValue.splitAndClear(batchSize);
+                        int u = 0;
+                        for (List<DataBuilder> list : lists) {
+                            /*同一张表结构*/
+                            u += updateExec(copy.getKey(), list);
+                        }
+
+                        if (u == 0) {
+                            log.error("insert.size() = {}, oper = {}", copyValue.size(), k, new RuntimeException());
+                        }
+                        k += u;
+                    }
+                }
+                if (k < 1) return;
                 float execTime = markTimer.execTime();
-                if (i == 0) {
-                    log.error("replace.size() = " + copyValue.size() + ", oper = " + i, new RuntimeException());
-                    return;
-                }
-
-                float dqjunzhi = (execTime / i);
+                float dqjunzhi = (execTime / k);
                 float dqsecjunzhi = 1000 / dqjunzhi;
 
-                lock();
-                try {
-                    if (Long.MAX_VALUE - allOperTimes < execTime) {
-                        /*=统计超过最大值做清理操作*/
-                        allOperTimes = 0;
-                        allOperSize = 0;
-                    }
-
-                    allOperTimes += execTime;
-                    allOperSize += i;
-                } finally {
-                    unlock();
+                if (Long.MAX_VALUE - allOperTimes.get() < execTime) {
+                    /*=统计超过最大值做清理操作*/
+                    allOperTimes.set(0);
+                    allOperSize.set(0);
                 }
 
-                float junzhi = (allOperTimes * 1f / allOperSize);
+                allOperTimes.addAndGet((long) execTime);
+                allOperSize.addAndGet(k);
+
+                float junzhi = (allOperTimes.get() * 1f / allOperSize.get());
                 float secjunzhi = 1000 / junzhi;
                 if (!isRuning()
-                        || cacheSize > maxCacheSize
-                        || ((System.currentTimeMillis() - lastTime) > showLogCd)
-                        || dbConfig().isShow_sql()) {
+                    || cacheSize > maxCacheSize
+                    || ((System.currentTimeMillis() - lastTime) > showLogCd)
+                    || dbConfig().isShow_sql()) {
                     lastTime = System.currentTimeMillis();
-                    log.warn(
-                            String.format("\n\n--------------------------------------------------" + currentThread.getName() + "-" + dbConfig().getDbBase() + "-异步写入-----------------------------------------------------------------------" +
-                                            "\n当前操作总量：%s 条, 当前耗时：%s ms, 当前平均分布：%s ms/条, 当前性能：%s 条/S, " +
-                                            "\n累计操作总量：%s 条, 历史耗时：%s ms, 历史平均分布：%s ms/条, 历史性能：%s 条/S, " +
-                                            "\n当前剩余：%s 条未处理" +
-                                            "\n--------------------------------------------------" + currentThread.getName() + "-" + dbConfig().getDbBase() + "-异步写入-----------------------------------------------------------------------\n",
-                                    i, execTime, decimalFormat.format(dqjunzhi), decimalFormat.format(dqsecjunzhi),
-                                    allOperSize, allOperTimes, decimalFormat.format(junzhi), decimalFormat.format(secjunzhi), cacheSize));
+                    log.warn("{}",
+                            """
+                                    \n
+                                    ------------------------------------%s-%s-异步写入------------------------------------
+                                    当前->耗时：%s ms, 平均：%s ms/条, 性能：%s 条/S 总量：%s 条
+                                    历史->耗时：%s ms, 平均：%s ms/条, 性能：%s 条/S 总量：%s 条
+                                    当前剩余：%s 条未处理
+                                    ------------------------------------%s-%s-异步写入------------------------------------
+                                    """.formatted(
+                                    currentThread.getName(), dbConfig().getDbBase(),
+                                    decimalFormat2.format(execTime), decimalFormat4.format(dqjunzhi), decimalFormat2.format(dqsecjunzhi), k,
+                                    decimalFormat2.format(allOperTimes), decimalFormat4.format(junzhi), decimalFormat2.format(secjunzhi), allOperSize,
+                                    cacheSize,
+                                    currentThread.getName(), dbConfig().getDbBase()
+                            )
+                    );
                     if (cacheSize > 300000) {
                         GlobalUtil.exception(currentThread.getName() + ", " + dbConfig().toString() + ", 当前数据堆积：" + cacheSize, null);
                     }
@@ -221,6 +306,10 @@ public abstract class BatchPool extends LockBase implements AutoCloseable {
     }
 
 
-    public abstract int exec(String tableName, List<DataBuilder> values) throws Exception;
+    public abstract int replaceExec(String tableName, List<DataBuilder> values) throws Exception;
+
+    public abstract int insertExec(String tableName, List<DataBuilder> values) throws Exception;
+
+    public abstract int updateExec(String tableName, List<DataBuilder> values) throws Exception;
 
 }

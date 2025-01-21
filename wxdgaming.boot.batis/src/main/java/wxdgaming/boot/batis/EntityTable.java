@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.batis.struct.DbIndex;
+import wxdgaming.boot.batis.struct.TableName;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.str.StringUtil;
 
@@ -59,6 +60,8 @@ public class EntityTable implements Serializable, DbIndex {
                 tableIndex = this.dbIndex(dbBase, this);
             }
             return tableName(tableIndex);
+        } else if (dbBase instanceof TableName tn) {
+            return tn.getTableName();
         } else {
             return tableName;
         }

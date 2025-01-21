@@ -1,4 +1,4 @@
-package code.pgsql;
+package code.bean;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.batis.struct.TableName;
 
 /**
- * test1
+ * 日志记录
  *
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2024-12-31 09:45
@@ -19,25 +19,18 @@ import wxdgaming.boot.batis.struct.TableName;
 @Setter
 @Accessors(chain = true)
 @DbTable
-public class PgsqlLogTest extends TableName {
+public class MysqlLogTest extends TableName {
 
     @DbColumn(alligator = true)
     private LogType logType;
     @DbColumn(key = true)
     private long uid;
-    private int lv;
-    private byte online2;
-    private boolean online;
-    @DbColumn(index = true)
     private String name;
-    @DbColumn(columnType = ColumnType.Text)
     private String name2;
-    // private String name3;
     @DbColumn(columnType = ColumnType.Json)
     private JSONObject sensors = new JSONObject();
 
     @Override public String getTableName() {
         return logType.name().toLowerCase() + "_log";
     }
-
 }
