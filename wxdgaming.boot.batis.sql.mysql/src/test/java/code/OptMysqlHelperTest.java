@@ -44,7 +44,7 @@ public class OptMysqlHelperTest {
                 .setCreateDbBase(true);
 
         dataHelper = new MysqlDataHelper(dbConfig);
-
+        dataHelper.getBatchPool().setMaxCacheSize(100 * 10000);
         // dbHelper.checkDataBase(OptMysql.class.getClassLoader(), "code.bean");
 
 
@@ -68,12 +68,12 @@ public class OptMysqlHelperTest {
 
     @Test
     public void insert_1w() throws Exception {
-        insert(10);
+        insert(100);
     }
 
     public void insert(int count) throws Exception {
         IntStream.range(0, count)
-                .parallel()
+                // .parallel()
                 .forEach(k -> {
                     long nanoTime = System.nanoTime();
                     for (int i = 0; i < 1000; i++) {
@@ -87,7 +87,6 @@ public class OptMysqlHelperTest {
                         logTest.getSensors().put("d", String.valueOf(RandomUtils.random(1, 10000)));
                         logTest.getSensors().put("e", new JSONObject().fluentPut("aa", String.valueOf(RandomUtils.random(1, 10000))));
                         dataHelper.getBatchPool().insert(logTest);
-                        dataHelper.getBatchPool().update(logTest);
                     }
                     System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
                 });
