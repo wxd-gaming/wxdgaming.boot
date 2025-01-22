@@ -16,8 +16,8 @@ public enum ColumnType implements Serializable {
     Short("tinyint(2)", "int2"),
     Int("int", "int4"),
     Long("bigint", "int8"),
-    Float("float", "float"),
-    Double("double", "double"),
+    Float("float", "float4"),
+    Double("double", "float8"),
     BigDecimal(true, "varchar", "varchar"),
     BigInteger(true, "varchar", "varchar"),
     /** gzip方式压缩存入数据 */
@@ -25,19 +25,19 @@ public enum ColumnType implements Serializable {
     /** gzip方式压缩存入数据 */
     LongBlob("longblob", "longblob"),
     /** bigint 实际存储的是 utc 毫秒 */
-    Date("bigint", "bigint"),
+    Date("bigint", "int8"),
     /** varchar(%s) */
     Varchar(true, "varchar", "varchar"),
     /** text */
     Text("text", "text"),
     /** longtext */
-    LongText("longtext", "longtext"),
+    LongText("longtext", "text"),
     /** 数据库类型 longtext， 用 fastjson 的方式转化成字符串 */
     Json("json", "json"),
     /** 数据库类型 longtext， 用 fastjson 的方式转化成字符串 */
     Jsonb("json", "jsonb"),
     /** 数据库类型 longtext 用 fastjson 的方式转化成字符串，然后 gzip 压缩成 base64 字符串 */
-    JsonGzip("longtext", "longtext"),
+    JsonGzip("longtext", "text"),
     ;
     private final boolean format;
     private final String mysqlTypeName;

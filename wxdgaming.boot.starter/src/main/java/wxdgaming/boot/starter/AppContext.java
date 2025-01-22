@@ -5,9 +5,9 @@ import com.google.inject.Injector;
 import com.google.inject.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.agent.function.Consumer2;
 import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.agent.function.STVFunction1;
 import wxdgaming.boot.agent.io.FileReadUtil;
@@ -17,7 +17,6 @@ import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.ProtobufMessageSerializerFastJson;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.DumpUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.starter.action.ActionProtoController;
@@ -50,7 +49,7 @@ public class AppContext {
 
     public static IocContext boot(Class<?>... startClasses) {
         final String[] packages = Arrays.stream(startClasses)
-                .map(v -> v.getPackage().getName())
+                .map(Class::getPackageName)
                 .toArray(String[]::new);
         return boot(packages);
     }
@@ -59,23 +58,19 @@ public class AppContext {
         LogbackUtil.setLogbackConfig();
         if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");
 
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            /*全局未捕获线程异常*/
-            @Override public void uncaughtException(Thread t, Throwable e) {
-                try {
-                    System.out.println(t);
-                    e.printStackTrace(System.out);
-                } catch (Throwable t0) {}
-            }
+        /*全局未捕获线程异常*/
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            try {
+                System.out.println(t);
+                e.printStackTrace(System.out);
+            } catch (Throwable ignore) {}
         });
 
-        GlobalUtil.exceptionCall = new Consumer2<Object, Throwable>() {
-            @Override public void accept(Object o, Throwable throwable) {
-                if (StringUtil.emptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
-                    logger().error("{}", o, throwable);
-                else
-                    FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
-            }
+        GlobalUtil.exceptionCall = (o, throwable) -> {
+            if (StringUtil.emptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
+                logger().error("{}", o, throwable);
+            else
+                FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
         };
 
         Set<String> packages1 = SetOf.asSet(packages);
@@ -86,15 +81,9 @@ public class AppContext {
 
             List<BaseModule> list = Stream.concat(
                             Stream.of(new BootStarterModule(reflectContext, null), new StarterModule(reflectContext, null)),
-                            reflectContext.classWithSuper(UserModule.class).map(v -> {
-                                try {
-                                    return v
-                                            .getDeclaredConstructor(ReflectContext.class)
-                                            .newInstance(reflectContext);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
+                            reflectContext
+                                    .classWithSuper(UserModule.class)
+                                    .map(v -> ReflectContext.newInstance(v, reflectContext))
                     )
                     .toList();
 

@@ -54,6 +54,11 @@
         </dependency>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.batis.sql.pgsql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
             <artifactId>wxdgaming.boot.net</artifactId>
             <version>${project.version}</version>
         </dependency>

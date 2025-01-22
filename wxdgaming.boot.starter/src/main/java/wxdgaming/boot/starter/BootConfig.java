@@ -4,7 +4,10 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.simpleframework.xml.*;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.core.lang.ObjectBase;
 
@@ -79,6 +82,22 @@ public class BootConfig extends ObjectBase {
     @JSONField(ordinal = 503)
     @Element(required = false)
     private DbConfig mysql3 = new DbConfig();
+
+
+    @JSONField(ordinal = 520)
+    @Element(required = false)
+    private DbConfig pgsql = new DbConfig();
+    @JSONField(ordinal = 521)
+    @Element(required = false)
+    private DbConfig pgsql1 = new DbConfig();
+    @JSONField(ordinal = 522)
+    @Element(required = false)
+    private DbConfig pgsql2 = new DbConfig();
+    @JSONField(ordinal = 523)
+    @Element(required = false)
+    private DbConfig pgsql3 = new DbConfig();
+
+
     @JSONField(ordinal = 600)
     @Element(required = false)
     private DbConfig mongodb = new DbConfig();

@@ -35,15 +35,28 @@ import java.util.stream.Stream;
 @Getter
 public class ReflectContext {
 
+    public static <R> R newInstance(Class<R> cls, Object... args) {
+        try {
+            Class<?>[] parameterTypes = new Class[args.length];
+            for (int i = 0; i < args.length; i++) {
+                parameterTypes[i] = args[i].getClass();
+            }
+            Constructor<R> constructor = cls.getConstructor(parameterTypes);
+            return constructor.newInstance(args);
+        } catch (Exception e) {
+            throw Throw.as(e);
+        }
+    }
+
     /** 判定 接口, 枚举, 注解, 抽象类 返回 false */
     public static boolean checked(Class<?> aClass) {
         /* 判定 是否可用 */
         return !(
                 Object.class.equals(aClass)
-                        || aClass.isInterface()
-                        || aClass.isEnum()
-                        || aClass.isAnnotation()
-                        || Modifier.isAbstract(aClass.getModifiers())
+                || aClass.isInterface()
+                || aClass.isEnum()
+                || aClass.isAnnotation()
+                || Modifier.isAbstract(aClass.getModifiers())
         );
     }
 

@@ -89,6 +89,12 @@ class BootStarterModule extends BaseModule {
             dbAction.accept(MysqlService3.class, bootConfig.getMysql3());
         }
         {
+            dbAction.accept(PgsqlService.class, bootConfig.getPgsql());
+            dbAction.accept(PgsqlService1.class, bootConfig.getPgsql1());
+            dbAction.accept(PgsqlService2.class, bootConfig.getPgsql());
+            dbAction.accept(PgsqlService3.class, bootConfig.getPgsql());
+        }
+        {
             dbAction.accept(MongoService.class, bootConfig.getMongodb());
             dbAction.accept(MongoService1.class, bootConfig.getMongodb1());
             dbAction.accept(MongoService2.class, bootConfig.getMongodb2());
