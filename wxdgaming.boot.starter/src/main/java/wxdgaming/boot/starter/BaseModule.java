@@ -5,8 +5,11 @@ import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
+import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.ReflectContext;
+import wxdgaming.boot.batis.DbConfig;
+import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.net.controller.ann.ProtoController;
 import wxdgaming.boot.net.controller.ann.TextController;
 import wxdgaming.boot.starter.action.ActionConfig;
@@ -23,32 +26,32 @@ import java.util.function.Consumer;
  **/
 @Slf4j
 @Getter
-abstract class BaseModule extends AbstractModule {
+abstract class BaseModule<T extends BaseModule> extends AbstractModule {
 
     protected final ReflectContext reflectContext;
-    protected final Consumer<? super BaseModule> onConfigure;
+    protected final Consumer<T> onConfigure;
 
-    public BaseModule(ReflectContext reflectContext, Consumer<? super BaseModule> onConfigure) {
+    public BaseModule(ReflectContext reflectContext, Consumer<T> onConfigure) {
         this.reflectContext = reflectContext;
         this.onConfigure = onConfigure;
     }
 
-    public BaseModule bindSingleton(Class<?> clazz) {
+    public T bindSingleton(Class<?> clazz) {
         log.debug("bind {} clazz={}", this.hashCode(), clazz);
         bind(clazz).in(Singleton.class);
-        return this;
+        return (T) this;
     }
 
-    public <T> BaseModule bindSingleton(Class<T> father, Class<? extends T> son) {
+    public <R> T bindSingleton(Class<R> father, Class<? extends R> son) {
         log.debug("bind {} father={} bind son={}", this.hashCode(), father, son);
         bind(father).to(son).in(Singleton.class);
-        return this;
+        return (T) this;
     }
 
-    public <B> BaseModule bindSingleton(Class<B> clazz, B instance) {
+    public <B> T bindSingleton(Class<B> clazz, B instance) {
         log.debug("bind {} clazz={} bind instance={}", this.hashCode(), clazz, instance.getClass());
         bind(clazz).toInstance(instance);
-        return this;
+        return (T) this;
     }
 
     @Override
@@ -56,7 +59,6 @@ abstract class BaseModule extends AbstractModule {
         binder().requireExplicitBindings();
         binder().requireExactBindingAnnotations();
         // binder().disableCircularProxies();/*禁用循环依赖*/
-
         reflectContext.withAnnotated(Config.class).forEach(content -> {
             try {
                 Object o = ActionConfig.action(content.getCls());
@@ -76,14 +78,14 @@ abstract class BaseModule extends AbstractModule {
                 .classStream()
                 .filter(c ->
                         AnnUtil.ann(c, Singleton.class) != null
-                                || AnnUtil.ann(c, TextController.class) != null
-                                || AnnUtil.ann(c, ProtoController.class) != null
+                        || AnnUtil.ann(c, TextController.class) != null
+                        || AnnUtil.ann(c, ProtoController.class) != null
                 )
                 .forEach(this::bindSingleton);
 
         try {
             if (onConfigure != null) {
-                onConfigure.accept(this);
+                onConfigure.accept((T) this);
             }
             bind();
         } catch (Throwable e) {
@@ -91,6 +93,30 @@ abstract class BaseModule extends AbstractModule {
         }
     }
 
-    protected abstract BaseModule bind() throws Throwable;
+    protected abstract T bind() throws Throwable;
+
+    protected final ConsumerE2<Class, TcpConfig> socketAction = (aClass, config) -> {
+        if (config.getPort() > 0) {
+            if (StringUtil.notEmptyOrNull(config.getServiceClassName())) {
+                /*通过指定的类进行加载*/
+                aClass = BootStarterModule.class.getClassLoader().loadClass(config.getServiceClassName());
+            }
+            Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
+            if (StringUtil.emptyOrNull(config.getName())) {
+                config.setName(newInstance.getClass().getSimpleName());
+            }
+            bindSingleton(aClass, newInstance);
+        }
+    };
+
+    protected final ConsumerE2<Class, DbConfig> dbAction = (aClass, config) -> {
+        if (config.getDbPort() > 0) {
+            Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
+            if (StringUtil.emptyOrNull(config.getName())) {
+                config.setName(newInstance.getClass().getSimpleName());
+            }
+            bindSingleton(aClass, newInstance);
+        }
+    };
 
 }

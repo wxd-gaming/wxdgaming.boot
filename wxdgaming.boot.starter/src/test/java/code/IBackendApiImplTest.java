@@ -6,8 +6,7 @@ import org.junit.Test;
 import wxdgaming.boot.core.str.Md5Util;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.net.http.HttpHeadValueType;
-import wxdgaming.boot.net.http.client.url.HttpBuilder;
+import wxdgaming.boot.httpclient.apache.HttpBuilder;
 
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -19,7 +18,7 @@ public class IBackendApiImplTest {
     @Test
     public void testAsyncBackRegister() {
         TreeMap<String, String> params = new TreeMap<>();
-        String game = "TLCQ";//同登陆接口参数game(大写)
+        String game = "TLCQ";// 同登陆接口参数game(大写)
         params.put("uid", String.valueOf(System.currentTimeMillis()));
         params.put("pwd", "pwd");
         params.put("mot", "15388152619");
@@ -40,9 +39,7 @@ public class IBackendApiImplTest {
         }
         String result = HttpBuilder
                 .postMulti("http://test99.yj99.cn/api/game/register/index.php")
-                .contentType(HttpHeadValueType.Multipart)
-                .putParams(params)
-                .setUrlEncoder(false)
+                .addParams(params, false)
                 .request()
                 .bodyUnicodeDecodeString();
 

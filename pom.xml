@@ -32,6 +32,10 @@
         <module>wxdgaming.boot.lua</module>
         <module>wxdgaming.boot.logbus</module>
         <module>wxdgaming.boot.batis.sql.pgsql</module>
+        <module>wxdgaming.boot.starter.pgsql</module>
+        <module>wxdgaming.boot.starter.mysql</module>
+        <module>wxdgaming.boot.starter.mongodb</module>
+        <module>wxdgaming.boot.starter.redis</module>
     </modules>
 
     <properties>

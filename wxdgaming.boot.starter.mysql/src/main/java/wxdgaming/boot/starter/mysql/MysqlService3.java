@@ -1,17 +1,18 @@
-package wxdgaming.boot.starter.batis;
+package wxdgaming.boot.starter.mysql;
 
 import wxdgaming.boot.batis.DbConfig;
 
 /**
- * Mongo
+ * mysql
  *
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-11 18:18
  **/
-public class MongoService2 extends MongoService {
+public class MysqlService3 extends MysqlService {
 
-    public MongoService2(DbConfig dbConfig) {
+    public MysqlService3(DbConfig dbConfig) {
         super(dbConfig);
     }
+
 
 }

@@ -11,9 +11,9 @@ import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.PrintConsole;
+import wxdgaming.boot.httpclient.apache.HttpBuilder;
 import wxdgaming.boot.net.auth.IAuth;
 import wxdgaming.boot.net.auth.SignConfig;
-import wxdgaming.boot.net.http.client.url.HttpBuilder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -100,13 +100,12 @@ public class PostCode implements PrintConsole {
     }
 
     protected String codeFilePath(String path, String className) {
-        String filePath = path + "/" + className.replace(".", "/") + ".java";
-        return filePath;
+        return path + "/" + className.replace(".", "/") + ".java";
     }
 
     public RunResult postCode(String url, String codePath, Object params) {
         try {
-//            String codeString = FileReadUtil.readString(codePath, StandardCharsets.UTF_8);
+            //            String codeString = FileReadUtil.readString(codePath, StandardCharsets.UTF_8);
             Map<String, byte[]> stringMap = new JavaCoderCompile().compilerJava(codePath).toBytesMap();
             String jsonString = FastJsonUtil.toJson(stringMap);
             byte[] compress = ZipUtil.zip2Bytes(jsonString);
@@ -132,7 +131,7 @@ public class PostCode implements PrintConsole {
                 .header(HttpHeaderNames.AUTHORIZATION.toString(), SignConfig.get().optByUser("root").map(IAuth::getToken).orElse(""))
                 .header(HttpHeaderNames.CONTENT_ENCODING.toString(), HttpHeaderValues.GZIP.toString())
                 // .addCookie(HttpHeaderNames.AUTHORIZATION, SignConfig.get().getToken())
-                .putParams(objects)
+                .addParams(objects, true)
                 .request()
                 .bodyString();
 
@@ -142,13 +141,13 @@ public class PostCode implements PrintConsole {
         try {
             r = FastJsonUtil.parse(post, RunResult.class);
             if (r.code() != 0) {
-                log.warn("\n" + r.code() + " - " + r.errorMsg());
+                log.warn("\n{} - {}", r.code(), r.errorMsg());
             } else {
                 String data = r.data();
-                log.warn("\n" + data);
+                log.warn("\n{}", data);
             }
         } catch (Exception e) {
-            log.error("\n" + post, e);
+            log.error("\n{}", post, e);
         }
         return r;
     }

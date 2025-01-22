@@ -1,4 +1,4 @@
-package wxdgaming.boot.starter.batis;
+package wxdgaming.boot.starter.mysql;
 
 import wxdgaming.boot.batis.DbConfig;
 

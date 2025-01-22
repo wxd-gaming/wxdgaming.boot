@@ -79,15 +79,16 @@ public class AppContext {
         try {
             ReflectContext reflectContext = builder.build();
 
-            List<BaseModule> list = Stream.concat(
-                            Stream.of(new BootStarterModule(reflectContext, null), new StarterModule(reflectContext, null)),
-                            reflectContext
-                                    .classWithSuper(UserModule.class)
-                                    .map(v -> ReflectContext.newInstance(v, reflectContext))
-                    )
-                    .toList();
+            Stream<? extends BaseModule<?>> a = Stream.of(new BootStarterModule(reflectContext, null), new StarterModule(reflectContext, null));
+            a = Stream.concat(a,
+                    reflectContext.classWithSuper(ServiceModule.class).map(v -> ReflectContext.newInstance(v, reflectContext))
+            );
 
-            Injector injector = Guice.createInjector(Stage.PRODUCTION, list);
+            a = Stream.concat(a,
+                    reflectContext.classWithSuper(UserModule.class).map(v -> ReflectContext.newInstance(v, reflectContext))
+            );
+
+            Injector injector = Guice.createInjector(Stage.PRODUCTION, a.toList());
             mainIocInjector = injector.getInstance(IocMainContext.class);
             iocInitBean(mainIocInjector, reflectContext);
             logger().info("主容器初始化完成：{}", mainIocInjector.hashCode());
@@ -112,7 +113,7 @@ public class AppContext {
                         .bindSingleton(IocContext.class, IocSubContext.class)
                 ;
             });
-            List<BaseModule> modules = Stream.concat(
+            List<? extends BaseModule> modules = Stream.concat(
                             Stream.of(starterModule),
                             reflectContext.classWithSuper(UserModule.class).map(v -> {
                                 try {
@@ -139,7 +140,7 @@ public class AppContext {
     static void iocInitBean(IocContext context, ReflectContext reflectContext) throws Exception {
         if (logger().isDebugEnabled()) {
             long count = reflectContext.getClassList().size();
-            logger().debug("find class size ：" + count);
+            logger().debug("find class size ：{}", count);
         }
 
         /*todo fastjson 注册 protoBuff 处理 处理配置类*/

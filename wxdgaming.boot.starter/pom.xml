@@ -34,27 +34,7 @@
         </dependency>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.batis.redis</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.batis.mongodb</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
             <artifactId>wxdgaming.boot.batis.sql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.batis.sql.mysql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.batis.sql.pgsql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -69,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.net.http.client.url</artifactId>
+            <artifactId>wxdgaming.boot.net.http.client.apache</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

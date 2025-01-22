@@ -1,4 +1,4 @@
-package wxdgaming.boot.starter.batis;
+package wxdgaming.boot.starter.redis;
 
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.redis.RedisDataHelper;

@@ -47,7 +47,7 @@ public class MongoBatchPool extends BatchPool {
     @Override public void replace(Object obj) {
         DataBuilder dataBuilder = builder(obj);
         Batch_Work thread = threads[dataBuilder.getIndex()];
-        thread.action(thread.getReplaceTaskQueue(), dataBuilder);
+        thread.action(thread.getReplaceLock(), thread.getReplaceTaskQueue(), dataBuilder);
     }
 
     /**
@@ -58,7 +58,7 @@ public class MongoBatchPool extends BatchPool {
     @Override public void insert(Object obj) {
         DataBuilder dataBuilder = builder(obj);
         Batch_Work thread = threads[dataBuilder.getIndex()];
-        thread.action(thread.getReplaceTaskQueue(), dataBuilder);
+        thread.action(thread.getInsertLock(), thread.getReplaceTaskQueue(), dataBuilder);
     }
 
     /**
@@ -69,7 +69,7 @@ public class MongoBatchPool extends BatchPool {
     @Override public void update(Object obj) {
         DataBuilder dataBuilder = builder(obj);
         Batch_Work thread = threads[dataBuilder.getIndex()];
-        thread.action(thread.getReplaceTaskQueue(), dataBuilder);
+        thread.action(thread.getUpdateLock(), thread.getReplaceTaskQueue(), dataBuilder);
     }
 
 

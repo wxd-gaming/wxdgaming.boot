@@ -12,7 +12,7 @@ import wxdgaming.boot.core.system.LocalHostUtil;
 import wxdgaming.boot.core.system.ThrowableCache;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
-import wxdgaming.boot.net.http.client.url.HttpBuilder;
+import wxdgaming.boot.httpclient.apache.HttpBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -110,8 +110,7 @@ public class FeishuPack extends Event {
 
                     try {
 
-                        final String bodyString = HttpBuilder.postText(url)
-                                .paramJson(requestText)
+                        final String bodyString = HttpBuilder.postJson(url, requestText)
                                 .request()
                                 .bodyString();
 
@@ -120,7 +119,7 @@ public class FeishuPack extends Event {
                         }
 
                     } catch (Exception e) {
-                        log.error("飞书上报异常：" + requestText, e);
+                        log.error("飞书上报异常：{}", requestText, e);
                     }
                 }
             }

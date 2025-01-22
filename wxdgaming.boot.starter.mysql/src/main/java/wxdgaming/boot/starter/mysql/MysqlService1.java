@@ -1,4 +1,4 @@
-package wxdgaming.boot.starter.batis;
+package wxdgaming.boot.starter.mysql;
 
 import wxdgaming.boot.batis.DbConfig;
 
@@ -8,9 +8,9 @@ import wxdgaming.boot.batis.DbConfig;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-12-11 18:18
  **/
-public class MysqlService3 extends MysqlService {
+public class MysqlService1 extends MysqlService {
 
-    public MysqlService3(DbConfig dbConfig) {
+    public MysqlService1(DbConfig dbConfig) {
         super(dbConfig);
     }
 
