@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TestSocketClient.sendRpc" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="wxdgaming.boot.starter.test-case" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="testcase.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="testcase" />
+    <option name="MAIN_CLASS_NAME" value="testcase.TestSocketClient" />
+    <option name="METHOD_NAME" value="sendRpc" />
+    <option name="TEST_OBJECT" value="method" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
