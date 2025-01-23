@@ -39,7 +39,7 @@ a:hover, a:active { color: #33be85; }
 .message_alert_bg { display: none; position: absolute;background: rgba(69, 68, 68, 0.2); width: 100%;height: 100%;left: 0px;top: 0px; z-index: 999999; }
 
 .message_alert_bg .message_alert_box {display: block;position: absolute; padding: 10px 3px 3px;
-    left: 50%;top: 28%; transform: translate(-50%, 0);max-width: 55%;
+    left: 50%;top: 28%; transform: translate(-50%, 0);max-width: 55%;min-width: 320px;
     border-radius: 6px 6px 3px 3px;border: #95B8E7 1px solid;color: rgba(0, 0, 0, 1);background: linear-gradient(to bottom, #EFF5FF 0, #E0ECFF 20%);
     text-align: left;vertical-align: center; word-wrap: break-word;white-space: normal;box-shadow: 0 0 20px 10px rgba(110, 54, 54, 0.2); /*毛玻璃*/
     }
@@ -51,7 +51,7 @@ a:hover, a:active { color: #33be85; }
 .message_alert_bg .message_alert_box .message_alert_c {
     display: block;padding: 8px 8px 60px;margin-top: 10px;
     border: #95B8E7 1px solid;color: #000000;background-color: #ffffff;
-    min-width: 400px; min-height: 140px; overflow: hidden;text-align: left;vertical-align: center;
+    min-width: 300px; min-height: 140px; overflow: hidden;text-align: left;vertical-align: center;
     word-wrap: break-word;white-space: normal;
     }
 
@@ -102,7 +102,7 @@ a:hover, a:active { color: #33be85; }
 .upload_file_bg .upload_file_c {
     display: block;padding: 8px 8px 60px;margin-top: 10px;
     border: #95B8E7 1px solid;color: #000000;background-color: #ffffff;
-    width: 530px; overflow: hidden;text-align: left;vertical-align: center;
+    width: 360px; overflow: hidden;text-align: left;vertical-align: center;
     word-wrap: break-word;white-space: normal;
     }
 

@@ -1,6 +1,5 @@
 package wxdgaming.boot.starter.action;
 
-import com.google.protobuf.Message;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.AnnUtil;
@@ -13,6 +12,7 @@ import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.ann.ProtoController;
 import wxdgaming.boot.net.controller.ann.ProtoMapping;
 import wxdgaming.boot.net.message.MessagePackage;
+import wxdgaming.boot.net.pojo.PojoBase;
 import wxdgaming.boot.starter.IocContext;
 
 import java.lang.reflect.Method;
@@ -81,8 +81,8 @@ public class ActionProtoController {
             Class<?> socketClass = method.getParameterTypes()[0];
 
             Class<?> messageClass = method.getParameterTypes()[1];
-            if (!SocketSession.class.isAssignableFrom(socketClass) || !Message.class.isAssignableFrom(messageClass)) {
-                throw new Throw("文件：" + instance.getClass().getName() + " 注册 proto service 方法 " + method + " 参数异常 第一个参数：" + SocketSession.class + ", 第二个参数：" + Message.class);
+            if (!SocketSession.class.isAssignableFrom(socketClass) || !PojoBase.class.isAssignableFrom(messageClass)) {
+                throw new Throw("文件：" + instance.getClass().getName() + " 注册 proto service 方法 " + method + " 参数异常 第一个参数：" + SocketSession.class + ", 第二个参数：" + PojoBase.class);
             }
             if (!MessagePackage.MsgName2IdMap.containsKey(messageClass.getName())) {
                 MessagePackage.loadMessageId_HashCode(messageClass, true);
@@ -101,7 +101,7 @@ public class ActionProtoController {
                     instance,
                     method
             );
-            /**消息的中午注解隐射*/
+            /*消息的中午注解映射*/
             MessagePackage.MsgName2RemarkMap.put(messageClass.getName(), remarks);
             if (log.isDebugEnabled()) {
                 if (msize > 0) {

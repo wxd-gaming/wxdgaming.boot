@@ -2,7 +2,7 @@ package wxdgaming.boot.net.controller;
 
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.handler.SocketCoderHandler;
-import wxdgaming.boot.net.message.Rpc;
+import wxdgaming.boot.net.message.rpc.ReqRemote;
 
 public abstract class ProtoMappingProxy {
 
@@ -10,7 +10,7 @@ public abstract class ProtoMappingProxy {
         ((SocketCoderHandler) instance).executor(
                 (SocketSession) session,
                 0,
-                (Rpc.ReqRemote) msg
+                (ReqRemote) msg
         );
     }
 

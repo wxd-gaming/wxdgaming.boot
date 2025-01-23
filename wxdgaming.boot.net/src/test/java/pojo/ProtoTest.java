@@ -2,7 +2,10 @@ package pojo;
 
 import io.protostuff.Tag;
 import org.junit.Test;
-import wxdgaming.boot.net.message.Rpc;
+import wxdgaming.boot.net.message.rpc.ReqRemote;
+import wxdgaming.boot.net.pojo.PojoBase;
+import wxdgaming.boot.net.pojo.ProtoBuf2Pojo;
+import wxdgaming.boot.net.pojo.SerializerUtil;
 
 import java.util.Arrays;
 
@@ -15,14 +18,19 @@ import java.util.Arrays;
 public class ProtoTest {
 
     @Test
+    public void buildProtoBuf() {
+        ProtoBuf2Pojo.actionProtoFile("src/main/java", "src/main/proto");
+    }
+
+    @Test
     public void t0() {
-        Rpc.ReqRemote.Builder builder = Rpc.ReqRemote.newBuilder();
+        ReqRemote builder = new ReqRemote();
         builder.setRpcId(1);
         builder.setGzip(1);
         builder.setCmd("ss");
         builder.setParams("1");
         builder.setRpcToken("1");
-        byte[] byteArray = builder.build().toByteArray();
+        byte[] byteArray = builder.encode();
         Tq tq = new Tq();
         byte[] encode = SerializerUtil.encode(tq);
         System.out.println(Arrays.toString(byteArray));
@@ -30,7 +38,14 @@ public class ProtoTest {
         System.out.println("1");
     }
 
-    public static class Tq {
+    public static class Tq extends PojoBase {
+
+        public static Tq parseFrom(byte[] bytes) {
+            Tq tq = new Tq();
+            tq.decode(bytes);
+            return tq;
+        }
+
         @Tag(1)
         private long rpcId = 1;
         @Tag(2)

@@ -196,7 +196,7 @@ public class AppContext {
                         logger().info(stringBuilder.toString());
                     }
                 },
-                30, 30, TimeUnit.SECONDS
+                30, 5, TimeUnit.MINUTES
         );
         JvmUtil.addShutdownHook(() -> {
             logger().info("------------------------------停服信号处理------------------------------");

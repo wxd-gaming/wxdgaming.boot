@@ -58,9 +58,9 @@ const wxd = {
      * @param execCount 执行次数
      * @returns {Promise<unknown>}
      */
-    delayed: function (action, interval, execCount) {
+    delayed: async function (action, interval, execCount) {
         if (execCount < 1) return;
-        return new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
                 let curExecCount = 0;
                 let intervalTmp = setInterval(() => {
                     try {
@@ -84,6 +84,7 @@ const wxd = {
                 }, interval);
             }
         );
+        await promise;
     },
 
     /** 从 Cookie 获取登录授权 */
@@ -274,6 +275,10 @@ const wxd = {
             return this;
         }
 
+        toJson() {
+            return JSON.stringify(this.nodes);
+        }
+
         /** 转化成http网络格式的字符串 */
         toString() {
             let pv = "";
@@ -292,6 +297,7 @@ const wxd = {
      * @param img 默认是 /loading-4.gif
      * @param w 默认是 64px
      * @param h 默认是 64px
+     * @param parent 父窗体
      */
     loading: function (img, w, h, parent) {
 
@@ -355,6 +361,7 @@ const wxd = {
             close() {
                 if (this.socket != null) {
                     this.socket.close();
+                    this.socketOpen = false;
                     this.socket = null;
                 }
             }
@@ -386,6 +393,7 @@ const wxd = {
                     };
 
                     this.socket.onclose = (event) => {
+                        console.error("链接异常");
                         if (this.socketOpen) {
                             wxd.message.notice("web socket 链接关闭", true, 3000);
                         } else {
@@ -428,7 +436,12 @@ const wxd = {
         upload_file_url: null,
         upload_file_formData: null,
         upload_file_onSource: null,
-        /** 上传文件 */
+        /**
+         * 上传文件
+         * @param url 上传地址
+         * @param formData 附近参数
+         * @param onSource 成功回调
+         * */
         upload: function (url, formData, onSource) {
 
             wxd.netty.upload_file_url = url;
@@ -449,7 +462,7 @@ const wxd = {
     <div class="upload_file_c">
         <div class="upload_file_c_1" style="max-height: ${bodyHeight}px;">
             <br>
-            <input id="wxd_upload_file" type="file" style="width: 340px;" value="上传配置" multiple/>
+            <input id="wxd_upload_file" type="file" style="width: 280px;" value="上传配置" multiple/>
             <br>
             <br>
             <div id="wxd_upload_progress_box">       
@@ -470,10 +483,14 @@ const wxd = {
         },
 
         /**
+         * 关闭上传文件窗口
+         */
+        uploadClose: function () {
+            $('.upload_file_bg').remove();
+        },
+
+        /**
          * 上传异步上传文件，带进度条展示
-         * @param url 上传地址
-         * @param formData 附近参数
-         * @param onSource 成功回调
          */
         upFile: function () {
 
@@ -511,7 +528,7 @@ const wxd = {
                 let box = `
 <span id="wxd_upload_progress_name_${i}">文件：${fileName}</span>
 <br>
-<progress id="wxd_upload_progress_bar_${i}" value="0" max="100" style="width: 430px;"></progress>&nbsp;&nbsp;<span id="wxd_p_b_v_${i}">0</span>%
+<progress id="wxd_upload_progress_bar_${i}" value="0" max="100" style="width: 280px;"></progress>&nbsp;&nbsp;<span id="wxd_p_b_v_${i}">0</span>%
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;大小：<span id="wxd_p_b_cur_${i}"></span> / <span id="wxd_p_b_max_${i}"></span>,&nbsp;&nbsp;&nbsp;&nbsp;速度：<span id="wxd_p_b_s_${i}"></span>
 <br>
@@ -593,6 +610,19 @@ const wxd = {
             this.post0(url, "application/x-www-form-urlencoded; charset=UTF-8", params, onLoad, onError, sync, time_out);
         },
 
+        /**
+         * post 请求
+         * @param url 地址
+         * @param params 参数
+         * @param onLoad 接收消息回调
+         * @param onError 异常回调
+         * @param sync true 表示同步请求
+         * @param time_out 超时时间
+         */
+        postJson: function (url, params, onLoad, onError, sync, time_out) {
+            this.post0(url, "application/json; charset=UTF-8", params, onLoad, onError, sync, time_out);
+        },
+
         ajax_timeout: 3000,//超时时间设置，单位毫秒
 
         /**
@@ -619,6 +649,12 @@ const wxd = {
                 contentType: contentType,
                 data: params,
                 async: sync,
+                beforeSend: function (xhr) {
+                    let token = localStorage.getItem("token");
+                    if (wxd.notNull(token)) {
+                        xhr.setRequestHeader('token', token);
+                    }
+                },
                 success: function (data) {
                     if (!wxd.isNull(onLoad)) {
                         try {
@@ -826,7 +862,7 @@ ${text}
                 top = e.pageY - this.tips_y - outerHeight;
             }
 
-            let bodyHeight = $("body").height() * 0.40;
+            let bodyHeight = $("body").height() * 0.55;
 
             $('.message_title_tips').css({
                 "opacity": "0.9",
@@ -851,7 +887,9 @@ ${text}
                         $(this).attr("title", "");
                         $('.message_title_tips').html(wxd.message.tips_tmp_title);
                     } else {
-                        $('.message_title_tips').html($(this).html());
+                        let value = $(this).html();
+                        value = wxd.replaceLine(value);
+                        $('.message_title_tips').html(value);
                     }
                     $('.message_title_tips').show();
                     wxd.message.tips_reset_css(e, this);
@@ -893,7 +931,7 @@ ${text}
         }
         let load = `
 <div style="position: absolute;width: 100%;height: 100%;left: 0;top: 0;background: rgba(28,28,28,0.31);">
-    <div style="position: relative;width: ${width};height: ${height};left: 50%;top: 50%;transform: translate(-50%, -50%);background: whitesmoke;border-radius: 15px;z-index: 99;display: block;box-sizing: border-box;">
+    <div id="div_load_box" style="position: relative;width: ${width};height: ${height};left: 50%;top: 50%;transform: translate(-50%, -50%);background: whitesmoke;border-radius: 15px;z-index: 99;display: block;box-sizing: border-box;">
         <object data="${url}" style="width: 100%;height: 100%;border-radius: 15px;display: block;box-sizing: border-box;"></object>
         <span title="关闭" onclick="$(this).parent().parent().remove();"
               style="position: absolute;top:5px;right: 5px;width: 15px;height: 15px; background: #f85802;border-radius: 15px;z-index: 999;cursor: pointer;">

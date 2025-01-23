@@ -1,7 +1,6 @@
 package wxdgaming.boot.net.handler;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.protobuf.Message;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +20,11 @@ import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.controller.ProtoMappingRecord;
 import wxdgaming.boot.net.controller.TextMappingRecord;
 import wxdgaming.boot.net.message.MessagePackage;
-import wxdgaming.boot.net.message.Rpc;
 import wxdgaming.boot.net.message.RpcEvent;
 import wxdgaming.boot.net.message.UpFileAccess;
+import wxdgaming.boot.net.message.rpc.ReqRemote;
+import wxdgaming.boot.net.message.rpc.ResRemote;
+import wxdgaming.boot.net.pojo.PojoBase;
 import wxdgaming.boot.net.util.ByteBufUtil;
 
 import java.io.Serializable;
@@ -100,8 +101,8 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
     default void action(S session, int messageId, byte[] messageBytes) {
         try {
-            if (messageId == MessagePackage.getMessageId(Rpc.ReqRemote.class)) {
-                Rpc.ReqRemote reqSyncMessage = Rpc.ReqRemote.parseFrom(messageBytes);
+            if (messageId == MessagePackage.getMessageId(ReqRemote.class)) {
+                ReqRemote reqSyncMessage = ReqRemote.parseFrom(messageBytes);
                 log.debug("收到消息：{} {}{}", session, reqSyncMessage.getClass().getSimpleName(), FastJsonUtil.toJson(reqSyncMessage));
                 long rpcId = reqSyncMessage.getRpcId();
                 String params = reqSyncMessage.getParams();
@@ -150,8 +151,8 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 return;
             }
 
-            if (messageId == MessagePackage.getMessageId(Rpc.ResRemote.class)) {
-                Rpc.ResRemote resSyncMessage = Rpc.ResRemote.parseFrom(messageBytes);
+            if (messageId == MessagePackage.getMessageId(ResRemote.class)) {
+                ResRemote resSyncMessage = ResRemote.parseFrom(messageBytes);
                 if (log.isDebugEnabled())
                     log.debug("收到消息：{} {}{}", session, resSyncMessage.getClass().getSimpleName(), FastJsonUtil.toJson(resSyncMessage));
                 if (resSyncMessage.getRpcId() > 0) {
@@ -231,7 +232,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         ProtoMappingRecord mapping = MappingFactory.protoMappingRecord((Class<? extends NioBase>) getClass(), messageId);
         if (mapping != null) {
             try {
-                Message message = MessagePackage.parseMessage(messageId, messageBytes);
+                PojoBase message = MessagePackage.parseMessage(messageId, messageBytes);
                 onMessage(session, messageId, message);
             } catch (Throwable e) {
                 log.error(mapping.toString() + " -> 遇到错误", e);
@@ -246,7 +247,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param messageId 消息协议id
      * @param message   消息
      */
-    default void onMessage(S session, int messageId, Message message) {
+    default void onMessage(S session, int messageId, PojoBase message) {
         executor(session, messageId, message);
     }
 
@@ -257,7 +258,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
      * @param messageId 消息协议id
      * @param message   消息
      */
-    default void executor(S session, int messageId, Message message) {
+    default void executor(S session, int messageId, PojoBase message) {
         ProtoMappingRecord mapping = MappingFactory.protoMappingRecord((Class<? extends NioBase>) getClass(), messageId);
         ProtoListenerAction protoListenerAction = new ProtoListenerAction(mapping, session, message);
 

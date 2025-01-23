@@ -19,7 +19,7 @@ public class PgsqlBatchPool extends SqlBatchPool {
     }
 
 
-    @Override public int replaceExec(String tableName, List<DataBuilder> values) throws Exception {
+    @Override public int replaceExec(String tableName, List<DataBuilder> values) {
         return super.replaceExec(tableName, values);
     }
 }

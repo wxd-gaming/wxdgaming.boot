@@ -13,6 +13,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>wxdgaming.boot</groupId>
             <artifactId>wxdgaming.boot.agent</artifactId>
             <version>${project.version}</version>
@@ -29,42 +43,8 @@
         </dependency>
         <dependency>
             <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.batis</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.batis.sql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
             <artifactId>wxdgaming.boot.net</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.net.http</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>wxdgaming.boot</groupId>
-            <artifactId>wxdgaming.boot.net.http.client.apache</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 

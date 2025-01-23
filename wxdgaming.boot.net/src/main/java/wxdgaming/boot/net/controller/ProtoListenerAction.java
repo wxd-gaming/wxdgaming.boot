@@ -1,16 +1,16 @@
 package wxdgaming.boot.net.controller;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.google.protobuf.Message;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.SocketSession;
+import wxdgaming.boot.net.pojo.PojoBase;
 
 /**
  * socket message 处理器
@@ -27,9 +27,9 @@ public final class ProtoListenerAction extends Event {
     private ProtoMappingRecord mapping;
     private SocketSession session;
     @JSONField(serialize = false, deserialize = false)
-    private Message message;
+    private PojoBase message;
 
-    public ProtoListenerAction(ProtoMappingRecord mapping, SocketSession session, Message message) {
+    public ProtoListenerAction(ProtoMappingRecord mapping, SocketSession session, PojoBase message) {
         super(mapping.method());
         this.mapping = mapping;
         this.session = session;

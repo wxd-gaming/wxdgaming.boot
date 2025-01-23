@@ -1,12 +1,13 @@
 package wxdgaming.boot.net.message;
 
-import com.google.protobuf.GeneratedMessageV3;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.net.message.rpc.ReqRemote;
+import wxdgaming.boot.net.message.rpc.ResRemote;
+import wxdgaming.boot.net.pojo.PojoBase;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -26,11 +27,12 @@ public class MessagePackage {
     public static final Map<String, Integer> MsgName2IdMap = new ConcurrentSkipListMap<>();
     /** 消息备注 */
     public static final Map<String, String> MsgName2RemarkMap = new ConcurrentSkipListMap<>();
-    public static final Map<Integer, Object> MsgId2ClassMap = new ConcurrentSkipListMap<>();
+    public static final Map<Integer, Class<? extends PojoBase>> MsgId2ClassMap = new ConcurrentSkipListMap<>();
 
     static {
         /*注册同步消息算法*/
-        loadMessageId_HashCode(Rpc.class, false);
+        loadMessageId_HashCode(ReqRemote.class, false);
+        loadMessageId_HashCode(ResRemote.class, false);
     }
 
     public static void main(String[] args) {
@@ -64,21 +66,19 @@ public class MessagePackage {
     static public int getMessageId(String simpleName) {
         Integer msgId = MsgName2IdMap.get(simpleName);
         if (msgId == null) {
-            log.warn("没有注册的消息：" + simpleName, new RuntimeException("路由跟踪"));
+            log.warn("没有注册的消息：{}", simpleName, new RuntimeException("路由跟踪"));
             return 0;
         }
         return msgId;
     }
 
-    static public <R extends GeneratedMessageV3> R parseMessage(int messageId, byte[] bytes) {
+    static public <R extends PojoBase> R parseMessage(int messageId, byte[] bytes) {
         try {
-            Object messageBuilder = MsgId2ClassMap.get(messageId);
+            Class<? extends PojoBase> messageBuilder = MsgId2ClassMap.get(messageId);
             if (messageBuilder == null) throw new RuntimeException("找不到消息：" + messageId);
-            if (messageBuilder instanceof GeneratedMessageV3 generatedMessageV3) {
-                return (R) generatedMessageV3.getParserForType().parseFrom(bytes);
-            } else {
-                throw new RuntimeException("无法解析");
-            }
+            PojoBase pojoBase = ReflectContext.newInstance(messageBuilder);
+            pojoBase.decode(bytes);
+            return (R) pojoBase;
         } catch (Exception e) {
             throw Throw.as("messageId=" + messageId, e);
         }
@@ -109,14 +109,14 @@ public class MessagePackage {
      */
     static public void loadMessageId_HashCode(Class<?> declaredClass, boolean reqOrRes) {
         if (log.isDebugEnabled())
-            log.debug("读取消息解析文件：" + declaredClass.getName() + " 类");
+            log.debug("读取消息解析文件：{} 类", declaredClass.getName());
         _loadMessageId_HashCode(declaredClass, reqOrRes);
         Class<?>[] declaredClasses = declaredClass.getDeclaredClasses();
         if (declaredClasses == null || declaredClasses.length == 0) {
             return;
         }
         if (log.isDebugEnabled())
-            log.debug("读取消息解析文件：" + declaredClass.getName() + " 类, 包含内部类文件：" + declaredClasses.length + " 个");
+            log.debug("读取消息解析文件：{} 类, 包含内部类文件：{} 个", declaredClass.getName(), declaredClasses.length);
         for (Class<?> clazz : declaredClasses) {
             _loadMessageId_HashCode(clazz, reqOrRes);
         }
@@ -128,11 +128,11 @@ public class MessagePackage {
      * @param declaredClass
      */
     static void _loadMessageId_HashCode(Class<?> declaredClass, boolean reqOrRes) {
-        if (com.google.protobuf.Message.class.isAssignableFrom(declaredClass)) {
+        if (PojoBase.class.isAssignableFrom(declaredClass)) {
             final String messageName = declaredClass.getName();
             if (reqOrRes) {
                 if (!declaredClass.getSimpleName().startsWith("Req")
-                        && !declaredClass.getSimpleName().startsWith("Res")) {
+                    && !declaredClass.getSimpleName().startsWith("Res")) {
                     return;
                 }
             }
@@ -143,26 +143,22 @@ public class MessagePackage {
             }
             final String numberName = MsgId2NameMap.get(number);
             if (numberName != null && !messageName.equalsIgnoreCase(numberName)) {
-                throw new RuntimeException("存在相同的消息协议id：" + messageName + "=" + number +
-                        "," + numberName + "=" + number);
+                throw new RuntimeException("存在相同的消息协议id：" + messageName + "=" + number + "," + numberName + "=" + number);
             }
-            add(number, declaredClass);
+            add(number, (Class<? extends PojoBase>) declaredClass);
         }
     }
 
-    public static void add(int messageId, Class<?> messageClass) {
+    public static void add(int messageId, Class<? extends PojoBase> messageClass) {
         try {
-            if (com.google.protobuf.Message.class.isAssignableFrom(messageClass)) {
-                Method getDefaultInstanceMethod = messageClass.getMethod("getDefaultInstance");
-                GeneratedMessageV3 defaultInstance = (GeneratedMessageV3) getDefaultInstanceMethod.invoke((Object) null);
-                MsgId2ClassMap.put(messageId, defaultInstance);
-            }
+            MsgId2ClassMap.put(messageId, messageClass);
             MsgId2NameMap.put(messageId, messageClass.getName());
             MsgName2IdMap.put(messageClass.getName(), messageId);
-            log.info("读取消息解析文件：" + messageId + " = " + messageClass.getName());
+            log.info("读取消息解析文件：{} = {}", messageId, messageClass.getName());
         } catch (Exception e) {
             throw Throw.as(e);
         }
     }
 
 }
+

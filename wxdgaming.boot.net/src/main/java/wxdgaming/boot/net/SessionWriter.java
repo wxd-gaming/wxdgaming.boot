@@ -1,16 +1,16 @@
 package wxdgaming.boot.net;
 
-import com.google.protobuf.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.i.ILock;
 import wxdgaming.boot.core.lang.ConvertUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.message.UpFileAccess;
+import wxdgaming.boot.net.pojo.PojoBase;
 import wxdgaming.boot.net.util.ByteBufUtil;
 
 import java.io.File;
@@ -45,12 +45,7 @@ interface SessionWriter extends ByteBufWrapper, ILock {
     }
 
     /** 发送消息 利用缓冲区发送消息 之后自行调用 flush() */
-    default ChannelFuture write(Message.Builder builder) {
-        return write(builder.build());
-    }
-
-    /** 发送消息 利用缓冲区发送消息 之后自行调用 flush() */
-    default ChannelFuture write(Message message) {
+    default ChannelFuture write(PojoBase message) {
         return write0(ByteBufWrapper.super.bufWrapper(message), false);
     }
 
@@ -60,12 +55,7 @@ interface SessionWriter extends ByteBufWrapper, ILock {
     }
 
     /** 立即同步发送 */
-    default ChannelFuture writeFlush(Message.Builder builder) {
-        return writeFlush(builder.build());
-    }
-
-    /** 立即同步发送 */
-    default ChannelFuture writeFlush(Message message) {
+    default ChannelFuture writeFlush(PojoBase message) {
         return write0(ByteBufWrapper.super.bufWrapper(message), true);
     }
 

@@ -1,11 +1,11 @@
 package wxdgaming.boot.net;
 
-import com.google.protobuf.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.net.message.MessagePackage;
+import wxdgaming.boot.net.pojo.PojoBase;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -46,8 +46,7 @@ public interface SessionRepository<S extends SocketSession> {
                 ChannelHandlerContext value = next.getChannelContext();
                 value.disconnect();
                 value.close();
-            } catch (Exception e) {
-            }
+            } catch (Exception ignored) {}
         }
         getAllSessionMap().clear();
     }
@@ -63,19 +62,14 @@ public interface SessionRepository<S extends SocketSession> {
     }
 
     /** 用空闲的 session 发消息 */
-    default void writeFlush(Message.Builder message) {
-        writeFlush(message.build());
-    }
-
-    /** 用空闲的 session 发消息 */
-    default void writeFlush(Message message) {
+    default void writeFlush(PojoBase message) {
         S session = idleSession();
         if (session != null) {
             session.writeFlush(message);
         } else if (log.isDebugEnabled()) {
-            log.debug("发送消息失败 -> 无法获取链接对象：" + this.toString(), new RuntimeException());
+            log.debug("发送消息失败 -> 无法获取链接对象：{}", this.toString(), new RuntimeException());
         } else {
-            log.warn("发送消息失败 -> 无法获取链接对象：" + this.toString());
+            log.warn("发送消息失败 -> 无法获取链接对象：{}", this.toString());
         }
     }
 
@@ -85,26 +79,21 @@ public interface SessionRepository<S extends SocketSession> {
         if (session != null) {
             session.writeFlush(mid, bytes);
         } else if (log.isDebugEnabled()) {
-            log.debug("发送消息失败 -> 无法获取链接对象：" + this.toString(), new RuntimeException());
+            log.debug("发送消息失败 -> 无法获取链接对象：{}", this.toString(), new RuntimeException());
         } else {
-            log.warn("发送消息失败 -> 无法获取链接对象：" + this.toString());
+            log.warn("发送消息失败 -> 无法获取链接对象：{}", this.toString());
         }
     }
 
     /** 用所有 有效的 session 发送消息， */
-    default void writeFlushAll(Message.Builder builder) {
-        writeFlushAll(builder.build());
-    }
-
-    /** 用所有 有效的 session 发送消息， */
-    default void writeFlushAll(Message message) {
+    default void writeFlushAll(PojoBase message) {
         if (!this.getAllSessionMap().isEmpty()) {
             int messageId = MessagePackage.getMessageId(message.getClass());
-            writeFlushAll(messageId, message.toByteArray());
+            writeFlushAll(messageId, message.encode());
         } else if (log.isDebugEnabled()) {
-            log.debug("发送消息失败 -> 无法获取链接对象：" + this.toString(), new RuntimeException());
+            log.debug("发送消息失败 -> 无法获取链接对象：{}", this.toString(), new RuntimeException());
         } else {
-            log.warn("发送消息失败 -> 无法获取链接对象：" + this.toString());
+            log.warn("发送消息失败 -> 无法获取链接对象：{}", this.toString());
         }
     }
 
@@ -115,9 +104,9 @@ public interface SessionRepository<S extends SocketSession> {
                 s.writeFlush(mid, bytes);
             }
         } else if (log.isDebugEnabled()) {
-            log.debug("发送消息失败 -> 无法获取链接对象：" + this.toString(), new RuntimeException());
+            log.debug("发送消息失败 -> 无法获取链接对象：{}", this.toString(), new RuntimeException());
         } else {
-            log.warn("发送消息失败 -> 无法获取链接对象：" + this.toString());
+            log.warn("发送消息失败 -> 无法获取链接对象：{}", this.toString());
         }
     }
 
@@ -127,9 +116,9 @@ public interface SessionRepository<S extends SocketSession> {
                 consumer.accept(s);
             }
         } else if (log.isDebugEnabled()) {
-            log.debug("发送消息失败 -> 无法获取链接对象：" + this.toString(), new RuntimeException());
+            log.debug("发送消息失败 -> 无法获取链接对象：{}", this.toString(), new RuntimeException());
         } else {
-            log.warn("发送消息失败 -> 无法获取链接对象：" + this.toString());
+            log.warn("发送消息失败 -> 无法获取链接对象：{}", this.toString());
         }
     }
 

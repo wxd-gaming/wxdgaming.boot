@@ -2,7 +2,7 @@ syntax = "proto3";
 //把文件拆分
 //option java_multiple_files = true;
 //导出包名
-option java_package = "wxdgamin.boot.net.message";
+option java_package = "wxdgaming.boot.net.message";
 
 //执行同步等待消息
 message ReqRemote {

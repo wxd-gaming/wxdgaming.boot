@@ -69,11 +69,11 @@ public class SqlBatchPool extends BatchPool {
         thread.action(thread.getUpdateLock(), thread.getUpdateTaskQueue(), dataBuilder);
     }
 
-    @Override public int replaceExec(String tableName, List<DataBuilder> values) throws Exception {
+    @Override public int replaceExec(String tableName, List<DataBuilder> values) {
         return insertExec(tableName, values);
     }
 
-    @Override public int insertExec(String tableName, List<DataBuilder> values) throws Exception {
+    @Override public int insertExec(String tableName, List<DataBuilder> values) {
         int i = 0;
         if (values != null && !values.isEmpty()) {
             final DataBuilder dbBase = values.getFirst();
@@ -92,7 +92,7 @@ public class SqlBatchPool extends BatchPool {
         return i;
     }
 
-    @Override public int updateExec(String tableName, List<DataBuilder> values) throws Exception {
+    @Override public int updateExec(String tableName, List<DataBuilder> values) {
         int i = 0;
         if (values != null && !values.isEmpty()) {
             final DataBuilder dbBase = values.getFirst();

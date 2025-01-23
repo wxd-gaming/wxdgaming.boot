@@ -83,7 +83,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                         int idleTime = idleTime();
                         if (idleTime > 0) {
                             /*设置15秒的读取空闲*/
-                            pipeline.addLast("idlehandler", new IdleStateHandler(idleTime, 0, 0, TimeUnit.SECONDS));
+                            pipeline.addLast("idleHandler", new IdleStateHandler(idleTime, 0, 0, TimeUnit.SECONDS));
                         }
                         NioServer.this.initChannel(pipeline);
                     }
@@ -100,8 +100,8 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 this.initBootstrap();
                 ChannelFuture channelFuture;
                 if (null == this.getHost()
-                        || "".equals(this.getHost())
-                        || "*".equals(this.getHost())
+                    || "".equals(this.getHost())
+                    || "*".equals(this.getHost())
                     //                        || "0.0.0.0".equals(this.getHost())
                     //                        || "0.0.0.0.0.0.0.0".equals(this.getHost())/*ipv6*/
                     //                        || "::".equals(this.getHost())/*ipv6*/
@@ -112,9 +112,9 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                     channelFuture = bootstrap.bind(this.getHost(), this.getPort()).sync();
                 }
                 serverChannel = channelFuture.channel();
-                log.info(this.getClass() + " " + this.toString() + " - " + this.getPort() + " 服务器已启动");
+                log.info("{} {} - {} 服务器已启动", this.getClass(), this.toString(), this.getPort());
             } catch (Throwable ex) {
-                log.error(this.getClass() + " " + this.toString() + " - " + this.getPort() + " 启动异常", ex);
+                log.error("{} {} - {} 启动异常", this.getClass(), this.toString(), this.getPort(), ex);
                 JvmUtil.halt(500);
             }
         } finally {
@@ -144,13 +144,13 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
         lock();
         try {
             if (this.bootstrap != null) {
-                log.info("=====服务关闭 " + this.toString() + " {start}");
+                log.info("=====服务关闭 {} {start}", this.toString());
                 if (serverChannel != null) {
                     serverChannel.close();
                     serverChannel = null;
                 }
                 this.bootstrap = null;
-                log.info("=====服务关闭 " + this.toString() + " {end}");
+                log.info("=====服务关闭 {} {end}", this.toString());
             }
         } finally {
             unlock();

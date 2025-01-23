@@ -14,6 +14,7 @@ import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.net.SocketSession;
+import wxdgaming.boot.net.message.rpc.ReqRemote;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -64,7 +65,7 @@ public class RpcEvent {
     /** 发送出去，不管了 */
     public void send() {
         if (sendEnd) return;
-        Rpc.ReqRemote.Builder builder = Rpc.ReqRemote.newBuilder();
+        ReqRemote builder = new ReqRemote();
         builder.setRpcId(rpcId);
         builder.setCmd(cmd);
         if (reqJson.length() > 1024) {
@@ -73,7 +74,7 @@ public class RpcEvent {
         } else {
             builder.setParams(reqJson);
         }
-        session.writeFlush(builder.build());
+        session.writeFlush(builder);
         sendEnd = true;
     }
 
@@ -169,9 +170,9 @@ public class RpcEvent {
 
     @Override public String toString() {
         return this.getClass().getSimpleName() + "{"
-                + "rpcId=" + rpcId + ", "
-                + "cmd=" + cmd + ", "
-                + "reqJson=" + reqJson
-                + '}';
+               + "rpcId=" + rpcId + ", "
+               + "cmd=" + cmd + ", "
+               + "reqJson=" + reqJson
+               + '}';
     }
 }

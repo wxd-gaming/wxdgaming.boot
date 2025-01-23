@@ -1,8 +1,8 @@
 package wxdgaming.boot.net;
 
-import com.google.protobuf.Message;
 import io.netty.buffer.ByteBuf;
 import wxdgaming.boot.net.message.MessagePackage;
+import wxdgaming.boot.net.pojo.PojoBase;
 import wxdgaming.boot.net.util.ByteBufUtil;
 
 /**
@@ -13,11 +13,7 @@ import wxdgaming.boot.net.util.ByteBufUtil;
  **/
 public interface ByteBufWrapper {
 
-    default byte[] toBytes(Message.Builder builder) {
-        return toBytes(builder.build());
-    }
-
-    default byte[] toBytes(Message message) {
+    default byte[] toBytes(PojoBase message) {
         ByteBuf byteBuf = bufWrapper(message);
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
@@ -28,16 +24,16 @@ public interface ByteBufWrapper {
     /**
      * 把消息写入 ByteBuf
      */
-    default ByteBuf bufWrapper(Message message) {
+    default ByteBuf bufWrapper(PojoBase message) {
         return bufWrapper(null, message);
     }
 
     /**
      * 把消息写入 ByteBuf
      */
-    default ByteBuf bufWrapper(ByteBuf byteBuf, Message message) {
+    default ByteBuf bufWrapper(ByteBuf byteBuf, PojoBase message) {
         int messageId = MessagePackage.getMessageId(message.getClass());
-        byte[] messageBytes = message.toByteArray();
+        byte[] messageBytes = message.encode();
         return bufWrapper(byteBuf, messageId, messageBytes);
     }
 

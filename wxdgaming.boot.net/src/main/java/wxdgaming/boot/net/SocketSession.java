@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.timer.MyClock;
-import wxdgaming.boot.net.message.Rpc;
+import wxdgaming.boot.net.message.rpc.ResRemote;
 import wxdgaming.boot.net.util.ByteBufUtil;
 
 /**
@@ -63,7 +63,7 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
      */
     public void rpcResponse(long rpcId, String msg) {
         if (rpcId == 0) return;
-        Rpc.ResRemote.Builder builder = Rpc.ResRemote.newBuilder();
+        ResRemote builder = new ResRemote();
         builder.setRpcId(rpcId);
         if (msg.length() > 1024) {
             builder.setGzip(1);
@@ -71,7 +71,7 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
         } else {
             builder.setParams(msg);
         }
-        this.writeFlush(builder.build());
+        this.writeFlush(builder);
     }
 
     public void checkReadCount(int maxReadCount) {
