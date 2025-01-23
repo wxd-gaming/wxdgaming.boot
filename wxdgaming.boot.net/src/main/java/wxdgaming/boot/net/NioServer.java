@@ -46,8 +46,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
     private final ConcurrentHashSet<String> whiteIPSet = new ConcurrentHashSet<>();
 
     protected int idleTime() {
-        int idleTime = JvmUtil.getProperty(JvmUtil.Netty_Idle_Time_Server, 20, Integer::valueOf);
-        return idleTime;
+        return JvmUtil.getProperty(JvmUtil.Netty_Idle_Time_Server, 20, Integer::valueOf);
     }
 
     @Override
@@ -56,13 +55,13 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 /*channel方法用来创建通道实例(NioServerSocketChannel类来实例化一个进来的链接)*/
                 .channel(NioFactory.serverSocketChannelClass())
                 /*方法用于设置监听套接字*/
-                .option(ChannelOption.SO_BACKLOG, 1024)
+                .option(ChannelOption.SO_BACKLOG, 0)
                 /*地址重用，socket链接断开后，立即可以被其他请求使用*/
                 .option(ChannelOption.SO_REUSEADDR, true)
-                /*方法用于设置和客户端链接的套接字*/
-                .childOption(ChannelOption.TCP_NODELAY, true)
                 /*是否启用心跳保活机机制*/
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
+                /*方法用于设置和客户端链接的套接字*/
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 /*地址重用，socket链接断开后，立即可以被其他请求使用*/
                 .childOption(ChannelOption.SO_REUSEADDR, true)
                 /*发送缓冲区 影响 channel.isWritable()*/

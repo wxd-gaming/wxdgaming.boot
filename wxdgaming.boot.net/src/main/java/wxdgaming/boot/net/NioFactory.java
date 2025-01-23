@@ -116,12 +116,12 @@ public class NioFactory implements Serializable {
                         while (true) {
                             try {
                                 r.run();
-                                /**正常结束就是需要退出 如果异常就让他再次拉起来*/
+                                /*正常结束就是需要退出 如果异常就让他再次拉起来*/
                                 return;
                             } catch (Throwable t) {
                                 try {
-                                    t.printStackTrace(System.out);
-                                } catch (Throwable t0) {}
+                                    log.error("netty 线程池异常", t);
+                                } catch (Throwable ignored) {}
                             }
                         }
                     }

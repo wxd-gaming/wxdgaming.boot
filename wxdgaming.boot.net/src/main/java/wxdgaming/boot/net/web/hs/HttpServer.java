@@ -2,26 +2,20 @@ package wxdgaming.boot.net.web.hs;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.DateFormatter;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.NioFactory;
@@ -53,8 +47,6 @@ public class HttpServer extends NioServer<HttpSession> {
 
     /** 过期时间格式化 */
     public static SimpleDateFormat ExpiresFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
-    /** 分段传输的最小字节数 */
-    public static int MaxContentLength = (int) BytesUnit.Mb.toBytes(5);
 
     public final class HServerHandler extends SocketChannelHandler<HttpSession> {
 
@@ -65,14 +57,6 @@ public class HttpServer extends NioServer<HttpSession> {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             super.channelActive(ctx);
-            HttpSession session = NioFactory.attr(ctx, NioFactory.Session);
-            if (session == null) {
-                session = new HttpSession("http-server-" + HttpServer.this.getName(), ctx);
-                if (!HttpServer.this.checkIPFilter(session.getIp())) {
-                    session.disConnect("IP 异常");
-                }
-                session.setResHeaderMap(new HashMap<>(HttpServer.this.headerMap));
-            }
         }
 
         @Override
@@ -84,12 +68,10 @@ public class HttpServer extends NioServer<HttpSession> {
                 } else {
                     try {
                         ctx.disconnect();
-                    } catch (Exception e) {
-                    }
+                    } catch (Exception ignore) {}
                     try {
                         ctx.close();
-                    } catch (Exception e) {
-                    }
+                    } catch (Exception ignore) {}
                 }
             } finally {
                 super.channelUnregistered(ctx);
@@ -98,6 +80,13 @@ public class HttpServer extends NioServer<HttpSession> {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            final String message = Optional.ofNullable(cause.getMessage())
+                    .map(String::toLowerCase).orElse("");
+            if (message.contains("broken pipe")
+                || message.contains("reset by peer")
+                || message.contains("connection reset")) {
+                return;
+            }
             super.exceptionCaught(ctx, cause);
             HttpSession session = NioFactory.attr(ctx, NioFactory.Session);
             if (session != null) {
@@ -105,7 +94,7 @@ public class HttpServer extends NioServer<HttpSession> {
                         HttpVersion.HTTP_1_1,
                         HttpResponseStatus.INTERNAL_SERVER_ERROR,
                         HttpHeadValueType.Text,
-                        Throw.ofString(cause).getBytes(StandardCharsets.UTF_8)
+                        "server error".getBytes(StandardCharsets.UTF_8)
                 );
             } else {
                 try {
@@ -128,53 +117,43 @@ public class HttpServer extends NioServer<HttpSession> {
             super.userEventTriggered(ctx, evt);
         }
 
-        @Override
-        protected void channelRead0(HttpSession session, Object object) throws Exception {
-            //            log.debug(object.getClass().getName());
-            if (object instanceof HttpRequest) {
-                if (session.getRequest() == null) {
-                    session.setRequest((HttpRequest) object);
-                    session.setFirstReadTime(MyClock.millis());
-                }
+        @Override public void channelRead(ChannelHandlerContext ctx, Object object) throws Exception {
+            FullHttpRequest fullHttpRequest = (FullHttpRequest) object;
+
+            HttpSession session = new HttpSession("http-server-" + HttpServer.this.getName(), ctx);
+            if (!HttpServer.this.checkIPFilter(session.getIp())) {
+                session.disConnect("IP 异常");
             }
+
+            session.setResHeaderMap(new HashMap<>(HttpServer.this.headerMap));
+            session.setRequest(fullHttpRequest);
+            session.setFirstReadTime(MyClock.millis());
 
             HttpMethod reqMethod = session.getRequest().method();
 
             try {
-                if (reqMethod.equals(HttpMethod.POST)) {
-                    if (object instanceof HttpContent httpContent) {
-                        /*todo 只是拷贝数据，不能读取数据，缓存字节数组*/
-                        int len = httpContent.content().readableBytes();
-                        byte[] reqContentByteBuf = session.getReqContentByteBuf();
-                        int dstIndex = 0;
-                        if (reqContentByteBuf == null) {
-                            /*初始化数组*/
-                            reqContentByteBuf = new byte[len];
-                        } else {
-                            /*数组扩容*/
-                            dstIndex = reqContentByteBuf.length;
-                            reqContentByteBuf = Arrays.copyOf(reqContentByteBuf, reqContentByteBuf.length + len);
-                        }
-                        /*todo 只是拷贝数据，不能读取数据*/
-                        httpContent.content().getBytes(0, reqContentByteBuf, dstIndex, len);
-                        session.setReqContentByteBuf(reqContentByteBuf);
-                        if (session.getHttpDecoder() != null) {
-                            session.getHttpDecoder().offer(httpContent);
-                        }
-                        try {
-                            httpContent.content().release();
-                        } catch (Exception e) {
-                            log.error("release() {}", session, e);
-                        }
-                    }
-                } else if (!reqMethod.equals(HttpMethod.GET)) {
+
+                /* TODO 仅支持get post */
+                if (!reqMethod.equals(HttpMethod.GET) && !reqMethod.equals(HttpMethod.POST)) {
                     response(session, HttpHeadValueType.Text, NioFactory.EmptyBytes);
                     return;
                 }
 
-                if (!(object instanceof LastHttpContent)) {
-                    return;
+                /*TODO 只是拷贝数据，不能读取数据，缓存字节数组*/
+                int len = fullHttpRequest.content().readableBytes();
+                byte[] reqContentByteBuf = reqContentByteBuf = new byte[len];
+                /*TODO 只是拷贝数据，不能读取数据*/
+                fullHttpRequest.content().getBytes(0, reqContentByteBuf, 0, len);
+                session.setReqContentByteBuf(reqContentByteBuf);
+                if (session.getHttpDecoder() != null) {
+                    session.getHttpDecoder().offer(fullHttpRequest);
                 }
+                try {
+                    fullHttpRequest.content().release();
+                } catch (Exception e) {
+                    log.error("release() {}", session, e);
+                }
+
                 session.setLastReadTime(MyClock.millis());
                 session.actionGetData();
                 if (reqMethod.equals(HttpMethod.POST)) {
@@ -192,8 +171,12 @@ public class HttpServer extends NioServer<HttpSession> {
                 httpListenerAction.submit();
             } catch (Throwable e) {
                 log.error("{} remoteAddress：{}", HttpServer.this, session, e);
-                response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, Throw.ofString(e).getBytes(StandardCharsets.UTF_8));
+                response(session, HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR, HttpHeadValueType.Text, "server error".getBytes(StandardCharsets.UTF_8));
             }
+        }
+
+        @Override protected void channelRead0(HttpSession httpSession, Object object) throws Exception {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -227,8 +210,10 @@ public class HttpServer extends NioServer<HttpSession> {
         pipeline.addLast(
                 new HttpRequestDecoder(),
                 new HttpServerCodec(),
+                /*聚合传输*/
+                new HttpObjectAggregator(65536),
                 /*向客户端发送HTML5文件。主要用于支持浏览器和服务端进行WebSocket通信*/
-                new ChunkedWriteHandler(),
+                // new ChunkedWriteHandler(),
                 /*顺序必须保证*/
                 new HServerHandler(this.getName()),
                 new HttpResponseEncoder()
@@ -343,16 +328,8 @@ public class HttpServer extends NioServer<HttpSession> {
                 byteBuf = Unpooled.wrappedBuffer(bytes);
             }
 
-            HttpResponse response;
-            int readableBytes = byteBuf.readableBytes();
-            if (readableBytes > MaxContentLength) {
-                response = new DefaultHttpResponse(hv, hrs);
-                /*表明是分段传输*/
-                response.headers().add(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-            } else {
-                response = new DefaultFullHttpResponse(hv, hrs, byteBuf);
+            HttpResponse response = new DefaultFullHttpResponse(hv, hrs, byteBuf);
 
-            }
             session.getResCookie().serverCookie(response.headers());
             if (session.getResHeaderMap() != null && !session.getResHeaderMap().isEmpty()) {
                 for (Map.Entry<String, String> stringStringEntry : session.getResHeaderMap().entrySet()) {
@@ -361,10 +338,9 @@ public class HttpServer extends NioServer<HttpSession> {
             }
 
             response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType.getValue());
-            //            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
 
             if (accept_gzip) {
-                response.headers().set(HttpHeaderNames.CONTENT_ENCODING, "gzip");
+                response.headers().set(HttpHeaderNames.CONTENT_ENCODING, HttpHeaderValues.GZIP);
             }
 
             if (before != null) {
@@ -388,40 +364,24 @@ public class HttpServer extends NioServer<HttpSession> {
                     log.info(stringBuilder.toString());
                 }
             }
+            boolean keepAlive = HttpUtil.isKeepAlive(session.getRequest());
 
-            if (readableBytes > MaxContentLength) {
-                ChannelFuture channelFuture = session.getChannelContext().writeAndFlush(response);
-                channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
-                    @Override
-                    public void operationComplete(Future<? super Void> future) throws Exception {
-                        int need = Math.min(MaxContentLength, byteBuf.readableBytes());
-                        if (need != 0) {
-                            ByteBuf buffer = session.getChannelContext().alloc().buffer();
-                            buffer.writeBytes(byteBuf, need);
-                            session.getChannelContext().writeAndFlush(buffer).addListener(this);
-                        } else {
-                            session.getChannelContext()
-                                    .writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
-                                    .addListener((ChannelFutureListener) future1 -> {
-                                        /*表示文件已经传输完成*/
-                                        session.disConnect("分段传输完成");
-                                        byteBuf.release();
-                                    });
-
-                        }
-                    }
-                });
+            session.setResTime(MyClock.millis());
+            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
+            if (keepAlive) {
+                response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
             } else {
-                session.setResTime(MyClock.millis());
-                response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
-                // response.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
-                response.headers().set(HttpHeaderNames.CONNECTION, "close");/*屏蔽连接池*/
-                session.getChannelContext()
-                        .writeAndFlush(response)
-                        .addListener((ChannelFutureListener) future1 -> {
-                            session.disConnect("正常传输完成");
-                        });
+                /* TODO 非复用的连接池 */
+                response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
             }
+            session.getChannelContext()
+                    .writeAndFlush(response)
+                    .addListener((ChannelFutureListener) future1 -> {
+                        if (!keepAlive) {
+                            /* TODO 非复用的连接池 */
+                            session.disConnect("正常传输完成");
+                        }
+                    });
         } catch (Throwable throwable) {
             log.warn("response error", throwable);
         }

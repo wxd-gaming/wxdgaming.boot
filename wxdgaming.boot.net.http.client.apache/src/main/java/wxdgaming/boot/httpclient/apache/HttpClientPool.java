@@ -1,6 +1,5 @@
 package wxdgaming.boot.httpclient.apache;
 
-import lombok.Getter;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -39,8 +38,8 @@ public class HttpClientPool implements AutoCloseable {
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .delay(TimeUnit.MINUTES.toMillis(1))
                 .loader((Function1<String, HttpClientPool>) s -> build(
-                        10,
-                        10,
+                        50,
+                        200,
                         2 * 1000,
                         2 * 1000,
                         2 * 1000,
@@ -75,20 +74,16 @@ public class HttpClientPool implements AutoCloseable {
         return httpClientPool;
     }
 
-    private SSLContext sslContext;
-    private X509TrustManager tm;
-    private SSLConnectionSocketFactory sslSocketFactory;
-    private Registry<ConnectionSocketFactory> registry;
-    @Getter private PoolingHttpClientConnectionManager connPoolMng;
+    private PoolingHttpClientConnectionManager connPoolMng;
     private CloseableHttpClient closeableHttpClient;
 
-    private int core;
-    private int max;
-    private int connectionRequestTimeout;
-    private int connectTimeOut;
-    private int readTimeout;
-    private int keepAliveTimeout;
-    private String sslProtocol;
+    private final int core;
+    private final int max;
+    private final int connectionRequestTimeout;
+    private final int connectTimeOut;
+    private final int readTimeout;
+    private final int keepAliveTimeout;
+    private final String sslProtocol;
 
     public HttpClientPool(int core, int max,
                           int connectionRequestTimeout, int connectTimeOut, int readTimeout,
@@ -130,8 +125,8 @@ public class HttpClientPool implements AutoCloseable {
         lock.lock();
         try {
             try {
-                sslContext = SSLContext.getInstance(sslProtocol);
-                tm = new X509TrustManager() {
+                SSLContext sslContext = SSLContext.getInstance(sslProtocol);
+                X509TrustManager tm = new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {return null;}
 
                     public void checkClientTrusted(X509Certificate[] xcs, String str) {}
@@ -140,10 +135,10 @@ public class HttpClientPool implements AutoCloseable {
                 };
 
                 sslContext.init(null, new TrustManager[]{tm}, null);
-                sslSocketFactory = new SSLConnectionSocketFactory(sslContext, (s, sslSession) -> true);
+                SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, (s, sslSession) -> true);
 
 
-                registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                         .register("http", PlainConnectionSocketFactory.getSocketFactory())
                         .register("https", sslSocketFactory)
                         .build();

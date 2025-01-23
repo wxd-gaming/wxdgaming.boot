@@ -38,14 +38,14 @@ public abstract class SocketChannelHandler<S extends Session> extends ChannelInb
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
         if (log.isDebugEnabled())
-            log.debug("channel 接入 " + this.name + " " + NioFactory.getCtxName(ctx) + " " + ctx);
+            log.debug("channel 接入 {} {} {}", this.name, NioFactory.getCtxName(ctx), ctx);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         if (log.isDebugEnabled())
-            log.debug("channel 激活 " + this.name + " " + NioFactory.getCtxName(ctx) + " " + ctx);
+            log.debug("channel 激活 {} {} {}", this.name, NioFactory.getCtxName(ctx), ctx);
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class SocketChannelHandler<S extends Session> extends ChannelInb
         super.channelInactive(ctx);
         Session session = NioFactory.attr(ctx, NioFactory.Session);
         if (log.isDebugEnabled())
-            log.debug("channel 空闲 " + session);
+            log.debug("channel 空闲 {}", session);
     }
 
     @Override
@@ -93,35 +93,23 @@ public abstract class SocketChannelHandler<S extends Session> extends ChannelInb
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        S session = NioFactory.attr(ctx, NioFactory.Session);
 
         final String message = Optional.ofNullable(cause.getMessage())
                 .map(String::toLowerCase).orElse("");
 
-        if (message.contains("sslhandshak") || message.contains("sslexception")) {
+        if (message.contains("sslhandshak")
+            || message.contains("sslexception")
+            || message.contains("certificate_unknown")
+            || message.contains("connection reset")
+            || message.contains("你的主机中的软件中止了一个已建立的连接")
+            || message.contains("远程主机强迫关闭了一个现有的连接")) {
             if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：{}, {}", message, session);
-            }
-        } else if (message.contains("certificate_unknown")) {
-            if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：{}, {}", message, session);
-            }
-        } else if (message.contains("connection reset")) {
-            if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：{}, {}", message, session);
-            }
-        } else if (message.contains("你的主机中的软件中止了一个已建立的连接")) {
-            if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：{}, {}", message, session);
-            }
-        } else if (message.contains("远程主机强迫关闭了一个现有的连接")) {
-            if (log.isDebugEnabled()) {
-                log.debug("内部处理异常：{}, {}", message, session);
+                log.debug("内部处理异常：{}, {}", message, ctx);
             }
         } else {
-            log.warn("内部异常：" + session.toString(), cause);
+            log.warn("内部异常：{}", ctx, cause);
             if (cause instanceof OutOfDirectMemoryError) {
-                GlobalUtil.exception(session.toString(), cause);
+                GlobalUtil.exception(ctx, cause);
             }
         }
     }
