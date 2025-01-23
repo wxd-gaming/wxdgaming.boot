@@ -1,12 +1,13 @@
 package wxdgaming.boot.batis.excel;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.io.FileWriteUtil;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.code.CodeLan;
 import wxdgaming.boot.batis.text.json.JsonDataWrapper;
 import wxdgaming.boot.batis.text.json.JsonEntityTable;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.TemplatePack;
 
 import java.io.Serializable;
@@ -81,7 +82,7 @@ public class ExcelRead2Json extends ExcelRead<JsonEntityTable, JsonDataWrapper> 
             stringBuilder.append("[").append("\n");
             LinkedList<LinkedHashMap<EntityField, Object>> rows = entityTable.getRows();
             for (LinkedHashMap<EntityField, Object> row : rows) {
-                ObjMap dataRow = new ObjMap();
+                JSONObject dataRow = MapOf.newJSONObject();
                 for (Map.Entry<EntityField, Object> entry : row.entrySet()) {
                     dataRow.put(entry.getKey().getColumnName(), entry.getValue());
                 }

@@ -1,6 +1,7 @@
 package wxdgaming.boot.net.ts;
 
 import io.netty.channel.ChannelHandlerContext;
+import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.SocketSession;
 
 import java.io.Serializable;
@@ -13,8 +14,8 @@ import java.io.Serializable;
  **/
 public class TcpSession extends SocketSession implements Serializable {
 
-    public TcpSession(String name, ChannelHandlerContext ctx) {
-        super(name, ctx);
+    public TcpSession(NioBase base, ChannelHandlerContext ctx) {
+        super(base, ctx);
         checkReadTime();
     }
 

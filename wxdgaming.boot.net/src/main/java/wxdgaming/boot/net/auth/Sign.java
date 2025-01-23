@@ -1,8 +1,8 @@
 package wxdgaming.boot.net.auth;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import wxdgaming.boot.agent.system.Base64Util;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.net.Session;
@@ -19,7 +19,7 @@ import java.util.Objects;
 public interface Sign<S extends Session> {
 
     @TextMapping(basePath = "/", remarks = "登录")
-    default RunResult sign(S session, ObjMap putData) {
+    default RunResult sign(S session, JSONObject putData) {
         String username = putData.getString("userName");
         String userPwd = putData.getString("userPwd");
         userPwd = Base64Util.decode(userPwd);
@@ -44,7 +44,7 @@ public interface Sign<S extends Session> {
                 return RunResult.error(101, "密码错误");
             }
             String token = cacheToken(sign);
-            return RunResult.ok().append(HttpHeaderNames.AUTHORIZATION.toString(), token);
+            return RunResult.ok().fluentPut(HttpHeaderNames.AUTHORIZATION.toString(), token);
         }
         return RunResult.error(100, "账号不存在");
     }

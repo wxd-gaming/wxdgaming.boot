@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.web.ws;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,8 +11,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.agent.LogbackUtil;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
+import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.SocketSession;
@@ -35,11 +37,11 @@ public class WebSession extends SocketSession implements Serializable {
     private boolean accept_gzip = false;
     private boolean content_gzip = false;
     /*post或者get完整参数*/
-    private ObjMap reqParams = new ObjMap();
+    private JSONObject reqParams = MapOf.newJSONObject();
     private CookiePack reqCookies = new CookiePack();
 
-    public WebSession(String name, ChannelHandlerContext ctx) {
-        super(name, ctx);
+    public WebSession(NioBase base, ChannelHandlerContext ctx) {
+        super(base, ctx);
     }
 
     public boolean ssl() {
@@ -60,7 +62,7 @@ public class WebSession extends SocketSession implements Serializable {
     }
 
     public ChannelFuture writeAndFlush(RunResult runResult) {
-        return writeAndFlush(runResult.toJson());
+        return writeAndFlush(runResult.toJSONString());
     }
 
     public ChannelFuture writeAndFlush(String msg) {
@@ -77,7 +79,7 @@ public class WebSession extends SocketSession implements Serializable {
         }
 
         if (!(obj instanceof BinaryWebSocketFrame
-                || obj instanceof TextWebSocketFrame)) {
+              || obj instanceof TextWebSocketFrame)) {
             throw new RuntimeException("消息：" + obj.getClass().getName() + " 非支持类型");
         }
 

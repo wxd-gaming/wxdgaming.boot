@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
@@ -83,7 +82,7 @@ class TextListenerAction extends Event {
                 Parameter parameter = parameters[i];
                 Type type = parameter.getParameterizedType();
                 if (type instanceof Class<?> clazz) {
-                    if (clazz.getName().equals(ObjMap.class.getName())) {
+                    if (clazz.getName().equals(JSONObject.class.getName())) {
                         params[i] = putData;
                     } else if (Session.class.isAssignableFrom(clazz)) {
                         if (clazz.isAssignableFrom(session.getClass())) {

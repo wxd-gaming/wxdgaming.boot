@@ -39,7 +39,7 @@ public abstract class SocketServer<S extends SocketSession> extends NioServer<S>
     protected Predicate<ProtoListenerAction> messageExecutorBefore;
     protected INotController<S> onNotController;
 
-    protected abstract S newSession(String name, ChannelHandlerContext ctx);
+    protected abstract S newSession(ChannelHandlerContext ctx);
 
     @Override
     public void close() {

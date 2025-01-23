@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -7,10 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.LocalShell;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.controller.ann.ProtoController;
@@ -162,19 +163,19 @@ public class ProtoBufCreateController {
                         String saveClassName = message + "Controller";
 
                         String saveFileName = codeOutPath + "/"
-                                + savePack.replace(".", "/")
-                                + "/" + saveClassName + ".java";
+                                              + savePack.replace(".", "/")
+                                              + "/" + saveClassName + ".java";
 
                         if (FileUtil.exists(saveFileName)) {
                             return;
                         }
 
-                        ObjMap objMap = new ObjMap();
+                        JSONObject objMap = MapOf.newJSONObject();
 
                         Set<String> imports = new TreeSet<>();
                         imports.add(messagePackage.get() + "." + message);
 
-                        imports.add(ObjMap.class.getName());
+                        imports.add(JSONObject.class.getName());
                         imports.add(SocketSession.class.getName());
                         imports.add(ProtoListenerAction.class.getName());
                         imports.add(ProtoController.class.getName());

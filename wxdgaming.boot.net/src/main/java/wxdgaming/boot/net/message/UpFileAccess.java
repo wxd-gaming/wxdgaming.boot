@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.message;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.ByteString;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +8,7 @@ import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.io.FileWriteUtil;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.MarkTimer;
@@ -59,7 +60,7 @@ public class UpFileAccess implements Serializable {
         UpFileAccess upFileAccess = new UpFileAccess();
         upFileAccess.fileId = StringUtil.hashcode(file.getPath());
         upFileAccess.filePath = file.getPath();
-        upFileAccess.jsonObject = new ObjMap();
+        upFileAccess.jsonObject = MapOf.newJSONObject();
         upFileAccess.jsonObject.put(FileDir, upFileDir);
         upFileAccess.jsonObject.put(FileName, file.getName());
         upFileAccess.jsonObject.put(FileLen, file.length());
@@ -73,7 +74,7 @@ public class UpFileAccess implements Serializable {
         UpFileAccess fileAccess = new UpFileAccess();
         fileAccess.fileId = fileId;
         fileAccess.readMaxCount = readMaxCount;
-        fileAccess.jsonObject = FastJsonUtil.parseObjMap(jsonParams);
+        fileAccess.jsonObject = FastJsonUtil.parse(jsonParams);
         fileAccess.fileName = fileAccess.jsonObject.getString(FileName);
 
         String fileDir = fileAccess.jsonObject.getString(FileDir);
@@ -110,7 +111,7 @@ public class UpFileAccess implements Serializable {
     /*传输的唯一id*/
     private long fileId;
     /*附加参数*/
-    private ObjMap jsonObject;
+    private JSONObject jsonObject;
     private String filePath;
     private String fileName;
     private final MarkTimer markTime = MarkTimer.build();
@@ -118,18 +119,18 @@ public class UpFileAccess implements Serializable {
     private byte[] fileDatas;
 
     public void upload(SocketSession session) {
-        ObjMap headMap = new ObjMap();
-        headMap.append("fileId", this.fileId);
-        headMap.append("params", jsonObject.toString());
+        JSONObject headMap = MapOf.newJSONObject();
+        headMap.fluentPut("fileId", this.fileId);
+        headMap.fluentPut("params", jsonObject.toString());
         AtomicInteger forCount = new AtomicInteger(fileDatas.length / SpiltLen);
         int forCount1 = fileDatas.length % SpiltLen;
         if (forCount1 > 0) {
             forCount.incrementAndGet();
         }
         /*设置消息内容发送次数*/
-        headMap.append("bodyCount", forCount);
+        headMap.fluentPut("bodyCount", forCount);
 
-        session.rpc("rpc.upload.file.head", headMap.toJson()).asyncString((result) -> {
+        session.rpc("rpc.upload.file.head", headMap.toJSONString()).asyncString((result) -> {
 
             if (!"OK!".equalsIgnoreCase(result)) {
                 throw new Throw("文件传输失败-HEAD：" + result);
@@ -143,14 +144,14 @@ public class UpFileAccess implements Serializable {
                         readCount = SpiltLen;
                     }
 
-                    ObjMap bodyMap = new ObjMap();
-                    headMap.append("fileId", this.fileId);
+                    JSONObject bodyMap = MapOf.newJSONObject();
+                    headMap.fluentPut("fileId", this.fileId);
                     /*设置消息内容发送次数*/
-                    headMap.append("bodyId", i + 1);
-                    headMap.append("offset", offSet);
-                    headMap.append("datas", ByteString.copyFrom(this.fileDatas, offSet, readCount).toByteArray());
+                    headMap.fluentPut("bodyId", i + 1);
+                    headMap.fluentPut("offset", offSet);
+                    headMap.fluentPut("datas", ByteString.copyFrom(this.fileDatas, offSet, readCount).toByteArray());
 
-                    result = session.rpc("rpc.upload.file.body", bodyMap.toJson()).get();
+                    result = session.rpc("rpc.upload.file.body", bodyMap.toJSONString()).get();
                     if (!"OK!".equalsIgnoreCase(result)) {
                         throw new Throw("文件传输失败-BODY：" + result);
                     }
@@ -176,9 +177,9 @@ public class UpFileAccess implements Serializable {
         float s = (fileDatas.length / 1024f) / execTime * 1000;
 
         return filePath
-                + ", 最后修改时间：" + MyClock.formatDate(MyClock.SDF_YYYYMMDDHHMMSS_1, jsonObject.getLongValue(FileLastModified))
-                + ", 大小：" + fileDatas.length + " b"
-                + ", 耗时：" + execTime + " ms, 速率：" + (s) + " KB/S";
+               + ", 最后修改时间：" + MyClock.formatDate(MyClock.SDF_YYYYMMDDHHMMSS_1, jsonObject.getLongValue(FileLastModified))
+               + ", 大小：" + fileDatas.length + " b"
+               + ", 耗时：" + execTime + " ms, 速率：" + (s) + " KB/S";
     }
 
 }

@@ -1,8 +1,9 @@
 package wxdgaming.boot.core.lang;
 
+import com.alibaba.fastjson.JSONObject;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.xml.XmlUtil;
 
 import java.io.Serializable;
@@ -29,8 +30,8 @@ public final class Properties implements Serializable {
     @ElementList(inline = true)
     private ArrayList<Property> datas = new ArrayList<>();
 
-    public ObjMap toMap() {
-        ObjMap jsonObject = ObjMap.build();
+    public JSONObject toMap() {
+        JSONObject jsonObject = MapOf.newJSONObject();
         for (Property data : datas) {
             jsonObject.put(data.getKey(), data.getValue());
         }

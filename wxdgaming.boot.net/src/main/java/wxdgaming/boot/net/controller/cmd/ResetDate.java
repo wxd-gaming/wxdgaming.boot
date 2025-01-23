@@ -1,8 +1,8 @@
 package wxdgaming.boot.net.controller.cmd;
 
 
+import com.alibaba.fastjson.JSONObject;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 
@@ -20,7 +20,7 @@ public interface ResetDate {
      * 重设系统运行当前时间
      */
     @TextMapping
-    default void resetCurrentDate(StreamWriter out, ObjMap putData) throws Exception {
+    default void resetCurrentDate(StreamWriter out, JSONObject putData) throws Exception {
         String curtime = putData.getString("curtime");
         Date zdt = MyClock.parseDate(MyClock.SDF_YYYYMMDDHHMMSS_2, curtime);
         if (zdt.getTime() < System.currentTimeMillis() || zdt.getTime() < MyClock.millis()) {

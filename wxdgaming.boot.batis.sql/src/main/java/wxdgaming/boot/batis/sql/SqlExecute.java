@@ -1,8 +1,9 @@
 package wxdgaming.boot.batis.sql;
 
+import com.alibaba.fastjson.JSONObject;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.PredicateE;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.ConvertUtil;
 import wxdgaming.boot.core.lang.Tuple2;
 
@@ -47,8 +48,8 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
      * @param call   function_xxx(?,?,?,?)
      * @param params
      */
-    default List<ObjMap> prepareCallQuery(String call, Object... params) {
-        List<ObjMap> rows = new LinkedList<>();
+    default List<JSONObject> prepareCallQuery(String call, Object... params) {
+        List<JSONObject> rows = new LinkedList<>();
         try (Connection connection = getConnection()) {
             try (CallableStatement prepareCall = connection.prepareCall("{call " + call + "}")) {
                 for (int i = 0; i < params.length; i++) {
@@ -57,7 +58,7 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
                 try (ResultSet resultSet = prepareCall.executeQuery()) {
                     if (resultSet != null) {
                         while (resultSet.next()) {
-                            ObjMap rowMap = new ObjMap();
+                            JSONObject rowMap = MapOf.newJSONObject();
                             int columnCount = resultSet.getMetaData().getColumnCount();
                             for (int j = 1; j < columnCount + 1; j++) {
                                 Object object = resultSet.getObject(j);
@@ -91,8 +92,8 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
         );
     }
 
-    default List<ObjMap> query(SqlQueryBuilder sqlQueryBuilder) {
-        List<ObjMap> rows = new LinkedList<>();
+    default List<JSONObject> query(SqlQueryBuilder sqlQueryBuilder) {
+        List<JSONObject> rows = new LinkedList<>();
         Tuple2<String, Object[]> build = sqlQueryBuilder.buildSelect();
         query(build.getLeft(), build.getRight(),
                 (row) -> {
@@ -103,7 +104,7 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
         return rows;
     }
 
-    default void query(SqlQueryBuilder sqlQueryBuilder, PredicateE<ObjMap> call) {
+    default void query(SqlQueryBuilder sqlQueryBuilder, PredicateE<JSONObject> call) {
         Tuple2<String, Object[]> build = sqlQueryBuilder.buildSelect();
         query(build.getLeft(), build.getRight(), call);
     }
@@ -115,8 +116,8 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
      * @param params
      * @return
      */
-    default List<ObjMap> query(String sqlString, Object... params) {
-        List<ObjMap> rows = new LinkedList<>();
+    default List<JSONObject> query(String sqlString, Object... params) {
+        List<JSONObject> rows = new LinkedList<>();
         query(sqlString, params,
                 (row) -> {
                     rows.add(row);
@@ -131,12 +132,12 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
      * @param params
      * @param rowCall   返回 true 表现继续查询
      */
-    default void query(String sqlString, Object[] params, PredicateE<ObjMap> rowCall) {
+    default void query(String sqlString, Object[] params, PredicateE<JSONObject> rowCall) {
         queryResultSet(
                 sqlString,
                 params,
                 (resultSet) -> {
-                    ObjMap rowMap = new ObjMap();
+                    JSONObject rowMap = MapOf.newJSONObject();
                     int columnCount = resultSet.getMetaData().getColumnCount();
                     for (int j = 1; j < columnCount + 1; j++) {
                         Object object = resultSet.getObject(j);

@@ -1,5 +1,6 @@
 package wxdgaming.boot.batis.excel;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import wxdgaming.boot.agent.exception.Throw;
@@ -10,7 +11,7 @@ import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.batis.code.CodeLan;
 import wxdgaming.boot.batis.code.CreateJavaCode;
 import wxdgaming.boot.batis.enums.ColumnType;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.field.ClassMapping;
 import wxdgaming.boot.core.field.ClassWrapper;
 import wxdgaming.boot.core.lang.ConvertUtil;
@@ -809,7 +810,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
         }
         String tmpPath = savePath + packageName.replace(".", "/") + "/";
 
-        ObjMap parse = new ObjMap();
+        JSONObject parse = MapOf.newJSONObject();
         parse.put("packageName", packageName);
         parse.put("date", MyClock.nowString()/*当前时间*/);
         parse.put("tableName", entityTable.getTableName());

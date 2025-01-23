@@ -1,5 +1,6 @@
 package wxdgaming.boot.batis.sql;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
@@ -9,7 +10,6 @@ import wxdgaming.boot.batis.DataBuilder;
 import wxdgaming.boot.batis.DataHelper;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.timer.MyClock;
@@ -35,7 +35,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     /** 数据库表和表说明备注 */
     protected Map<String, String> dbTableMap = new LinkedHashMap<>();
     /** 数据库，数据结构 */
-    protected Map<String, LinkedHashMap<String, ObjMap>> dbTableStructMap = new LinkedHashMap<>();
+    protected Map<String, LinkedHashMap<String, JSONObject>> dbTableStructMap = new LinkedHashMap<>();
 
     protected SqlDataHelper() {
     }
@@ -119,8 +119,8 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         }
         if (dbTableMap.isEmpty()) {
             String sql = "SELECT TABLE_NAME,TABLE_COMMENT FROM information_schema.`TABLES` WHERE table_schema= ? ORDER BY TABLE_NAME";
-            final List<ObjMap> jsonObjects = this.query(sql, this.getDbBase());
-            for (ObjMap jsonObject : jsonObjects) {
+            final List<JSONObject> jsonObjects = this.query(sql, this.getDbBase());
+            for (JSONObject jsonObject : jsonObjects) {
                 final String table_name = jsonObject.getString("TABLE_NAME");
                 final String TABLE_COMMENT = jsonObject.getString("TABLE_COMMENT");
                 dbTableMap.put(table_name, TABLE_COMMENT);
@@ -130,7 +130,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     }
 
     @Override
-    public Map<String, LinkedHashMap<String, ObjMap>> getDbTableStructMap() {
+    public Map<String, LinkedHashMap<String, JSONObject>> getDbTableStructMap() {
         if (dbTableStructMap == null) {
             dbTableStructMap = new LinkedHashMap<>();
         }
@@ -154,8 +154,8 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                     "WHERE table_schema= ? \n" +
                     "ORDER BY TABLE_NAME, ORDINAL_POSITION;";
 
-            final List<ObjMap> jsonObjects = this.query(sql, this.getDbBase());
-            for (ObjMap jsonObject : jsonObjects) {
+            final List<JSONObject> jsonObjects = this.query(sql, this.getDbBase());
+            for (JSONObject jsonObject : jsonObjects) {
                 final String table_name = jsonObject.getString("TABLE_NAME");
                 final String column_name = jsonObject.getString("COLUMN_NAME");
                 dbTableStructMap.computeIfAbsent(table_name, l -> new LinkedHashMap<>())
@@ -411,7 +411,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         Object[] keys = null;
         LinkedList<Object[]> paramList = new LinkedList<>();
         for (String line : fileLines) {
-            ObjMap jsonObject = ObjMap.parse(line);
+            JSONObject jsonObject = FastJsonUtil.parse(line);
             TreeMap<Object, Object> stringObjectTreeMap = new TreeMap<>(jsonObject);
             if (keys == null || keys.length < stringObjectTreeMap.size()) {
                 keys = stringObjectTreeMap.keySet().toArray(new Object[0]);

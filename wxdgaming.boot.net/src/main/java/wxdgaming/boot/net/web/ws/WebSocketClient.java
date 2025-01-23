@@ -72,8 +72,8 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
     }
 
     @Override
-    public S newSession(String name, ChannelHandlerContext ctx) {
-        return (S) new WebSession(name, ctx);
+    public S newSession(ChannelHandlerContext ctx) {
+        return (S) new WebSession(this, ctx);
     }
 
     @Override public WebSocketClient<S> setOnOpen(Consumer<S> onOpen) {
@@ -209,7 +209,7 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
                 Channel channel = ctx.channel();
                 // 阻塞等待是否握手成功
                 this.webSocketClientHandshaker.handshake(channel);
-                session = newSession(this.name, ctx);
+                session = newSession(ctx);
             }
         }
 

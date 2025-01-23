@@ -1,11 +1,12 @@
 package wxdgaming.boot.batis.text.json;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DataChecked;
 import wxdgaming.boot.batis.text.TextEntityTable;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class JsonEntityTable extends TextEntityTable implements Serializable {
 
     @Override
     public String encoded(Object dbModel) {
-        ObjMap jsonObject = new ObjMap();
+        JSONObject jsonObject = MapOf.newJSONObject();
         for (Map.Entry<String, EntityField> entry : columnMap.entrySet()) {
             Object fieldValue = entry.getValue().getFieldValue(dbModel);
             if (fieldValue != null) {

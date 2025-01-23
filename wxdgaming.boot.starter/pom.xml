@@ -46,6 +46,16 @@
             <artifactId>wxdgaming.boot.net</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.batis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>wxdgaming.boot</groupId>
+            <artifactId>wxdgaming.boot.net.http.client.apache</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

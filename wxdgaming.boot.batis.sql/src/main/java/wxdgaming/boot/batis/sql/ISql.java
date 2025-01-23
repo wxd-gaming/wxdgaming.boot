@@ -1,14 +1,13 @@
 package wxdgaming.boot.batis.sql;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.ConsumerE1;
 import wxdgaming.boot.agent.function.FunctionE;
-import wxdgaming.boot.agent.function.FunctionE2;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DataChecked;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.system.MarkTimer;
 
 import java.sql.Connection;
@@ -90,7 +89,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
         if (apply != null) {
             if (apply instanceof Integer) {
                 size = (Integer) apply;
-            } else if (apply instanceof ObjMap) {
+            } else if (apply instanceof JSONObject) {
                 size = 1;
             } else if (apply instanceof Collection) {
                 size = ((Collection<?>) apply).size();
@@ -109,7 +108,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
         return apply;
     }
 
-    default <R> R builderDataModel(ObjMap rs, Class<R> rClass) {
+    default <R> R builderDataModel(JSONObject rs, Class<R> rClass) {
         final DM dataModelMapping = getDataWrapper().asEntityTable(rClass);
         return builderDataModel(rs, dataModelMapping);
     }
@@ -122,7 +121,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
      * @param entityTable
      * @return
      */
-    default <R> R builderDataModel(ObjMap rs, DM entityTable) {
+    default <R> R builderDataModel(JSONObject rs, DM entityTable) {
         try {
             Collection<EntityField> columns = entityTable.getColumns();
             /* 生成一个实例 */

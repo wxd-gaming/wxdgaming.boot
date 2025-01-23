@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.lang;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.NoArgsConstructor;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 /**
@@ -10,8 +10,7 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-11-01 16:58
  **/
-@NoArgsConstructor
-public class RunResult extends ObjMap {
+public class RunResult extends JSONObject {
 
     public static RunResult parse(String json) {
         return FastJsonUtil.parse(json, RunResult.class);
@@ -32,6 +31,10 @@ public class RunResult extends ObjMap {
     /** code不等于1表示异常 */
     public static RunResult error(int code, String msg) {
         return new RunResult().code(code).errorMsg(msg);
+    }
+
+    public RunResult() {
+        super(true);
     }
 
     /** code不等于1表示异常 */
@@ -76,8 +79,9 @@ public class RunResult extends ObjMap {
         return parseObject("data", r);
     }
 
-    @Override public RunResult append(Object key, Object value) {
-        super.append(key, value);
+    @Override public RunResult fluentPut(String key, Object value) {
+        super.fluentPut(key, value);
         return this;
     }
+
 }

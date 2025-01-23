@@ -98,7 +98,7 @@ public class PgsqlTest {
                         logTest.getSensors().put("b", RandomUtils.random(1, 10000));
                         // logTest.getSensors().put("c", RandomUtils.random(1, 10000));
                         // logTest.getSensors().put("d", RandomUtils.random(1, 10000));
-                        // logTest.getSensors().put("e", new JSONObject().fluentPut("aa", String.valueOf(RandomUtils.random(1, 10000))));
+                        // logTest.getSensors().put("e", MapOf.toJSONObject("aa", String.valueOf(RandomUtils.random(1, 10000))));
                         dataHelper.getBatchPool().insert(logTest);
                     }
                     System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");

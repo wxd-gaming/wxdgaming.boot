@@ -1,8 +1,8 @@
 package wxdgaming.boot.core.threading;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.collection.ObjMap;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import java.util.Map;
  **/
 @Slf4j
 @Getter
-public class ThreadContext extends ObjMap {
+public class ThreadContext extends JSONObject {
 
     private static final ThreadLocal<ThreadContext> local = new InheritableThreadLocal<>();
 
@@ -45,7 +45,7 @@ public class ThreadContext extends ObjMap {
     }
 
     /** put参数 */
-    public static <T> void putContent(final Object name, T ins) {
+    public static <T> void putContent(final String name, T ins) {
         context().put(name, ins);
     }
 
@@ -55,7 +55,7 @@ public class ThreadContext extends ObjMap {
     }
 
     /** put参数 */
-    public static <T> void putContentIfAbsent(final Object name, T ins) {
+    public static <T> void putContentIfAbsent(final String name, T ins) {
         context().putIfAbsent(name, ins);
     }
 

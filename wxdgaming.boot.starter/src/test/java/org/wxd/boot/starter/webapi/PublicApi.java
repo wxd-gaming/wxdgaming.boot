@@ -1,6 +1,6 @@
 package org.wxd.boot.starter.webapi;
 
-import wxdgaming.boot.core.collection.ObjMap;
+import com.alibaba.fastjson.JSONObject;
 import wxdgaming.boot.core.lang.RandomUtils;
 import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.threading.ExecutorLog;
@@ -19,25 +19,25 @@ import wxdgaming.boot.net.web.hs.HttpSession;
 public class PublicApi {
 
     @TextMapping(remarks = "公共接口")
-    public String index(HttpSession httpSession, ObjMap objMap) {
+    public String index(HttpSession httpSession, JSONObject objMap) {
         return "holle";
     }
 
     @TextMapping(remarks = "test")
-    public void test0(HttpSession httpSession, ObjMap objMap) throws Exception {
+    public void test0(HttpSession httpSession, JSONObject objMap) throws Exception {
         httpSession.responseOver();
         httpSession.responseText("test");
     }
 
     @TextMapping(remarks = "test")
-    public String test1(HttpSession httpSession, ObjMap objMap) throws Exception {
+    public String test1(HttpSession httpSession, JSONObject objMap) throws Exception {
         int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";
     }
 
     @TextMapping(remarks = "test")
-    public String test2(HttpSession httpSession, ObjMap objMap) throws Exception {
+    public String test2(HttpSession httpSession, JSONObject objMap) throws Exception {
         int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";
@@ -45,7 +45,7 @@ public class PublicApi {
 
     @ThreadInfo(vt = true)
     @TextMapping(remarks = "test")
-    public String test3(HttpSession httpSession, ObjMap objMap) throws Exception {
+    public String test3(HttpSession httpSession, JSONObject objMap) throws Exception {
         int random = RandomUtils.random(6);
         Thread.sleep(random);
         return "test";

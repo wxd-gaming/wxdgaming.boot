@@ -3,7 +3,6 @@ package wxdgaming.boot.starter;
 import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.function.*;
@@ -111,19 +110,19 @@ public interface ContextAction {
         forEachBean(filter, (SerializableLambda) function, args);
     }
 
-    default <T1> void forEachBean(Class<T> filter, ConsumerE1<T1> function, Object... args) {
+    default <T1> void forEachBean(Class<T1> filter, ConsumerE1<T1> function, Object... args) {
         forEachBean(filter, (SerializableLambda) function, args);
     }
 
-    default <T1, T2> void forEachBean(Class<T> filter, ConsumerE2<T1, T2> function, Object... args) {
+    default <T1, T2> void forEachBean(Class<T1> filter, ConsumerE2<T1, T2> function, Object... args) {
         forEachBean(filter, (SerializableLambda) function, args);
     }
 
-    default <T1, T2, T3> void forEachBean(Class<T> filter, ConsumerE3<T1, T2, T3> function, Object... args) {
+    default <T1, T2, T3> void forEachBean(Class<T1> filter, ConsumerE3<T1, T2, T3> function, Object... args) {
         forEachBean(filter, (SerializableLambda) function, args);
     }
 
-    default <T1, T2, T3, T4> void forEachBean(Class<T> filter, ConsumerE4<T1, T2, T3, T4> function, Object... args) {
+    default <T1, T2, T3, T4> void forEachBean(Class<T1> filter, ConsumerE4<T1, T2, T3, T4> function, Object... args) {
         forEachBean(filter, (SerializableLambda) function, args);
     }
 

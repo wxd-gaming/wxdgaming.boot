@@ -2,7 +2,7 @@ package code;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.net.http.client.url.HttpBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,7 +57,7 @@ public class HttpTest {
             long n = System.nanoTime();
             AtomicInteger tmp = new AtomicInteger();
             HttpBuilder.postMulti(url)
-                    .putParams(ObjMap.build(1, 1))
+                    .putParams(MapOf.newJSONObject("1", 1))
                     .timeout(3200)
                     .readTimeout(8000)
                     .logTime(5000)

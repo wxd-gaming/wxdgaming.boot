@@ -1,10 +1,10 @@
 package wxdgaming.boot.batis.sql;
 
+import com.alibaba.fastjson.JSONObject;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -125,7 +125,7 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
     }
 
     /** 检测字段是否变更 */
-    default boolean columnTypeChange(EntityField newField, ObjMap oldField) {
+    default boolean columnTypeChange(EntityField newField, JSONObject oldField) {
         return !Objects.equals(oldField.getString("DATA_TYPE").toLowerCase(), newField.getColumnType().getMysqlTypeName().toLowerCase());
     }
 
@@ -133,13 +133,13 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
      * 新建表返回true，如果不是返回false
      */
     default void createTable(DM entityTable, String tableName, String tableComment) {
-        final LinkedHashMap<String, ObjMap> tableColumns = getDbTableStructMap().get(tableName);
+        final LinkedHashMap<String, JSONObject> tableColumns = getDbTableStructMap().get(tableName);
         if (tableColumns != null) {
             LinkedHashMap<String, EntityField> columnMap = entityTable.getColumnMap();
             EntityField upField = null;
             for (EntityField entityField : columnMap.values()) {
                 String columnName = entityField.getColumnName();
-                ObjMap objMap = tableColumns.get(columnName);
+                JSONObject objMap = tableColumns.get(columnName);
                 if (objMap == null) {
                     String addColumn = getDataWrapper().buildAddColumn(tableName, entityField, upField);
                     this.executeUpdate(addColumn);
@@ -167,6 +167,6 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
         }
     }
 
-    Map<String, LinkedHashMap<String, ObjMap>> getDbTableStructMap();
+    Map<String, LinkedHashMap<String, JSONObject>> getDbTableStructMap();
 
 }

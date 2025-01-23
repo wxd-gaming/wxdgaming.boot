@@ -1,10 +1,10 @@
 package wxdgaming.boot.net.web.hs.controller.cmd;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.controller.ann.TextMapping;
@@ -24,7 +24,7 @@ public interface HttpFtp {
     Logger log = LoggerFactory.getLogger(HttpFtp.class);
 
     @TextMapping
-    default void ftp(HttpSession httpSession, ObjMap putData) throws Exception {
+    default void ftp(HttpSession httpSession, JSONObject putData) throws Exception {
 
         String userHome = JvmUtil.userHome();
         userHome = FileUtil.getCanonicalPath(userHome);

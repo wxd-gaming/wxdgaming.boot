@@ -31,9 +31,8 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
         return this;
     }
 
-    @Override
-    public S newSession(String name, ChannelHandlerContext ctx) {
-        return (S) new TcpSession(name, ctx);
+    @Override public S newSession(ChannelHandlerContext ctx) {
+        return (S) new TcpSession(this, ctx);
     }
 
     @Override
@@ -93,7 +92,7 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
             super.channelActive(ctx);
             S session = NioFactory.attr(ctx, NioFactory.Session);
             if (session == null) {
-                session = newSession(this.name, ctx);
+                session = newSession(ctx);
                 openSession(session);
             }
         }
@@ -111,18 +110,16 @@ public class TcpClient<S extends TcpSession> extends NioClient<S> implements ILo
                 if (session != null) {
                     closeSession(session);
                     if (getAllSessionMap().isEmpty()) {
-                        log.error(TcpClient.this.toString() + ", 链接全部被关闭", new RuntimeException("链接全部被关闭"));
+                        log.error("{}, 链接全部被关闭", TcpClient.this.toString(), new RuntimeException("链接全部被关闭"));
                     }
                     session.disConnect("链接断开");
                 } else {
                     try {
                         ctx.disconnect();
-                    } catch (Exception e) {
-                    }
+                    } catch (Exception ignored) {}
                     try {
                         ctx.close();
-                    } catch (Exception e) {
-                    }
+                    } catch (Exception ignored) {}
                 }
             } finally {
                 super.channelUnregistered(ctx);

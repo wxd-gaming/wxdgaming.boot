@@ -168,7 +168,7 @@ public abstract class NioClient<S extends SocketSession> extends NioBase
         return future;
     }
 
-    public abstract S newSession(String name, ChannelHandlerContext ctx);
+    public abstract S newSession(ChannelHandlerContext ctx);
 
     @Override
     public void openSession(S session) {

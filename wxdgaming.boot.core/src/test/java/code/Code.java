@@ -1,13 +1,14 @@
 package code;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.carrotsearch.hppc.IntIntHashMap;
 import org.junit.Test;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.loader.JavaFileObject4StringCode;
 import wxdgaming.boot.core.append.JoinBuilder;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentHashSet;
 import wxdgaming.boot.core.format.TimeFormat;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
@@ -82,14 +83,13 @@ public class Code implements Serializable {
 
     @Test
     public void objMap() {
-        ObjMap objMap = new ObjMap();
-        objMap.put(1, 1);
+        JSONObject objMap = MapOf.newJSONObject();
         objMap.put("1", 2);
         String s = FastJsonUtil.toJson(objMap);
         System.out.println(s);
-        ObjMap parse = FastJsonUtil.parse(s, ObjMap.class);
-        System.out.println(parse.getInteger(2));
-        System.out.println(parse.getIntValue(2));
+        JSONObject parse = FastJsonUtil.parse(s, JSONObject.class);
+        System.out.println(parse.getInteger("2"));
+        System.out.println(parse.getIntValue("2"));
         System.out.println(parse.getString("1"));
         System.out.println(parse);
     }

@@ -39,15 +39,17 @@ public abstract class Session extends LockBase implements Serializable {
     private String localAddress = null;
     private String remoteAddress = null;
     private boolean isDisConnect = false;
+    private Class<? extends NioBase> nioBaseClass;
 
-    public Session(String name, ChannelHandlerContext channelContext) {
+    public Session(NioBase nioBase, ChannelHandlerContext channelContext) {
         this.createTime = MyClock.millis();
         this.id = sessionId0.incrementAndGet();
-        this.name = name;
+        this.nioBaseClass = nioBase.getClass();
+        this.name = nioBase.getName();
         this.channelContext = channelContext;
         NioFactory.attr(channelContext, NioFactory.Session, this);
         if (log.isDebugEnabled()) {
-            log.debug("链接完成 , " + this.toString());
+            log.debug("链接完成 , {}", this.toString());
         }
     }
 
@@ -175,8 +177,8 @@ public abstract class Session extends LockBase implements Serializable {
     @Override
     public String toString() {
         return this.name + "：" + NioFactory.getCtxName(channelContext) + ", "
-                + this.getId() + ", "
-                + this.getRemoteAddress() + ", 状态：registered = " + isRegistered() + ", active = " + isActive();
+               + this.getId() + ", "
+               + this.getRemoteAddress() + ", 状态：registered = " + isRegistered() + ", active = " + isActive();
     }
 
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- @author: wxd-gaming(無心道, 15388152619) -->
+<bootConfig>
+    <!-- 虚拟线程池 -->
+    <vtExecutor coreSize="100" maxSize="200"/>
+    <!-- 默认线程池 -->
+    <defaultExecutor coreSize="2" maxSize="4"/>
+    <!-- 逻辑线程池 -->
+    <logicExecutor coreSize="8" maxSize="16"/>
+    <http>
+        <name>default</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>19000</port>
+        <sslProtocolType></sslProtocolType>
+        <jks>jks/wxdtest-1.8.jks</jks>
+        <jksPwd>jks/wxdtest-1.8.jks.pwd</jksPwd>
+        <serviceClassName>wxdgaming.boot.starter.service.HsService</serviceClassName>
+        <needCache>true</needCache>
+        <resourcesPath></resourcesPath>
+        <headers>
+            <!-- 跨域支持 -->
+            <KV key="Access-Control-Allow-Origin" value="*"/>
+            <KV key="Access-Control-Allow-Methods" value="GET,PUT,POST,DELETE,OPTIONS"/>
+            <KV key="Access-Control-Allow-Credentials" value="true"/>
+            <KV key="Access-Control-Allow-Headers"
+                value="DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"/>
+            <!-- 添加缓存 -->
+            <!--            <KV key="pragma" value="private"/>-->
+            <!--            <KV key="expires" value="Mon, 23 Jan 2099 12:52:30 GMT"/>-->
+            <!--            <KV key="cache-control" value="max-age=36000"/>-->
+        </headers>
+    </http>
+    <tcpSocket>
+        <name>g1</name>
+        <host>*</host>
+        <wanIp>127.0.0.1</wanIp>
+        <port>17000</port>
+        <sslProtocolType></sslProtocolType>
+        <jks></jks>
+        <jksPwd></jksPwd>
+    </tcpSocket>
+    <pgsql>
+        <name>default</name>
+        <show_sql>true</show_sql>
+        <connectionPool>true</connectionPool>
+        <batchSizeThread>1</batchSizeThread>
+        <dbHost>192.168.137.10</dbHost>
+        <dbPort>5432</dbPort>
+        <dbBase>backend</dbBase>
+        <dbUser>postgres</dbUser>
+        <dbPwd>test</dbPwd>
+    </pgsql>
+    <!--    <redis>-->
+    <!--        <name>数据源1</name>-->
+    <!--        <dbHost>127.0.0.1</dbHost>-->
+    <!--        <dbPort>6379</dbPort>-->
+    <!--        <dbPwd>test</dbPwd>-->
+    <!--    </redis>-->
+
+    <other>
+        <KV key="a" value="a"/>
+    </other>
+</bootConfig>

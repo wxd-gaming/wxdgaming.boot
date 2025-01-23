@@ -22,6 +22,7 @@ import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.DumpUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.threading.Executors;
+import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.starter.action.ActionProtoController;
 import wxdgaming.boot.starter.action.ActionTextController;
 import wxdgaming.boot.starter.action.ActionTimer;
@@ -71,9 +72,7 @@ public class AppContext {
         });
 
         GlobalUtil.exceptionCall = (o, throwable) -> {
-            if (StringUtil.emptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
-                logger().error("{}", o, throwable);
-            else
+            if (StringUtil.notEmptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
                 FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
         };
 
@@ -84,7 +83,7 @@ public class AppContext {
         System.out.println("读取文件目录：" + inputStream.t1());
         BootConfig.setInstance(XmlUtil.fromXml(inputStream.t2(), BootConfig.class));
 
-        Set<String> packages1 = SetOf.asSet(AppContext.class.getPackageName());
+        Set<String> packages1 = SetOf.asSet(AppContext.class.getPackageName(), NioBase.class.getPackageName());
         packages1.addAll(Arrays.asList(packages));
         String[] array = packages1.toArray(new String[0]);
         ReflectContext.Builder builder = ReflectContext.Builder.of(array);

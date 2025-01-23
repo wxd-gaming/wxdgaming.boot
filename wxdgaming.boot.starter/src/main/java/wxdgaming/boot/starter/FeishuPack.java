@@ -2,7 +2,7 @@ package wxdgaming.boot.starter;
 
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.collection.SplitCollection;
 import wxdgaming.boot.core.lang.LockBase;
 import wxdgaming.boot.core.str.StringUtil;
@@ -103,8 +103,8 @@ public class FeishuPack extends Event {
 
                     String text = title + "\n" + FeishuPublicProperty + "\n内容：\n" + content;
 
-                    final Object put = ObjMap.build("msg_type", "text")
-                            .append("content", ObjMap.build("text", text));
+                    final Object put = MapOf.newJSONObject("msg_type", "text")
+                            .fluentPut("content", MapOf.newJSONObject("text", text));
 
                     String requestText = FastJsonUtil.toJson(put);
 

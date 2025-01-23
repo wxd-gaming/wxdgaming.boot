@@ -1,10 +1,10 @@
 package wxdgaming.boot.starter.net.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.loader.ClassBytesLoader;
 import wxdgaming.boot.agent.system.Base64Util;
 import wxdgaming.boot.agent.zip.ZipUtil;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.net.controller.ann.TextMapping;
@@ -26,7 +26,7 @@ public interface RunCode {
      * 运行动态代码
      */
     @TextMapping(remarks = "动态执行代码", needAuth = 9/*必须验证权限*/)
-    default void runCode(HttpSession httpSession, ObjMap putData) throws Exception {
+    default void runCode(HttpSession httpSession, JSONObject putData) throws Exception {
         String codebase64 = putData.getString("codebase64");
         byte[] decode = Base64Util.decode2Byte(codebase64);
         String javaClasses = ZipUtil.unzip2String(decode);
@@ -44,7 +44,7 @@ public interface RunCode {
                     PostCodeRun newInstance = (PostCodeRun) aClass.getDeclaredConstructor().newInstance();
                     newInstance.setIocInjector(AppContext.context());
                     RunResult result = newInstance.run(params);
-                    httpSession.responseText(result.toJson());
+                    httpSession.responseText(result.toJSONString());
                     return;
                 }
             }

@@ -1,12 +1,13 @@
 package wxdgaming.boot.net;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.zip.GzipUtil;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.message.rpc.ResRemote;
 import wxdgaming.boot.net.util.ByteBufUtil;
@@ -25,10 +26,10 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
     protected int readCount = 0;
     protected long lastReadTime = 0;
     protected long lastSendMailTime = 0;
-    protected ObjMap tmpOthers = null;
+    protected JSONObject tmpOthers = null;
 
-    public SocketSession(String name, ChannelHandlerContext channel) {
-        super(name, channel);
+    public SocketSession(NioBase nioBase, ChannelHandlerContext channel) {
+        super(nioBase, channel);
     }
 
     @Override
@@ -77,10 +78,10 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
     public void checkReadCount(int maxReadCount) {
         if (maxReadCount > 0) {
             if (this.getReadCount() > (maxReadCount * 0.75)) {
-                log.warn("收取消息过于频繁---- 最大值：" + maxReadCount + ", 当前：" + this.getReadCount() + " - > " + this.getId());
+                log.warn("收取消息过于频繁---- 最大值：{}, 当前：{} - > {}", maxReadCount, this.getReadCount(), this.getId());
             }
             if (this.getReadCount() > maxReadCount) {
-                log.warn("收取消息过于频繁---- 最大值：" + maxReadCount + ", 当前：" + this.getReadCount() + " - > " + this.getId());
+                log.warn("收取消息过于频繁---- 最大值：{}, 当前：{} - > {}", maxReadCount, this.getReadCount(), this.getId());
                 this.disConnect("收取消息过于频繁");
             }
         }
@@ -98,9 +99,9 @@ public abstract class SocketSession extends Session implements SessionWriter, Se
         }
     }
 
-    public ObjMap getTmpOthers() {
+    public JSONObject getTmpOthers() {
         if (tmpOthers == null) {
-            tmpOthers = new ObjMap();
+            tmpOthers = MapOf.newJSONObject();
         }
         return tmpOthers;
     }

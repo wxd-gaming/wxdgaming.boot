@@ -10,7 +10,6 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import wxdgaming.boot.agent.function.SLFunction1;
 import wxdgaming.boot.agent.io.Objects;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.bit.BitFlag;
 
 import java.lang.reflect.Type;
@@ -157,10 +156,6 @@ public class FastJsonUtil {
         return JSON.parseObject(bytes, JSONObject.class, Reader_Features);
     }
 
-    public static ObjMap parseObjMap(byte[] bytes) {
-        return JSON.parseObject(bytes, ObjMap.class, Reader_Features);
-    }
-
     public static <T> T parse(byte[] bytes, Type clazz) {
         return JSON.parseObject(bytes, clazz, Reader_Features);
     }
@@ -180,10 +175,6 @@ public class FastJsonUtil {
 
     public static JSONObject parse(String str) {
         return JSON.parseObject(str, JSONObject.class, Reader_Features);
-    }
-
-    public static ObjMap parseObjMap(String str) {
-        return JSON.parseObject(str, ObjMap.class, Reader_Features);
     }
 
     public static <T> T parse(String str, Type type) {

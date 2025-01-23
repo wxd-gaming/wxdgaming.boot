@@ -1,13 +1,14 @@
 package wxdgaming.boot.net.web.hs.util;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import wxdgaming.boot.core.str.TemplatePack;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.collection.ListOf;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.format.ByteFormat;
 import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.http.HttpDataAction;
@@ -62,23 +63,23 @@ public class FtpFileUtil implements Serializable {
             if (ftpPath.length() < 2) break;
             ftpPath = ftpPath.substring(1);
         }
-        ObjMap objMap = new ObjMap();
+        JSONObject objMap = MapOf.newJSONObject();
         List<String> pathList = ListOf.asList(ftpPath.split("\\/"));
         pathList.add(0, "/");
         String htmlPath = "";
-        ArrayList<ObjMap> urls = new ArrayList<>();
+        ArrayList<JSONObject> urls = new ArrayList<>();
 
-        objMap.append("urls", urls);
+        objMap.fluentPut("urls", urls);
 
         for (String s : pathList) {
             if (htmlPath.length() > 1) htmlPath += "/";
             htmlPath += s;
-            urls.add(new ObjMap().append("text", s).append("url", ftpUrl + "?path=" + HttpDataAction.urlEncoder(htmlPath) + "&pageSize=" + pageSize));
+            urls.add(MapOf.newJSONObject("text", s).fluentPut("url", ftpUrl + "?path=" + HttpDataAction.urlEncoder(htmlPath) + "&pageSize=" + pageSize));
         }
 
         int pageMaxNumber = 0;
 
-        List<ObjMap> datas = new ArrayList<>();
+        List<JSONObject> datas = new ArrayList<>();
         if (files != null && files.length > 0) {
             pageMaxNumber = (files.length / pageSize) + (files.length % pageSize > 0 ? 1 : 0);
             if (pageNumber >= pageMaxNumber) {
@@ -123,42 +124,42 @@ public class FtpFileUtil implements Serializable {
                 }
 
                 count++;
-                datas.add(new ObjMap()
-                        .append("id", String.valueOf(count))
-                        .append("text", list.getName())
-                        .append("url", ftpUrl + "?path=" + HttpDataAction.urlEncoder(listPath) + "&pageSize=" + pageSize)
-                        .append("isFile", list.isFile())
-                        .append("dateString", dateString)
-                        .append("byteString", byteString)
+                datas.add(MapOf.newJSONObject()
+                        .fluentPut("id", String.valueOf(count))
+                        .fluentPut("text", list.getName())
+                        .fluentPut("url", ftpUrl + "?path=" + HttpDataAction.urlEncoder(listPath) + "&pageSize=" + pageSize)
+                        .fluentPut("isFile", list.isFile())
+                        .fluentPut("dateString", dateString)
+                        .fluentPut("byteString", byteString)
                 );
             }
         }
 
-        objMap.append("datas", datas);
+        objMap.fluentPut("datas", datas);
 
-        objMap.append("search", search);
-        objMap.append("pageSize", String.valueOf(pageSize));
-        objMap.append("pageNumber", String.valueOf(pageNumber));
-        objMap.append("pageMaxNumber", String.valueOf(pageMaxNumber));
-        objMap.append("pageMaxIndex", String.valueOf(pageMaxNumber - 1));
+        objMap.fluentPut("search", search);
+        objMap.fluentPut("pageSize", String.valueOf(pageSize));
+        objMap.fluentPut("pageNumber", String.valueOf(pageNumber));
+        objMap.fluentPut("pageMaxNumber", String.valueOf(pageMaxNumber));
+        objMap.fluentPut("pageMaxIndex", String.valueOf(pageMaxNumber - 1));
         int pageUpIndex = pageNumber - 1;
         if (pageUpIndex < 1) {
             pageUpIndex = 1;
         }
-        objMap.append("pageUpIndex", String.valueOf(pageUpIndex));
+        objMap.fluentPut("pageUpIndex", String.valueOf(pageUpIndex));
 
         int pageNextIndex = pageNumber + 1;
         if (pageNextIndex >= pageMaxNumber) {
             pageNextIndex = pageMaxNumber;
         }
-        objMap.append("pageNextIndex", String.valueOf(pageNextIndex));
+        objMap.fluentPut("pageNextIndex", String.valueOf(pageNextIndex));
 
         TemplatePack templatePack = TemplatePack.build(FtpFileUtil.class.getClassLoader(), "template/ftp");
         String ftphtml = templatePack.ftl2String("ftp.ftl", objMap);
 
         if (httpSession != null) {
             if (httpSession.getReqParams().getIntValue("pageSize") != pageSize
-                    || httpSession.getReqParams().getIntValue("pageNumber") != pageNumber) {
+                || httpSession.getReqParams().getIntValue("pageNumber") != pageNumber) {
                 String uriPath = httpSession.getUriPath();
                 httpSession.getReqParams().put("pageSize", pageSize);
                 httpSession.getReqParams().put("pageNumber", pageNumber);

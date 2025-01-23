@@ -1,5 +1,6 @@
 package wxdgaming.boot.batis.code;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -12,7 +13,7 @@ import wxdgaming.boot.batis.struct.DbBean;
 import wxdgaming.boot.batis.struct.DbColumn;
 import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.field.ClassMapping;
 import wxdgaming.boot.core.field.ClassWrapper;
 import wxdgaming.boot.core.str.TemplatePack;
@@ -40,7 +41,7 @@ public class CreateJavaCode implements Serializable, ICreateCode {
             savePath += "/";
         }
 
-        ObjMap parse = new ObjMap();
+        JSONObject parse = MapOf.newJSONObject();
         parse.put("packageName", packageName);
         parse.put("tableName", entityTable.getTableName());
         parse.put("tableComment", entityTable.getTableComment());

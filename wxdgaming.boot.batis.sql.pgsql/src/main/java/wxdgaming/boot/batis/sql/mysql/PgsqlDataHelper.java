@@ -1,12 +1,12 @@
 package wxdgaming.boot.batis.sql.mysql;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
-import wxdgaming.boot.core.collection.ObjMap;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -187,8 +187,8 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
                     JOIN pg_namespace n ON n.oid = c.relnamespace
                     WHERE c.relkind = 'r' AND n.nspname = 'public'
                     """;
-            final List<ObjMap> jsonObjects = this.query(sql);
-            for (ObjMap jsonObject : jsonObjects) {
+            final List<JSONObject> jsonObjects = this.query(sql);
+            for (JSONObject jsonObject : jsonObjects) {
                 final String table_name = jsonObject.getString("table_name");
                 final String TABLE_COMMENT = jsonObject.getString("table_comment");
                 dbTableMap.put(table_name, TABLE_COMMENT);
@@ -198,7 +198,7 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
     }
 
     @Override
-    public Map<String, LinkedHashMap<String, ObjMap>> getDbTableStructMap() {
+    public Map<String, LinkedHashMap<String, JSONObject>> getDbTableStructMap() {
         if (dbTableStructMap == null) {
             dbTableStructMap = new LinkedHashMap<>();
         }
@@ -222,8 +222,8 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
                     ORDER BY c.relname,a.attnum;
                     """;
 
-            final List<ObjMap> jsonObjects = this.query(pgsql);
-            for (ObjMap jsonObject : jsonObjects) {
+            final List<JSONObject> jsonObjects = this.query(pgsql);
+            for (JSONObject jsonObject : jsonObjects) {
                 final String table_name = jsonObject.getString("table_name");
                 final String column_name = jsonObject.getString("column_name");
                 dbTableStructMap.computeIfAbsent(table_name, l -> new LinkedHashMap<>())
@@ -233,7 +233,7 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
         return dbTableStructMap;
     }
 
-    @Override public boolean columnTypeChange(EntityField newField, ObjMap oldField) {
+    @Override public boolean columnTypeChange(EntityField newField, JSONObject oldField) {
         return !Objects.equals(oldField.getString("column_type").toLowerCase(), newField.getColumnType().getPgsqlTypeName().toLowerCase());
     }
 

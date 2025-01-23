@@ -1,29 +1,17 @@
 package wxdgaming.boot.net.handler;
 
-import com.alibaba.fastjson.JSONObject;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
-import wxdgaming.boot.agent.zip.GzipUtil;
-import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.controller.ProtoMappingRecord;
-import wxdgaming.boot.net.controller.TextMappingRecord;
 import wxdgaming.boot.net.message.MessagePackage;
-import wxdgaming.boot.net.message.RpcEvent;
-import wxdgaming.boot.net.message.UpFileAccess;
-import wxdgaming.boot.net.message.rpc.ReqRemote;
-import wxdgaming.boot.net.message.rpc.ResRemote;
 import wxdgaming.boot.net.pojo.PojoBase;
 import wxdgaming.boot.net.util.ByteBufUtil;
 
@@ -101,124 +89,11 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
     default void action(S session, int messageId, byte[] messageBytes) {
         try {
-            if (messageId == MessagePackage.getMessageId(ReqRemote.class)) {
-                ReqRemote reqSyncMessage = ReqRemote.parseFrom(messageBytes);
-                log.debug("收到消息：{} {}{}", session, reqSyncMessage.getClass().getSimpleName(), FastJsonUtil.toJson(reqSyncMessage));
-                long rpcId = reqSyncMessage.getRpcId();
-                String params = reqSyncMessage.getParams();
-                if (reqSyncMessage.getGzip() == 1) {
-                    params = GzipUtil.unGzip2String(params);
-                }
-                /*处理消息--理论上是丢出去了的*/
-                final JSONObject putData = FastJsonUtil.parse(params);
-                String cmd = reqSyncMessage.getCmd().toLowerCase();
-                switch (cmd) {
-                    case "rpc.heart" -> {
-                        session.rpcResponse(rpcId, "OK!");
-                    }
-                    case "rpc.upload.file.head" -> {
-                        /*todo 接收文件头*/
-                        long fileId = putData.getLongValue("fileId");
-                        int bodyCount = putData.getIntValue("bodyCount");
-                        String objectString = putData.getString("params");
-                        UpFileAccess.readHead(fileId, bodyCount, objectString);
-                        session.rpcResponse(rpcId, "OK!");
-                    }
-                    case "rpc.upload.file.body" -> {
-                        /*todo 接收文件内容*/
-                        long fileId = putData.getLongValue("fileId");
-                        int bodyId = putData.getIntValue("bodyId");
-                        int offset = putData.getIntValue("offset");
-                        byte[] datas = putData.getObject("datas", byte[].class);
-                        UpFileAccess fileAccess = UpFileAccess.readBody(fileId, bodyId, offset, datas);
-                        if (fileAccess.getReadMaxCount() <= bodyId) {
-                            /*表示读取完成*/
-                            upFile(fileAccess);
-                        }
-                        session.rpcResponse(rpcId, "OK!");
-                    }
-                    default -> {
-                        if (StringUtil.emptyOrNull(cmd)) {
-                            log.info("{} 命令参数 cmd , 未找到", session.toString());
-                            if (rpcId > 0) {
-                                session.rpcResponse(rpcId, RunResult.error("命令参数 cmd , 未找到").toJson());
-                            }
-                            return;
-                        }
-                        actionCmdListener(session, rpcId, cmd, putData);
-                    }
-                }
-                return;
-            }
-
-            if (messageId == MessagePackage.getMessageId(ResRemote.class)) {
-                ResRemote resSyncMessage = ResRemote.parseFrom(messageBytes);
-                if (log.isDebugEnabled())
-                    log.debug("收到消息：{} {}{}", session, resSyncMessage.getClass().getSimpleName(), FastJsonUtil.toJson(resSyncMessage));
-                if (resSyncMessage.getRpcId() > 0) {
-                    String params = resSyncMessage.getParams();
-                    if (resSyncMessage.getGzip() == 1) {
-                        params = GzipUtil.unGzip2String(params);
-                    }
-                    RpcEvent syncrequest = RpcEvent.RPC_REQUEST_CACHE_PACK.getIfPresent(resSyncMessage.getRpcId());
-                    if (syncrequest != null) {
-                        syncrequest.response(resSyncMessage.getParams());
-                    } else {
-                        log.info(
-                                "{} 同步消息回来后，找不到同步对象 {}, rpcId={}, params={}",
-                                getName(),
-                                this.toString(),
-                                resSyncMessage.getRpcId(),
-                                params,
-                                new RuntimeException()
-                        );
-                    }
-                }
-                return;
-            }
-
             /*处理消息--理论上是丢出去了的*/
             onMessage(session, messageId, messageBytes);
         } catch (Exception e) {
             GlobalUtil.exception("读取消息异常 " + toString(), e);
         }
-    }
-
-    default void actionCmdListener(S session, long rpcId, String cmd, JSONObject putData) {
-        final String methodNameLowerCase = cmd.toLowerCase().trim();
-        TextMappingRecord mappingRecord = MappingFactory.textMappingRecord((Class<? extends NioBase>) getClass(), methodNameLowerCase);
-        if (mappingRecord == null) {
-            log.info("{} not found url {}", session.toString(), cmd);
-            if (rpcId > 0) {
-                session.rpcResponse(rpcId, RunResult.error("not found url " + cmd).toJson());
-            }
-            return;
-        }
-        final MarkTimer markTimer = MarkTimer.build();
-        final StreamWriter outAppend = new StreamWriter(1024);
-        TextListenerAction listenerAction = new TextListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
-            if (showLog) {
-                log.info("\n执行：" + session.toString()
-                         + "\n" + markTimer.execTime2String() +
-                         "\nrpcId=" + rpcId +
-                         "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
-                         "\n结果 = " + outAppend.toString());
-            }
-            if (rpcId > 0) {
-                session.rpcResponse(rpcId, outAppend.toString());
-            }
-        });
-
-        if (MappingFactory.TextMappingSubmitBefore != null) {
-            try {
-                Boolean apply = MappingFactory.TextMappingSubmitBefore.apply(session, listenerAction);
-                if (Boolean.FALSE.equals(apply)) return;
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        listenerAction.submit();
     }
 
     /**
@@ -235,7 +110,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                 PojoBase message = MessagePackage.parseMessage(messageId, messageBytes);
                 onMessage(session, messageId, message);
             } catch (Throwable e) {
-                log.error(mapping.toString() + " -> 遇到错误", e);
+                log.error("{} -> 遇到错误", mapping.toString(), e);
             }
         } else {
             this.notController(session, messageId, messageBytes);
@@ -298,10 +173,6 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     new RuntimeException()
             );
         }
-    }
-
-    default void upFile(UpFileAccess upFileAccess) throws Exception {
-        upFileAccess.saveFile();
     }
 
 }

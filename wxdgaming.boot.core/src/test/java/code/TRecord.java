@@ -1,7 +1,6 @@
 package code;
 
 import org.junit.Test;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.format.data.Data2Json;
 
 /**
@@ -13,7 +12,6 @@ import wxdgaming.boot.core.format.data.Data2Json;
 public class TRecord {
     public record T1(int i1, long l2) implements Data2Json {}
 
-    private ObjMap s = new ObjMap();
 
     @Test
     public void t1() {

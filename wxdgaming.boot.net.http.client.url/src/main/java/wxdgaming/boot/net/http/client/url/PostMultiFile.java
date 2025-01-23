@@ -1,11 +1,11 @@
 package wxdgaming.boot.net.http.client.url;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.net.http.HttpDataAction;
 import wxdgaming.boot.net.http.HttpHeadValueType;
 
@@ -82,7 +82,7 @@ public class PostMultiFile extends PostMulti {
         return this;
     }
 
-    @Override public PostMultiFile setReqMap(ObjMap reqMap) {
+    @Override public PostMultiFile setReqMap(JSONObject reqMap) {
         super.setReqMap(reqMap);
         return this;
     }

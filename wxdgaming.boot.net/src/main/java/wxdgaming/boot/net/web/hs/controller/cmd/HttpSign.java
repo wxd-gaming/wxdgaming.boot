@@ -1,7 +1,7 @@
 package wxdgaming.boot.net.web.hs.controller.cmd;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.net.auth.Sign;
 import wxdgaming.boot.net.controller.ann.TextMapping;
@@ -18,7 +18,7 @@ public interface HttpSign extends Sign<HttpSession> {
     /** 用于http登录生成秘钥的，秘钥过期时间是10分钟 */
     @Override
     @TextMapping(basePath = "/", remarks = "登录")
-    default RunResult sign(HttpSession session, ObjMap putData) {
+    default RunResult sign(HttpSession session, JSONObject putData) {
         RunResult runResult = Sign.super.sign(session, putData);
         if (runResult != null && runResult.code() == 1) {
             session.getResCookie().addCookie(

@@ -1,11 +1,12 @@
 package wxdgaming.boot.net.http.client.url;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.net.http.HttpDataAction;
 import wxdgaming.boot.net.http.HttpHeadValueType;
 
@@ -24,7 +25,7 @@ import java.util.Map;
 public class PostMulti extends Post<PostMulti> {
 
     protected boolean urlEncoder = true;
-    protected ObjMap reqMap = new ObjMap();
+    protected JSONObject reqMap = MapOf.newJSONObject();
 
     protected PostMulti(String uriPath) {
         super(uriPath);
@@ -32,7 +33,7 @@ public class PostMulti extends Post<PostMulti> {
     }
 
     public PostMulti putParams(Object key, Object value) {
-        reqMap.put(key, value);
+        reqMap.put(String.valueOf(key), value);
         return this;
     }
 
@@ -45,7 +46,7 @@ public class PostMulti extends Post<PostMulti> {
         if (reqMap.isEmpty()) return;
         boolean isMultipart = this.contentType == HttpHeadValueType.Multipart || contentType == HttpHeadValueType.FormData;
         StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<Object, Object> stringEntry : reqMap.entrySet()) {
+        for (Map.Entry<String, Object> stringEntry : reqMap.entrySet()) {
             String name = String.valueOf(stringEntry.getKey());
             String value = String.valueOf(stringEntry.getValue());
             if (urlEncoder) {

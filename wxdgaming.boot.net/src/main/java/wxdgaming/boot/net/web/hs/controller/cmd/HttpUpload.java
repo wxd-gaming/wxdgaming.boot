@@ -6,6 +6,7 @@ import io.netty.util.ReferenceCounted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.io.FileUtil;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.JvmUtil;
@@ -60,7 +61,7 @@ public interface HttpUpload {
             }
             new File(outDir).mkdirs();
             RunResult result = RunResult.ok();
-            JSONObject data = new JSONObject(true);
+            JSONObject data = MapOf.newJSONObject();
             try {
                 for (Map.Entry<String, FileUpload> entry : uploadFilesMap.entrySet()) {
                     FileUpload fileUpload = entry.getValue();
@@ -72,7 +73,7 @@ public interface HttpUpload {
                             file.setLastModified(Long.parseLong(lastModified));
                         }
                     } catch (Exception e) {
-                        log.warn("设置文件最后修改时间异常：" + lastModified);
+                        log.warn("设置文件最后修改时间异常：{}", lastModified);
                     }
                     String msg = "上传成功, 文件：" + file.getCanonicalPath();
                     log.info(msg);

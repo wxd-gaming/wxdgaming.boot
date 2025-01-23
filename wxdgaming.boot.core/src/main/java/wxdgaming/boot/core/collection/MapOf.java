@@ -1,7 +1,11 @@
 package wxdgaming.boot.core.collection;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
 
 /**
@@ -12,12 +16,45 @@ import java.util.function.Function;
  **/
 public class MapOf implements Serializable {
 
-    public static Map empty() {
-        return Collections.EMPTY_MAP;
+    public static <K, V> Map<K, V> of() {
+        return Map.of();
     }
 
     public static boolean isEmpty(final Map map) {
         return map == null || map.isEmpty();
+    }
+
+    public static <K, V> HashMap<K, V> newHashMap() {
+        return new HashMap<>();
+    }
+
+    public static <K, V> HashMap<K, V> newLinkedHashMap() {
+        return new LinkedHashMap<>();
+    }
+
+    public static <K, V> ConcurrentHashMap<K, V> newConcurrentHashMap() {
+        return new ConcurrentHashMap<>();
+    }
+
+    public static <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> newConcurrentSkipListMap() {
+        return new ConcurrentSkipListMap<>();
+    }
+
+
+    public static JSONObject newJSONObject() {
+        return new JSONObject(true);
+    }
+
+    public static JSONObject newJSONObject(String key, Object value) {
+        return MapOf.newJSONObject().fluentPut(key, value);
+    }
+
+    public static JSONObject newJSONObject(Map<String, Object> map) {
+        return MapOf.newJSONObject().fluentPutAll(map);
+    }
+
+    public static <K, V> Map<K, V> of(K k1, V v1) {
+        return Map.of(k1, v1);
     }
 
     public static Map<Integer, Integer> asMap(int[][] ts) {

@@ -1,9 +1,9 @@
 package wxdgaming.boot.net.auth;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import lombok.Getter;
 import wxdgaming.boot.agent.system.AnnUtil;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.Cache;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
@@ -30,7 +30,7 @@ public class AuthModule {
             .build();
 
     /** 优先验证最高权限token */
-    public static boolean checkAuthorization(String userName, ObjMap putData) {
+    public static boolean checkAuthorization(String userName, JSONObject putData) {
         SignConfig signConfig = SignConfig.get();
         String authorization = putData.getString(HttpHeaderNames.AUTHORIZATION.toString());
         Optional<IAuth> root = signConfig.opt(userName, authorization)
@@ -42,7 +42,7 @@ public class AuthModule {
         TextMapping annotation = AnnUtil.ann(cmdMethod, TextMapping.class);
         if (annotation == null) return null;
         if (annotation.needAuth() > 0 && StringUtil.emptyOrNull(token))
-            return RunResult.error(100, annotation.authTips()).toJson();
+            return RunResult.error(100, annotation.authTips()).toJSONString();
 
         // 验证签名
         IAuth auth = AUTH_CACHE_PACK.getIfPresent(token);
@@ -51,7 +51,7 @@ public class AuthModule {
         }
         if (annotation.needAuth() > 0) {
             if (auth == null || !auth.checkAuth(annotation.needAuth())) {
-                return RunResult.error(100, annotation.authTips()).toJson();
+                return RunResult.error(100, annotation.authTips()).toJSONString();
             }
         }
         session.setAuthUser(auth);

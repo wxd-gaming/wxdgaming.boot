@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.net.message.rpc.ReqRemote;
-import wxdgaming.boot.net.message.rpc.ResRemote;
 import wxdgaming.boot.net.pojo.PojoBase;
 
 import java.util.Map;
@@ -31,8 +29,8 @@ public class MessagePackage {
 
     static {
         /*注册同步消息算法*/
-        loadMessageId_HashCode(ReqRemote.class, false);
-        loadMessageId_HashCode(ResRemote.class, false);
+        // loadMessageId_HashCode(ReqRemote.class, false);
+        // loadMessageId_HashCode(ResRemote.class, false);
     }
 
     public static void main(String[] args) {
@@ -87,14 +85,13 @@ public class MessagePackage {
     /**
      * 用名字 获取 hashcode 方案
      *
-     * @param findChild    查找子目录
      * @param packageNames 包名
      */
-    static public void loadMessageId_HashCode(boolean findChild, String... packageNames) {
-        loadMessageId_HashCode(Thread.currentThread().getContextClassLoader(), findChild, packageNames);
+    static public void loadMessageId_HashCode(String... packageNames) {
+        loadMessageId_HashCode(Thread.currentThread().getContextClassLoader(), packageNames);
     }
 
-    static public void loadMessageId_HashCode(ClassLoader classLoader, boolean findChild, String... packageNames) {
+    static public void loadMessageId_HashCode(ClassLoader classLoader, String... packageNames) {
         ReflectContext.Builder
                 .of(classLoader, packageNames)
                 .build()
@@ -102,31 +99,19 @@ public class MessagePackage {
                 .forEach(aClass -> loadMessageId_HashCode(aClass, true));
     }
 
-    /**
-     * 用名字 获取 hashcode 方案
-     *
-     * @param declaredClass
-     */
+    /** 用名字 获取 hashcode 方案 */
     static public void loadMessageId_HashCode(Class<?> declaredClass, boolean reqOrRes) {
-        if (log.isDebugEnabled())
-            log.debug("读取消息解析文件：{} 类", declaredClass.getName());
         _loadMessageId_HashCode(declaredClass, reqOrRes);
         Class<?>[] declaredClasses = declaredClass.getDeclaredClasses();
         if (declaredClasses == null || declaredClasses.length == 0) {
             return;
         }
-        if (log.isDebugEnabled())
-            log.debug("读取消息解析文件：{} 类, 包含内部类文件：{} 个", declaredClass.getName(), declaredClasses.length);
         for (Class<?> clazz : declaredClasses) {
             _loadMessageId_HashCode(clazz, reqOrRes);
         }
     }
 
-    /**
-     * 用名字 获取 hashcode 方案
-     *
-     * @param declaredClass
-     */
+    /** 用名字 获取 hashcode 方案 */
     static void _loadMessageId_HashCode(Class<?> declaredClass, boolean reqOrRes) {
         if (PojoBase.class.isAssignableFrom(declaredClass)) {
             final String messageName = declaredClass.getName();
@@ -145,6 +130,8 @@ public class MessagePackage {
             if (numberName != null && !messageName.equalsIgnoreCase(numberName)) {
                 throw new RuntimeException("存在相同的消息协议id：" + messageName + "=" + number + "," + numberName + "=" + number);
             }
+            if (log.isDebugEnabled())
+                log.debug("读取消息解析文件：{} 类", declaredClass.getName());
             add(number, (Class<? extends PojoBase>) declaredClass);
         }
     }

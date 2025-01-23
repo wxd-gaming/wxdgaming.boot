@@ -67,7 +67,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
                 .addLast(
                         new HttpServerCodec(),
                         new HttpObjectAggregator((int) BytesUnit.Mb.toBytes(64)),/*接受完整的http消息 64mb*/
-//                        new WebSocketServerCompressionHandler(),
+                        //                        new WebSocketServerCompressionHandler(),
                         new ChunkedWriteHandler(),/*用于大数据的分区传输*/
                         new WebSocketServerChannelHandler(this.toString())/*自定义的业务handler*/
                 );
@@ -75,8 +75,8 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
     }
 
     @Override
-    public S newSession(String name, ChannelHandlerContext ctx) {
-        return (S) new WebSession(name, ctx);
+    public S newSession(ChannelHandlerContext ctx) {
+        return (S) new WebSession(this, ctx);
     }
 
     public WebSocketServer<S> writeAll(String msg) {
@@ -176,7 +176,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
             super.channelActive(ctx);
             S session = NioFactory.attr(ctx, NioFactory.Session);
             if (session == null) {
-                session = newSession(this.name, ctx);
+                session = newSession(ctx);
                 if (!checkIPFilter(session.getIp())) {
                     session.disConnect("IP 异常");
                 }
@@ -275,7 +275,7 @@ public class WebSocketServer<S extends WebSession> extends SocketServer<S> {
                 }
 
                 if (!httpRequest.decoderResult().isSuccess()
-                        || (!"websocket".equalsIgnoreCase(httpRequest.headers().get("Upgrade")))/*判别必须websocket不能是get或者post*/) {
+                    || (!"websocket".equalsIgnoreCase(httpRequest.headers().get("Upgrade")))/*判别必须websocket不能是get或者post*/) {
                     // 若不是websocket方式，则创建BAD_REQUEST的req，返回给客户端
                     log.warn("收到的监听不正确，拒绝 请求 -> " + path);
                 } else {

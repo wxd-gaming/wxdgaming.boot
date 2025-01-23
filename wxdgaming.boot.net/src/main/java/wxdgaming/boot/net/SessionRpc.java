@@ -1,8 +1,9 @@
 package wxdgaming.boot.net;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.net.message.RpcEvent;
 
 /**
@@ -22,11 +23,11 @@ interface SessionRpc extends ByteBufWrapper {
     }
 
     default RpcEvent rpc(String cmd, String key, Object value) {
-        return rpc(cmd, new ObjMap().append(key, value));
+        return rpc(cmd, MapOf.newJSONObject().fluentPut(key, value));
     }
 
-    default RpcEvent rpc(String cmd, ObjMap objMap) {
-        return rpc(cmd, objMap.toJson());
+    default RpcEvent rpc(String cmd, JSONObject objMap) {
+        return rpc(cmd, objMap.toJSONString());
     }
 
     default RpcEvent rpc(String cmd, String dataJson) {

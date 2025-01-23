@@ -2,7 +2,6 @@ package wxdgaming.boot.net.web.hs.controller.cmd;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.net.auth.AuthModule;
 import wxdgaming.boot.net.auth.SignCheck;

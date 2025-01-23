@@ -28,6 +28,7 @@ public interface SessionRepository<S extends SocketSession> {
     Map<Long, S> getAllSessionMap();
 
     default void openSession(S session) {
+        getAllSessionQueue().add(session);
         this.getAllChannels().add(session.getChannelContext().channel());
         this.getAllSessionMap().put(session.getId(), session);
         session.getChannelContext().channel().closeFuture().addListener(future -> {

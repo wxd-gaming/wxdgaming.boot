@@ -4,16 +4,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.SocketServer;
-import wxdgaming.boot.net.controller.ProtoListenerAction;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
+import wxdgaming.boot.net.http.ssl.SslProtocolType;
 
 import javax.net.ssl.SSLContext;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * 基于 netty tcp server 服务
@@ -39,13 +37,11 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
         return this;
     }
 
-    @Override
-    public S newSession(String name, ChannelHandlerContext ctx) {
-        return (S) new TcpSession(name, ctx);
+    @Override public S newSession(ChannelHandlerContext ctx) {
+        return (S) new TcpSession(this, ctx);
     }
 
-    @Override
-    public TcpServer<S> setName(String name) {
+    @Override public TcpServer<S> setName(String name) {
         super.setName(name);
         return this;
     }
@@ -111,7 +107,7 @@ public class TcpServer<S extends TcpSession> extends SocketServer<S> {
             super.channelActive(ctx);
             S session = NioFactory.attr(ctx, NioFactory.Session);
             if (session == null) {
-                session = newSession(name, ctx);
+                session = newSession(ctx);
                 if (!TcpServer.this.checkIPFilter(session.getIp())) {
                     session.disConnect("IP 异常");
                     return;

@@ -9,6 +9,7 @@ import wxdgaming.boot.batis.enums.ColumnType;
 import wxdgaming.boot.batis.struct.DbColumn;
 import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.batis.struct.TableName;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.ObjectBase;
 
 /**
@@ -35,7 +36,7 @@ public class MysqlLogTest extends ObjectBase implements TableName {
     private String name2;
     @JSONField(ordinal = 5)
     @DbColumn(columnType = ColumnType.Json)
-    private JSONObject sensors = new JSONObject();
+    private JSONObject sensors = MapOf.newJSONObject();
 
     @Override public String getTableName() {
         return logType.name().toLowerCase() + "_log";

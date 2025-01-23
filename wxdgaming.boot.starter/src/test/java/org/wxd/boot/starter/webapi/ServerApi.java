@@ -1,11 +1,11 @@
 package org.wxd.boot.starter.webapi;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.inject.Inject;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.lang.Record2;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.net.controller.ann.TextController;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 import wxdgaming.boot.net.http.HttpHeadValueType;
@@ -35,12 +35,12 @@ public class ServerApi implements IBeanInit {
     }
 
     @TextMapping(remarks = "sdk index")
-    public String index(HttpSession httpSession, ObjMap objMap) {
+    public String index(HttpSession httpSession, JSONObject objMap) {
         return "holle";
     }
 
     @TextMapping(remarks = "sdk s1", match = true)
-    public String s1(HttpSession httpSession, ObjMap objMap) {
+    public String s1(HttpSession httpSession, JSONObject objMap) {
         String string = objMap.getString("name");
         String key = objMap.getString("key");
         long time = objMap.getLongValue("time");
@@ -63,7 +63,7 @@ public class ServerApi implements IBeanInit {
     }
 
     @TextMapping(remarks = "sdk处理", needAuth = 1)
-    public String sdk(HttpSession httpSession, ObjMap objMap) {
+    public String sdk(HttpSession httpSession, JSONObject objMap) {
         return "sdk";
     }
 

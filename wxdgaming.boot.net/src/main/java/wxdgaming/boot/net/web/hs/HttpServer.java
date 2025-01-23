@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.web.hs;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -14,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.zip.GzipUtil;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.timer.MyClock;
@@ -120,7 +121,7 @@ public class HttpServer extends NioServer<HttpSession> {
         @Override public void channelRead(ChannelHandlerContext ctx, Object object) throws Exception {
             FullHttpRequest fullHttpRequest = (FullHttpRequest) object;
 
-            HttpSession session = new HttpSession("http-server-" + HttpServer.this.getName(), ctx);
+            HttpSession session = new HttpSession(HttpServer.this, ctx);
             if (!HttpServer.this.checkIPFilter(session.getIp())) {
                 session.disConnect("IP 异常");
             }
@@ -431,8 +432,8 @@ public class HttpServer extends NioServer<HttpSession> {
     /**
      * {@code key=value&key=value&key=value&key=value&key=value}
      */
-    public static ObjMap queryStringMap(String queryString) {
-        ObjMap paramsMap = new ObjMap();
+    public static JSONObject queryStringMap(String queryString) {
+        JSONObject paramsMap = MapOf.newJSONObject();
         queryStringMap(paramsMap, queryString);
         return paramsMap;
     }

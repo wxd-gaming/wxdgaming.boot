@@ -1,12 +1,13 @@
 package wxdgaming.boot.starter.net.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.loader.JavaCoderCompile;
 import wxdgaming.boot.agent.system.Base64Util;
 import wxdgaming.boot.agent.zip.ZipUtil;
-import wxdgaming.boot.core.collection.ObjMap;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
@@ -111,7 +112,7 @@ public class PostCode implements PrintConsole {
             byte[] compress = ZipUtil.zip2Bytes(jsonString);
             String encodeToString = Base64Util.encode2String(compress);
 
-            ObjMap postParams = new ObjMap();
+            JSONObject postParams = MapOf.newJSONObject();
             postParams.put("codebase64", encodeToString);
             if (params != null) {
                 postParams.put("params", params);
@@ -123,7 +124,7 @@ public class PostCode implements PrintConsole {
         return null;
     }
 
-    protected RunResult post0(String url, Map<Object, Object> objects) {
+    protected RunResult post0(String url, Map<String, Object> objects) {
         String readIp = readIp();
         objects.put(HttpHeaderNames.AUTHORIZATION.toString(), SignConfig.get().optByUser("root").map(IAuth::getToken).orElse(""));
         String post = HttpBuilder.postMulti(readIp + "/" + url)

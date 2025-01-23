@@ -3,7 +3,6 @@ package code;
 import code.bean.Account;
 import code.bean.LogType;
 import code.bean.MysqlLogTest;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +11,7 @@ import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.sql.mysql.MysqlDataHelper;
 import wxdgaming.boot.batis.struct.DbTable;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.format.HexId;
 import wxdgaming.boot.core.lang.RandomUtils;
 
@@ -86,7 +86,7 @@ public class OptMysqlHelperTest {
                         logTest.getSensors().put("b", String.valueOf(RandomUtils.random(1, 10000)));
                         logTest.getSensors().put("c", String.valueOf(RandomUtils.random(1, 10000)));
                         logTest.getSensors().put("d", String.valueOf(RandomUtils.random(1, 10000)));
-                        logTest.getSensors().put("e", new JSONObject().fluentPut("aa", String.valueOf(RandomUtils.random(1, 10000))));
+                        logTest.getSensors().put("e", MapOf.newJSONObject("aa", String.valueOf(RandomUtils.random(1, 10000))));
                         dataHelper.getBatchPool().insert(logTest);
                     }
                     System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");

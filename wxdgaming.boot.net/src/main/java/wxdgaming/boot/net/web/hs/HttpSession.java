@@ -8,11 +8,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.timer.MyClock;
+import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.http.HttpDataAction;
@@ -82,8 +84,8 @@ public class HttpSession extends Session implements Serializable {
     protected AtomicBoolean responseOver = new AtomicBoolean();
     protected StringBuilder showLogStringBuilder;
 
-    public HttpSession(String name, ChannelHandlerContext ctx) {
-        super(name, ctx);
+    public HttpSession(NioBase base, ChannelHandlerContext ctx) {
+        super(base, ctx);
     }
 
     /**
@@ -132,7 +134,7 @@ public class HttpSession extends Session implements Serializable {
     }
 
     public void responseText(RunResult res) {
-        responseText(res.toJson().getBytes(StandardCharsets.UTF_8));
+        responseText(res.toJSONString().getBytes(StandardCharsets.UTF_8));
     }
 
     public void responseText(byte[] res) {
@@ -144,7 +146,7 @@ public class HttpSession extends Session implements Serializable {
     }
 
     public void responseJson(RunResult res) {
-        responseJson(res.toJson().getBytes(StandardCharsets.UTF_8));
+        responseJson(res.toJSONString().getBytes(StandardCharsets.UTF_8));
     }
 
     public void responseJson(byte[] res) {
@@ -309,7 +311,7 @@ public class HttpSession extends Session implements Serializable {
 
     public JSONObject getReqParams() {
         if (reqParams == null) {
-            reqParams = new JSONObject(true);
+            reqParams = MapOf.newJSONObject();
         }
         return reqParams;
     }
