@@ -39,8 +39,8 @@ public class HttpClientPool implements AutoCloseable {
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .delay(TimeUnit.MINUTES.toMillis(1))
                 .loader((Function1<String, HttpClientPool>) s -> build(
-                        50,
-                        120,
+                        10,
+                        10,
                         2 * 1000,
                         2 * 1000,
                         2 * 1000,
@@ -150,8 +150,8 @@ public class HttpClientPool implements AutoCloseable {
 
                 // 初始化http连接池
 
-
                 connPoolMng = new PoolingHttpClientConnectionManager(registry);
+                // 设置总的连接数为200，每个路由的最大连接数为20
                 connPoolMng.setMaxTotal(max);
                 connPoolMng.setDefaultMaxPerRoute(core);
 

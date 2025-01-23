@@ -1,7 +1,7 @@
 package wxdgaming.boot.net.auth;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.net.Session;
 
 import java.lang.reflect.Method;
@@ -14,11 +14,11 @@ import java.lang.reflect.Method;
  **/
 public interface SignCheck<S extends Session> {
 
-    static String checkAuth(Method cmdMethod, Session session, ObjMap putData) {
+    static String checkAuth(Method cmdMethod, Session session, JSONObject putData) {
         return AuthModule.checkToken(cmdMethod, session, putData.getString(HttpHeaderNames.AUTHORIZATION.toString()));
     }
 
-    default String checkSign(Method cmdMethod, S session, ObjMap putData) {
+    default String checkSign(Method cmdMethod, S session, JSONObject putData) {
         return checkAuth(cmdMethod, session, putData);
     }
 

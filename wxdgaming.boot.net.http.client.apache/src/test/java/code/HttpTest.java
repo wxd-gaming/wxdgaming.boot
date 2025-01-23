@@ -2,6 +2,7 @@ package code;
 
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
+import org.junit.jupiter.api.RepeatedTest;
 import wxdgaming.boot.httpclient.apache.HttpBuilder;
 
 /**
@@ -13,9 +14,11 @@ import wxdgaming.boot.httpclient.apache.HttpBuilder;
 public class HttpTest {
 
     @Test
+    @RepeatedTest(20)
     public void httpTest() {
+
         String string = HttpBuilder.postText(
-                        "http://192.168.10.134:8086/starter/auth/token",
+                        "http://127.0.0.1:19000",
                         "token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbk5hbWUiOiIxMzMwMDAwMDAwMCIsImlzcyI6InFqX3N0YXJ0ZXIiLCJleHAiOjE3MjMxNzM4MDEsInR5cGUiOjEsImlhdCI6MTcyMjU2OTAwMSwidXNlcklkIjoxfQ.yvQW_JwzaEIUgjdWLfIEftB0XolbUB-UDQNSQGlWP78")
                 .setContentType(ContentType.APPLICATION_FORM_URLENCODED)
                 .request()

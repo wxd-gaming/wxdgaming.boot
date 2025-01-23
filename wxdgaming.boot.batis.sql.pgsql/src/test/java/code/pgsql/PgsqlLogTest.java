@@ -8,6 +8,7 @@ import wxdgaming.boot.batis.enums.ColumnType;
 import wxdgaming.boot.batis.struct.DbColumn;
 import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.batis.struct.TableName;
+import wxdgaming.boot.core.lang.ObjectBase;
 
 /**
  * test1
@@ -19,7 +20,7 @@ import wxdgaming.boot.batis.struct.TableName;
 @Setter
 @Accessors(chain = true)
 @DbTable
-public class PgsqlLogTest extends TableName {
+public class PgsqlLogTest extends ObjectBase implements TableName {
 
     @DbColumn(alligator = true)
     private LogType logType;

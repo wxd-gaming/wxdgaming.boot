@@ -276,7 +276,7 @@ public class Cache<K, V> implements Closeable {
             return this;
         }
 
-        /** 心跳间隔时间 */
+        /** 写入过期时间 */
         public CacheBuilder<K, V> expireAfterWrite(long duration, TimeUnit timeUnit) {
             this.expireAfterWrite(timeUnit.toMillis(duration));
             return this;
@@ -325,8 +325,8 @@ public class Cache<K, V> implements Closeable {
 
     @Override public String toString() {
         return "Cache{" +
-                "cacheName='" + cacheName + '\'' +
-                '}';
+               "cacheName='" + cacheName + '\'' +
+               '}';
     }
 
 }

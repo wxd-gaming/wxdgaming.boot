@@ -1,13 +1,13 @@
 package wxdgaming.boot.starter;
 
-import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.agent.lang.Record2;
+import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.ReflectContext;
-import wxdgaming.boot.core.str.xml.XmlUtil;
 import wxdgaming.boot.core.system.JvmUtil;
+import wxdgaming.boot.starter.action.ActionConfig;
+import wxdgaming.boot.starter.config.Config;
+import wxdgaming.boot.starter.i.IConfigInit;
 import wxdgaming.boot.starter.service.*;
 
-import java.io.InputStream;
 import java.util.function.Consumer;
 
 /**
@@ -22,10 +22,27 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
         super(reflectContext, onConfigure);
     }
 
+    @Override protected void configure() {
+        super.configure();
+        reflectContext.withAnnotated(Config.class).forEach(content -> {
+            try {
+                Object o = ActionConfig.action(content.getCls());
+                if (o != null) {
+                    if (o instanceof IConfigInit) {
+                        ((IConfigInit) o).configInit();
+                    }
+                    Class clazz = o.getClass();
+                    bindSingleton(clazz, o);
+                }
+            } catch (Throwable throwable) {
+                throw Throw.as(throwable);
+            }
+        });
+    }
+
     protected BootStarterModule bind() throws Throwable {
-        Record2<String, InputStream> inputStream = FileUtil.findInputStream(this.getClass().getClassLoader(), "boot.xml");
-        System.out.println("读取文件目录：" + inputStream.t1());
-        BootConfig bootConfig = XmlUtil.fromXml(inputStream.t2(), BootConfig.class);
+
+        BootConfig bootConfig = BootConfig.getInstance();
 
         JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
         JvmUtil.setProperty(JvmUtil.Default_Executor_Max_Size, bootConfig.getDefaultExecutor().getMaxSize());

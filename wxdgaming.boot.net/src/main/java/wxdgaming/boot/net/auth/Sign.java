@@ -18,7 +18,7 @@ import java.util.Objects;
  **/
 public interface Sign<S extends Session> {
 
-    @TextMapping(url = "/", remarks = "登录")
+    @TextMapping(basePath = "/", remarks = "登录")
     default RunResult sign(S session, ObjMap putData) {
         String username = putData.getString("userName");
         String userPwd = putData.getString("userPwd");

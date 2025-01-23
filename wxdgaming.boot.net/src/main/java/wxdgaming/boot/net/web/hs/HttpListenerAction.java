@@ -1,21 +1,21 @@
 package wxdgaming.boot.net.web.hs;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.Consumer2;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.lang.Record2;
 import wxdgaming.boot.agent.system.AnnUtil;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.core.threading.ThreadInfo;
@@ -102,7 +102,7 @@ class HttpListenerAction extends Event {
         try {
             final HttpMethod reqMethod = session.getRequest().method();
             final String urlCmd = session.getUriPath();
-            final ObjMap putData = session.getReqParams();
+            final JSONObject putData = session.getReqParams();
             final HttpHeadValueType httpHeadValueType = session.getReqContentType().toLowerCase().contains("json") ? HttpHeadValueType.Json : null;
 
             Consumer2<Object, Boolean> callBack = (string, aBoolean) -> {
@@ -200,7 +200,7 @@ class HttpListenerAction extends Event {
                     Parameter parameter = parameters[i];
                     Type type = parameter.getParameterizedType();
                     if (type instanceof Class<?> clazz) {
-                        if (clazz.getName().equals(ObjMap.class.getName())) {
+                        if (clazz.isAssignableFrom(JSONObject.class)) {
                             params[i] = putData;
                         } else if (clazz.isAssignableFrom(session.getClass())) {
                             params[i] = session;
@@ -228,11 +228,11 @@ class HttpListenerAction extends Event {
                 content += "\n执行：cmd = " + urlCmd;
                 content += "\n参数：" + FastJsonUtil.toJson(putData);
                 GlobalUtil.exception(content, throwable);
-                session.response500(Throw.ofString(throwable));
+                session.response500("server error");
             }
         } catch (Throwable e) {
             log.error("{} remoteAddress：{}", httpServer, session, e);
-            session.response500(Throw.ofString(e));
+            session.response500("server error");
         }
     }
 

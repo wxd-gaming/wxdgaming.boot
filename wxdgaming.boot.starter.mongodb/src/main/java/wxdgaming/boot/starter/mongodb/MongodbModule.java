@@ -19,7 +19,7 @@ public class MongodbModule extends ServiceModule {
 
     @Override protected ServiceModule bind() throws Throwable {
 
-        BootConfig bootConfig = getProvider(BootConfig.class).get();
+        BootConfig bootConfig = BootConfig.getInstance();
 
         dbAction.accept(MongoService.class, bootConfig.getMongodb());
         dbAction.accept(MongoService1.class, bootConfig.getMongodb1());

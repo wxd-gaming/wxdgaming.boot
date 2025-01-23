@@ -110,12 +110,10 @@ public class HttpServer extends NioServer<HttpSession> {
             } else {
                 try {
                     ctx.disconnect();
-                } catch (Exception e) {
-                }
+                } catch (Exception ignore) {}
                 try {
                     ctx.close();
-                } catch (Exception e) {
-                }
+                } catch (Exception ignore) {}
             }
         }
 
@@ -132,7 +130,7 @@ public class HttpServer extends NioServer<HttpSession> {
 
         @Override
         protected void channelRead0(HttpSession session, Object object) throws Exception {
-//            log.debug(object.getClass().getName());
+            //            log.debug(object.getClass().getName());
             if (object instanceof HttpRequest) {
                 if (session.getRequest() == null) {
                     session.setRequest((HttpRequest) object);
@@ -363,7 +361,7 @@ public class HttpServer extends NioServer<HttpSession> {
             }
 
             response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType.getValue());
-//            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
+            //            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
 
             if (accept_gzip) {
                 response.headers().set(HttpHeaderNames.CONTENT_ENCODING, "gzip");
@@ -416,8 +414,8 @@ public class HttpServer extends NioServer<HttpSession> {
             } else {
                 session.setResTime(MyClock.millis());
                 response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
-//                response.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
-//                 response.headers().set(HttpHeaderNames.CONNECTION, "close");
+                // response.headers().set(HttpHeaderNames.CONNECTION, "keep-alive");
+                response.headers().set(HttpHeaderNames.CONNECTION, "close");/*屏蔽连接池*/
                 session.getChannelContext()
                         .writeAndFlush(response)
                         .addListener((ChannelFutureListener) future1 -> {

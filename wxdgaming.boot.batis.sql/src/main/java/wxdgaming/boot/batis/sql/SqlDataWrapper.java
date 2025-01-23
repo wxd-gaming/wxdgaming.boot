@@ -146,7 +146,8 @@ public class SqlDataWrapper<DM extends SqlEntityTable> extends DataWrapper<DM> i
     public String buildAlterColumnIndex(String tableName, EntityField entityField) {
         String sqls = null;
         if (entityField.isColumnIndex()) {
-            sqls = "ALTER TABLE `" + tableName + "` ADD " + "INDEX in_key_" + tableName + "_" + entityField.getColumnName() + " (" + "`" + entityField.getColumnName() + "`);";
+            String columnName = entityField.getColumnName();
+            sqls = "ALTER TABLE `" + tableName + "` ADD " + "INDEX in_key_" + tableName + "_" + columnName + " (" + "`" + columnName + "`);";
         }
         return sqls;
     }

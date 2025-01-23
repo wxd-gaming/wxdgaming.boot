@@ -17,7 +17,7 @@ public interface HttpSign extends Sign<HttpSession> {
 
     /** 用于http登录生成秘钥的，秘钥过期时间是10分钟 */
     @Override
-    @TextMapping(url = "/", remarks = "登录")
+    @TextMapping(basePath = "/", remarks = "登录")
     default RunResult sign(HttpSession session, ObjMap putData) {
         RunResult runResult = Sign.super.sign(session, putData);
         if (runResult != null && runResult.code() == 1) {

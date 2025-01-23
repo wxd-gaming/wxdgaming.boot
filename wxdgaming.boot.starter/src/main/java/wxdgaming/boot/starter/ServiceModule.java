@@ -20,4 +20,11 @@ public abstract class ServiceModule extends BaseModule<ServiceModule> {
         super(reflectContext, onConfigure);
     }
 
+    @Override protected void configure() {
+        try {
+            bind();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

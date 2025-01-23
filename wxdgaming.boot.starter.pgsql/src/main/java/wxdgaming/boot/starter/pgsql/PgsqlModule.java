@@ -4,8 +4,6 @@ import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.starter.BootConfig;
 import wxdgaming.boot.starter.ServiceModule;
 
-import java.util.function.Consumer;
-
 /**
  * pgsql引用
  *
@@ -19,7 +17,7 @@ public class PgsqlModule extends ServiceModule {
     }
 
     @Override protected ServiceModule bind() throws Throwable {
-        BootConfig bootConfig = getProvider(BootConfig.class).get();
+        BootConfig bootConfig = BootConfig.getInstance();
 
         dbAction.accept(PgsqlService.class, bootConfig.getPgsql());
         dbAction.accept(PgsqlService1.class, bootConfig.getPgsql1());

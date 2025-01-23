@@ -4,8 +4,6 @@ import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.starter.BootConfig;
 import wxdgaming.boot.starter.ServiceModule;
 
-import java.util.function.Consumer;
-
 /**
  * pgsql引用
  *
@@ -20,7 +18,8 @@ public class RedisModule extends ServiceModule {
 
 
     @Override protected RedisModule bind() throws Throwable {
-        BootConfig bootConfig = getProvider(BootConfig.class).get();
+
+        BootConfig bootConfig = BootConfig.getInstance();
 
         dbAction.accept(RedisService.class, bootConfig.getRedis());
         dbAction.accept(RedisService1.class, bootConfig.getRedis1());

@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.web.hs.controller.cmd;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.str.StringUtil;
@@ -17,7 +18,7 @@ import java.lang.reflect.Method;
  **/
 public interface HttpSignCheck extends SignCheck<HttpSession> {
 
-    static String checkAuth(Method cmdMethod, HttpSession session, ObjMap putData) {
+    static String checkAuth(Method cmdMethod, HttpSession session, JSONObject putData) {
         String s = AuthModule.checkToken(cmdMethod, session, putData.getString(HttpHeaderNames.AUTHORIZATION.toString()));
         if (StringUtil.notEmptyOrNull(s)) {
             s = AuthModule.checkToken(cmdMethod, session, session.getReqCookies().findCookieValue(HttpHeaderNames.AUTHORIZATION));
@@ -29,7 +30,7 @@ public interface HttpSignCheck extends SignCheck<HttpSession> {
     }
 
     @Override
-    default String checkSign(Method cmdMethod, HttpSession session, ObjMap putData) {
+    default String checkSign(Method cmdMethod, HttpSession session, JSONObject putData) {
         return checkAuth(cmdMethod, session, putData);
     }
 

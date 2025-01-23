@@ -32,7 +32,7 @@ public class ActionTextController {
                 for (TextController textController : controllerList) {
                     Object instance = iocInjector.getInstance(aClass);
                     List<Method> methodList = content.methodsWithAnnotated(TextMapping.class).collect(Collectors.toList());
-                    MappingTextAction.bindCmd(textController.service(), textController.url(), instance, methodList);
+                    MappingTextAction.bindCmd(textController.service(), textController.path(), instance, methodList);
                 }
             }
         });

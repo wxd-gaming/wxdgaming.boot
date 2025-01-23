@@ -176,6 +176,27 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
         }
     }
 
+    @Override public Map<String, String> getDbTableMap() {
+        if (dbTableMap == null) {
+            dbTableMap = new LinkedHashMap<>();
+        }
+        if (dbTableMap.isEmpty()) {
+            String sql = """
+                    SELECT c.relname AS table_name, obj_description(c.oid, 'pg_class') AS table_comment
+                    FROM pg_class c
+                    JOIN pg_namespace n ON n.oid = c.relnamespace
+                    WHERE c.relkind = 'r' AND n.nspname = 'public'
+                    """;
+            final List<ObjMap> jsonObjects = this.query(sql);
+            for (ObjMap jsonObject : jsonObjects) {
+                final String table_name = jsonObject.getString("table_name");
+                final String TABLE_COMMENT = jsonObject.getString("table_comment");
+                dbTableMap.put(table_name, TABLE_COMMENT);
+            }
+        }
+        return dbTableMap;
+    }
+
     @Override
     public Map<String, LinkedHashMap<String, ObjMap>> getDbTableStructMap() {
         if (dbTableStructMap == null) {
@@ -185,14 +206,14 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
 
             String pgsql = """
                     SELECT
-                    c.relname as TABLE_NAME,
-                    a.attname AS COLUMN_NAME,
-                    a.attnum as ORDINAL_POSITION,
-                    t.typname AS COLUMN_TYPE,
+                    c.relname as table_name,
+                    a.attname AS column_name,
+                    a.attnum as ordinal_position,
+                    t.typname AS column_type,
                     a.attlen AS length,
                     a.atttypmod AS lengthvar,
                     a.attnotnull AS notnull,
-                    b.description AS COLUMN_COMMENT
+                    b.description AS column_comment
                     FROM pg_class c, pg_attribute a
                         LEFT JOIN pg_description b ON a.attrelid = b.objoid AND a.attnum = b.objsubid, pg_type t
                     WHERE a.attnum > 0
@@ -223,19 +244,21 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
         for (EntityField entityField : columnMap.values()) {
             if (entityField.isColumnIndex()) {
                 String keyName = tableName + "_" + entityField.getColumnName();
+                /*pgsql 默认全小写*/
+                keyName = keyName.toLowerCase();
                 String checkIndexSql = "SELECT 1 as exists FROM pg_indexes WHERE tablename = '%s' AND indexname = '%s';".formatted(tableName, keyName);
                 try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
                     ResultSet resultSet = statement.executeQuery(checkIndexSql);
                     if (resultSet.next()) {
                         continue;
                     }
+                    String alterColumn = getDataWrapper().buildAlterColumnIndex(tableName, entityField);
+                    statement.execute(alterColumn);
+                    log.warn("pgsql 数据库 {}，新增索引：{}", getDbConfig().getDbBase(), keyName);
+                    connection.commit();
                 } catch (Exception e) {
-                    log.error("pgsql 数据库 {} 索引 {}", getDbConfig().getDbBase(), keyName, e);
+                    log.error("pgsql 数据库 {} 索引 {} sql {}", getDbConfig().getDbBase(), keyName, checkIndexSql, e);
                 }
-                String alterColumn = getDataWrapper().buildAlterColumnIndex(tableName, entityField);
-
-                this.executeUpdate(alterColumn);
-                log.warn("pgsql 数据库 {}，新增索引：{}", getDbConfig().getDbBase(), keyName);
             }
         }
     }

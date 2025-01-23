@@ -55,6 +55,10 @@ public class EntityField extends FieldMapping {
         this.columnComment = "";
     }
 
+    public String getColumnName() {
+        return columnName.toLowerCase();
+    }
+
     @Override
     @JSONField(serialize = true)
     public String getFieldName() {

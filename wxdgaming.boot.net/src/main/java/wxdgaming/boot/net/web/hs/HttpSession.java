@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.web.hs;
 
+import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.*;
@@ -7,9 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.NioFactory;
@@ -67,7 +68,7 @@ public class HttpSession extends Session implements Serializable {
     private String reqContent = "";
     private byte[] reqContentByteBuf = null;
     /** post或者get完整参数 */
-    private ObjMap reqParams;
+    private JSONObject reqParams;
     /*上传的文件集合*/
     private Map<String, FileUpload> uploadFilesMap;
     /** 域名 */
@@ -306,9 +307,9 @@ public class HttpSession extends Session implements Serializable {
         return function.apply(getReqParams().getString(key));
     }
 
-    public ObjMap getReqParams() {
+    public JSONObject getReqParams() {
         if (reqParams == null) {
-            reqParams = new ObjMap();
+            reqParams = new JSONObject(true);
         }
         return reqParams;
     }
@@ -379,7 +380,7 @@ public class HttpSession extends Session implements Serializable {
             this.reqContent = URLDecoder.decode(this.reqContent, StandardCharsets.UTF_8);
             if (this.reqContentType.contains("json")) {
                 if (StringUtil.notEmptyOrNull(this.reqContent)) {
-                    final ObjMap jsonObject = ObjMap.parse(this.reqContent);
+                    final JSONObject jsonObject = FastJsonUtil.parse(this.reqContent);
                     if (jsonObject != null && !jsonObject.isEmpty()) {
                         this.getReqParams().putAll(jsonObject);
                     }

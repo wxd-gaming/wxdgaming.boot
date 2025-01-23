@@ -11,10 +11,13 @@ import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.agent.function.STVFunction1;
 import wxdgaming.boot.agent.io.FileReadUtil;
+import wxdgaming.boot.agent.io.FileUtil;
+import wxdgaming.boot.agent.lang.Record2;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.core.collection.SetOf;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.ProtobufMessageSerializerFastJson;
+import wxdgaming.boot.core.str.xml.XmlUtil;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.DumpUtil;
 import wxdgaming.boot.core.system.JvmUtil;
@@ -24,6 +27,7 @@ import wxdgaming.boot.starter.action.ActionTextController;
 import wxdgaming.boot.starter.action.ActionTimer;
 import wxdgaming.boot.starter.i.*;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -73,7 +77,15 @@ public class AppContext {
                 FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
         };
 
-        Set<String> packages1 = SetOf.asSet(packages);
+        Record2<String, InputStream> inputStream = FileUtil.findInputStream(Thread.currentThread().getContextClassLoader(), "boot.xml");
+        if (inputStream == null) {
+            throw new RuntimeException("未找到配置文件 boot.xml");
+        }
+        System.out.println("读取文件目录：" + inputStream.t1());
+        BootConfig.setInstance(XmlUtil.fromXml(inputStream.t2(), BootConfig.class));
+
+        Set<String> packages1 = SetOf.asSet(AppContext.class.getPackageName());
+        packages1.addAll(Arrays.asList(packages));
         String[] array = packages1.toArray(new String[0]);
         ReflectContext.Builder builder = ReflectContext.Builder.of(array);
         try {

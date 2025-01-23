@@ -86,6 +86,16 @@ public class HttpBuilder {
         return new PostText(httpClient, url);
     }
 
+    /** 构建好的字符串 */
+    public static PostText postJson(String url, String json) {
+        return new PostText(client(), url).paramJson(json);
+    }
+
+    /** 构建好的字符串 */
+    public static PostText postJson(HttpClient httpClient, String url, String json) {
+        return new PostText(httpClient, url).paramJson(json);
+    }
+
     /** 多段参数设置 */
     public static PostMulti postMulti(String url) {
         return postMulti(client(), url);

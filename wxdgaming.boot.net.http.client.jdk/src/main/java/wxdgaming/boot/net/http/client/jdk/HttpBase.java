@@ -108,13 +108,13 @@ public abstract class HttpBase<H extends HttpBase> {
         HttpRequest httpRequest = builder.build();
 
         if (log.isDebugEnabled()) {
-            log.debug(this.getClass().getSimpleName() + " " + this.response.uriPath);
+            log.debug("{} {}", this.getClass().getSimpleName(), this.response.uriPath);
             final String collect = headers.entrySet().stream()
                     .map(entry -> entry.getKey() + ":" + String.join("=", entry.getValue()))
                     .collect(Collectors.joining(", "));
-            log.debug("http head：" + collect);
+            log.debug("http head：{}", collect);
             if (log.isDebugEnabled() && StringUtil.notEmptyOrNull(this.response.postText)) {
-                log.debug("http send：" + this.response.postText);
+                log.debug("http send：{}", this.response.postText);
             }
         }
         Mono<Response<H>> optFuture = Mono.empty();

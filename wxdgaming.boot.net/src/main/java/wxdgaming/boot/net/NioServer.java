@@ -56,7 +56,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
                 /*channel方法用来创建通道实例(NioServerSocketChannel类来实例化一个进来的链接)*/
                 .channel(NioFactory.serverSocketChannelClass())
                 /*方法用于设置监听套接字*/
-                .option(ChannelOption.SO_BACKLOG, 0)
+                .option(ChannelOption.SO_BACKLOG, 1024)
                 /*地址重用，socket链接断开后，立即可以被其他请求使用*/
                 .option(ChannelOption.SO_REUSEADDR, true)
                 /*方法用于设置和客户端链接的套接字*/

@@ -1,17 +1,17 @@
 package wxdgaming.boot.net.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.protobuf.Message;
 import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.collection.ObjMap;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.net.NioBase;
@@ -109,7 +109,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                     params = GzipUtil.unGzip2String(params);
                 }
                 /*处理消息--理论上是丢出去了的*/
-                final ObjMap putData = FastJsonUtil.parse(params, ObjMap.class);
+                final JSONObject putData = FastJsonUtil.parse(params);
                 String cmd = reqSyncMessage.getCmd().toLowerCase();
                 switch (cmd) {
                     case "rpc.heart" -> {
@@ -128,7 +128,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
                         long fileId = putData.getLongValue("fileId");
                         int bodyId = putData.getIntValue("bodyId");
                         int offset = putData.getIntValue("offset");
-                        byte[] datas = putData.getObject("datas");
+                        byte[] datas = putData.getObject("datas", byte[].class);
                         UpFileAccess fileAccess = UpFileAccess.readBody(fileId, bodyId, offset, datas);
                         if (fileAccess.getReadMaxCount() <= bodyId) {
                             /*表示读取完成*/
@@ -183,7 +183,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         }
     }
 
-    default void actionCmdListener(S session, long rpcId, String cmd, ObjMap putData) {
+    default void actionCmdListener(S session, long rpcId, String cmd, JSONObject putData) {
         final String methodNameLowerCase = cmd.toLowerCase().trim();
         TextMappingRecord mappingRecord = MappingFactory.textMappingRecord((Class<? extends NioBase>) getClass(), methodNameLowerCase);
         if (mappingRecord == null) {
@@ -198,10 +198,10 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
         TextListenerAction listenerAction = new TextListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
             if (showLog) {
                 log.info("\n执行：" + session.toString()
-                        + "\n" + markTimer.execTime2String() +
-                        "\nrpcId=" + rpcId +
-                        "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
-                        "\n结果 = " + outAppend.toString());
+                         + "\n" + markTimer.execTime2String() +
+                         "\nrpcId=" + rpcId +
+                         "\ncmd = " + cmd + ", " + FastJsonUtil.toJson(putData) +
+                         "\n结果 = " + outAppend.toString());
             }
             if (rpcId > 0) {
                 session.rpcResponse(rpcId, outAppend.toString());

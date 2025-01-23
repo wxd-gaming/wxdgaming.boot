@@ -14,11 +14,11 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TextMapping {
 
-    /** url 会覆盖 {@link TextController}.url() */
-    String url() default "";
+    /** basePath 会覆盖 {@link TextController}.path() */
+    String basePath() default "";
 
     /** 路由名称 */
-    String mapping() default "";
+    String path() default "";
 
     /** 备注 */
     String remarks() default "";

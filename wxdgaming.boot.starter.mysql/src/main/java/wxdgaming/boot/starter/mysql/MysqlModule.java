@@ -19,7 +19,7 @@ public class MysqlModule extends ServiceModule {
 
     @Override protected ServiceModule bind() throws Throwable {
 
-        BootConfig bootConfig = getProvider(BootConfig.class).get();
+        BootConfig bootConfig = BootConfig.getInstance();
 
         dbAction.accept(MysqlService.class, bootConfig.getMysql());
         dbAction.accept(MysqlService1.class, bootConfig.getMysql1());

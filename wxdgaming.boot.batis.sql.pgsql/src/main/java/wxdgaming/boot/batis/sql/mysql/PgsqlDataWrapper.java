@@ -41,17 +41,9 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
 
         if (entityTable.getDataColumnKey() != null) {
             stringAppend.write(",")
-                    .write("PRIMARY KEY (").write(entityTable.getDataColumnKey().getColumnName()).write(")");
+                    .write("PRIMARY KEY (").write(entityTable.getDataColumnKey().getColumnName().toLowerCase()).write(")");
         }
 
-        // for (EntityField column : columns) {
-        //     if (column.isColumnIndex()) {
-        //         stringAppend.write(",").writeLn();
-        //         stringAppend.write("    ")
-        //                 .write("KEY \"index_").write(tableName).write("_").write(column.getColumnName()).write("\"")
-        //                 .write("(\"").write(column.getColumnName()).write("\") ").write(column.getMysqlIndexType());
-        //     }
-        // }
         stringAppend.write(")");
     }
 
@@ -64,22 +56,21 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
     }
 
     @Override public String buildDropColumn(String tableName, String columnName) {
-        return "ALTER TABLE \"" + tableName + "\" drop COLUMN \"" + columnName + "\"";
+        return "ALTER TABLE \"" + tableName + "\" drop COLUMN \"" + columnName.toLowerCase() + "\"";
     }
 
 
     @Override public String buildAlterColumnIndex(String tableName, EntityField entityField) {
         String sqls = null;
         if (entityField.isColumnIndex()) {
-            String keyName = tableName + "_" + entityField.getColumnName();
-
-            sqls = "CREATE INDEX \"" + keyName + "\" ON \"" + tableName + "\" (\"" + entityField.getColumnName() + "\");";
+            String keyName = tableName + "_" + entityField.getColumnName().toLowerCase();
+            sqls = "CREATE INDEX \"" + keyName + "\" ON \"" + tableName + "\" (\"" + entityField.getColumnName().toLowerCase() + "\");";
         }
         return sqls;
     }
 
     @Override public String buildColumnSqlString(EntityField entityField) {
-        String sqlString = entityField.getColumnName() + " "
+        String sqlString = entityField.getColumnName().toLowerCase()+ " "
                            + entityField.checkColumnType().pgsqlFormatString(entityField.getColumnLength());
 
         if (entityField.isColumnKey() || !entityField.isColumnNullAble()) {
@@ -101,7 +92,7 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
             if (i > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append("\"").append(column.getColumnName()).append("\"");
+            stringBuilder.append("\"").append(column.getColumnName().toLowerCase()).append("\"");
             i++;
         }
         stringBuilder.append(") VALUES (");
@@ -138,7 +129,7 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
             if (i > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append("\"").append(column.getColumnName()).append("\"").append(" = ?");
+            stringBuilder.append("\"").append(column.getColumnName().toLowerCase()).append("\"").append(" = ?");
 
             if (column.getColumnType() == ColumnType.Json) {
                 stringBuilder.append("::json");
@@ -149,7 +140,7 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
             }
             i++;
         }
-        stringBuilder.append(" where ").append(entityTable.getDataColumnKey().getColumnName()).append(" = ?");
+        stringBuilder.append(" where ").append(entityTable.getDataColumnKey().getColumnName().toLowerCase()).append(" = ?");
         return (stringBuilder.toString().trim());
     }
 
@@ -170,18 +161,18 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
             if (i > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append("\"").append(value.getColumnName()).append("\"");
+            stringBuilder.append("\"").append(value.getColumnName().toLowerCase()).append("\"");
             i++;
         }
         stringBuilder.append(" FROM \"").append(entityTable.getTableName()).append("\" ");
         entityTable.setSelectSql(stringBuilder.toString().trim());
 
         entityTable.setSelectSortSql(stringBuilder.toString().trim()
-                                     + " order by \"" + entityTable.getDataColumnKey().getColumnName() + "\" "
+                                     + " order by \"" + entityTable.getDataColumnKey().getColumnName().toLowerCase() + "\" "
                                      + entityTable.getDataColumnKey().getSortType().name()
         );
 
-        stringBuilder.append(" where \"").append(entityTable.getDataColumnKey().getColumnName()).append("\" = ?");
+        stringBuilder.append(" where \"").append(entityTable.getDataColumnKey().getColumnName().toLowerCase()).append("\" = ?");
 
         entityTable.setSelectWhereSql(stringBuilder.toString().trim());
     }

@@ -28,7 +28,7 @@ public class MappingTextAction {
             bindCmd(NioBase.class, "", instance, methodList);
         } else {
             for (TextController textController : controllerList) {
-                bindCmd(textController.service(), textController.url(), instance, methodList);
+                bindCmd(textController.service(), textController.path(), instance, methodList);
             }
         }
     }
@@ -70,8 +70,8 @@ public class MappingTextAction {
             TextMapping mapping = AnnUtil.ann(method, TextMapping.class);
             if (mapping != null) {
                 String cmdUrl = url;
-                if (StringUtil.notEmptyOrNull(mapping.url())) {
-                    cmdUrl = mapping.url();
+                if (StringUtil.notEmptyOrNull(mapping.basePath())) {
+                    cmdUrl = mapping.basePath();
                 }
 
                 if (cmdUrl.startsWith("/")) cmdUrl = cmdUrl.substring(1);
@@ -82,7 +82,7 @@ public class MappingTextAction {
                     }
                 }
 
-                String mappingName = mapping.mapping();
+                String mappingName = mapping.path();
 
                 if (StringUtil.emptyOrNull(mappingName)) {
                     cmdUrl += method.getName().toLowerCase().trim();

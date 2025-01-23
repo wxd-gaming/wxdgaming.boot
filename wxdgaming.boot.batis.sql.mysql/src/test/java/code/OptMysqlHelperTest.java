@@ -15,6 +15,7 @@ import wxdgaming.boot.batis.struct.DbTable;
 import wxdgaming.boot.core.format.HexId;
 import wxdgaming.boot.core.lang.RandomUtils;
 
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -94,6 +95,14 @@ public class OptMysqlHelperTest {
         Thread.sleep(2000);
     }
 
+    @Test
+    public void selectList() {
+        long nanoTime = System.nanoTime();
+        List<MysqlLogTest> pgsqlLogTests = dataHelper.queryEntities("select * from login_log", MysqlLogTest.class);
+        System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
+        System.out.println("select count=" + pgsqlLogTests.size());
+        pgsqlLogTests.forEach(System.out::println);
+    }
 
     @Test
     public void t2() {

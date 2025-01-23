@@ -37,42 +37,28 @@ abstract class BaseModule<T extends BaseModule> extends AbstractModule {
     }
 
     public T bindSingleton(Class<?> clazz) {
-        log.debug("bind {} clazz={}", this.hashCode(), clazz);
+        log.debug("bind {} {} clazz={}", this.getClass().getName(), this.hashCode(), clazz);
         bind(clazz).in(Singleton.class);
         return (T) this;
     }
 
     public <R> T bindSingleton(Class<R> father, Class<? extends R> son) {
-        log.debug("bind {} father={} bind son={}", this.hashCode(), father, son);
+        log.debug("bind {} {} father={} bind son={}", this.getClass().getName(), this.hashCode(), father, son);
         bind(father).to(son).in(Singleton.class);
         return (T) this;
     }
 
     public <B> T bindSingleton(Class<B> clazz, B instance) {
-        log.debug("bind {} clazz={} bind instance={}", this.hashCode(), clazz, instance.getClass());
+        log.debug("bind {} {} clazz={} bind instance={}", this.getClass().getName(), this.hashCode(), clazz, instance.getClass());
         bind(clazz).toInstance(instance);
         return (T) this;
     }
 
     @Override
-    protected final void configure() {
+    protected void configure() {
         binder().requireExplicitBindings();
         binder().requireExactBindingAnnotations();
         // binder().disableCircularProxies();/*禁用循环依赖*/
-        reflectContext.withAnnotated(Config.class).forEach(content -> {
-            try {
-                Object o = ActionConfig.action(content.getCls());
-                if (o != null) {
-                    if (o instanceof IConfigInit) {
-                        ((IConfigInit) o).configInit();
-                    }
-                    Class clazz = o.getClass();
-                    bindSingleton(clazz, o);
-                }
-            } catch (Throwable throwable) {
-                throw Throw.as(throwable);
-            }
-        });
 
         reflectContext
                 .classStream()

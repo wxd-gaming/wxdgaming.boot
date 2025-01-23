@@ -2,7 +2,6 @@ package wxdgaming.boot.net.controller.ann;
 
 
 import wxdgaming.boot.net.NioBase;
-import wxdgaming.boot.net.NioServer;
 
 import java.lang.annotation.*;
 
@@ -19,10 +18,10 @@ import java.lang.annotation.*;
 @Repeatable(TextControllers.class/*表示复用*/)
 public @interface TextController {
 
-    /** 服务名称 */
+    /** 绑定在某个服务 */
     Class<? extends NioBase> service() default NioBase.class;
 
     /** url 会被 {@link TextMapping}.url() */
-    String url() default "";
+    String path() default "";
 
 }

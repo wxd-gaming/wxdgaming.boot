@@ -1,6 +1,7 @@
 package wxdgaming.boot.starter;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -22,6 +23,9 @@ import java.util.ArrayList;
 @Accessors(chain = true)
 @Root
 public class BootConfig extends ObjectBase {
+
+    @Getter @Setter(value = AccessLevel.PROTECTED)
+    private static BootConfig instance;
 
     @JSONField(ordinal = 1)
     @Element(required = false)

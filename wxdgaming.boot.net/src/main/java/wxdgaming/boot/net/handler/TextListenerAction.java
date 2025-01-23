@@ -1,5 +1,6 @@
 package wxdgaming.boot.net.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.AnnUtil;
@@ -34,13 +35,13 @@ class TextListenerAction extends Event {
     private final TextMappingRecord mappingRecord;
     private final SocketSession session;
     private final String listener;
-    private final ObjMap putData;
+    private final JSONObject putData;
     private final StreamWriter out;
     private final Consumer<Boolean> callBack;
 
     public TextListenerAction(TextMappingRecord mappingRecord,
                               SocketSession session,
-                              String listener, ObjMap putData,
+                              String listener, JSONObject putData,
                               StreamWriter out, Consumer<Boolean> callBack) {
         super(mappingRecord.method());
         this.mappingRecord = mappingRecord;
