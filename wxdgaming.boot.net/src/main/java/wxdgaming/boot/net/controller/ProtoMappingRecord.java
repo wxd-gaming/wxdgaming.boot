@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 public record ProtoMappingRecord(Class<? extends NioBase> service,
         String remarks, int messageId,
         ProtoMappingProxy mapping,
-        Object instance, Method method) {
+        Object instance, Method method,
+        boolean showLog) {
 
 }

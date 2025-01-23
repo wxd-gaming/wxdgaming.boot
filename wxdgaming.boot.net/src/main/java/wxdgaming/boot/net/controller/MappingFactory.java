@@ -3,9 +3,11 @@ package wxdgaming.boot.net.controller;
 
 import wxdgaming.boot.agent.LogbackUtil;
 import wxdgaming.boot.agent.function.FunctionE2;
+import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentTable;
 import wxdgaming.boot.core.threading.Event;
+import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.ann.TextMapping;
@@ -79,10 +81,12 @@ public class MappingFactory {
         javaAssist.getCtClass().defrost();
         javaAssist.getCtClass().detach();
 
+        boolean showLog = AnnUtil.annOpt(method, ExecutorLog.class).map(ExecutorLog::showLog).orElse(false);
+
         PROTO_MAP.put(
                 service,
                 messageId,
-                new ProtoMappingRecord(service, remarks, messageId, protoMappingProxy, instance, method)
+                new ProtoMappingRecord(service, remarks, messageId, protoMappingProxy, instance, method,showLog)
         );
 
     }
@@ -122,12 +126,12 @@ public class MappingFactory {
                 Parameter parameter = method.getParameters()[i];
                 Class<?> parameterType = parameter.getType();
                 if (boolean.class.equals(parameterType)
-                        || byte.class.equals(parameterType)
-                        || short.class.equals(parameterType)
-                        || int.class.equals(parameterType)
-                        || long.class.equals(parameterType)
-                        || float.class.equals(parameterType)
-                        || double.class.equals(parameterType)) {
+                    || byte.class.equals(parameterType)
+                    || short.class.equals(parameterType)
+                    || int.class.equals(parameterType)
+                    || long.class.equals(parameterType)
+                    || float.class.equals(parameterType)
+                    || double.class.equals(parameterType)) {
                     throw new RuntimeException(instance.getClass().getName() + "." + method.getName() + ", 参数：类型请使用引用类型不要使用值类型 例如 int 改为 Integer");
                 }
                 stringBuilder.append(String.format("        (%s) params[%s]", parameterType.getName(), i));
@@ -147,10 +151,12 @@ public class MappingFactory {
         javaAssist.getCtClass().defrost();
         javaAssist.getCtClass().detach();
 
+        boolean showLog = AnnUtil.annOpt(method, ExecutorLog.class).map(ExecutorLog::showLog).orElse(false);
+
         TEXT_MAP.put(
                 service,
                 path,
-                new TextMappingRecord(textMapping, path, remarks, textMappingProxy, instance, method)
+                new TextMappingRecord(textMapping, path, remarks, textMappingProxy, instance, method, showLog)
         );
 
     }

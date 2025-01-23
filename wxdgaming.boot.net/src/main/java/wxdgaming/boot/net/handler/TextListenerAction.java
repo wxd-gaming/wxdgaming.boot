@@ -2,15 +2,12 @@ package wxdgaming.boot.net.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.agent.system.AnnUtil;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
-import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.auth.SignCheck;
@@ -97,12 +94,10 @@ class TextListenerAction extends Event {
                     }
                 }
             }
-            AtomicReference atomicReference = new AtomicReference();
+            AtomicReference atomicReference = new AtomicReference("");
             mappingRecord.mapping().proxy(atomicReference, mappingRecord.instance(), params);
-            Class<?> returnType = mappingRecord.method().getReturnType();
-            if (!void.class.equals(returnType)) {
+            if (mappingRecord.textMapping().autoResponse())
                 out.write(String.valueOf(atomicReference.get()));
-            }
         } catch (Throwable throwable) {
             if (throwable.getCause() != null) {
                 throwable = throwable.getCause();
@@ -114,13 +109,9 @@ class TextListenerAction extends Event {
             content += "\n参数：" + FastJsonUtil.toJson(putData);
             GlobalUtil.exception(content, throwable);
             out.clear();
-            out.write(RunResult.error(505, Throw.ofString(throwable)));
+            out.write(RunResult.error(505, "server error"));
         } finally {
-            boolean showLog = false;
-            ExecutorLog annotation = AnnUtil.ann(mappingRecord.method(), ExecutorLog.class);
-            if (annotation != null) {
-                showLog = annotation.showLog();
-            }
+            boolean showLog = mappingRecord.showLog();
             callBack.accept(showLog);
         }
     }

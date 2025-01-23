@@ -32,4 +32,7 @@ public @interface TextMapping {
     /** 权限不足提示 */
     String authTips() default "权限认证失败";
 
+    /** 自动调用 response */
+    boolean autoResponse() default true;
+
 }

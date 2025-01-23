@@ -213,11 +213,8 @@ class HttpListenerAction extends Event {
                 }
                 AtomicReference atomicReference = new AtomicReference();
                 mappingRecord.mapping().proxy(atomicReference, mappingRecord.instance(), params);
-                boolean showLog = AnnUtil.annOpt(mappingRecord.method(), ExecutorLog.class).map(ExecutorLog::showLog).orElse(false);
-                Class<?> returnType = mappingRecord.method().getReturnType();
-                if (!void.class.equals(returnType)) {
-                    callBack.accept(atomicReference.get(), showLog);
-                }
+                if (mappingRecord.textMapping().autoResponse())
+                    callBack.accept(atomicReference.get(), mappingRecord.showLog());
             } catch (Throwable throwable) {
                 if (throwable.getCause() != null) {
                     throwable = throwable.getCause();
