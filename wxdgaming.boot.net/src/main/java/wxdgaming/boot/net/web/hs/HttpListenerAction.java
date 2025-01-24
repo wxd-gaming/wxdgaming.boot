@@ -22,6 +22,7 @@ import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.TextMappingRecord;
+import wxdgaming.boot.net.controller.ann.Body;
 import wxdgaming.boot.net.controller.ann.Get;
 import wxdgaming.boot.net.controller.ann.Param;
 import wxdgaming.boot.net.controller.ann.Post;
@@ -205,9 +206,15 @@ class HttpListenerAction extends Event {
                         } else if (clazz.isAssignableFrom(session.getClass())) {
                             params[i] = session;
                         } else {
+                            Body body = parameter.getAnnotation(Body.class);
+                            if (body != null) {
+                                Object javaObject = putData.toJavaObject(clazz);
+                                params[i] = javaObject;
+                                continue;
+                            }
                             /*实现注入*/
                             Param annotation = parameter.getAnnotation(Param.class);
-                            params[i] = putData.parseObject(annotation.value(), (Class) clazz);
+                            params[i] = putData.getObject(annotation.value(), (Class) clazz);
                         }
                     }
                 }
