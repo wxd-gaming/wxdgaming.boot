@@ -75,8 +75,12 @@ public class DbConfig extends ObjectBase implements Serializable, Cloneable {
     @JSONField(ordinal = 11)
     private String scanPackage;
 
-    public DbConfig clone(String dbName) throws CloneNotSupportedException {
-        return clone().setDbBase(dbName);
+    public DbConfig clone(String dbName)  {
+        try {
+            return clone().setDbBase(dbName);
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

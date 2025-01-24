@@ -49,7 +49,7 @@ public class TestSocketClient {
     @Test
     public void sendRpc() throws Exception {
         TcpSession session = client.getAllSessionQueue().idle();
-        RpcEvent rpc = session.rpc("/rpc/hello", MapOf.newJSONObject("1", "1"));
+        RpcEvent rpc = session.rpc("/rpc/hello", MapOf.newJSONObject("key", "1").fluentPut("value", "2"));
         String string = rpc.get();
         System.out.println(string);
         Thread.sleep(1000);

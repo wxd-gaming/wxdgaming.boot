@@ -19,24 +19,25 @@ import java.util.List;
 @Accessors(chain = true)
 public class MySqlDataRepository extends DataRepository<SqlEntityTable, SqlDataWrapper<SqlEntityTable>> {
 
-    protected MysqlDataHelper mysqlDao;
+    protected MysqlDataHelper dataHelper;
 
-    public MySqlDataRepository() {
+    public MySqlDataRepository(MysqlDataHelper dataHelper) {
+        this.dataHelper = dataHelper;
     }
 
     @Override
     public SqlDataWrapper<SqlEntityTable> dataBuilder() {
-        return mysqlDao.getDataWrapper();
+        return dataHelper.getDataWrapper();
     }
 
     @Override
     public String dataName() {
-        return mysqlDao.getDbBase();
+        return dataHelper.getDbBase();
     }
 
     @Override
     public final List readDbList(SqlEntityTable entityTable) throws Exception {
-        return mysqlDao.queryEntities(entityTable, entityTable.getSelectSortSql());
+        return dataHelper.queryEntities(entityTable, entityTable.getSelectSortSql());
     }
 
 

@@ -97,6 +97,13 @@ class RpcListenerAction extends Event {
                         }
                         /*实现注入*/
                         Param annotation = parameter.getAnnotation(Param.class);
+                        if (annotation.required() && !putData.containsKey(annotation.value())) {
+                            if (StringUtil.notEmptyOrNull(annotation.defaultValue())) {
+                                putData.put(annotation.value(), annotation.defaultValue());
+                            } else {
+                                throw new RuntimeException("listener " + listener + ", 接口 " + mappingRecord.method() + ", 参数 " + annotation.value() + " 为必传参数，但未传");
+                            }
+                        }
                         params[i] = putData.getObject(annotation.value(), (Class) clazz);
                     }
                 }
@@ -116,7 +123,7 @@ class RpcListenerAction extends Event {
             content += "\n参数：" + FastJsonUtil.toJson(putData);
             GlobalUtil.exception(content, throwable);
             out.clear();
-            out.write(RunResult.error(505, "server error"));
+            out.write(RunResult.error(500, "server error"));
         } finally {
             boolean showLog = mappingRecord.showLog();
             callBack.accept(showLog);

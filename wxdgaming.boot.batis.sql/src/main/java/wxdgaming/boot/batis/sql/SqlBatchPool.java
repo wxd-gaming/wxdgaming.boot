@@ -28,7 +28,7 @@ public class SqlBatchPool extends BatchPool {
     protected SqlDataHelper<SqlEntityTable, SqlDataWrapper<SqlEntityTable>> dataHelper;
 
     public SqlBatchPool(SqlDataHelper dataHelper, int batchThreadSize) {
-        super("BatchJob", batchThreadSize);
+        super(dataHelper.getDbConfig().getDbBase() + "_batch", batchThreadSize);
         this.dataHelper = dataHelper;
     }
 

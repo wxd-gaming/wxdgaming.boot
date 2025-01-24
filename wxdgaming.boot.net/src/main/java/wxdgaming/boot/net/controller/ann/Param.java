@@ -9,6 +9,11 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER/*局部变量*/})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Param {
+
     String value();
+
+    String defaultValue() default "";
+
+    boolean required() default true;
 
 }

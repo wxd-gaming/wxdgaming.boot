@@ -200,7 +200,13 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     public int insert(Object model) {
         DM entityTable = asEntityTable(model);
         String sqlStr = entityTable.getInsertSql(model);
-        return executeUpdate(entityTable, model, sqlStr);
+        return stmtFun(
+                stmt -> {
+                    setInsertParams(stmt, entityTable, model);
+                    return stmt.executeUpdate();
+                },
+                sqlStr
+        );
     }
 
     /** insertBatch */
@@ -239,7 +245,13 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     public int update(Object model) {
         DM entityTable = asEntityTable(model);
         String sqlStr = entityTable.getUpdateSql(model);
-        return executeUpdate(entityTable, model, sqlStr);
+        return stmtFun(
+                stmt -> {
+                    setUpdateParams(stmt, entityTable, model);
+                    return stmt.executeUpdate();
+                },
+                sqlStr
+        );
     }
 
     /** updateBatch */
@@ -281,7 +293,13 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     public int replace(Object model) {
         DM entityTable = asEntityTable(model);
         String sqlStr = entityTable.getReplaceSql(model);
-        return executeUpdate(entityTable, model, sqlStr);
+        return stmtFun(
+                stmt -> {
+                    setInsertParams(stmt, entityTable, model);
+                    return stmt.executeUpdate();
+                },
+                sqlStr
+        );
     }
 
     /**
@@ -317,16 +335,6 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         } catch (Exception e) {
             throw Throw.as(sqlStr, e);
         }
-    }
-
-    protected int executeUpdate(DM entityTable, Object model, String sqlStr) {
-        return stmtFun(
-                stmt -> {
-                    setInsertParams(stmt, entityTable, model);
-                    return stmt.executeUpdate();
-                },
-                sqlStr
-        );
     }
 
     /**

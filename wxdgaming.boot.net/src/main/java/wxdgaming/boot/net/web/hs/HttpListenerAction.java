@@ -20,6 +20,7 @@ import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.MyClock;
+import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.TextMappingRecord;
 import wxdgaming.boot.net.controller.ann.Body;
@@ -203,8 +204,12 @@ class HttpListenerAction extends Event {
                     if (type instanceof Class<?> clazz) {
                         if (clazz.isAssignableFrom(JSONObject.class)) {
                             params[i] = putData;
-                        } else if (clazz.isAssignableFrom(session.getClass())) {
-                            params[i] = session;
+                        } else if (Session.class.isAssignableFrom(clazz)) {
+                            if (clazz.isAssignableFrom(session.getClass())) {
+                                params[i] = session;
+                            } else {
+                                throw new RuntimeException("listener " + urlPath + ", session error 需要 " + clazz.getSimpleName() + ", 当前：" + session.getClass().getSimpleName());
+                            }
                         } else {
                             Body body = parameter.getAnnotation(Body.class);
                             if (body != null) {
@@ -214,6 +219,13 @@ class HttpListenerAction extends Event {
                             }
                             /*实现注入*/
                             Param annotation = parameter.getAnnotation(Param.class);
+                            if (annotation.required() && !putData.containsKey(annotation.value())) {
+                                if (StringUtil.notEmptyOrNull(annotation.defaultValue())) {
+                                    putData.put(annotation.value(), annotation.defaultValue());
+                                } else {
+                                    throw new RuntimeException("listener " + urlPath + ", 接口 " + mappingRecord.method() + ", 参数 " + annotation.value() + " 为必传参数，但未传");
+                                }
+                            }
                             params[i] = putData.getObject(annotation.value(), (Class) clazz);
                         }
                     }
@@ -232,11 +244,11 @@ class HttpListenerAction extends Event {
                 content += "\n执行：cmd = " + urlCmd;
                 content += "\n参数：" + FastJsonUtil.toJson(putData);
                 GlobalUtil.exception(content, throwable);
-                session.response500("server error");
+                session.response500(RunResult.error(500, "server error").toJSONString());
             }
         } catch (Throwable e) {
             log.error("{} remoteAddress：{}", httpServer, session, e);
-            session.response500("server error");
+            session.response500(RunResult.error(500, "server error").toJSONString());
         }
     }
 

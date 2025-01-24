@@ -261,8 +261,9 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
                     }
                     String alterColumn = getDataWrapper().buildAlterColumnIndex(tableName, entityField);
                     statement.execute(alterColumn);
+                    if (!connection.getAutoCommit())
+                        connection.commit();
                     log.warn("pgsql 数据库 {}，新增索引：{}", getDbConfig().getDbBase(), keyName);
-                    connection.commit();
                 } catch (Exception e) {
                     log.error("pgsql 数据库 {} 索引 {} sql {}", getDbConfig().getDbBase(), keyName, checkIndexSql, e);
                 }

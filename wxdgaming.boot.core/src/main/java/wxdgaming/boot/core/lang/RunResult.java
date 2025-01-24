@@ -76,7 +76,7 @@ public class RunResult extends JSONObject {
     }
 
     public <R> R data(Class<R> r) {
-        return parseObject("data", r);
+        return getObject("data", r);
     }
 
     @Override public RunResult fluentPut(String key, Object value) {

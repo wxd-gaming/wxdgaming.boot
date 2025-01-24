@@ -56,6 +56,10 @@ public abstract class DataWrapper<DM extends EntityTable>
         return dataTableMap;
     }
 
+    public final boolean checkClazz(Class<?> clazz) {
+        return checkClazz(clazz, false);
+    }
+
     /**
      * 检查是否可以处理的类型，创建表的时候
      * <p>
@@ -64,11 +68,11 @@ public abstract class DataWrapper<DM extends EntityTable>
      * @param clazz
      * @return
      */
-    public final boolean checkClazz(Class<?> clazz) {
+    public final boolean checkClazz(Class<?> clazz, boolean findSuperClass) {
         if (!ReflectContext.checked(clazz)) {
             return false;
         }
-        DbTable annotation = AnnUtil.ann(clazz, DbTable.class, true);
+        DbTable annotation = AnnUtil.ann(clazz, DbTable.class, findSuperClass);
         if (annotation != null) {
             if (annotation.mappedSuperclass()) {
                 return false;
@@ -205,13 +209,13 @@ public abstract class DataWrapper<DM extends EntityTable>
             if (Modifier.isFinal(field.getModifiers())) {
                 if (/*ConvertUtil.isBaseType(field.getType())*/
                         !Map.class.isAssignableFrom(field.getType())
-                                && !List.class.isAssignableFrom(field.getType())
-                                && !Set.class.isAssignableFrom(field.getType())
+                        && !List.class.isAssignableFrom(field.getType())
+                        && !Set.class.isAssignableFrom(field.getType())
                 ) {
                     if (Final_Warning) {
                         log.warn(
                                 "警告 无法处理 final 字段：" + field.getName()
-                                        + " 实体类：" + entityTable.getLogTableName()
+                                + " 实体类：" + entityTable.getLogTableName()
                         );
                     }
                     continue;
@@ -251,9 +255,9 @@ public abstract class DataWrapper<DM extends EntityTable>
             if (entityField.isColumnKey()) {
                 if (entityTable.getDataColumnKey() != null) {
                     throw new RuntimeException("不支持双主键："
-                            + entityTable.getLogTableName()
-                            + ", " + entityTable.getDataColumnKey().getFieldName()
-                            + ", " + entityField.getFieldName());
+                                               + entityTable.getLogTableName()
+                                               + ", " + entityTable.getDataColumnKey().getFieldName()
+                                               + ", " + entityField.getFieldName());
                 }
                 entityTable.setDataColumnKey(entityField);
             }
