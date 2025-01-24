@@ -86,7 +86,7 @@ public class ReqRemoteHandler {
         }
         final MarkTimer markTimer = MarkTimer.build();
         final StreamWriter outAppend = new StreamWriter(1024);
-        TextListenerAction listenerAction = new TextListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
+        RpcListenerAction listenerAction = new RpcListenerAction(mappingRecord, session, cmd, putData, outAppend, (showLog) -> {
             if (showLog) {
                 log.info("\n执行：{}\n{}\nrpcId={}\ncmd = {}, {}\n结果 = {}",
                         session.toString(), markTimer.execTime2String(), rpcId, cmd, FastJsonUtil.toJson(putData), outAppend.toString());

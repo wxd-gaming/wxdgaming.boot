@@ -1,5 +1,6 @@
 package wxdgaming.boot.httpclient.apache;
 
+import lombok.Getter;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -14,6 +15,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import wxdgaming.boot.agent.function.Function1;
 import wxdgaming.boot.core.lang.Cache;
+import wxdgaming.boot.core.system.JvmUtil;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -28,6 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2023-04-28 12:30
  **/
+@Getter
 public class HttpClientPool implements AutoCloseable {
 
     public static final ReentrantLock lock = new ReentrantLock();
@@ -37,20 +40,25 @@ public class HttpClientPool implements AutoCloseable {
         HTTP_CLIENT_CACHE = Cache.<String, HttpClientPool>builder().cacheName("http-client")
                 .expireAfterWrite(5, TimeUnit.MINUTES)
                 .delay(TimeUnit.MINUTES.toMillis(1))
-                .loader((Function1<String, HttpClientPool>) s -> build(
-                        50,
-                        200,
-                        2 * 1000,
-                        2 * 1000,
-                        2 * 1000,
-                        10 * 1000,
-                        "TLS"
-                ))
+                .loader((Function1<String, HttpClientPool>) s -> {
+                    Integer core = JvmUtil.getProperty("http.client.core", 50, Integer::parseInt);
+                    Integer max = JvmUtil.getProperty("http.client.max", 200, Integer::parseInt);
+                    int connectionRequestTimeout = JvmUtil.getProperty("apache.http.client.connectionRequestTimeout", 2000, Integer::parseInt);
+                    int connectTimeOut = JvmUtil.getProperty("http.client.connectTimeOut", 2000, Integer::parseInt);
+                    int readTimeout = JvmUtil.getProperty("http.client.readTimeout", 2000, Integer::parseInt);
+                    int keepAliveTimeout = JvmUtil.getProperty("http.client.keepAliveTimeout", 2000, Integer::parseInt);
+                    String sslProtocol = JvmUtil.getProperty("http.client.ssl", "TLS", str -> str);
+                    return build(core, max,
+                            connectionRequestTimeout, connectTimeOut, readTimeout,
+                            keepAliveTimeout,
+                            sslProtocol
+                    );
+                })
                 .build();
     }
 
     public static HttpClientPool getDefault() {
-        return HTTP_CLIENT_CACHE.get("0");
+        return getDefault("0-0");
     }
 
     public static HttpClientPool getDefault(String key) {
@@ -70,8 +78,7 @@ public class HttpClientPool implements AutoCloseable {
     public static HttpClientPool build(int core, int max,
                                        int connectionRequestTimeout, int connectTimeOut, int readTimeout,
                                        int keepAliveTimeout, String sslProtocol) {
-        HttpClientPool httpClientPool = new HttpClientPool(core, max, connectionRequestTimeout, connectTimeOut, readTimeout, keepAliveTimeout, sslProtocol);
-        return httpClientPool;
+        return new HttpClientPool(core, max, connectionRequestTimeout, connectTimeOut, readTimeout, keepAliveTimeout, sslProtocol);
     }
 
     private PoolingHttpClientConnectionManager connPoolMng;

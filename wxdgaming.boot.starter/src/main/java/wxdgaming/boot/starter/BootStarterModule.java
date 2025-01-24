@@ -44,16 +44,6 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
 
         BootConfig bootConfig = BootConfig.getInstance();
 
-        JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
-        JvmUtil.setProperty(JvmUtil.Default_Executor_Max_Size, bootConfig.getDefaultExecutor().getMaxSize());
-
-        JvmUtil.setProperty(JvmUtil.VT_Executor_Core_Size, bootConfig.getVtExecutor().getCoreSize());
-        JvmUtil.setProperty(JvmUtil.VT_Executor_Max_Size, bootConfig.getVtExecutor().getMaxSize());
-
-        JvmUtil.setProperty(JvmUtil.Logic_Executor_Core_Size, bootConfig.getLogicExecutor().getCoreSize());
-        JvmUtil.setProperty(JvmUtil.Logic_Executor_Max_Size, bootConfig.getLogicExecutor().getMaxSize());
-
-
         {
             socketAction.accept(TsService.class, bootConfig.getTcpSocket());
             socketAction.accept(TsService1.class, bootConfig.getTcpSocket1());

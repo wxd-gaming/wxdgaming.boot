@@ -40,9 +40,9 @@ public class HttpBase<H extends HttpBase> implements Closeable {
     protected HttpClientPool httpClientPool;
     protected long logTime = 200;
     protected long waringTime = 1200;
-    protected int connectionRequestTimeout = 1200;
-    protected int connTimeout = 3000;
-    protected int readTimeout = 3000;
+    protected int connectionRequestTimeout;
+    protected int connTimeout;
+    protected int readTimeout;
     protected int retry = 1;
     protected String uriPath;
     protected final Map<String, String> reqHeaderMap = new LinkedHashMap<>();
@@ -53,6 +53,10 @@ public class HttpBase<H extends HttpBase> implements Closeable {
     public HttpBase(HttpClientPool httpClientPool, String uriPath) {
         this.httpClientPool = httpClientPool;
         this.uriPath = uriPath;
+        connectionRequestTimeout = httpClientPool.getConnectionRequestTimeout();
+        connTimeout = httpClientPool.getConnectTimeOut();
+        readTimeout = httpClientPool.getReadTimeout();
+        header("user-agent", "wxd-gaming j21");
         response = new Response(this, uriPath);
     }
 
@@ -257,18 +261,15 @@ public class HttpBase<H extends HttpBase> implements Closeable {
     }
 
     public H header(HttpHeadNameType headerKey, HttpHeadValueType HeaderValue) {
-        header(headerKey.getValue(), HeaderValue.getValue());
-        return (H) this;
+        return header(headerKey.getValue(), HeaderValue.getValue());
     }
 
     public H header(HttpHeadNameType headerKey, String value) {
-        header(headerKey.getValue(), value);
-        return (H) this;
+        return header(headerKey.getValue(), value);
     }
 
     public H header(String name, HttpHeadValueType HeaderValue) {
-        header(name, HeaderValue.getValue());
-        return (H) this;
+        return header(name, HeaderValue.getValue());
     }
 
     /**
@@ -279,8 +280,7 @@ public class HttpBase<H extends HttpBase> implements Closeable {
      * @return
      */
     public H header(AsciiString headerKey, String HeaderValue) {
-        header(headerKey.toString(), HeaderValue);
-        return (H) this;
+        return header(headerKey.toString(), HeaderValue);
     }
 
     public H header(String headerKey, String HeaderValue) {
@@ -289,7 +289,7 @@ public class HttpBase<H extends HttpBase> implements Closeable {
     }
 
     public String url() {
-        return response.uriPath.toString();
+        return response.uriPath;
     }
 
     public String getPostText() {

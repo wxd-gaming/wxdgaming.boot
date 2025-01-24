@@ -59,6 +59,13 @@
     <!--    </redis>-->
 
     <other>
-        <KV key="a" value="a"/>
+        <KV key="http.client.core" value="50"/>
+        <KV key="http.client.max" value="300"/>
+        <KV key="http.client.connectionRequestTimeout" value="3000"/>
+        <KV key="http.client.connectTimeOut" value="3000"/>
+        <KV key="http.client.readTimeout" value="3000"/>
+        <KV key="http.client.keepAliveTimeout" value="3000"/>
+        <KV key="http.client.ssl" value="TLS"/>
     </other>
+
 </bootConfig>

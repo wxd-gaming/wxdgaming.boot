@@ -9,7 +9,6 @@ import wxdgaming.boot.core.append.StreamWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * @author: wxd-gaming(無心道, 15388152619)
@@ -36,22 +35,18 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
                 .classWithAnnotated(DbTable.class)
                 .forEach(this::createTable);
 
-        getDbTableStructMap().clear();
-        final Set<String> strings = getDbTableStructMap().keySet();
-        for (String string : strings) {
-            if (!getDataWrapper().getDataTableMap().containsKey(string)) {
-                dropTable(string);
-            }
-        }
-        getDbTableStructMap().clear();
     }
 
     /** 删除所有表，给清档的时候用的 */
     default void dropTables() {
-        final Set<String> set = ((SqlDataHelper) this).getDbTableStructMap().keySet();
-        for (String tableName : set) {
-            dropTable(tableName);
+        getDbTableMap().clear();
+        for (String tableName : getDbTableMap().keySet()) {
+            if (!getDataWrapper().getDataTableMap().containsKey(tableName)) {
+                dropTable(tableName);
+            }
         }
+        getDbTableMap().clear();
+        getDbTableStructMap().clear();
     }
 
     /**
@@ -166,6 +161,8 @@ interface SqlTable<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ext
             this.executeUpdate(streamWriter.toString());
         }
     }
+
+    Map<String, String> getDbTableMap();
 
     Map<String, LinkedHashMap<String, JSONObject>> getDbTableStructMap();
 

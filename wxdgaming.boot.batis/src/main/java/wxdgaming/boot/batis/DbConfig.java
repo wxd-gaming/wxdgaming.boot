@@ -72,6 +72,8 @@ public class DbConfig extends ObjectBase implements Serializable, Cloneable {
     /** 密码 */
     @JSONField(ordinal = 10)
     private String dbPwd;
+    @JSONField(ordinal = 11)
+    private String scanPackage;
 
     public DbConfig clone(String dbName) throws CloneNotSupportedException {
         return clone().setDbBase(dbName);
@@ -84,16 +86,8 @@ public class DbConfig extends ObjectBase implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("DbConfig{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", show_sql=").append(show_sql);
-        sb.append(", connectionPool=").append(connectionPool);
-        sb.append(", batchSizeThread=").append(batchSizeThread);
-        sb.append(", dbHost=").append(dbHost).append(":").append(dbPort).append("/").append(dbBase);
-        sb.append(", dbUser='").append(dbUser).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "DbConfig{name='%s', show_sql=%s, connectionPool=%s, batchSizeThread=%d, dbHost=%s:%d/%s, dbUser='%s'}"
+                .formatted(name, show_sql, connectionPool, batchSizeThread, dbHost, dbPort, dbBase, dbUser);
     }
     //    @Override
     //    public String toString() {

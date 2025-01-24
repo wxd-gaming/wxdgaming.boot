@@ -7,6 +7,7 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
 import wxdgaming.boot.batis.sql.SqlEntityTable;
+import wxdgaming.boot.core.str.StringUtil;
 
 import java.sql.Connection;
 
@@ -53,7 +54,9 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         if (getDbConfig().isCreateDbBase()) {
             createDatabase();
         }
-
+        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+            checkDataBase(getDbConfig().getScanPackage());
+        }
         if (dbConfig.isConnectionPool()) {
             this.dbSource = new HikariDbSource(
                     connectionDriverName,
@@ -77,9 +80,8 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
     }
 
     @Override
-    public MysqlDataHelper initBatchPool(int batchThreadSize) {
+    public void initBatchPool(int batchThreadSize) {
         super.initBatchPool(batchThreadSize);
-        return this;
     }
 
     /**
@@ -117,8 +119,7 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         if (this.getDbSource() != null) {
             try {
                 this.getDbSource().close();
-            } catch (Throwable throwable) {
-            }
+            } catch (Throwable ignored) {}
         }
         log.info("{} 关闭 mysql host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
@@ -134,11 +135,7 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         }
     }
 
-    /**
-     * 创建数据库
-     *
-     * @return
-     */
+    /** 创建数据库 */
     public boolean createDatabase() {
         return createDatabase(this.getDbBase());
     }
@@ -161,8 +158,8 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
                         .append(DataHelper.DAOCHARACTER)
                         .append("_unicode_ci;");
                 return connection
-                        .prepareStatement(stringBuilder.toString())
-                        .executeUpdate() == 0;
+                               .prepareStatement(stringBuilder.toString())
+                               .executeUpdate() == 0;
             } catch (Exception e) {
                 if (e.getMessage().contains("utf8mb4")) {
                     DataHelper.DAOCHARACTER = "utf8";
@@ -176,8 +173,8 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
                             .append(DataHelper.DAOCHARACTER)
                             .append("_unicode_ci;");
                     return connection
-                            .prepareStatement(stringBuilder.toString())
-                            .executeUpdate() == 0;
+                                   .prepareStatement(stringBuilder.toString())
+                                   .executeUpdate() == 0;
                 } else {
                     log.error("创建数据库 {}", database, e);
                 }

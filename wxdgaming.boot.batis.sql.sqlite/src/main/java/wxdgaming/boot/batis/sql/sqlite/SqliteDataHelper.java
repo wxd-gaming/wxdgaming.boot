@@ -8,6 +8,7 @@ import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
 import wxdgaming.boot.batis.sql.SqlEntityTable;
 import wxdgaming.boot.core.append.StreamWriter;
+import wxdgaming.boot.core.str.StringUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,6 +55,11 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
             }
             this.startEnd = true;
         }
+
+        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+            checkDataBase(getDbConfig().getScanPackage());
+        }
+
         if (dbConfig.getBatchSizeThread() > 0) {
             initBatchPool(dbConfig.getBatchSizeThread());
         }
@@ -71,9 +77,8 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
     }
 
     @Override
-    public SqliteDataHelper initBatchPool(int batchThreadSize) {
+    public void initBatchPool(int batchThreadSize) {
         super.initBatchPool(batchThreadSize);
-        return this;
     }
 
     /**

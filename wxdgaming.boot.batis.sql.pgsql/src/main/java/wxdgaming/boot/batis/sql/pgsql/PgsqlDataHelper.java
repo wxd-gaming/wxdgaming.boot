@@ -1,4 +1,4 @@
-package wxdgaming.boot.batis.sql.mysql;
+package wxdgaming.boot.batis.sql.pgsql;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
@@ -7,6 +7,7 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
+import wxdgaming.boot.core.str.StringUtil;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -55,6 +56,9 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
         if (getDbConfig().isCreateDbBase()) {
             createDatabase();
         }
+        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+            checkDataBase(getDbConfig().getScanPackage());
+        }
 
         if (dbConfig.isConnectionPool()) {
             this.dbSource = new HikariDbSource(
@@ -79,13 +83,12 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
     }
 
     @Override
-    public PgsqlDataHelper initBatchPool(int batchThreadSize) {
+    public void initBatchPool(int batchThreadSize) {
         if (batchPool == null) {
             this.batchPool = new PgsqlBatchPool(this, batchThreadSize);
         } else {
             log.error("已经初始化了 db Batch Pool", new RuntimeException());
         }
-        return this;
     }
 
     /**
@@ -231,6 +234,10 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
             }
         }
         return dbTableStructMap;
+    }
+
+    @Override public void dropTable(String tableName) {
+        executeUpdate("DROP TABLE \"" + tableName + "\";");
     }
 
     @Override public boolean columnTypeChange(EntityField newField, JSONObject oldField) {

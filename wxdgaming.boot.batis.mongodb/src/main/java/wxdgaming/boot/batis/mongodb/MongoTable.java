@@ -124,7 +124,7 @@ interface MongoTable {
                 collection.createIndex(document);
             }
         }
-        log.info(((MongoDataHelper) this).getDbBase() + " 创建表：" + tableName);
+        log.info("{} 创建表：{}", ((MongoDataHelper) this).getDbBase(), tableName);
     }
 
     /**

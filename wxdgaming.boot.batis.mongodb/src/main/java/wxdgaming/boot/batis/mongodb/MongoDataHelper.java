@@ -15,6 +15,7 @@ import com.mongodb.client.result.UpdateResult;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.zip.OutZipFile;
@@ -24,7 +25,7 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DataChecked;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.agent.GlobalUtil;
+import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.timer.MyClock;
 
@@ -117,19 +118,23 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
         ClientSession clientSession = mongoClient.startSession();
         clientSession.close();
         mongoDatabase = mongoClient.getDatabase(dbConfig.getDbBase());
+
+        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+            checkDataBase(getDbConfig().getScanPackage());
+        }
+
         if (dbConfig.getBatchSizeThread() > 0) {
             initBatchPool(dbConfig.getBatchSizeThread());
         }
         log.info("{} 启动 mongo db host={} serviceName={} dbName={}", this.getClass(), dbConfig.getDbHost(), dbConfig.getName(), dbConfig.getDbBase());
     }
 
-    public MongoDataHelper initBatchPool(int batchThreadSize) {
+    public void initBatchPool(int batchThreadSize) {
         if (this.batchPool == null) {
             this.batchPool = new MongoBatchPool(this, this.getDbBase() + "-BatchJob", batchThreadSize);
         } else {
             log.error("已经初始化了 db Batch Pool", new RuntimeException());
         }
-        return this;
     }
 
     public void close() {
@@ -137,14 +142,14 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
             try {
                 this.getBatchPool().close();
             } catch (Throwable throwable) {
-                log.error(this.toString() + " batch pool close", throwable);
+                log.error("{} batch pool close", this.toString(), throwable);
             }
         }
         if (this.mongoClient != null) {
             try {
                 this.mongoClient.close();
             } catch (Throwable throwable) {
-                log.error(this.toString() + " mongo client close", throwable);
+                log.error("{} mongo client close", this.toString(), throwable);
             }
         }
     }
@@ -194,21 +199,18 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
                         fieldValue.addAll((Set) jsonValue);
                     } else {
                         throw new RuntimeException("数据库：" + this.getDbBase()
-                                + " \n映射表：" + entityTable.getLogTableName()
-                                + " \n字段：" + entityField.getColumnName()
-                                + " \n类型：" + entityField.getFieldType()
-                                + " \n数据库配置值：" + jsonValue + "; 最终类型异常");
+                                                   + " \n映射表：" + entityTable.getLogTableName()
+                                                   + " \n字段：" + entityField.getColumnName()
+                                                   + " \n类型：" + entityField.getFieldType()
+                                                   + " \n数据库配置值：" + jsonValue + "; 最终类型异常");
                     }
                 } else {
                     entityField.setFieldValue(source, jsonValue);
                 }
                 entityField.setFieldValue(source, jsonValue);
             } catch (Exception e) {
-                String msg = "数据库：" + this.getDbBase()
-                        + " 映射表：" + entityTable.getTableName()
-                        + " 字段：" + entityField.getColumnName()
-                        + " 字段类型：" + entityField.getFieldType()
-                        + " 数据库配置值：" + jsonValue + ";";
+                String msg = "数据库：%s 映射表：%s 字段：%s 字段类型：%s 数据库配置值：%s;"
+                        .formatted(this.getDbBase(), entityTable.getTableName(), entityField.getColumnName(), entityField.getFieldType(), jsonValue);
                 throw Throw.as(msg, e);
             }
         }

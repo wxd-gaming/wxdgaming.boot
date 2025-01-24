@@ -12,6 +12,7 @@ import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.auth.SignCheck;
 import wxdgaming.boot.net.controller.TextMappingRecord;
+import wxdgaming.boot.net.controller.ann.Body;
 import wxdgaming.boot.net.controller.ann.Param;
 
 import java.lang.reflect.Parameter;
@@ -26,7 +27,7 @@ import java.util.function.Consumer;
  * @version: 2023-12-19 15:38
  **/
 @Slf4j
-class TextListenerAction extends Event {
+class RpcListenerAction extends Event {
 
     private final TextMappingRecord mappingRecord;
     private final SocketSession session;
@@ -35,10 +36,10 @@ class TextListenerAction extends Event {
     private final StreamWriter out;
     private final Consumer<Boolean> callBack;
 
-    public TextListenerAction(TextMappingRecord mappingRecord,
-                              SocketSession session,
-                              String listener, JSONObject putData,
-                              StreamWriter out, Consumer<Boolean> callBack) {
+    public RpcListenerAction(TextMappingRecord mappingRecord,
+                             SocketSession session,
+                             String listener, JSONObject putData,
+                             StreamWriter out, Consumer<Boolean> callBack) {
         super(mappingRecord.method());
         this.mappingRecord = mappingRecord;
         this.session = session;
@@ -79,7 +80,7 @@ class TextListenerAction extends Event {
                 Parameter parameter = parameters[i];
                 Type type = parameter.getParameterizedType();
                 if (type instanceof Class<?> clazz) {
-                    if (clazz.getName().equals(JSONObject.class.getName())) {
+                    if (clazz.isAssignableFrom(JSONObject.class)) {
                         params[i] = putData;
                     } else if (Session.class.isAssignableFrom(clazz)) {
                         if (clazz.isAssignableFrom(session.getClass())) {
@@ -88,9 +89,15 @@ class TextListenerAction extends Event {
                             throw new RuntimeException("listener " + listener + ", session error 需要 " + clazz.getSimpleName() + ", 当前：" + session.getClass().getSimpleName());
                         }
                     } else {
+                        Body body = parameter.getAnnotation(Body.class);
+                        if (body != null) {
+                            Object javaObject = putData.toJavaObject(clazz);
+                            params[i] = javaObject;
+                            continue;
+                        }
                         /*实现注入*/
                         Param annotation = parameter.getAnnotation(Param.class);
-                        params[i] = putData.parseObject(annotation.value(), (Class) clazz);
+                        params[i] = putData.getObject(annotation.value(), (Class) clazz);
                     }
                 }
             }

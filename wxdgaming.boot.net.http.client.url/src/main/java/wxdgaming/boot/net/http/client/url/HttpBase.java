@@ -2,12 +2,13 @@ package wxdgaming.boot.net.http.client.url;
 
 import io.netty.util.AsciiString;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.publisher.Mono;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.agent.GlobalUtil;
+import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.net.http.HttpHeadNameType;
@@ -53,8 +54,15 @@ public abstract class HttpBase<H extends HttpBase> {
 
     protected HttpBase(String uriPath) {
         header(HttpHeadNameType.Accept_Encoding, HttpHeadValueType.Gzip);
-        header("user-agent", "java.org.wxd j21");
-        response = new Response(this, uriPath);
+        header("user-agent", "wxd-gaming j21");
+        response = new Response<>((H) this, uriPath);
+        init();
+    }
+
+    protected void init() {
+        connTimeout = JvmUtil.getProperty("http.client.connectTimeOut", 2000, Integer::parseInt);
+        readTimeout = JvmUtil.getProperty("http.client.readTimeout", 2000, Integer::parseInt);
+        sslProtocolType = SslProtocolType.of(JvmUtil.getProperty("http.client.ssl", "TLS", str -> str));
     }
 
     /** 处理需要发送的数据 */
@@ -87,7 +95,7 @@ public abstract class HttpBase<H extends HttpBase> {
             for (Map.Entry<String, String> headerEntry : reqHeaderMap.entrySet()) {
                 this.response.urlConnection.setRequestProperty(headerEntry.getKey(), headerEntry.getValue());
             }
-
+            /*这个方式不支持链接复用*/
             header("connection", "close");
             /*
             必须设置false，否则会自动redirect到重定向后的地址
@@ -198,8 +206,8 @@ public abstract class HttpBase<H extends HttpBase> {
                     byte[] toByteArray = bos.toByteArray();
                     String encoding = this.response.urlConnection.getContentEncoding();
                     if (encoding != null
-                            && encoding.toLowerCase().contains("gzip")
-                            && toByteArray.length > 0) {
+                        && encoding.toLowerCase().contains("gzip")
+                        && toByteArray.length > 0) {
                         this.response.bodys = GzipUtil.unGZip(toByteArray);
                     } else {
                         this.response.bodys = toByteArray;

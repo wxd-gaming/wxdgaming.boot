@@ -1,4 +1,4 @@
-package wxdgaming.boot.batis.sql.mysql;
+package wxdgaming.boot.batis.sql.pgsql;
 
 
 import wxdgaming.boot.batis.EntityField;
@@ -70,7 +70,7 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
     }
 
     @Override public String buildColumnSqlString(EntityField entityField) {
-        String sqlString = entityField.getColumnName().toLowerCase()+ " "
+        String sqlString = "\"" + entityField.getColumnName().toLowerCase() + "\" "
                            + entityField.checkColumnType().pgsqlFormatString(entityField.getColumnLength());
 
         if (entityField.isColumnKey() || !entityField.isColumnNullAble()) {

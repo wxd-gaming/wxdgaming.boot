@@ -1,6 +1,7 @@
 package wxdgaming.boot.batis.sql;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version: 2020-12-30 20:33
  */
 @Slf4j
+@Getter
 public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>>
         extends DataHelper<DM, DW>
         implements SqlExecute<DM, DW>, SqlTable<DM, DW>, SqlSelect<DM, DW>, SqlDel<DM, DW> {
@@ -41,24 +43,20 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
     }
 
     /**
-     * @param dbConfig
+     * 初始化
+     *
+     * @param dbConfig 配置
      */
     public SqlDataHelper(DW dataWrapper, DbConfig dbConfig) {
         super(dataWrapper, dbConfig);
     }
 
-    public SqlDataHelper initBatchPool(int batchThreadSize) {
+    public void initBatchPool(int batchThreadSize) {
         if (batchPool == null) {
             this.batchPool = new SqlBatchPool(this, batchThreadSize);
         } else {
             log.error("已经初始化了 db Batch Pool", new RuntimeException());
         }
-
-        return this;
-    }
-
-    public SqlBatchPool getBatchPool() {
-        return batchPool;
     }
 
     @Override
@@ -70,19 +68,16 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         return getDataWrapper().queryBuilder();
     }
 
-    /**
-     * 获取数据库的链接
-     *
-     * @return
-     */
+    /** 获取数据库的链接 */
     @Override
     public Connection getConnection() {
         return getConnection(this.getDbConfig().getDbHost());
     }
 
     /**
-     * @param dbnameString
-     * @return
+     * 创建链接，非连接池
+     *
+     * @param dbnameString 数据库名
      */
     @Override
     public Connection getConnection(String dbnameString) {
@@ -113,7 +108,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         return dbBaseList;
     }
 
-    public Map<String, String> getDbTableMap() {
+    @Override public Map<String, String> getDbTableMap() {
         if (dbTableMap == null) {
             dbTableMap = new LinkedHashMap<>();
         }
@@ -129,8 +124,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         return dbTableMap;
     }
 
-    @Override
-    public Map<String, LinkedHashMap<String, JSONObject>> getDbTableStructMap() {
+    @Override public Map<String, LinkedHashMap<String, JSONObject>> getDbTableStructMap() {
         if (dbTableStructMap == null) {
             dbTableStructMap = new LinkedHashMap<>();
         }

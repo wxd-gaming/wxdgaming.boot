@@ -1,4 +1,4 @@
-package wxdgaming.boot.batis.sql.mysql;
+package wxdgaming.boot.batis.sql.pgsql;
 
 
 import com.zaxxer.hikari.HikariConfig;

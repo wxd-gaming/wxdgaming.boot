@@ -63,6 +63,31 @@ public class AppContext {
         LogbackUtil.setLogbackConfig();
         if (mainIocInjector != null) throw new RuntimeException("不允许第二次启动");
 
+        {
+            /* TODO 初始化配置文件 */
+            Record2<String, InputStream> inputStream = FileUtil.findInputStream(Thread.currentThread().getContextClassLoader(), "boot.xml");
+            if (inputStream == null) {
+                throw new RuntimeException("未找到配置文件 boot.xml");
+            }
+            System.out.println("读取文件目录：" + inputStream.t1());
+            BootConfig.setInstance(XmlUtil.fromXml(inputStream.t2(), BootConfig.class));
+
+            BootConfig bootConfig = BootConfig.getInstance();
+
+            JvmUtil.setProperty(JvmUtil.Default_Executor_Core_Size, bootConfig.getDefaultExecutor().getCoreSize());
+            JvmUtil.setProperty(JvmUtil.Default_Executor_Max_Size, bootConfig.getDefaultExecutor().getMaxSize());
+
+            JvmUtil.setProperty(JvmUtil.VT_Executor_Core_Size, bootConfig.getVtExecutor().getCoreSize());
+            JvmUtil.setProperty(JvmUtil.VT_Executor_Max_Size, bootConfig.getVtExecutor().getMaxSize());
+
+            JvmUtil.setProperty(JvmUtil.Logic_Executor_Core_Size, bootConfig.getLogicExecutor().getCoreSize());
+            JvmUtil.setProperty(JvmUtil.Logic_Executor_Max_Size, bootConfig.getLogicExecutor().getMaxSize());
+
+            for (KV kv : bootConfig.getOther()) {
+                JvmUtil.setProperty(kv.getKey(), kv.getValue());
+            }
+        }
+
         /*全局未捕获线程异常*/
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             try {
@@ -75,13 +100,6 @@ public class AppContext {
             if (StringUtil.notEmptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
                 FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
         };
-
-        Record2<String, InputStream> inputStream = FileUtil.findInputStream(Thread.currentThread().getContextClassLoader(), "boot.xml");
-        if (inputStream == null) {
-            throw new RuntimeException("未找到配置文件 boot.xml");
-        }
-        System.out.println("读取文件目录：" + inputStream.t1());
-        BootConfig.setInstance(XmlUtil.fromXml(inputStream.t2(), BootConfig.class));
 
         Set<String> packages1 = SetOf.asSet(AppContext.class.getPackageName(), NioBase.class.getPackageName());
         packages1.addAll(Arrays.asList(packages));

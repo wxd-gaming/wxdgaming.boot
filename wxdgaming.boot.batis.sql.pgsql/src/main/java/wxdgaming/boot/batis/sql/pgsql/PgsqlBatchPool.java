@@ -1,4 +1,4 @@
-package wxdgaming.boot.batis.sql.mysql;
+package wxdgaming.boot.batis.sql.pgsql;
 
 import wxdgaming.boot.batis.DataBuilder;
 import wxdgaming.boot.batis.sql.SqlBatchPool;

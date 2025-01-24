@@ -1,7 +1,7 @@
 package wxdgaming.boot.starter.pgsql;
 
 import wxdgaming.boot.batis.DbConfig;
-import wxdgaming.boot.batis.sql.mysql.PgsqlDataHelper;
+import wxdgaming.boot.batis.sql.pgsql.PgsqlDataHelper;
 
 /**
  * mysql

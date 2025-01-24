@@ -55,7 +55,7 @@ public abstract class HttpBase<H extends HttpBase> {
 
         header(HttpHeadNameType.Content_Type, HttpHeadValueType.Application);
         header(HttpHeadNameType.Accept_Encoding, HttpHeadValueType.Gzip);
-        header("user-agent", "java.org.wxd j21");
+        header("user-agent", "wxd-gaming j21");
         response = new Response<>((H) this, url);
     }
 
