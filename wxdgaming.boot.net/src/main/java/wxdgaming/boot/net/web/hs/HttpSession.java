@@ -133,10 +133,6 @@ public class HttpSession extends Session implements Serializable {
         responseText(res.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void responseText(RunResult res) {
-        responseText(res.toJSONString().getBytes(StandardCharsets.UTF_8));
-    }
-
     public void responseText(byte[] res) {
         response(HttpHeadValueType.Text, res);
     }
@@ -175,8 +171,13 @@ public class HttpSession extends Session implements Serializable {
     }
 
     /** HttpContentType.html 回复 http 请求 */
+    public void response(byte[] bytes) {
+        HttpServer.response(this, HttpVersion.HTTP_1_1, HttpResponseStatus.OK, HttpHeadValueType.OctetStream, bytes);
+    }
+
+    /** HttpContentType.html 回复 http 请求 */
     public void response(HttpResponseStatus status, byte[] bytes) {
-        HttpServer.response(this, HttpVersion.HTTP_1_1, status, HttpHeadValueType.Html, bytes);
+        HttpServer.response(this, HttpVersion.HTTP_1_1, status, HttpHeadValueType.OctetStream, bytes);
     }
 
     /** HttpContentType.html 回复 http 请求 */
@@ -186,6 +187,14 @@ public class HttpSession extends Session implements Serializable {
 
     public void responseOver() {
         this.responseOver.set(true);
+    }
+
+    public HttpResult newHttpResult() {
+        return new HttpResult();
+    }
+
+    public HttpResult newJsonResult() {
+        return new HttpResult().setContentType(HttpHeadValueType.Json);
     }
 
     public boolean isResponseOver() {

@@ -19,7 +19,7 @@ public class HttpTest {
 
     @Test
     public void t1() throws Exception {
-        String url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
+        String url = "/sjcq/wanIp";
 
         // url = "http://192.168.11.84:8686/qj5.json";
         // url = "http://login.yzzl.dalangx.com/qj5.json";

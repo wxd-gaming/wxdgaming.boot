@@ -136,6 +136,10 @@ public class FastJsonUtil {
         return JSON.toJSONString(object, Writer_Features_Type_Name_Fmt);
     }
 
+    public static JSONObject toJSONObject(Object object) {
+        return parse(toJson(object));
+    }
+
     /** 转化成字节流 */
     public static byte[] toBytes(Object object) {
         return JSON.toJSONBytes(object, Writer_Features);

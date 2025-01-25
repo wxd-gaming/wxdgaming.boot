@@ -358,6 +358,8 @@ public class HttpServer extends NioServer<HttpSession> {
                     if (!session.isFile()) {
                         stringBuilder
                                 .append(";\n=============================================输出================================================")
+                                .append("\n").append(hrs).append(", ").append(contentType).append(", len: ").append(byteBuf.readableBytes())
+                                .append(";\n=============================================输出================================================")
                                 .append("\n").append(new String(bytes, StandardCharsets.UTF_8))
                                 .append("\n=============================================结束================================================")
                                 .append("\n");

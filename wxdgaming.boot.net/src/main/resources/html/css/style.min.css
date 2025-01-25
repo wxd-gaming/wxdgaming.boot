@@ -1074,7 +1074,7 @@ body {font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;f
 
 body, body.full-height-layout #page-wrapper, body.full-height-layout #wrapper, html {height: 100%;}
 
-#page-wrapper {min-height: auto}
+#page-wrapper {min-height: auto,overflow: hidden;}
 
 body.boxed-layout {background: url(patterns/shattered.png)}
 
@@ -1130,7 +1130,7 @@ video {width: 100% !important;height: auto !important}
 
 .modal-footer {margin-top: 0}
 
-#wrapper {width: 100%;overflow-x: hidden;background-color: #2f4050}
+#wrapper {width: 100%;overflow: hidden;background-color: #2f4050}
 
 .wrapper {padding: 0 20px}
 
@@ -1196,7 +1196,7 @@ nav.page-tabs .page-tabs-content {float: left}
 
 .dropdown-menu-right {left: auto}
 
-#content-main {height: calc(100% - 45px);overflow: hidden}
+#content-main {height: calc(100% - 40px);overflow: hidden}
 
 .fixed-nav #content-main {height: calc(100% - 80px);overflow: hidden}
 

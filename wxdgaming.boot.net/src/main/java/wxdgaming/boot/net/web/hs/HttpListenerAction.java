@@ -107,10 +107,16 @@ class HttpListenerAction extends Event {
             final JSONObject putData = session.getReqParams();
             final HttpHeadValueType httpHeadValueType = session.getReqContentType().toLowerCase().contains("json") ? HttpHeadValueType.Json : null;
 
-            Consumer2<Object, Boolean> callBack = (string, aBoolean) -> {
+            Consumer2<Object, Boolean> callBack = (object, aBoolean) -> {
                 session.setShowLog(aBoolean);
                 if (!session.isResponseOver()) {
-                    session.responseText(String.valueOf(string));
+                    switch (object) {
+                        case byte[] bytes -> session.response(bytes);
+                        case String text -> session.responseText(text);
+                        case RunResult result -> session.responseJson(FastJsonUtil.toJsonKeyAsString(result));
+                        case HttpResult result -> result.response(session);
+                        case null, default -> session.responseText(String.valueOf(object));
+                    }
                 }
             };
 

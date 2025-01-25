@@ -16,7 +16,7 @@ public class HttpClientTest {
     @Test
     public void t1() throws Exception {
 
-        String url = "http://test-center.xiaw.net:18800/sjcq/wanIp";
+        String url = "/sjcq/wanIp";
         log.info("{}", HttpBuilder.get(url).request().bodyString());
         log.info("{}", HttpBuilder.get(url).retry(2)/*设置重试次数，比如请求失败了*/.request().bodyString());
 

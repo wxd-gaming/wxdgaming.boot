@@ -22,9 +22,9 @@
     <link href="css/style.min.css?v=4.0.0" rel="stylesheet">
 
     <script charset="utf-8" type="text/javascript" src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script charset="utf-8" type="text/javascript" src="/js/com.wxd.js"></script>
+    <script charset="utf-8" type="text/javascript" src="js/com.wxd.js"></script>
 
-    <link href="style/com.wxd.css" rel="stylesheet">
+    <link rel="stylesheet" href="style/com.wxd.css">
 
     <script type="application/javascript">
         $(() => {
@@ -38,13 +38,12 @@
                 .loadTopSearch()
                 .put("content", "1");
 
-            wxd.netty.post("/gm/001/002/003/menu", urlQuery.toString(),
+            wxd.netty.post("/menu/list", urlQuery.toString(),
                 function (responseText) {
-                    let ls = "";
                     for (const row of responseText.rows) {
-                        ls += `<a class="J_menuItem" href="${row.value}">${row.key}</a>\n`;
+                        let ls = `<a class="J_menuItem" href="${row.value}">${row.key}</a>`;
+                        $("#side-menu-sub").append(ls);
                     }
-                    $("#side-menu-sub").append(ls);
                     wxd.loading_close();
                 },
                 function (error) {
@@ -73,7 +72,7 @@
                         </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
-                                    <span class="block m-t-xs1"><strong class="font-bold">Beaut-zihan</strong></span>
+                                    <span class="block m-t-xs1"><strong class="font-bold">wxd-gaming</strong></span>
                                     <span class="text-muted text-xs block">超级管理员<b class="caret"></b></span>
                                 </span>
                         </a>
@@ -97,7 +96,7 @@
                     </a>
                     <ul class="nav nav-second-level">
                         <li id="side-menu-sub">
-                            <!-- <a class="J_menuItem" href="index_v1.html">主页示例一</a>-->
+                            <a class="J_menuItem" href="index_v1.html">主页示例一</a>
                         </li>
                     </ul>
                 </li>

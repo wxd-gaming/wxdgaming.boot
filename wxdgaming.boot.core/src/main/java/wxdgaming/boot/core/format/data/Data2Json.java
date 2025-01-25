@@ -1,6 +1,7 @@
 package wxdgaming.boot.core.format.data;
 
 
+import com.alibaba.fastjson.JSONObject;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 /**
@@ -14,6 +15,10 @@ public interface Data2Json extends DataSerialize {
     /** json */
     default String toJson() {
         return FastJsonUtil.toJson(this);
+    }
+
+    default JSONObject toJsonObject() {
+        return FastJsonUtil.toJSONObject(this);
     }
 
     /** 一般是js用的，所有 key 值都是字符串 格式化 */
