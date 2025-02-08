@@ -125,4 +125,18 @@ public class PgsqlTest {
         pgsqlLogTests.forEach(System.out::println);
     }
 
+    @Test
+    @RepeatedTest(5)
+    public void selectJson2() {
+        long nanoTime = System.nanoTime();
+        String string = String.valueOf(RandomUtils.random(1, 10000));
+        List<PgsqlLogTest> all2Stream = dataHelper.queryEntitiesWhere(
+                PgsqlLogTest.class,
+                "jsonb_extract_path_text(sensors,'e','aa') = ?1",
+                string
+        );
+        System.out.println((System.nanoTime() - nanoTime) / 10000 / 100f + " ms");
+        System.out.println("select $.e.aa=" + string + " - count = " + all2Stream.size());
+        all2Stream.forEach(System.out::println);
+    }
 }
