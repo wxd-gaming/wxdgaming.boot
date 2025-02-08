@@ -41,10 +41,24 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
 
         if (entityTable.getDataColumnKey() != null) {
             stringAppend.write(",")
-                    .write("PRIMARY KEY (").write(entityTable.getDataColumnKey().getColumnName().toLowerCase()).write(")");
+                    .write("PRIMARY KEY (")
+                    .write("\"").write(entityTable.getDataColumnKey().getColumnName()).write("\"");
+            for (EntityField entityField : columns) {
+                Partition annotation = entityField.getField().getAnnotation(Partition.class);
+                if (annotation != null) {
+                    stringAppend.write(", \"").write(entityField.getColumnName()).write("\"");
+                }
+            }
+            stringAppend.write(")");
         }
 
         stringAppend.write(")");
+        for (EntityField entityField : columns) {
+            Partition annotation = entityField.getField().getAnnotation(Partition.class);
+            if (annotation != null) {
+                stringAppend.write(" PARTITION BY ").write(annotation.types()).write("(\"").write(entityField.getColumnName()).write("\")");
+            }
+        }
     }
 
     @Override public String buildAddColumn(String tableName, EntityField entityField, EntityField upField) {
@@ -56,21 +70,21 @@ public class PgsqlDataWrapper extends SqlDataWrapper<PgsqlEntityTable> implement
     }
 
     @Override public String buildDropColumn(String tableName, String columnName) {
-        return "ALTER TABLE \"" + tableName + "\" drop COLUMN \"" + columnName.toLowerCase() + "\"";
+        return "ALTER TABLE \"" + tableName + "\" drop COLUMN \"" + columnName + "\"";
     }
 
 
     @Override public String buildAlterColumnIndex(String tableName, EntityField entityField) {
         String sqls = null;
         if (entityField.isColumnIndex()) {
-            String keyName = tableName + "_" + entityField.getColumnName().toLowerCase();
-            sqls = "CREATE INDEX \"" + keyName + "\" ON \"" + tableName + "\" (\"" + entityField.getColumnName().toLowerCase() + "\");";
+            String keyName = tableName + "_" + entityField.getColumnName();
+            sqls = "CREATE INDEX \"" + keyName + "\" ON \"" + tableName + "\" (\"" + entityField.getColumnName() + "\");";
         }
         return sqls;
     }
 
     @Override public String buildColumnSqlString(EntityField entityField) {
-        String sqlString = "\"" + entityField.getColumnName().toLowerCase() + "\" "
+        String sqlString = "\"" + entityField.getColumnName() + "\" "
                            + entityField.checkColumnType().pgsqlFormatString(entityField.getColumnLength());
 
         if (entityField.isColumnKey() || !entityField.isColumnNullAble()) {

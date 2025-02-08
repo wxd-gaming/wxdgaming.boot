@@ -8,10 +8,12 @@ import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
 import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.timer.MyClock;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,7 +248,12 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
 
     @Override public void createTable(PgsqlEntityTable entityTable, String tableName, String tableComment) {
         super.createTable(entityTable, tableName, tableComment);
-        /*处理索引*/
+
+        if (tableComment != null && !tableComment.isEmpty()) {
+            this.executeUpdate("COMMENT ON TABLE \"" + tableName + "\" IS '" + tableComment + "'");
+        }
+
+        /*TODO 处理索引*/
         LinkedHashMap<String, EntityField> columnMap = entityTable.getColumnMap();
         for (EntityField entityField : columnMap.values()) {
             if (entityField.isColumnIndex()) {
@@ -269,5 +276,6 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
                 }
             }
         }
+
     }
 }

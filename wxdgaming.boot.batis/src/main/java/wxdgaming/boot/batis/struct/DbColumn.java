@@ -52,8 +52,6 @@ public @interface DbColumn {
 
     /**
      * mysql 索引类型 {@code USING HASH} or {@code USING BTREE}
-     *
-     * @return
      */
     String mysqlIndexType() default "";
 
