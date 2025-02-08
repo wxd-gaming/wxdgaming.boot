@@ -5,6 +5,7 @@ import wxdgaming.boot.core.threading.ThreadContext;
 import wxdgaming.boot.core.threading2.ExecutorActor;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,4 +31,8 @@ public class Code {
         executorService.shutdown();
     }
 
+    // public void t3() {
+    //     Executor executor = Executors.newVirtualThreadPerTaskExecutor();
+    //     executor.execute(new Runnable(){});
+    // }
 }

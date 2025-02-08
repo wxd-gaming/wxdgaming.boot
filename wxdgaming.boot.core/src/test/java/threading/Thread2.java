@@ -87,19 +87,23 @@ public class Thread2 {
     public void t2() {
         /*线程传递参数*/
         Exchanger<String> exchanger = new Exchanger<>();
-        CompletableFuture.runAsync(() -> {
+        Thread.ofVirtual().start(() -> {
             try {
                 System.out.println("我是A：" + exchanger.exchange("444"));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
-        CompletableFuture.runAsync(() -> {
+        Thread.ofVirtual().start(() -> {
             try {
                 System.out.println("我是B：" + exchanger.exchange("555"));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    @Test
+    public void t55(){
     }
 }
