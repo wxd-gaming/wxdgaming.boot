@@ -2,6 +2,7 @@ package wxdgaming.boot.net.controller;
 
 
 import wxdgaming.boot.agent.LogbackUtil;
+import wxdgaming.boot.agent.function.FunctionE;
 import wxdgaming.boot.agent.function.FunctionE2;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
@@ -11,6 +12,8 @@ import wxdgaming.boot.core.threading.ExecutorLog;
 import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.ann.TextMapping;
+import wxdgaming.boot.net.handler.RpcListenerAction;
+import wxdgaming.boot.net.web.hs.HttpListenerAction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -32,7 +35,9 @@ public class MappingFactory {
     public static boolean OUT_FILE_Java_Assist_Code = false;
 
     /** text mapping submit 监听 */
-    public static FunctionE2<Session, Event, Boolean> TextMappingSubmitBefore = null;
+    public static FunctionE<HttpListenerAction, Boolean> HttpMappingSubmitBefore = null;
+    /** rpc mapping submit 监听 */
+    public static FunctionE<RpcListenerAction, Boolean> RPCMappingSubmitBefore = null;
     /** proto mapping submit 监听 */
     public static FunctionE2<Session, Event, Boolean> ProtoMappingSubmitBefore = null;
 
@@ -86,7 +91,7 @@ public class MappingFactory {
         PROTO_MAP.put(
                 service,
                 messageId,
-                new ProtoMappingRecord(service, remarks, messageId, protoMappingProxy, instance, method,showLog)
+                new ProtoMappingRecord(service, remarks, messageId, protoMappingProxy, instance, method, showLog)
         );
 
     }

@@ -30,6 +30,7 @@ import wxdgaming.boot.net.http.ssl.SslProtocolType;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -160,11 +161,21 @@ public class HttpServer extends NioServer<HttpSession> {
                 if (reqMethod.equals(HttpMethod.POST)) {
                     session.actionPostData();
                 }
-                HttpListenerAction httpListenerAction = new HttpListenerAction(HttpServer.this, session);
-                if (MappingFactory.TextMappingSubmitBefore != null) {
+
+                Method method = Optional.ofNullable(session.getUriPath())
+                        .map(v -> MappingFactory.textMappingRecord(HttpServer.this.getClass(), v.toLowerCase()))
+                        .map(v -> v.method())
+                        .orElse(null);
+
+
+                HttpListenerAction httpListenerAction = new HttpListenerAction(method, HttpServer.this, session);
+
+                if (MappingFactory.HttpMappingSubmitBefore != null) {
                     try {
-                        Boolean apply = MappingFactory.TextMappingSubmitBefore.apply(session, httpListenerAction);
-                        if (Boolean.FALSE.equals(apply)) return;
+                        Boolean apply = MappingFactory.HttpMappingSubmitBefore.apply(httpListenerAction);
+                        if (Boolean.FALSE.equals(apply)) {
+                            return;
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

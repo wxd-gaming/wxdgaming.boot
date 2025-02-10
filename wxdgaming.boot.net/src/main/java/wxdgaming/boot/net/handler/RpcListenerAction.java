@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * @version: 2023-12-19 15:38
  **/
 @Slf4j
-class RpcListenerAction extends Event {
+public final class RpcListenerAction extends Event {
 
     private final TextMappingRecord mappingRecord;
     private final SocketSession session;

@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
@@ -17,8 +18,6 @@ import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.threading.Event;
-import wxdgaming.boot.core.threading.ExecutorLog;
-import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.MappingFactory;
@@ -33,10 +32,10 @@ import wxdgaming.boot.net.web.hs.controller.cmd.HttpSignCheck;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -46,54 +45,16 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version: 2023-12-18 19:38
  **/
 @Slf4j
-class HttpListenerAction extends Event {
+@Getter
+public final class HttpListenerAction extends Event {
 
-    protected HttpServer httpServer;
-    protected HttpSession session;
+    final HttpServer httpServer;
+    final HttpSession session;
 
-    public HttpListenerAction(HttpServer httpServer, HttpSession session) {
+    public HttpListenerAction(Method method, HttpServer httpServer, HttpSession session) {
+        super(method);
         this.httpServer = httpServer;
         this.session = session;
-    }
-
-    @Override public long getLogTime() {
-        return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
-                .map(ExecutorLog::logTime)
-                .orElse(66L);
-    }
-
-    @Override public long getWarningTime() {
-        return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ExecutorLog.class))
-                .map(ExecutorLog::warningTime)
-                .orElse(super.getWarningTime());
-    }
-
-    @Override public boolean isVt() {
-        return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ThreadInfo.class))
-                .map(ThreadInfo::vt)
-                .orElse(false);
-    }
-
-    @Override public String getThreadName() {
-        return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ThreadInfo.class))
-                .map(ThreadInfo::threadName)
-                .orElse("");
-    }
-
-    @Override public String getQueueName() {
-        return Optional.ofNullable(session.getUriPath())
-                .map(v -> MappingFactory.textMappingRecord(httpServer.getClass(), v.toLowerCase()))
-                .map(v -> AnnUtil.ann(v.method(), ThreadInfo.class))
-                .map(ThreadInfo::queueName)
-                .orElse("");
     }
 
     @Override public String getTaskInfoString() {

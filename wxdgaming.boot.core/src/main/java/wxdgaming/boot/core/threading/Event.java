@@ -37,6 +37,9 @@ public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
     }
 
     public Event(Method method) {
+        if (method == null) {
+            return;
+        }
         /* 虚拟线程 */
         AtomicBoolean vt = new AtomicBoolean();
         AtomicReference<String> threadName = new AtomicReference<>();

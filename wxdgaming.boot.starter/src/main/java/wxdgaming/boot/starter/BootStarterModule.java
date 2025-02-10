@@ -2,10 +2,12 @@ package wxdgaming.boot.starter;
 
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.ReflectContext;
-import wxdgaming.boot.core.system.JvmUtil;
+import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.starter.action.ActionConfig;
 import wxdgaming.boot.starter.config.Config;
 import wxdgaming.boot.starter.i.IConfigInit;
+import wxdgaming.boot.starter.net.filter.HttpFilter;
+import wxdgaming.boot.starter.net.filter.RpcFilter;
 import wxdgaming.boot.starter.service.*;
 
 import java.util.function.Consumer;
@@ -62,6 +64,20 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
             socketAction.accept(WsService2.class, bootConfig.getWebSocket2());
             socketAction.accept(WsService3.class, bootConfig.getWebSocket3());
         }
+
+        /* TODO 添加 aop 拦截器 */
+        MappingFactory.HttpMappingSubmitBefore = (event) -> {
+            return AppContext.context()
+                    .beanStream(HttpFilter.class)
+                    .allMatch(filter -> filter.doFilter(event));
+        };
+
+        /* TODO 添加 aop 拦截器 */
+        MappingFactory.RPCMappingSubmitBefore = (event) -> {
+            return AppContext.context()
+                    .beanStream(RpcFilter.class)
+                    .allMatch(filter -> filter.doFilter(event));
+        };
 
         bindSingleton(BootConfig.class, bootConfig);
         bindSingleton(IocMainContext.class);

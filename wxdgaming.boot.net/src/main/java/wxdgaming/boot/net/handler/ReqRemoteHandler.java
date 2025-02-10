@@ -96,9 +96,9 @@ public class ReqRemoteHandler {
             }
         });
 
-        if (MappingFactory.TextMappingSubmitBefore != null) {
+        if (MappingFactory.RPCMappingSubmitBefore != null) {
             try {
-                Boolean apply = MappingFactory.TextMappingSubmitBefore.apply(session, listenerAction);
+                Boolean apply = MappingFactory.RPCMappingSubmitBefore.apply(listenerAction);
                 if (Boolean.FALSE.equals(apply)) return;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
