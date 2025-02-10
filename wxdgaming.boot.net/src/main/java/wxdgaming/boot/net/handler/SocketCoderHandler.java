@@ -144,7 +144,7 @@ public interface SocketCoderHandler<S extends SocketSession> extends Serializabl
 
         if (MappingFactory.ProtoMappingSubmitBefore != null) {
             try {
-                Boolean apply = MappingFactory.ProtoMappingSubmitBefore.apply(session, protoListenerAction);
+                Boolean apply = MappingFactory.ProtoMappingSubmitBefore.apply(protoListenerAction);
                 if (Boolean.FALSE.equals(apply)) {
                     return;
                 }

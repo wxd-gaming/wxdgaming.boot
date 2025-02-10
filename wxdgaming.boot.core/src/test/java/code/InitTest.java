@@ -10,6 +10,7 @@ public class InitTest {
 
     public static void main(String[] args) {
         B b = new B();
+        System.out.println("=============================");
         B b1 = new B(new A());
     }
 
@@ -17,16 +18,19 @@ public class InitTest {
         final A a;
 
         public B() {
+            System.out.println("B()");
             a = new A();
         }
 
         public B(A a) {
+            System.out.println("B(A a)");
             this.a = a;
         }
     }
 
     public static class A {
         public A() {
+            System.out.println("A()");
             System.out.println(1);
         }
     }

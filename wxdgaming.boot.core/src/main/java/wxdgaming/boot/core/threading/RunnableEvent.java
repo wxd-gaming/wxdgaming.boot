@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  **/
 public final class RunnableEvent extends Event {
 
-    Runnable event;
+    final Runnable event;
 
     public RunnableEvent(Runnable event) {
         this.event = event;

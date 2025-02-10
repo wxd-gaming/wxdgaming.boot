@@ -2,7 +2,6 @@ package wxdgaming.boot.net.controller;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
@@ -20,14 +19,13 @@ import wxdgaming.boot.net.pojo.PojoBase;
  */
 @Slf4j
 @Getter
-@Setter
 @Accessors(chain = true)
 public final class ProtoListenerAction extends Event {
 
-    private ProtoMappingRecord mapping;
-    private SocketSession session;
+    private final ProtoMappingRecord mapping;
+    private final SocketSession session;
     @JSONField(serialize = false, deserialize = false)
-    private PojoBase message;
+    private final PojoBase message;
 
     public ProtoListenerAction(ProtoMappingRecord mapping, SocketSession session, PojoBase message) {
         super(mapping.method());
@@ -54,8 +52,8 @@ public final class ProtoListenerAction extends Event {
     public String toString() {
         return
                 "session = " + session
-                        + ";\ncontroller=" + mapping.method().getDeclaringClass().getName()
-                        + ";\nmessage = " + message.getClass().getName() + FastJsonUtil.toJson(message);
+                + ";\ncontroller=" + mapping.method().getDeclaringClass().getName()
+                + ";\nmessage = " + message.getClass().getName() + FastJsonUtil.toJson(message);
     }
 
 }

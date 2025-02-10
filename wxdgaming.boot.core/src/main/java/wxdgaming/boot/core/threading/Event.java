@@ -2,7 +2,8 @@ package wxdgaming.boot.core.threading;
 
 import lombok.Getter;
 import lombok.Setter;
-import wxdgaming.boot.agent.exception.Throw;
+import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.IAssistMonitor;
 import wxdgaming.boot.core.str.StringUtil;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2022-11-09 10:21
  **/
+@Slf4j
 @Getter
 public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
 
@@ -32,11 +34,14 @@ public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
     /** 队列名称 */
     @Setter protected String queueName = "";
 
+    protected ThreadContext threadContext = null;
 
     public Event() {
+        recordThreadContext();
     }
 
     public Event(Method method) {
+        this();
         if (method == null) {
             return;
         }
@@ -57,21 +62,34 @@ public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
     }
 
     public Event(long logTime, long warningTime) {
+        this();
         this.logTime = logTime;
         this.warningTime = warningTime;
     }
 
     public Event(String taskInfoString, long logTime, long warningTime) {
+        this();
         this.taskInfoString = taskInfoString;
         this.logTime = logTime;
         this.warningTime = warningTime;
     }
 
+    /** 添加线程上下文 */
+    public void recordThreadContext() {
+        if (threadContext == null)
+            this.threadContext = new ThreadContext(ThreadContext.context());
+    }
+
     @Override public final void run() {
         try {
-            onEvent();
-        } catch (Exception e) {
-            throw Throw.as(e);
+            try {
+                ThreadContext.set(threadContext);
+                onEvent();
+            } finally {
+                ThreadContext.cleanup();
+            }
+        } catch (Throwable e) {
+            GlobalUtil.exception(taskInfoString, e);
         }
     }
 

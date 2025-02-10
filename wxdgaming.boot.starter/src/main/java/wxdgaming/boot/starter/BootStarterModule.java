@@ -7,6 +7,7 @@ import wxdgaming.boot.starter.action.ActionConfig;
 import wxdgaming.boot.starter.config.Config;
 import wxdgaming.boot.starter.i.IConfigInit;
 import wxdgaming.boot.starter.net.filter.HttpFilter;
+import wxdgaming.boot.starter.net.filter.ProtoFilter;
 import wxdgaming.boot.starter.net.filter.RpcFilter;
 import wxdgaming.boot.starter.service.*;
 
@@ -76,6 +77,13 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
         MappingFactory.RPCMappingSubmitBefore = (event) -> {
             return AppContext.context()
                     .beanStream(RpcFilter.class)
+                    .allMatch(filter -> filter.doFilter(event));
+        };
+
+        /* TODO 添加 aop 拦截器 */
+        MappingFactory.ProtoMappingSubmitBefore = (event) -> {
+            return AppContext.context()
+                    .beanStream(ProtoFilter.class)
                     .allMatch(filter -> filter.doFilter(event));
         };
 
