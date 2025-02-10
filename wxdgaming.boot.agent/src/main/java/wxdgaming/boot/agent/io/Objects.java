@@ -20,6 +20,8 @@ import java.util.Map;
  */
 public class Objects {
 
+    public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
     public static boolean compare(Object o1, Object o2) {
         long hashCode1 = getHashCode(o1);
         long hashCode2 = getHashCode(o2);
@@ -34,16 +36,16 @@ public class Objects {
             Field[] fields = clazz.getDeclaredFields();// 根据Class对象获得属性 私有的也可以获得
             for (Field field : fields) {
                 if (Modifier.isStatic(field.getModifiers())
-                        || Modifier.isTransient(field.getModifiers())
-                        || Modifier.isFinal(field.getModifiers())) {
-//                    System.out.println(" 类：" + clazz.getName() + " 字段：" + field.getName() + " is transient or static or final;");
+                    || Modifier.isTransient(field.getModifiers())
+                    || Modifier.isFinal(field.getModifiers())) {
+                    //                    System.out.println(" 类：" + clazz.getName() + " 字段：" + field.getName() + " is transient or static or final;");
                     continue;
                 }
                 Object get = field.get(object);
                 if (get != null) {
                     hashcode += java.util.Objects.hashCode(get);
                 }
-//                System.out.println(field.getName() + " " + field.getType().getName() + "," + get);//打印每个属性的类型名字
+                //                System.out.println(field.getName() + " " + field.getType().getName() + "," + get);//打印每个属性的类型名字
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);

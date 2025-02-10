@@ -142,9 +142,7 @@ public class SqlBatchPool extends BatchPool {
                     stm.executeBatch();
                     stm.clearBatch();
                 } catch (Exception ex) {
-                    String valueJsonString = FastJsonUtil.toJsonWriteType(value);
-                    String msg = "数据库操作 insert 对象异常\nSql=" + sqlStr + ", \n数据=" + valueJsonString + "\n";
-                    GlobalUtil.exception(msg, tex);
+                    value.outErrorFile(sqlStr,ex);
                 }
                 j++;
             }
@@ -183,9 +181,7 @@ public class SqlBatchPool extends BatchPool {
                     stm.executeBatch();
                     stm.clearBatch();
                 } catch (Exception ex) {
-                    String valueJsonString = FastJsonUtil.toJsonWriteType(value);
-                    String msg = "数据库操作 update 对象异常\nSql=" + sqlStr + ", \n数据=" + valueJsonString + "\n";
-                    GlobalUtil.exception(msg, tex);
+                    value.outErrorFile(sqlStr,ex);
                 }
                 j++;
             }

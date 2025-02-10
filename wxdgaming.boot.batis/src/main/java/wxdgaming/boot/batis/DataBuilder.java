@@ -2,6 +2,10 @@ package wxdgaming.boot.batis;
 
 import lombok.Getter;
 import lombok.Setter;
+import wxdgaming.boot.agent.GlobalUtil;
+import wxdgaming.boot.agent.io.FileWriteUtil;
+import wxdgaming.boot.core.str.json.FastJsonUtil;
+import wxdgaming.boot.core.timer.MyClock;
 
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +49,24 @@ public final class DataBuilder {
 
     @Override public String toString() {
         return entityTable.tableName + " - " + entityTable.tableComment;
+    }
+
+    public void outErrorFile(String sqlStr, Throwable throwable) {
+        EntityField dataColumnKey = entityTable.getDataColumnKey();
+        Object object = dataMap.get(dataColumnKey);
+        String string = MyClock.formatDate("yyyy/MM/dd");
+        String msg = """
+                数据库操作异常
+                sql：%s
+                数据：%s
+                
+                error：%s
+                """.formatted(sqlStr, FastJsonUtil.toJsonWriteType(data), throwable);
+        FileWriteUtil.writeString(
+                "target/data_error/" + string + "/" + tableName + "_" + object + ".json",
+                msg
+        );
+        GlobalUtil.exception(msg, throwable);
     }
 
 }
