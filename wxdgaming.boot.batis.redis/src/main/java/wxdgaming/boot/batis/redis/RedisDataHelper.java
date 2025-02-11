@@ -3,6 +3,7 @@ package wxdgaming.boot.batis.redis;
 import com.alibaba.fastjson.TypeReference;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import redis.clients.jedis.*;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.ConsumerE1;
 import wxdgaming.boot.agent.function.FunctionE;
@@ -16,7 +17,6 @@ import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.timer.MyClock;
-import redis.clients.jedis.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -118,6 +118,14 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
         } catch (Throwable e) {
             throw Throw.as(e);
         }
+    }
+
+    @Override public <R> R findById(Class<R> clazz, Object id) {
+        throw new UnsupportedOperationException("暂未实现");
+    }
+
+    @Override public <R> void save(R r) {
+        throw new UnsupportedOperationException("暂未实现");
     }
 
     /**

@@ -61,6 +61,10 @@ public abstract class DataHelper<DM extends EntityTable, DW extends DataWrapper<
         return getDataWrapper().asEntityTable(clazz);
     }
 
+    public abstract <R> R findById(Class<R> clazz, Object id);
+
+    public abstract <R> void save(R r);
+
     /**
      * 关闭数据库链接
      */

@@ -1,5 +1,6 @@
 package wxdgaming.boot.core.threading;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.lang.Tick;
@@ -249,6 +250,14 @@ public final class Executors implements Serializable {
         public void add(TimerJob timerJob) {
             relock.lock();
             try {
+                int index = 0;
+                for (TimerJob job : timerJobs) {
+                    if (job.getLastExecTime() > timerJob.getLastExecTime()) {
+                        timerJobs.add(index, job);
+                        return;
+                    }
+                    index++;
+                }
                 timerJobs.add(timerJob);
             } finally {
                 relock.unlock();
@@ -257,6 +266,7 @@ public final class Executors implements Serializable {
 
         @Override public void run() {
             Tick tick = new Tick(1, 2, TimeUnit.MILLISECONDS);
+            Logger logger = LoggerFactory.getLogger(this.getClass());
             while (!GlobalUtil.SHUTTING.get()) {
                 try {
                     tick.waitNext();
@@ -269,16 +279,24 @@ public final class Executors implements Serializable {
                                 if (next.IExecutorServices.isShutdown() || next.IExecutorServices.isTerminated()) {
                                     /*线程正在关闭不处理*/
                                     iterator.remove();
-                                    if (LoggerFactory.getLogger(this.getClass()).isDebugEnabled()) {
-                                        LoggerFactory.getLogger(this.getClass()).debug("线程{}正在关闭不处理{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("线程{}正在关闭不处理{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
                                     }
                                     continue;
                                 }
-                                if (next.exec()) {
-                                    iterator.remove();
-                                    if (LoggerFactory.getLogger(this.getClass()).isDebugEnabled()) {
-                                        LoggerFactory.getLogger(this.getClass()).debug("线程{}执行时间到期，移除{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
+                                if (next.needExec()) {
+                                    next.exec();
+                                    /*优先移除当前对象*/
+                                    if (next.isOver()) {
+                                        iterator.remove();
+                                        if (logger.isDebugEnabled()) {
+                                            logger.debug("线程{}执行时间到期，移除{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
+                                        }
+                                    } else {
+                                        // add(next);
                                     }
+                                } else {
+                                    break;
                                 }
                             } catch (Throwable throwable) {
                                 GlobalUtil.exception("定时任务公共处理器", throwable);
@@ -289,7 +307,7 @@ public final class Executors implements Serializable {
                     }
                 } catch (Throwable throwable) {/*不能加东西，log也有可能异常*/}
             }
-            LoggerFactory.getLogger(this.getClass()).info("定时任务公共处理器 线程退出");
+            logger.info("定时任务公共处理器 线程退出");
         }
     }
 

@@ -302,22 +302,21 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
         return count;
     }
 
-    /**
-     * 删除当前数据库
-     *
-     * @return
-     */
+    @Override public <R> R findById(Class<R> clazz, Object id) {
+        return queryEntity(clazz, id);
+    }
+
+    @Override public <R> void save(R r) {
+        replace(r);
+    }
+
+    /** 删除当前数据库 */
     public int dropDatabase() {
         this.mongoDatabase.drop();
         return 1;
     }
 
-    /**
-     * 删除指定的数据库
-     *
-     * @param database
-     * @return
-     */
+    /** 删除指定的数据库 */
     public int dropDatabase(String database) {
         this.mongoClient.dropDatabase(database);
         return 1;

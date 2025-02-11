@@ -1,5 +1,6 @@
 package wxdgaming.boot.core.threading;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.core.timer.MyClock;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @version: 2023-11-10 23:04
  **/
 @Setter
+@Getter
 @Accessors(chain = true)
 public final class TimerJob implements Job {
 
@@ -46,20 +48,20 @@ public final class TimerJob implements Job {
         lastExecTime = MyClock.millis() + unit.toMillis(d);
     }
 
-    boolean exec() {
-        if (!executorServiceJob.append.get()) {
-            if (MyClock.millis() >= lastExecTime) {
-                this.IExecutorServices.executeJob(queueName, executorServiceJob);
-                if (maxExecCount >= 0) {
-                    execCount++;
-                    if (execCount >= maxExecCount) {
-                        return true;
-                    }
-                }
-                resetLastTimer(delay);
-            }
+    public boolean needExec() {
+        return !executorServiceJob.append.get() && MyClock.millis() >= lastExecTime;
+    }
+
+    void exec() {
+        this.IExecutorServices.executeJob(queueName, executorServiceJob);
+        if (maxExecCount >= 0) {
+            execCount++;
         }
-        return false;
+        resetLastTimer(delay);
+    }
+
+    public boolean isOver() {
+        return maxExecCount >= 0 && execCount >= maxExecCount;
     }
 
     @Override public String names() {

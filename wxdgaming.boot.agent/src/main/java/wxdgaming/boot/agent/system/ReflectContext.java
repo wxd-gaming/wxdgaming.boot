@@ -87,15 +87,15 @@ public class ReflectContext {
     }
 
     /** 获取泛型的第一个 */
-    public static Class<?> getTClass(Class<?> source) {
+    public static <T> Class<T> getTClass(Class<?> source) {
         return getTClass(source, 0);
     }
 
     /** 获取泛型的类型 */
-    public static Class<?> getTClass(Class<?> source, int index) {
+    public static <T> Class<T> getTClass(Class<?> source, int index) {
         Type genType = source.getGenericSuperclass();
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
-        return (Class<?>) params[index];
+        return (Class) params[index];
     }
 
     /** 所有的类 */

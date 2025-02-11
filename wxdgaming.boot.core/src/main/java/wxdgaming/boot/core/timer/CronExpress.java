@@ -150,6 +150,11 @@ public class CronExpress extends ObjectBase {
 
     }
 
+    /** 取下一次执行时间戳 */
+    public long validateTimeAfterMillis() {
+        return validateTimeAfter(MyClock.millis())[0];
+    }
+
     /** 取下一次可用的时间 */
     public long[] validateTimeAfter() {
         return validateTimeAfter(MyClock.millis());
@@ -188,6 +193,11 @@ public class CronExpress extends ObjectBase {
     /** 获取下一次可用的时间 持续结束时间 格式化字符串 */
     public String validateOverDateAfter(long time) {
         return MyClock.formatDate(validateOverTimeAfter(time)[1]);
+    }
+
+    /** 取上一次执行时间戳 */
+    public long validateTimeBeforeMillis() {
+        return validateTimeBefore(MyClock.millis())[0];
     }
 
     /** 获取上一次可用的时间 */

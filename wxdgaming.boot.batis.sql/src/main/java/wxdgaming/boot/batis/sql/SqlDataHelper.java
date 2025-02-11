@@ -196,6 +196,21 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
         return executeScalar("select database();", String.class);
     }
 
+    /** 会比较消耗 ，会先执行 find 然后 执行 update */
+    @Override public <R> void save(R r) {
+        DM entityTable = asEntityTable(r);
+        Object uid = entityTable.getDataColumnKey().getFieldValue(r);
+        if (uid == null) {
+            insert(r);
+        } else {
+            update(r);
+        }
+    }
+
+    @Override public <R> R findById(Class<R> clazz, Object id) {
+        return queryEntity(clazz, id);
+    }
+
     /** insert */
     public int insert(Object model) {
         DM entityTable = asEntityTable(model);
