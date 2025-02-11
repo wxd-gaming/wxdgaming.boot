@@ -84,6 +84,8 @@ public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
         try {
             try {
                 ThreadContext.set(threadContext);
+                ThreadContext.putContent("threadName", threadName);
+                ThreadContext.putContent("queueName", queueName);
                 onEvent();
             } finally {
                 ThreadContext.cleanup();
