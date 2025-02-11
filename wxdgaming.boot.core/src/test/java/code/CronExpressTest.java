@@ -30,4 +30,16 @@ public class CronExpressTest {
         System.out.println(parse.validateDateBefore());
     }
 
+    @Test
+    public void t2() {
+
+        CronExpress parse = new CronExpress("*/3", TimeUnit.SECONDS, 500);
+
+        long[] longs = parse.validateTimeAfter(MyClock.millis());
+        System.out.println(Arrays.toString(longs));
+        System.out.println(parse.validateDateAfter());
+
+        System.out.println(parse.validateDateBefore());
+    }
+
 }

@@ -26,15 +26,14 @@ public class ActionTimer {
     public static void action(IocContext context, ReflectContext reflectContext) {
         final ScheduledService scheduledService = context.getInstance(ScheduledService.class);
 
-        List<ScheduledInfo> jobList = new ArrayList<>();
-        jobList.addAll(scheduledService.getJobList());
+        List<ScheduledInfo> jobList = new ArrayList<>(scheduledService.getJobList());
 
         reflectContext.stream().forEach(content -> {
             Stream<Method> methodStream = content.methodsWithAnnotated(Scheduled.class);
             action(context, jobList, methodStream);
         });
 
-        jobList.sort(null);
+        scheduledService.sort(jobList);
         scheduledService.setJobList(jobList);
     }
 

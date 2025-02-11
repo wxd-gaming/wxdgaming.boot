@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.ann.Sort;
 import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.ann.Scheduled;
@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * cron 表达式时间触发器
@@ -41,10 +42,11 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
     private CronExpress cronExpress;
     /** 上一次执行尚未完成是否持续执行 默认false 不执行 */
     private boolean scheduleAtFixedRate = false;
+    protected final ReentrantLock lock = new ReentrantLock();
     protected AtomicBoolean runEnd = new AtomicBoolean(true);
     protected boolean async = false;
-    protected int cursecond = -1;
     protected long startExecTime;
+    protected long nextRunTime = -1;
 
     public ScheduledInfo(Object instance, Method method, Scheduled scheduled) {
         super(method);
@@ -65,7 +67,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
                     }
                 """
                 .formatted(instance.getClass().getName(), method.getName());
-        //System.out.println(formatted);
+        // System.out.println(formatted);
         javaAssist.createMethod(formatted);
 
         scheduledProxy = javaAssist.toInstance();
@@ -83,7 +85,8 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         final Sort sortAnn = AnnUtil.ann(method, Sort.class);
         this.index = sortAnn == null ? 999999 : sortAnn.value();
         this.scheduleAtFixedRate = scheduled.scheduleAtFixedRate();
-        cronExpress = new CronExpress(scheduled.value(), TimeUnit.SECONDS, 0);
+        this.cronExpress = new CronExpress(scheduled.value(), TimeUnit.SECONDS, 0);
+
     }
 
     @Override public String getTaskInfoString() {
@@ -120,14 +123,28 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         cronExpress = new CronExpress(scheduled, TimeUnit.SECONDS, 0);
     }
 
-    public void job(int second, int minute, int hour, int dayOfWeek, int dayOfMonth, int month, int year) {
-
-        if (!cronExpress.checkJob(second, minute, hour, dayOfWeek, dayOfMonth, month, year)) {
-            return;
+    public long getNextRunTime() {
+        if (nextRunTime == -1) {
+            this.nextRunTime = this.cronExpress.validateTimeAfterMillis();
         }
-        if (!scheduleAtFixedRate && !runEnd.get()) return;
-        /*标记为正在执行*/
-        runEnd.set(false);
+        return nextRunTime;
+    }
+
+    /** 检查时间是否满足 */
+    public boolean checkRunTime(long millis) {
+        return millis >= getNextRunTime();
+    }
+
+    public boolean runJob(long millis) {
+        lock.lock();
+        try {
+            if (!scheduleAtFixedRate && !runEnd.get()) return false;
+            /*标记为正在执行*/
+            runEnd.set(false);
+            this.nextRunTime = this.cronExpress.validateTimeAfterMillis();
+        } finally {
+            lock.unlock();
+        }
 
         if (this.isAsync()) {
             /*异步执行*/
@@ -142,6 +159,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
                 log.info(msg);
             }
         }
+        return true;
     }
 
     @Override public void onEvent() {
@@ -155,8 +173,13 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
             String msg = "执行：" + this.name;
             GlobalUtil.exception(msg, throwable);
         } finally {
-            /*标记为执行完成*/
-            runEnd.set(true);
+            lock.lock();
+            try {
+                /*标记为执行完成*/
+                runEnd.set(true);
+            } finally {
+                lock.unlock();
+            }
         }
     }
 

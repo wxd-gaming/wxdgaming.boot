@@ -5,12 +5,10 @@ import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.lang.Tick;
 import wxdgaming.boot.core.system.JvmUtil;
+import wxdgaming.boot.core.timer.MyClock;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -243,21 +241,21 @@ public final class Executors implements Serializable {
 
         public TimerThread() {
             super("timer-executor");
-            this.setDaemon(true);
+            // this.setDaemon(true);
             start();
         }
 
         public void add(TimerJob timerJob) {
             relock.lock();
             try {
-                // int index = 0;
-                // for (TimerJob job : timerJobs) {
-                //     if (job.getLastExecTime() > timerJob.getLastExecTime()) {
-                //         timerJobs.add(index, job);
-                //         return;
-                //     }
-                //     index++;
-                // }
+                int index = 0;
+                for (TimerJob job : timerJobs) {
+                    if (job.getLastExecTime() > timerJob.getLastExecTime()) {
+                        timerJobs.add(index, job);
+                        return;
+                    }
+                    index++;
+                }
                 timerJobs.add(timerJob);
             } finally {
                 relock.unlock();
@@ -271,7 +269,9 @@ public final class Executors implements Serializable {
                 try {
                     tick.waitNext();
                     relock.lock();
+                    long millis = MyClock.millis();
                     try {
+                        boolean needSort = false;
                         Iterator<TimerJob> iterator = timerJobs.iterator();
                         while (iterator.hasNext()) {
                             try {
@@ -284,23 +284,27 @@ public final class Executors implements Serializable {
                                     }
                                     continue;
                                 }
-                                if (next.needExec()) {
-                                    next.exec();
-                                    /*优先移除当前对象*/
-                                    if (next.isOver()) {
-                                        iterator.remove();
-                                        if (logger.isDebugEnabled()) {
-                                            logger.debug("线程{}执行时间到期，移除{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
+                                if (next.checkRunTime(millis)) {
+                                    if (next.runJob()) {
+                                        /*优先移除当前对象*/
+                                        if (next.isOver()) {
+                                            iterator.remove();
+                                            if (logger.isDebugEnabled()) {
+                                                logger.debug("线程{}执行时间到期，移除{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
+                                            }
+                                        } else {
+                                            needSort = true;
                                         }
-                                    } /* else {
-                                        add(next);
-                                    } */
-                                } /* else {
+                                    }
+                                } else {
                                     break;
-                                } */
+                                }
                             } catch (Throwable throwable) {
                                 GlobalUtil.exception("定时任务公共处理器", throwable);
                             }
+                        }
+                        if (needSort) {
+                            timerJobs.sort(Comparator.comparingLong(TimerJob::getLastExecTime));
                         }
                     } finally {
                         relock.unlock();

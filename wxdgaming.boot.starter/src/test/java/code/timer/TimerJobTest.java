@@ -12,7 +12,6 @@ import wxdgaming.boot.core.timer.ann.Scheduled;
 import wxdgaming.boot.starter.AppContext;
 import wxdgaming.boot.starter.service.ScheduledService;
 
-import javax.sound.midi.Soundbank;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
@@ -24,16 +23,18 @@ import java.util.concurrent.TimeUnit;
  **/
 @Slf4j
 @Singleton
-public class TestTimerJob implements Serializable {
+public class TimerJobTest implements Serializable {
 
 
     public static void main(String[] args) throws Throwable {
-        AppContext.boot(TestTimerJob.class);
+        AppContext.boot(TimerJobTest.class);
         ScheduledService scheduledService = AppContext.context().getInstance(ScheduledService.class);
         List<ScheduledInfo> jobList = scheduledService.getJobList();
         ScheduledInfo scheduledInfo = new ScheduledInfo(() -> System.out.println("test"), "测试动态注入", "*/1", false);
         jobList.add(scheduledInfo);
+        scheduledService.sort(jobList);
         AppContext.start(true, 1, "");
+        Thread.sleep(2000);
     }
 
     @Test
@@ -75,18 +76,30 @@ public class TestTimerJob implements Serializable {
 
     @ThreadInfo
     @Scheduled(value = "* *", scheduleAtFixedRate = true)
-    public void t1() {
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public void s1() {
+        // try {
+        //     TimeUnit.SECONDS.sleep(2);
+        // } catch (InterruptedException e) {
+        //     throw new RuntimeException(e);
+        // }
         log.info("间隔 1 秒执行");
     }
 
     @ThreadInfo
+    @Scheduled(value = "*/3")
+    public void s3() {
+        log.info("间隔 3 秒执行");
+    }
+
+    @ThreadInfo
+    @Scheduled(value = "*/7")
+    public void s7() {
+        log.info("间隔 7 秒执行");
+    }
+
+    @ThreadInfo
     @Scheduled(value = "*/10")
-    public void t2() {
+    public void s10() {
         log.info("间隔 10 秒执行");
     }
 

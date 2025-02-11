@@ -48,16 +48,18 @@ public final class TimerJob implements Job {
         lastExecTime = MyClock.millis() + unit.toMillis(d);
     }
 
-    public boolean needExec() {
-        return !executorServiceJob.append.get() && MyClock.millis() >= lastExecTime;
+    public boolean checkRunTime(long millis) {
+        return millis >= lastExecTime;
     }
 
-    void exec() {
+    boolean runJob() {
+        if (executorServiceJob.append.get()) return false;
         this.IExecutorServices.executeJob(queueName, executorServiceJob);
         if (maxExecCount >= 0) {
             execCount++;
         }
         resetLastTimer(delay);
+        return true;
     }
 
     public boolean isOver() {

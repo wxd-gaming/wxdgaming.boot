@@ -10,6 +10,7 @@ import wxdgaming.boot.core.threading.Executors;
 import wxdgaming.boot.core.threading.Job;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,27 +48,30 @@ public class TimerJobPool extends Event {
         }
     }
 
+    public void sort(List<ScheduledInfo> jobs) {
+        jobs.sort(Comparator.comparingLong(ScheduledInfo::getNextRunTime));
+    }
+
     int curSecond = -1;
 
     @Override public void onEvent() {
-        int second = MyClock.getSecond();
+        long millis = MyClock.millis();
+        int second = MyClock.getSecond(millis);
         if (curSecond == second) {
             return;
         }
-
         curSecond = second;
-
-        int minute = MyClock.getMinute();
-        int hour = MyClock.getHour();
-        int dayOfWeek = MyClock.dayOfWeek();
-        int dayOfMonth = MyClock.dayOfMonth();
-        int month = MyClock.getMonth();
-        int year = MyClock.getYear();
-
-//                log.debug(second + "-" + minute + "-" + hour + "-" + dayOfWeek);
-
+        boolean needSort = false;
         for (ScheduledInfo scheduledInfo : jobList) {
-            scheduledInfo.job(second, minute, hour, dayOfWeek, dayOfMonth, month, year);
+            if (!scheduledInfo.checkRunTime(millis)) {
+                break;
+            }
+            if (scheduledInfo.runJob(millis)) {
+                needSort = true;
+            }
+        }
+        if (needSort) {
+            sort(jobList);
         }
     }
 
