@@ -103,12 +103,12 @@ public class CookiePack implements Serializable {
      * @return
      */
     public CookiePack addCookie(String cookieKey, Object cookieValue, String cookiePath, String domain, Long maxAge) {
-        if (cookieKey == null || cookieKey.length() < 1 || cookieValue == null) {
+        if (cookieKey == null || cookieKey.isEmpty() || cookieValue == null) {
             return this;
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("cookiePath " + cookiePath + ", domain = " + domain);
+            log.debug("cookiePath {}, domain = {}", cookiePath, domain);
         }
 
         final DefaultCookie defaultCookie = new DefaultCookie(cookieKey, String.valueOf(cookieValue));
@@ -132,7 +132,7 @@ public class CookiePack implements Serializable {
      * @param cookieString
      */
     public CookiePack decodeClientCookie(String cookieString) {
-        if (cookieString != null && cookieString.length() > 0) {
+        if (cookieString != null && !cookieString.isEmpty()) {
             Cookie cookie = ClientCookieDecoder.STRICT.decode(cookieString);
             cookies.add(cookie);
         }
@@ -145,7 +145,7 @@ public class CookiePack implements Serializable {
      * @param cookieString
      */
     public CookiePack decodeServerCookie(String cookieString) {
-        if (cookieString != null && cookieString.length() > 0) {
+        if (cookieString != null && !cookieString.isEmpty()) {
             final Set<Cookie> cookieSet = ServerCookieDecoder.STRICT.decode(cookieString);
             for (Cookie cookie : cookieSet) {
                 cookies.add(cookie);
