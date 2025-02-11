@@ -67,13 +67,19 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
         try (Connection conn = getConnection()) {
             try {
                 conn.setAutoCommit(false);
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                try {
                     if (params != null && params.length > 0) {
                         for (int i = 0; i < params.length; i++) {
                             getDataWrapper().setStmtParams(stmt, i + 1, params[i]);
                         }
                     }
                     apply = call.apply(stmt);
+                } catch (Exception e) {
+                    String string = stmt.toString();
+                    throw e;
+                } finally {
+                    stmt.close();
                 }
                 conn.commit();
             } catch (Exception e) {
@@ -145,10 +151,10 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
                                     fieldValue.addAll((Set) colValue);
                                 } else {
                                     throw new RuntimeException("数据库：" + this.getSqlDao().getDbBase()
-                                            + " \n映射表：" + entityTable.getLogTableName()
-                                            + " \n字段：" + entityField.getColumnName()
-                                            + " \n类型：" + entityField.getFieldType()
-                                            + " \n数据库配置值：" + valueObject + "; 最终类型异常");
+                                                               + " \n映射表：" + entityTable.getLogTableName()
+                                                               + " \n字段：" + entityField.getColumnName()
+                                                               + " \n类型：" + entityField.getFieldType()
+                                                               + " \n数据库配置值：" + valueObject + "; 最终类型异常");
                                 }
                             }
                         } else {
@@ -157,10 +163,10 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
                     }
                 } catch (Exception e) {
                     throw Throw.as("数据库：" + this.getSqlDao().getDbBase()
-                                    + " \n映射表：" + entityTable.getLogTableName()
-                                    + " \n字段：" + entityField.getColumnName()
-                                    + " \n类型：" + entityField.getFieldType()
-                                    + " \n数据库配置值：" + valueObject + ";",
+                                   + " \n映射表：" + entityTable.getLogTableName()
+                                   + " \n字段：" + entityField.getColumnName()
+                                   + " \n类型：" + entityField.getFieldType()
+                                   + " \n数据库配置值：" + valueObject + ";",
                             e);
                 }
             }

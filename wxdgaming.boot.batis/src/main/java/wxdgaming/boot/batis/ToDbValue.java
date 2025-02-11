@@ -10,6 +10,7 @@ import wxdgaming.boot.core.str.json.ProtobufSerializer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.util.Set;
 
 /**
  * @author: wxd-gaming(無心道, 15388152619)
@@ -178,6 +179,8 @@ interface ToDbValue {
             source = ProtobufSerializer.toJson((Message) source);
         } else if (source instanceof Message.Builder) {
             source = ProtobufSerializer.toJson((Message.Builder) source);
+        } else if (source instanceof Set<?>) {
+            source = FastJsonUtil.toJson(source, FastJsonUtil.Writer_Features_Type_Name_NOT_ROOT);
         } else if (!(source instanceof String)) {
             source = FastJsonUtil.toJsonWriteType(source);
         }
@@ -190,6 +193,8 @@ interface ToDbValue {
                 source = ((Message) source).toByteArray();
             } else if (source instanceof Message.Builder) {
                 source = ((Message.Builder) source).build().toByteArray();
+            } else if (source instanceof Set<?>) {
+                source = FastJsonUtil.toBytes(source, FastJsonUtil.Writer_Features_Type_Name_NOT_ROOT);
             } else if (!(source instanceof byte[])) {
                 source = FastJsonUtil.toBytesWriteType(source);
             }
