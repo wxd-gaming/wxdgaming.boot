@@ -131,6 +131,16 @@ public class BootConfig extends ObjectBase {
     @ElementList(required = false)
     private ArrayList<KV> other = new ArrayList<>();
 
+    public String other(String key) {
+        return BootConfig.getInstance()
+                .getOther()
+                .stream()
+                .filter(v -> v.getKey().equals(key))
+                .findFirst()
+                .map(KV::getValue)
+                .orElse(null);
+    }
+
     @Getter
     @Setter
     public static class ThreadConfig extends ObjectBase {
