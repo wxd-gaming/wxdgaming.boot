@@ -295,9 +295,9 @@ public final class Executors implements Serializable {
                                     } /* else {
                                         add(next);
                                     } */
-                                } else {
+                                } /* else {
                                     break;
-                                }
+                                } */
                             } catch (Throwable throwable) {
                                 GlobalUtil.exception("定时任务公共处理器", throwable);
                             }
