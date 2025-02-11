@@ -252,8 +252,7 @@ const wxd = {
                     let index = pv.indexOf("=");
                     if (index >= 0) {
                         let p = pv.substring(0, index);
-                        let v = pv.substring(index + 1);
-                        this.nodes[p] = v;
+                        this.nodes[p] = pv.substring(index + 1);
                     }
                 }
             }
