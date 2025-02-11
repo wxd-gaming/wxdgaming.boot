@@ -27,6 +27,8 @@ public class FastJsonUtil {
     public static final SerializerFeature[] Writer_Features_Fmt;
     /** 写入字段类型 */
     public static final SerializerFeature[] Writer_Features_Type_Name;
+    /** 写入字段类型 */
+    public static final SerializerFeature[] Writer_Features_Type_Name_NOT_ROOT;
     /** 写入字段类型，并且格式化 */
     public static final SerializerFeature[] Writer_Features_Type_Name_Fmt;
     /**
@@ -78,6 +80,8 @@ public class FastJsonUtil {
 
         Writer_Features_Type_Name = Objects.merge(Writer_Features, SerializerFeature.WriteClassName);
 
+        Writer_Features_Type_Name_NOT_ROOT = Objects.merge(Writer_Features_Type_Name, SerializerFeature.NotWriteRootClassName);
+
         Writer_Features_Type_Name_Fmt = Objects.merge(Writer_Features_Type_Name, SerializerFeature.PrettyFormat);
 
         Writer_Features_Key_String = Objects.merge(Writer_Features, SerializerFeature.WriteNonStringKeyAsString);/*所有的 key 都用引号*/
@@ -121,6 +125,11 @@ public class FastJsonUtil {
         return JSON.toJSONString(object, Writer_Features);
     }
 
+    /** 格式化 */
+    public static String toJson(Object object, SerializerFeature... features) {
+        return JSON.toJSONString(object, features);
+    }
+
     /** 格式化 ,包含数据类型 {@code @class} */
     public static String toJsonWriteType(Object object) {
         return JSON.toJSONString(object, Writer_Features_Type_Name);
@@ -143,6 +152,11 @@ public class FastJsonUtil {
     /** 转化成字节流 */
     public static byte[] toBytes(Object object) {
         return JSON.toJSONBytes(object, Writer_Features);
+    }
+
+    /** 转化成字节流 */
+    public static byte[] toBytes(Object object, SerializerFeature... features) {
+        return JSON.toJSONBytes(object, features);
     }
 
     /** 格式化,包含数据类型 {@code @class} */
