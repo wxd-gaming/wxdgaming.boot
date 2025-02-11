@@ -250,14 +250,14 @@ public final class Executors implements Serializable {
         public void add(TimerJob timerJob) {
             relock.lock();
             try {
-                int index = 0;
-                for (TimerJob job : timerJobs) {
-                    if (job.getLastExecTime() > timerJob.getLastExecTime()) {
-                        timerJobs.add(index, job);
-                        return;
-                    }
-                    index++;
-                }
+                // int index = 0;
+                // for (TimerJob job : timerJobs) {
+                //     if (job.getLastExecTime() > timerJob.getLastExecTime()) {
+                //         timerJobs.add(index, job);
+                //         return;
+                //     }
+                //     index++;
+                // }
                 timerJobs.add(timerJob);
             } finally {
                 relock.unlock();
@@ -292,9 +292,9 @@ public final class Executors implements Serializable {
                                         if (logger.isDebugEnabled()) {
                                             logger.debug("线程{}执行时间到期，移除{}", next.IExecutorServices.getName(), next.executorServiceJob.toString());
                                         }
-                                    } else {
-                                        // add(next);
-                                    }
+                                    } /* else {
+                                        add(next);
+                                    } */
                                 } else {
                                     break;
                                 }
