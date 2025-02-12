@@ -17,12 +17,12 @@ import java.io.Serializable;
  **/
 @Getter
 @Setter
-public abstract class EntityBase<ID> extends ObjectBase implements Serializable, EntityUID<ID> {
+public abstract class EntityLong extends ObjectBase implements Serializable, EntityUID<Long> {
 
     @Serial private static final long serialVersionUID = 1L;
 
     @JSONField(ordinal = 1)
     @DbColumn(key = true)
-    private ID uid;
+    private Long uid;
 
 }

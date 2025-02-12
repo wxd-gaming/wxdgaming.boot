@@ -214,8 +214,8 @@ public abstract class DataWrapper<DM extends EntityTable>
                 ) {
                     if (Final_Warning) {
                         log.warn(
-                                "警告 无法处理 final 字段：" + field.getName()
-                                + " 实体类：" + entityTable.getLogTableName()
+                                "警告 无法处理 final 字段：{} 实体类：{}",
+                                field.getName(), entityTable.getLogTableName()
                         );
                     }
                     continue;
@@ -272,11 +272,11 @@ public abstract class DataWrapper<DM extends EntityTable>
             entityField.setFieldType(fieldMapping.getFieldType());
 
             if (entityField.getGetMethod() == null && entityField.getSetMethod() == null) {
-                log.debug("实体类：" + entityTable.getLogTableName() + " 字段：" + field.getName() + " 没有 set And get Method", new LoggerException());
+                log.debug("实体类：{} 字段：{} 没有 set And get Method", entityTable.getLogTableName(), field.getName(), new LoggerException());
             } else if (entityField.getGetMethod() == null) {
-                log.debug("实体类：" + entityTable.getLogTableName() + " 字段：" + field.getName() + " 没有 get Method", new LoggerException());
+                log.debug("实体类：{} 字段：{} 没有 get Method", entityTable.getLogTableName(), field.getName(), new LoggerException());
             } else if (entityField.getSetMethod() == null && !entityField.isFinalField()) {
-                log.debug("实体类：" + entityTable.getLogTableName() + " 字段：" + field.getName() + " 没有 set Method", new LoggerException());
+                log.debug("实体类：{} 字段：{} 没有 set Method", entityTable.getLogTableName(), field.getName(), new LoggerException());
             }
 
             entityTable.getColumnMap().put(entityField.getColumnName(), entityField);
