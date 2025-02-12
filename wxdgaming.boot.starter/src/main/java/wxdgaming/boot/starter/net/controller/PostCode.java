@@ -13,8 +13,6 @@ import wxdgaming.boot.core.str.StringUtil;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.PrintConsole;
 import wxdgaming.boot.httpclient.apache.HttpBuilder;
-import wxdgaming.boot.net.auth.IAuth;
-import wxdgaming.boot.net.auth.SignConfig;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -126,10 +124,10 @@ public class PostCode implements PrintConsole {
 
     protected RunResult post0(String url, Map<String, Object> objects) {
         String readIp = readIp();
-        objects.put(HttpHeaderNames.AUTHORIZATION.toString(), SignConfig.get().optByUser("root").map(IAuth::getToken).orElse(""));
+        objects.put(HttpHeaderNames.AUTHORIZATION.toString(), "");
         String post = HttpBuilder.postMulti(readIp + "/" + url)
                 .timeout(400000)
-                .header(HttpHeaderNames.AUTHORIZATION.toString(), SignConfig.get().optByUser("root").map(IAuth::getToken).orElse(""))
+                .header(HttpHeaderNames.AUTHORIZATION.toString(), "")
                 .header(HttpHeaderNames.CONTENT_ENCODING.toString(), HttpHeaderValues.GZIP.toString())
                 // .addCookie(HttpHeaderNames.AUTHORIZATION, SignConfig.get().getToken())
                 .addParams(objects, true)

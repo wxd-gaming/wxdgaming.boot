@@ -18,8 +18,6 @@ import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.net.NioClient;
 import wxdgaming.boot.net.NioFactory;
-import wxdgaming.boot.net.auth.IAuth;
-import wxdgaming.boot.net.auth.SignConfig;
 import wxdgaming.boot.net.handler.INotController;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
 import wxdgaming.boot.net.http.ssl.SslContextClient;
@@ -60,7 +58,7 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
         WebSocketClient<WebSession> client = new WebSocketClient<>()
                 .setName("post_log_client")
                 .setSsl(true).setHost("192.168.30.254").setPort(19001)
-                .addCookie(HttpHeaderNames.AUTHORIZATION.toString(), SignConfig.get().optByUser("root").map(IAuth::getToken).orElse(""))
+                .addCookie(HttpHeaderNames.AUTHORIZATION.toString(), "")
                 .initBootstrap();
 
         client.connect();

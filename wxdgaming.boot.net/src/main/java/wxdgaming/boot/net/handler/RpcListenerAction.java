@@ -10,7 +10,6 @@ import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.SocketSession;
-import wxdgaming.boot.net.auth.SignCheck;
 import wxdgaming.boot.net.controller.TextMappingRecord;
 import wxdgaming.boot.net.controller.ann.Body;
 import wxdgaming.boot.net.controller.ann.Param;
@@ -54,24 +53,6 @@ public final class RpcListenerAction extends Event {
     }
 
     @Override public void onEvent() {
-
-        if (!listener.endsWith("/sign")/*优先判断是否是登录 */) {
-            if (mappingRecord.instance() instanceof SignCheck signCheck) {
-                String s = signCheck.checkSign(mappingRecord.method(), session, putData);
-                if (StringUtil.notEmptyOrNull(s)) {
-                    out.write("权限认证失败");
-                    callBack.accept(true);
-                    return;
-                }
-            } else if (mappingRecord.textMapping().needAuth() > 0) {
-                String s = SignCheck.checkAuth(mappingRecord.method(), session, putData);
-                if (StringUtil.notEmptyOrNull(s)) {
-                    out.write("权限认证失败");
-                    callBack.accept(true);
-                    return;
-                }
-            }
-        }
 
         try {
             Parameter[] parameters = mappingRecord.method().getParameters();

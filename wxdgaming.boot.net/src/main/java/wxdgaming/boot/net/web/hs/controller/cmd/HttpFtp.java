@@ -23,7 +23,7 @@ public interface HttpFtp {
 
     Logger log = LoggerFactory.getLogger(HttpFtp.class);
 
-    @TextMapping
+    @TextMapping(needAuth = 1)
     default void ftp(HttpSession httpSession, JSONObject putData) throws Exception {
 
         String userHome = JvmUtil.userHome();

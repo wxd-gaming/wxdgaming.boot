@@ -17,12 +17,10 @@
         <module>wxdgaming.boot.batis.sql</module>
         <module>wxdgaming.boot.batis.sql.mysql</module>
         <module>wxdgaming.boot.batis.sql.sqlite</module>
-        <module>wxdgaming.boot.convert</module>
         <module>wxdgaming.boot.core</module>
         <module>wxdgaming.boot.holder</module>
         <module>wxdgaming.boot.jscript</module>
         <module>wxdgaming.boot.logbus</module>
-        <module>wxdgaming.boot.lua</module>
         <module>wxdgaming.boot.net</module>
         <module>wxdgaming.boot.net.http</module>
         <module>wxdgaming.boot.net.http.client.apache</module>

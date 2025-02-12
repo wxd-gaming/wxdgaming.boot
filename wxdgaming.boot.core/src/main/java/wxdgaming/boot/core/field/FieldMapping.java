@@ -1,6 +1,9 @@
 package wxdgaming.boot.core.field;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.field.extend.FieldAnn;
 import wxdgaming.boot.core.lang.ConvertUtil;
@@ -17,17 +20,20 @@ import java.lang.reflect.Type;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2021-01-14 11:54
  **/
+@Getter
+@Setter
+@Accessors(chain = true)
 public class FieldMapping {
 
-    /*字段*/
+    /** 字段 */
     private Field field;
-    /*字段注解*/
+    /** 字段注解 */
     private FieldAnn fieldAnn;
     private Type jsonFieldType = null;
     private Class<?> fieldType;
-    /*字段的get属性*/
+    /** 字段的get属性 */
     private Method getMethod;
-    /*字段的set属性*/
+    /** 字段的set属性 */
     private Method setMethod;
 
     public FieldMapping() {
@@ -65,22 +71,11 @@ public class FieldMapping {
         return getField().getName();
     }
 
-    public Field getField() {
-        return field;
-    }
 
     public FieldMapping setField(Field field) {
         this.field = field;
+        Type genericType = field.getGenericType();
         this.fieldType = field.getType();
-        return this;
-    }
-
-    public FieldAnn getFieldAnn() {
-        return fieldAnn;
-    }
-
-    public FieldMapping setFieldAnn(FieldAnn fieldAnn) {
-        this.fieldAnn = fieldAnn;
         return this;
     }
 
@@ -102,7 +97,7 @@ public class FieldMapping {
     /**
      * json反序列化使用
      *
-     * @return
+     * @return 返回类型
      */
     public Type jsonFieldType() {
         if (jsonFieldType == null) {
@@ -127,51 +122,12 @@ public class FieldMapping {
         return this;
     }
 
-    /**
-     * getter方法
-     *
-     * @return
-     */
-    public Method getGetMethod() {
-        return getMethod;
-    }
-
-    /**
-     * getter方法
-     *
-     * @param getMethod
-     * @return
-     */
-    public FieldMapping setGetMethod(Method getMethod) {
-        this.getMethod = getMethod;
-        return this;
-    }
-
-    /**
-     * setter方法
-     *
-     * @return
-     */
-    public Method getSetMethod() {
-        return setMethod;
-    }
-
-    /**
-     * setter方法
-     *
-     * @param setMethod
-     * @return
-     */
-    public FieldMapping setSetMethod(Method setMethod) {
-        this.setMethod = setMethod;
-        return this;
-    }
 
     /**
      * 获取属性值
      *
-     * @param source
-     * @param value
+     * @param source 实例对象
+     * @param value  设置的值
      */
     @JSONField(serialize = false, deserialize = false)
     public void setFieldValue(Object source, Object value) {
@@ -195,8 +151,8 @@ public class FieldMapping {
     /**
      * 获取属性值
      *
-     * @param source
-     * @return
+     * @param source 实例对象
+     * @return 字段属性值
      */
     @JSONField(serialize = false, deserialize = false)
     public Object getFieldValue(Object source) {

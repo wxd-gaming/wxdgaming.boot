@@ -22,12 +22,8 @@ import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.Session;
 import wxdgaming.boot.net.controller.MappingFactory;
 import wxdgaming.boot.net.controller.TextMappingRecord;
-import wxdgaming.boot.net.controller.ann.Body;
-import wxdgaming.boot.net.controller.ann.Get;
-import wxdgaming.boot.net.controller.ann.Param;
-import wxdgaming.boot.net.controller.ann.Post;
+import wxdgaming.boot.net.controller.ann.*;
 import wxdgaming.boot.net.http.HttpHeadValueType;
-import wxdgaming.boot.net.web.hs.controller.cmd.HttpSignCheck;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,11 +46,13 @@ public final class HttpListenerAction extends Event {
 
     final HttpServer httpServer;
     final HttpSession session;
+    final TextMapping textMapping;
 
-    public HttpListenerAction(Method method, HttpServer httpServer, HttpSession session) {
+    public HttpListenerAction(Method method, HttpServer httpServer, HttpSession session, TextMapping textMapping) {
         super(method);
         this.httpServer = httpServer;
         this.session = session;
+        this.textMapping = textMapping;
     }
 
     @Override public String getTaskInfoString() {
@@ -135,28 +133,6 @@ public final class HttpListenerAction extends Event {
                             log.debug("{}({}) 必须是 GET 请求 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
                         }
                         action.run();
-                        return;
-                    }
-                }
-            }
-
-            if (!urlPath.endsWith("/sign")/*优先判断是否是登录 */) {
-                if (mappingRecord.instance() instanceof HttpSignCheck signCheck) {
-                    String s = signCheck.checkSign(mappingRecord.method(), session, putData);
-                    if (StringUtil.notEmptyOrNull(s)) {
-                        callBack.accept("权限认证失败", false);
-                        if (log.isDebugEnabled()) {
-                            log.debug("{}({}) 权限认证失败 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
-                        }
-                        return;
-                    }
-                } else if (mappingRecord.textMapping().needAuth() > 0) {
-                    String s = HttpSignCheck.checkAuth(mappingRecord.method(), session, putData);
-                    if (StringUtil.notEmptyOrNull(s)) {
-                        callBack.accept("权限认证失败", false);
-                        if (log.isDebugEnabled()) {
-                            log.debug("{}({}) 权限认证失败 url {}", httpServer.getName(), httpServer.getClass().getSimpleName(), urlPath);
-                        }
                         return;
                     }
                 }
