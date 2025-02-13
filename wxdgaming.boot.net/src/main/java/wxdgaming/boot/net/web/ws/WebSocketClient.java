@@ -95,7 +95,7 @@ public class WebSocketClient<S extends WebSession> extends NioClient<S> {
         try {
             uri = new URI(ws);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
         httpHeaders.set(HttpHeaderNames.USER_AGENT, "java.org.wxd v1");
         super.initBootstrap();

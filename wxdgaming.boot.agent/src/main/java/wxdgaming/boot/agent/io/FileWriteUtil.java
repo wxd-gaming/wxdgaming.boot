@@ -112,7 +112,7 @@ public class FileWriteUtil implements Serializable {
         try (OutputStream out = Files.newOutputStream(file.toPath(), openOptions)) {
             call.accept(out);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

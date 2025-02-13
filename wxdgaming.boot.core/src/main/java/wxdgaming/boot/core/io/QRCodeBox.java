@@ -74,7 +74,7 @@ public class QRCodeBox {
             writeToStream(outStream);
             return this;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -84,7 +84,7 @@ public class QRCodeBox {
             ImageIO.write(bufferedImage, format, outputStream);
             return this;
         } catch (IOException e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -93,7 +93,7 @@ public class QRCodeBox {
             writeToStream(byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -130,7 +130,7 @@ public class QRCodeBox {
         try {
             return addLogo(new FileInputStream(logoPath));
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -158,7 +158,7 @@ public class QRCodeBox {
             }
             return this;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

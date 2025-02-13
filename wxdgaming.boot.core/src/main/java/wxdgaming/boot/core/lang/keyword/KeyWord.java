@@ -134,7 +134,7 @@ public class KeyWord {
                 }
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
         // 将敏感词库加入到HashMap中
         for (String keyWord : keyWordSet) {

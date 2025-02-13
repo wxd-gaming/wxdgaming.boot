@@ -44,7 +44,7 @@ public class JsonEntityTable extends TextEntityTable implements Serializable {
             }
             return dbModel;
         } catch (Exception e) {
-            throw Throw.as(entityClass.getName() + ", json = " + text, e);
+            throw Throw.of(entityClass.getName() + ", json = " + text, e);
 
         }
     }

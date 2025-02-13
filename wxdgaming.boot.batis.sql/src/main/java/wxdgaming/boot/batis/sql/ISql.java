@@ -89,7 +89,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
                 conn.setAutoCommit(true);
             }
         } catch (Throwable throwable) {
-            throw Throw.as(sql, throwable);
+            throw Throw.of(sql, throwable);
         }
         int size = 0;
         if (apply != null) {
@@ -162,7 +162,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
                         }
                     }
                 } catch (Exception e) {
-                    throw Throw.as("数据库：" + this.getSqlDao().getDbBase()
+                    throw Throw.of("数据库：" + this.getSqlDao().getDbBase()
                                    + " \n映射表：" + entityTable.getLogTableName()
                                    + " \n字段：" + entityField.getColumnName()
                                    + " \n类型：" + entityField.getFieldType()
@@ -175,7 +175,7 @@ public interface ISql<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> 
             }
             return obj;
         } catch (Exception e) {
-            throw Throw.as("数据库异常：" + this.getSqlDao().getDbBase(), e);
+            throw Throw.of("数据库异常：" + this.getSqlDao().getDbBase(), e);
         }
     }
 

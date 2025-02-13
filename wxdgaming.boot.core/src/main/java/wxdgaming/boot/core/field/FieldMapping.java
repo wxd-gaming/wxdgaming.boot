@@ -143,7 +143,7 @@ public class FieldMapping {
                 getField().set(source, value);
             }
         } catch (Throwable e) {
-            throw Throw.as("字段：" + getField().getName() + ", setter ", e);
+            throw Throw.of("字段：" + getField().getName() + ", setter ", e);
         }
     }
 
@@ -164,7 +164,7 @@ public class FieldMapping {
                 return getField().get(source);
             }
         } catch (Throwable e) {
-            throw Throw.as("字段：" + getField().getName() + ", getter ", e);
+            throw Throw.of("字段：" + getField().getName() + ", getter ", e);
         }
     }
 

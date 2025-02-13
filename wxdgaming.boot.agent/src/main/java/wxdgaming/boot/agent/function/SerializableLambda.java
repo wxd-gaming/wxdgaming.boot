@@ -48,7 +48,7 @@ public interface SerializableLambda extends Serializable {
             Class<?> aClass = Thread.currentThread().getContextClassLoader().loadClass(implClass);
             return aClass;
         } catch (ClassNotFoundException e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -78,7 +78,7 @@ public interface SerializableLambda extends Serializable {
             }
             return field;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

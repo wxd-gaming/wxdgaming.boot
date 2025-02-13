@@ -38,7 +38,7 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
                     bindSingleton(clazz, o);
                 }
             } catch (Throwable throwable) {
-                throw Throw.as(throwable);
+                throw Throw.of(throwable);
             }
         });
     }

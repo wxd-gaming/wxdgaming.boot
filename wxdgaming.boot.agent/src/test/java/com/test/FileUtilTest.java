@@ -29,7 +29,7 @@ public class FileUtilTest implements Serializable {
     @Test
     public void throwTest() {
         RuntimeException runtimeException = new RuntimeException("t");
-        RuntimeException runtimeException1 = Throw.as("t2", runtimeException);
+        RuntimeException runtimeException1 = Throw.of("t2", runtimeException);
         runtimeException1.printStackTrace();
     }
 

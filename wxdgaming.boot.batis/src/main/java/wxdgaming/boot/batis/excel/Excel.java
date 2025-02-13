@@ -44,7 +44,7 @@ public class Excel implements Serializable {
             }
             return workbook;
         } catch (Throwable throwable) {
-            throw Throw.as(throwable);
+            throw Throw.of(throwable);
         }
     }
 }

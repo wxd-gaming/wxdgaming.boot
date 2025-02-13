@@ -211,7 +211,7 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
             } catch (Exception e) {
                 String msg = "数据库：%s 映射表：%s 字段：%s 字段类型：%s 数据库配置值：%s;"
                         .formatted(this.getDbBase(), entityTable.getTableName(), entityField.getColumnName(), entityField.getFieldType(), jsonValue);
-                throw Throw.as(msg, e);
+                throw Throw.of(msg, e);
             }
         }
         if (source instanceof DataChecked) {

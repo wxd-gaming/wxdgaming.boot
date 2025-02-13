@@ -61,7 +61,7 @@ public class ExcelOut implements Serializable, AutoCloseable {
                 workbook.close();
             }
         } catch (Exception e) {
-            throw Throw.as(fileName, e);
+            throw Throw.of(fileName, e);
         }
     }
 

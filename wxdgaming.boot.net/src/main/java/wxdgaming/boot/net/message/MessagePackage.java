@@ -78,7 +78,7 @@ public class MessagePackage {
             pojoBase.decode(bytes);
             return (R) pojoBase;
         } catch (Exception e) {
-            throw Throw.as("messageId=" + messageId, e);
+            throw Throw.of("messageId=" + messageId, e);
         }
     }
 
@@ -143,7 +143,7 @@ public class MessagePackage {
             MsgName2IdMap.put(messageClass.getName(), messageId);
             log.info("读取消息解析文件：{} = {}", messageId, messageClass.getName());
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

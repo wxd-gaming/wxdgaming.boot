@@ -116,7 +116,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
         try (Jedis jedis = getJedis(dbIndex)) {
             return jedisRFunction.apply(jedis);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -136,7 +136,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
         try (Jedis jedis = getJedis(dbIndex)) {
             consumerJedis.accept(jedis);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -155,7 +155,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                 pipelined.sync();
             }
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -171,7 +171,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                 return ret.get();
             }
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -186,7 +186,7 @@ public class RedisDataHelper extends DataHelper<EntityTable, DataWrapper<EntityT
                 return ret;
             }
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

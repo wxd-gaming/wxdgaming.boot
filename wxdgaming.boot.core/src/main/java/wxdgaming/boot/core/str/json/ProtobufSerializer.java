@@ -22,7 +22,7 @@ public class ProtobufSerializer {
             JsonFormat.printer().sortingMapKeys().appendTo(object, stringBuilder);
             return StringUtil.filterLine(stringBuilder.toString());
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -33,7 +33,7 @@ public class ProtobufSerializer {
             parse4Json(json, builder);
             return (R) builder.build();
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -42,7 +42,7 @@ public class ProtobufSerializer {
         try {
             JsonFormat.parser().ignoringUnknownFields().merge(json, builder);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -56,7 +56,7 @@ public class ProtobufSerializer {
             parse4Json(json, builder);
             return (R) builder;
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -69,7 +69,7 @@ public class ProtobufSerializer {
             parse4Bytes(builder, bytes);
             return (R) builder;
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -79,7 +79,7 @@ public class ProtobufSerializer {
             parse4Bytes(builder, bytes);
             return (R) builder.build();
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -88,7 +88,7 @@ public class ProtobufSerializer {
         try {
             builder.mergeFrom(bytes);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 }

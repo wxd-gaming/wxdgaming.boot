@@ -120,7 +120,7 @@ public class RpcEvent {
                     get();
                     optFuture.completableFuture().complete(RpcEvent.this);
                 } catch (Throwable throwable) {
-                    RuntimeException runtimeException = Throw.as(RpcEvent.this.toString(), throwable);
+                    RuntimeException runtimeException = Throw.of(RpcEvent.this.toString(), throwable);
                     if (stackTraceElements != null) {
                         runtimeException.setStackTrace(stackTraceElements);
                     }
@@ -152,7 +152,7 @@ public class RpcEvent {
                     poll = this.queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
                 } else poll = this.queue.take();
             } catch (InterruptedException e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
             if (StringUtil.emptyOrNull(this.resJson)) {
                 throw new RuntimeException("get time out");

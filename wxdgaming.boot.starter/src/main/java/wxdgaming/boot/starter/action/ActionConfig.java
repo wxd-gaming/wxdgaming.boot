@@ -63,7 +63,7 @@ public class ActionConfig {
                         break;
                     }
                 } catch (Exception e) {
-                    throw Throw.as("configPath：" + configPath, e);
+                    throw Throw.of("configPath：" + configPath, e);
                 }
             } else if (config.notConfigInit()) {
                 Constructor<?> declaredConstructor = aClass.getDeclaredConstructor();

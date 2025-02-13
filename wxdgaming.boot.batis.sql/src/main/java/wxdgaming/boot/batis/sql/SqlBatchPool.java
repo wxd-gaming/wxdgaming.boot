@@ -9,7 +9,6 @@ import wxdgaming.boot.batis.BatchPool;
 import wxdgaming.boot.batis.DataBuilder;
 import wxdgaming.boot.batis.DataWrapper;
 import wxdgaming.boot.batis.DbConfig;
-import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -86,7 +85,7 @@ public class SqlBatchPool extends BatchPool {
                 }
                 connection.commit();
             } catch (Exception e) {
-                throw Throw.as(sqlStr, e);
+                throw Throw.of(sqlStr, e);
             }
         }
         return i;
@@ -105,7 +104,7 @@ public class SqlBatchPool extends BatchPool {
                 }
                 connection.commit();
             } catch (Exception e) {
-                throw Throw.as(sqlStr, e);
+                throw Throw.of(sqlStr, e);
             }
         }
         return i;

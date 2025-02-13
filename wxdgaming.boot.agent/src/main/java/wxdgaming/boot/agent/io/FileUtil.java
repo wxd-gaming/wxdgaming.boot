@@ -38,7 +38,7 @@ public class FileUtil implements Serializable {
         try {
             return fileName.getCanonicalPath();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -137,11 +137,11 @@ public class FileUtil implements Serializable {
                 try {
                     return new Record2<>(file.getPath(), new FileInputStream(file));
                 } catch (Exception e) {
-                    throw Throw.as("resources:" + file, e);
+                    throw Throw.of("resources:" + file, e);
                 }
             });
         } catch (Exception e) {
-            throw Throw.as("resources:" + path, e);
+            throw Throw.of("resources:" + path, e);
         }
     }
 
@@ -191,7 +191,7 @@ public class FileUtil implements Serializable {
                 log().info("下载文件：{}, 保存：{}, 大小：{} kb, 耗时：{} ms", url, saveFileName, file.length() / 1024f, costTime);
             }
         } catch (Exception e) {
-            throw Throw.as(url, e);
+            throw Throw.of(url, e);
         }
     }
 
@@ -222,7 +222,7 @@ public class FileUtil implements Serializable {
             file.createNewFile();
             return file;
         } catch (Exception e) {
-            throw Throw.as(file.getPath(), e);
+            throw Throw.of(file.getPath(), e);
         }
     }
 
@@ -361,7 +361,7 @@ public class FileUtil implements Serializable {
             }
             return walk;
         } catch (Exception e) {
-            throw Throw.as(path.toString(), e);
+            throw Throw.of(path.toString(), e);
         }
     }
 

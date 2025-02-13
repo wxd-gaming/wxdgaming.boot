@@ -88,7 +88,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                     this.getDbConfig().getDbPwd()
             );
         } catch (SQLException e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -252,7 +252,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                 connection.setAutoCommit(true);
             }
         } catch (Exception e) {
-            throw Throw.as(insertSql, e);
+            throw Throw.of(insertSql, e);
         }
     }
 
@@ -297,7 +297,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                 connection.setAutoCommit(true);
             }
         } catch (Exception e) {
-            throw Throw.as(updateSql, e);
+            throw Throw.of(updateSql, e);
         }
     }
 
@@ -348,7 +348,7 @@ public abstract class SqlDataHelper<DM extends SqlEntityTable, DW extends SqlDat
                 connection.setAutoCommit(true);
             }
         } catch (Exception e) {
-            throw Throw.as(sqlStr, e);
+            throw Throw.of(sqlStr, e);
         }
     }
 

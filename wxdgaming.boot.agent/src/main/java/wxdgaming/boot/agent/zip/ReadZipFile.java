@@ -30,7 +30,7 @@ public class ReadZipFile implements Serializable, Closeable {
         try {
             zip = new ZipFile(new File(zipPath));
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -38,7 +38,7 @@ public class ReadZipFile implements Serializable, Closeable {
         try {
             zip = new ZipFile(zipPath);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -83,7 +83,7 @@ public class ReadZipFile implements Serializable, Closeable {
                     try {
                         call.accept(z.getName(), bytes);
                     } catch (Throwable e) {
-                        throw Throw.as(e);
+                        throw Throw.of(e);
                     }
                 });
     }
@@ -97,7 +97,7 @@ public class ReadZipFile implements Serializable, Closeable {
                     try {
                         call.accept(z.getName(), inputStream);
                     } catch (Throwable e) {
-                        throw Throw.as(e);
+                        throw Throw.of(e);
                     }
                 });
     }
@@ -112,7 +112,7 @@ public class ReadZipFile implements Serializable, Closeable {
         try {
             return zip.getInputStream(zipEntry);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

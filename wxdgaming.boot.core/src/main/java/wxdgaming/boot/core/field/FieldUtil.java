@@ -46,7 +46,7 @@ public class FieldUtil {
         try {
             field.setFieldValue(source, ConvertUtil.changeType(value, field.getField().getType()));
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -73,7 +73,7 @@ public class FieldUtil {
                 setFieldValue(source, field, value.shortValue());
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -90,7 +90,7 @@ public class FieldUtil {
                 return getFieldValue(source, field, Double.class);
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
         return 0D;
     }

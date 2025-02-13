@@ -103,7 +103,7 @@ public class XmlUtil {
             serializerThreadLocal().write(obj, writer);
             return writer.toString();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

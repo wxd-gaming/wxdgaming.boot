@@ -185,7 +185,7 @@ public interface ContextAction {
                             }
                         }
                     } catch (Exception e) {
-                        throw Throw.as(e);
+                        throw Throw.of(e);
                     }
 
                     List<Object> list = hashMap.values().stream()

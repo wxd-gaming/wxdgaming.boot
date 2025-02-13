@@ -38,7 +38,7 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
                 return prepareCall.executeUpdate();
             }
         } catch (Exception e) {
-            throw Throw.as("存储过程：" + call, e);
+            throw Throw.of("存储过程：" + call, e);
         }
     }
 
@@ -72,7 +72,7 @@ interface SqlExecute<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> e
             }
             return rows;
         } catch (Exception e) {
-            throw Throw.as("存储过程：" + call, e);
+            throw Throw.of("存储过程：" + call, e);
         }
     }
 

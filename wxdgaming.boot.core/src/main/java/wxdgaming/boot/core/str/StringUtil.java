@@ -402,7 +402,7 @@ public class StringUtil {
              BufferedReader bufferedReader = new BufferedReader(stringReader)) {
             return bufferedReader.lines().collect(Collectors.toList());
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

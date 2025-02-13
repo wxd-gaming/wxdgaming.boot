@@ -189,7 +189,7 @@ public class MyClock {
         try {
             return simpleDateFormat(formatter).parse(date);
         } catch (ParseException e) {
-            throw Throw.as("配置异常, 格式：" + formatter + ", 输入：" + date, e);
+            throw Throw.of("配置异常, 格式：" + formatter + ", 输入：" + date, e);
         }
     }
 

@@ -39,7 +39,7 @@ public class OutZipFile implements Serializable, Closeable {
             zos = new ZipOutputStream(outputStream);
             bufferedOutputStream = new BufferedOutputStream(zos);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -55,7 +55,7 @@ public class OutZipFile implements Serializable, Closeable {
             zos.putNextEntry(zipEntry);
             return this;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -70,7 +70,7 @@ public class OutZipFile implements Serializable, Closeable {
             bufferedOutputStream.flush();
             return this;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

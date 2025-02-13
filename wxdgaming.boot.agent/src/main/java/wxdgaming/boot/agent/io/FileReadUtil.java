@@ -76,7 +76,7 @@ public class FileReadUtil implements Serializable {
         try (final FileInputStream fileInputStream = new FileInputStream(file)) {
             return readString(fileInputStream, charset);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -122,7 +122,7 @@ public class FileReadUtil implements Serializable {
         try (final FileInputStream fileInputStream = new FileInputStream(file)) {
             readLine(fileInputStream, charset, call);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -135,7 +135,7 @@ public class FileReadUtil implements Serializable {
                 call.accept(line);
             }
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -147,7 +147,7 @@ public class FileReadUtil implements Serializable {
         try (final FileInputStream fileInputStream = new FileInputStream(file)) {
             return readBytes(fileInputStream);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -156,12 +156,12 @@ public class FileReadUtil implements Serializable {
             readBytes(outputStream, inputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
         }
     }
@@ -174,12 +174,12 @@ public class FileReadUtil implements Serializable {
                 outputStream.write(bytes, 0, read);
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
         }
     }

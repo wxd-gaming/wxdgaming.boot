@@ -300,7 +300,7 @@ public abstract class BatchPool implements AutoCloseable {
                     }
                 }
             } catch (Throwable throwable) {
-                throw Throw.as(throwable);
+                throw Throw.of(throwable);
             }
         }
     }

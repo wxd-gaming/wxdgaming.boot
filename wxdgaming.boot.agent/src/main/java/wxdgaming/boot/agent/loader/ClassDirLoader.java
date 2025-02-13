@@ -158,7 +158,7 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
                 this.addURL(new File(url).toURI().toURL());
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -179,7 +179,7 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
                 classFileMap.put(className, bytes);
             });
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -230,7 +230,7 @@ public class ClassDirLoader extends URLClassLoader implements Serializable {
                 if (errorContinue) {
                     LoggerFactory.getLogger(ClassDirLoader.class).error("load class bytes error " + className, e);
                 } else {
-                    throw Throw.as("load class bytes error " + className, e);
+                    throw Throw.of("load class bytes error " + className, e);
                 }
             }
         }

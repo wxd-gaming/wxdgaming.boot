@@ -36,7 +36,7 @@ public class SslContextClient implements Serializable {
                                 new java.security.SecureRandom());
                         return sslContext;
                     } catch (Throwable throwable) {
-                        throw Throw.as(throwable);
+                        throw Throw.of(throwable);
                     }
                 }
         );

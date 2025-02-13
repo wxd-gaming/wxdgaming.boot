@@ -71,7 +71,7 @@ public class TemplatePack {
             try {
                 this.dirTemplatePack.setDirectoryForTemplateLoading(new File(dir));
             } catch (IOException e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
         } else {
             this.dirTemplatePack = null;
@@ -110,7 +110,7 @@ public class TemplatePack {
             ftl2OutputStream(ftlName, dataObj, outputStream);
             return outputStream.toByteArray();
         } catch (Throwable throwable) {
-            throw Throw.as(throwable);
+            throw Throw.of(throwable);
         }
     }
 
@@ -122,7 +122,7 @@ public class TemplatePack {
                 template.process(dataObj, outputStreamWriter);
             }
         } catch (Throwable throwable) {
-            throw Throw.as(throwable);
+            throw Throw.of(throwable);
         }
     }
 

@@ -64,7 +64,7 @@ public class GzipUtil {
             }
             return out.toByteArray();
         } catch (IOException e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -102,7 +102,7 @@ public class GzipUtil {
             final byte[] bytes = primStr.getBytes(StandardCharsets.ISO_8859_1);
             return unGzip2String(bytes);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -138,7 +138,7 @@ public class GzipUtil {
             }
             return out.toByteArray();
         } catch (IOException e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

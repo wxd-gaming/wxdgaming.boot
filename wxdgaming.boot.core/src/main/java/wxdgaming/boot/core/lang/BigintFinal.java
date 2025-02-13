@@ -69,7 +69,7 @@ public class BigintFinal extends LockBase implements Serializable, Cloneable, Co
         try {
             return (BigintFinal) super.clone();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

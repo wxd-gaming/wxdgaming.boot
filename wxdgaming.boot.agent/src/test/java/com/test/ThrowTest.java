@@ -17,7 +17,7 @@ public class ThrowTest {
         try {
             t1();
         } catch (Exception e) {
-            Throw.as(e).printStackTrace();
+            Throw.of(e).printStackTrace();
         }
     }
 

@@ -118,7 +118,7 @@ public class AgentService implements Serializable {
                 }
 
             }
-            throw Throw.as(agentJarPath + " - " + Full_Class_Name, e);
+            throw Throw.of(agentJarPath + " - " + Full_Class_Name, e);
         }
     }
 

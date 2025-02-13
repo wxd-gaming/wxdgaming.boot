@@ -76,7 +76,7 @@ public abstract class DbBean<T, S extends DataRepository> {
                         }
                     }
                 } catch (Throwable e) {
-                    throw Throw.as("数据：" + FastJsonUtil.toJson(dbModel), e);
+                    throw Throw.of("数据：" + FastJsonUtil.toJson(dbModel), e);
                 }
             });
             /*不可变的列表*/

@@ -64,7 +64,7 @@ public class Objects {
                 return baos.toByteArray();
             }
         } catch (Throwable ex) {
-            throw Throw.as("对象转 byte[] 出现错误", ex);
+            throw Throw.of("对象转 byte[] 出现错误", ex);
         }
     }
 
@@ -81,7 +81,7 @@ public class Objects {
                 return (R) ois.readObject();
             }
         } catch (Throwable ex) {
-            throw Throw.as("byte[] 转 对象 出现错误", ex);
+            throw Throw.of("byte[] 转 对象 出现错误", ex);
         }
     }
 

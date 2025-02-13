@@ -29,7 +29,7 @@ public class HmacSHA256Util implements Serializable {
             byte[] hmacSha256Bytes = hmacSha256.doFinal(content);
             return hmacSha256Bytes;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -68,7 +68,7 @@ public class HmacSHA256Util implements Serializable {
             hash = byteArrayToHexString(bytes);
             return hash;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

@@ -88,7 +88,7 @@ public class ZipUtil {
             }
             return out.toByteArray();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -148,7 +148,7 @@ public class ZipUtil {
             }
             return out.toByteArray();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -206,7 +206,7 @@ public class ZipUtil {
                 }
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

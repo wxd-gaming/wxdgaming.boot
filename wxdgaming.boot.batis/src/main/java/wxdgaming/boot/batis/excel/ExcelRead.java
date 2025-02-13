@@ -899,7 +899,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                         entityField.setFieldValue(instance, convertDataValue);
                     }
                 } catch (Exception e) {
-                    throw Throw.as(clazz.getName() + ", " + entityField.getFieldName() + ", " + dataColumnObjectEntry.getValue(), e);
+                    throw Throw.of(clazz.getName() + ", " + entityField.getFieldName() + ", " + dataColumnObjectEntry.getValue(), e);
                 }
             }
             list.add(instance);

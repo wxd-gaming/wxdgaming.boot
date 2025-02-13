@@ -30,7 +30,7 @@ public class Qos {
                 throwable = e;
             }
         }
-        throw Throw.as("重试次数：" + retry, throwable);
+        throw Throw.of("重试次数：" + retry, throwable);
     }
 
     /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */
@@ -52,7 +52,7 @@ public class Qos {
                 throwable = e;
             }
         }
-        throw Throw.as("重试次数：" + retry, throwable);
+        throw Throw.of("重试次数：" + retry, throwable);
     }
 
     /** 保证质量的运行，如果异常重试，比如http超时，rpc超时 */

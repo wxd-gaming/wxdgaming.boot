@@ -31,7 +31,7 @@ public class Bigint extends BigintFinal implements Serializable, Cloneable, Comp
         try {
             return (Bigint) super.clone();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

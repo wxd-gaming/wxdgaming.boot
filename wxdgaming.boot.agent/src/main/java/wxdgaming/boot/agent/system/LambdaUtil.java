@@ -191,12 +191,12 @@ public class LambdaUtil implements Serializable {
                     try {
                         call.accept(delegate);
                     } catch (Throwable throwable) {
-                        throw Throw.as(inClass + " - " + inMethod + " - " + object + " - " + method, throwable);
+                        throw Throw.of(inClass + " - " + inMethod + " - " + object + " - " + method, throwable);
                     }
                 }
             }
         } catch (Throwable throwable) {
-            throw Throw.as(throwable);
+            throw Throw.of(throwable);
         }
     }
 
@@ -238,7 +238,7 @@ public class LambdaUtil implements Serializable {
             Object invokeExact = metafactory.getTarget().bindTo(object).invoke();
             return new Mapping(object, method, invokeExact);
         } catch (Throwable throwable) {
-            throw Throw.as(inClass + " - " + inMethod + " - " + object + " - " + method, throwable);
+            throw Throw.of(inClass + " - " + inMethod + " - " + object + " - " + method, throwable);
         }
     }
 

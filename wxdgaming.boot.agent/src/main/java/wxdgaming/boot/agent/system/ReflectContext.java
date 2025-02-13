@@ -44,7 +44,7 @@ public class ReflectContext {
             Constructor<R> constructor = cls.getConstructor(parameterTypes);
             return constructor.newInstance(args);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -346,7 +346,7 @@ public class ReflectContext {
                     }
                 }
             } catch (Throwable e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
         }
 
@@ -438,7 +438,7 @@ public class ReflectContext {
                     }
                 }
             } catch (Throwable e) {
-                throw Throw.as(jarPath, e);
+                throw Throw.of(jarPath, e);
             }
         }
 

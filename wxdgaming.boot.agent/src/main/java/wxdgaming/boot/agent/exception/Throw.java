@@ -11,11 +11,11 @@ public class Throw extends RuntimeException implements Serializable {
 
     public static final StackTraceElement[] StackTraceEmpty = new StackTraceElement[0];
 
-    public static RuntimeException as(Throwable throwable) {
-        return as(null, throwable);
+    public static RuntimeException of(Throwable throwable) {
+        return of(null, throwable);
     }
 
-    public static RuntimeException as(String msg, Throwable throwable) {
+    public static RuntimeException of(String msg, Throwable throwable) {
 
         String message = null;
 

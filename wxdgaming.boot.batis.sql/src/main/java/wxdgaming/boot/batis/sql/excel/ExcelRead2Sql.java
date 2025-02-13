@@ -152,7 +152,7 @@ public class ExcelRead2Sql extends ExcelRead<SqlEntityTable, SqlDataWrapper<SqlE
                     }
                 }
             } catch (Throwable throwable) {
-                throw Throw.as("数据结构：" + entityTable.getLogTableName(), throwable);
+                throw Throw.of("数据结构：" + entityTable.getLogTableName(), throwable);
             }
         }
         return this;

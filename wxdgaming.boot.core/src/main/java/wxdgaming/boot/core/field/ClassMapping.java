@@ -609,7 +609,7 @@ public class ClassMapping implements Serializable {
                 call.accept(fieldName, fieldValue);
             }
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -647,7 +647,7 @@ public class ClassMapping implements Serializable {
                 }
                 fv.setFieldValue(object, jsonValue);
             } catch (Throwable e) {
-                throw Throw.as("值=" + jsonStr, e);
+                throw Throw.of("值=" + jsonStr, e);
             }
         }
     }

@@ -173,7 +173,7 @@ public class MethodUtil {
             Method[] declaredMethods = cls.getDeclaredMethods();
             readAllMethods0(declaredMethods, methodList);
         } catch (Throwable throwable) {
-            throw Throw.as(cls.getName(), throwable);
+            throw Throw.of(cls.getName(), throwable);
         }
     }
 

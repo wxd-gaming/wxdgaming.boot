@@ -59,7 +59,7 @@ public class JavaFileObject4StringCode extends SimpleJavaFileObject {
                 throw new UnsupportedOperationException("并未找到的 类名");
             }
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

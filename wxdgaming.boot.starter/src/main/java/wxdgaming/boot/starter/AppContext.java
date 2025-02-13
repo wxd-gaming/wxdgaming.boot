@@ -160,7 +160,7 @@ public class AppContext {
             logger().info("子容器初始化完成：{}", iocInjector.hashCode());
             return iocInjector;
         } catch (Throwable throwable) {
-            throw Throw.as("子容器初始化失败", throwable);
+            throw Throw.of("子容器初始化失败", throwable);
         }
     }
 
@@ -222,7 +222,7 @@ public class AppContext {
                         logger().info("shutdownBefore：{} {}", object.getClass(), object.toString());
                         object.shutdownBefore();
                     } catch (Throwable e) {
-                        throw Throw.as(object.getClass().getName() + ".shutdown()", e);
+                        throw Throw.of(object.getClass().getName() + ".shutdown()", e);
                     }
                 });
             }
@@ -233,7 +233,7 @@ public class AppContext {
                         logger().info("shutdown：{} {}", object.getClass(), object.toString());
                         object.shutdown();
                     } catch (Throwable e) {
-                        throw Throw.as(object.getClass().getName() + ".shutdown()", e);
+                        throw Throw.of(object.getClass().getName() + ".shutdown()", e);
                     }
                 });
             }
@@ -244,7 +244,7 @@ public class AppContext {
                         logger().info("shutdownEnd：{} {}", object.getClass(), object.toString());
                         object.shutdownEnd();
                     } catch (Throwable e) {
-                        throw Throw.as(object.getClass().getName() + ".shutdown()", e);
+                        throw Throw.of(object.getClass().getName() + ".shutdown()", e);
                     }
                 });
             }

@@ -176,7 +176,7 @@ public record Flux<T>(CompletableFuture<Collection<T>> completableFuture) {
         try {
             return completableFuture.get();
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -184,7 +184,7 @@ public record Flux<T>(CompletableFuture<Collection<T>> completableFuture) {
         try {
             return completableFuture.get(timeout, unit);
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 }

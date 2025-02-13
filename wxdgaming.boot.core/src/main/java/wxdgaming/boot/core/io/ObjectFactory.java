@@ -24,7 +24,7 @@ public class ObjectFactory implements Serializable {
         try {
             consumer.accept(object);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         } finally {
             returnObject(object);
         }
@@ -36,7 +36,7 @@ public class ObjectFactory implements Serializable {
         try {
             return function.apply(object);
         } catch (Throwable e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         } finally {
             returnObject(object);
         }

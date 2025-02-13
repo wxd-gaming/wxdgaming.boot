@@ -51,7 +51,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
             try {
                 outputStream.close();
             } catch (Throwable throwable) {
-                throw Throw.as("关闭资源", throwable);
+                throw Throw.of("关闭资源", throwable);
             }
         }
     }
@@ -121,7 +121,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
             }
             return this;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 
@@ -132,7 +132,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
             }
             return this;
         } catch (Exception e) {
-            throw Throw.as(e);
+            throw Throw.of(e);
         }
     }
 

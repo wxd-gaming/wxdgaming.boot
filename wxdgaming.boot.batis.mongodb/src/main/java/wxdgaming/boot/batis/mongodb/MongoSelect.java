@@ -337,7 +337,7 @@ interface MongoSelect {
             try {
                 call.accept(document);
             } catch (Throwable e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
         }
     }
@@ -402,7 +402,7 @@ interface MongoSelect {
             try {
                 call.accept(document);
             } catch (Throwable e) {
-                throw Throw.as(e);
+                throw Throw.of(e);
             }
         }
     }
