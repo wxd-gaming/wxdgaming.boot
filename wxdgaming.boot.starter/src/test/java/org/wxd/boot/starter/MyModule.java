@@ -1,8 +1,5 @@
 package org.wxd.boot.starter;
 
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import org.wxd.boot.starter.webapi.TestBean;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.starter.UserModule;
 
@@ -18,9 +15,8 @@ public class MyModule extends UserModule {
         super(reflectContext);
     }
 
-    @Override protected MyModule bind() throws Exception {
+    @Override protected void bind() throws Exception {
 
-        return this;
     }
 
 

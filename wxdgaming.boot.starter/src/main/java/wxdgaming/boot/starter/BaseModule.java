@@ -1,6 +1,7 @@
 package wxdgaming.boot.starter;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,22 +33,19 @@ abstract class BaseModule<T extends BaseModule> extends AbstractModule {
         this.onConfigure = onConfigure;
     }
 
-    public T bindSingleton(Class<?> clazz) {
+    public void bindSingleton(Class<?> clazz) {
         log.debug("bind {} {} clazz={}", this.getClass().getName(), this.hashCode(), clazz);
         bind(clazz).in(Singleton.class);
-        return (T) this;
     }
 
-    public <R> T bindSingleton(Class<R> father, Class<? extends R> son) {
+    public <R> void bindSingleton(Class<R> father, Class<? extends R> son) {
         log.debug("bind {} {} father={} bind son={}", this.getClass().getName(), this.hashCode(), father, son);
         bind(father).to(son).in(Singleton.class);
-        return (T) this;
     }
 
-    public <B> T bindSingleton(Class<B> clazz, B instance) {
+    public <B> void bindSingleton(Class<B> clazz, B instance) {
         log.debug("bind {} {} clazz={} bind instance={}", this.getClass().getName(), this.hashCode(), clazz, instance.getClass());
         bind(clazz).toInstance(instance);
-        return (T) this;
     }
 
     @Override
@@ -75,7 +73,7 @@ abstract class BaseModule<T extends BaseModule> extends AbstractModule {
         }
     }
 
-    protected abstract T bind() throws Throwable;
+    protected abstract void bind() throws Throwable;
 
     protected final ConsumerE2<Class, TcpConfig> socketAction = (aClass, config) -> {
         if (config.getPort() > 0) {

@@ -17,7 +17,7 @@ public class MongodbModule extends ServiceModule {
     }
 
 
-    @Override protected ServiceModule bind() throws Throwable {
+    @Override protected void bind() throws Throwable {
 
         BootConfig bootConfig = BootConfig.getInstance();
 
@@ -26,6 +26,5 @@ public class MongodbModule extends ServiceModule {
         dbAction.accept(MongoService2.class, bootConfig.getMongodb2());
         dbAction.accept(MongoService3.class, bootConfig.getMongodb3());
 
-        return this;
     }
 }

@@ -137,10 +137,8 @@ public class AppContext {
         try {
 
             StarterModule starterModule = new StarterModule(reflectContext, baseModule -> {
-                baseModule
-                        .bindSingleton(IocSubContext.class)
-                        .bindSingleton(IocContext.class, IocSubContext.class)
-                ;
+                baseModule.bindSingleton(IocSubContext.class);
+                baseModule.bindSingleton(IocContext.class, IocSubContext.class);
             });
             List<? extends BaseModule> modules = Stream.concat(
                             Stream.of(starterModule),

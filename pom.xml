@@ -16,6 +16,7 @@
         <module>wxdgaming.boot.batis.redis</module>
         <module>wxdgaming.boot.batis.sql</module>
         <module>wxdgaming.boot.batis.sql.mysql</module>
+        <module>wxdgaming.boot.batis.sql.pgsql</module>
         <module>wxdgaming.boot.batis.sql.sqlite</module>
         <module>wxdgaming.boot.core</module>
         <module>wxdgaming.boot.holder</module>
@@ -24,13 +25,10 @@
         <module>wxdgaming.boot.net</module>
         <module>wxdgaming.boot.net.http</module>
         <module>wxdgaming.boot.net.http.client.apache</module>
-        <module>wxdgaming.boot.net.http.client.jdk</module>
-        <module>wxdgaming.boot.net.http.client.url</module>
-        <module>wxdgaming.boot.net.http.service.simple</module>
         <module>wxdgaming.boot.starter</module>
-        <module>wxdgaming.boot.batis.sql.pgsql</module>
         <module>wxdgaming.boot.starter.pgsql</module>
         <module>wxdgaming.boot.starter.mysql</module>
+        <module>wxdgaming.boot.starter.net.server</module>
         <module>wxdgaming.boot.starter.mongodb</module>
         <module>wxdgaming.boot.starter.redis</module>
         <module>wxdgaming.boot.starter.test-case</module>

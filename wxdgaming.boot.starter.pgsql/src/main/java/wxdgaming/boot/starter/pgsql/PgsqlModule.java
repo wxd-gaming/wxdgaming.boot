@@ -16,7 +16,7 @@ public class PgsqlModule extends ServiceModule {
         super(reflectContext);
     }
 
-    @Override protected ServiceModule bind() throws Throwable {
+    @Override protected void bind() throws Throwable {
         BootConfig bootConfig = BootConfig.getInstance();
 
         dbAction.accept(PgsqlService.class, bootConfig.getPgsql());
@@ -24,6 +24,5 @@ public class PgsqlModule extends ServiceModule {
         dbAction.accept(PgsqlService2.class, bootConfig.getPgsql2());
         dbAction.accept(PgsqlService3.class, bootConfig.getPgsql3());
 
-        return this;
     }
 }

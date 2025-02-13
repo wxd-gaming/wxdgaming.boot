@@ -19,7 +19,7 @@ public class Throw extends RuntimeException implements Serializable {
 
         String message = null;
 
-        if (msg != null && !msg.isEmpty() && !msg.isBlank()) {
+        if (msg != null && !msg.isBlank()) {
             message = msg;
         }
 
@@ -30,7 +30,7 @@ public class Throw extends RuntimeException implements Serializable {
             throwableMessage = throwable.toString();
         }
 
-        if (throwableMessage != null && !throwableMessage.isEmpty() && !throwableMessage.isBlank()) {
+        if (throwableMessage != null && !throwableMessage.isBlank()) {
             if (message != null) message = message + ", " + throwableMessage;
             else message = throwableMessage;
         }

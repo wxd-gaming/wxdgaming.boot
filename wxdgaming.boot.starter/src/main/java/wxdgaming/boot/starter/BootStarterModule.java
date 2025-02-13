@@ -3,12 +3,12 @@ package wxdgaming.boot.starter;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.net.controller.MappingFactory;
+import wxdgaming.boot.net.controller.ProtoFilter;
+import wxdgaming.boot.net.handler.RpcFilter;
+import wxdgaming.boot.net.web.hs.HttpFilter;
 import wxdgaming.boot.starter.action.ActionConfig;
 import wxdgaming.boot.starter.config.Config;
 import wxdgaming.boot.starter.i.IConfigInit;
-import wxdgaming.boot.net.web.hs.HttpFilter;
-import wxdgaming.boot.net.controller.ProtoFilter;
-import wxdgaming.boot.net.handler.RpcFilter;
 import wxdgaming.boot.starter.service.*;
 
 import java.util.function.Consumer;
@@ -43,7 +43,7 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
         });
     }
 
-    protected BootStarterModule bind() throws Throwable {
+    protected void bind() throws Throwable {
 
         BootConfig bootConfig = BootConfig.getInstance();
 
@@ -90,7 +90,6 @@ class BootStarterModule extends BaseModule<BootStarterModule> {
         bindSingleton(BootConfig.class, bootConfig);
         bindSingleton(IocMainContext.class);
         bindSingleton(ScheduledService.class);
-        return this;
     }
 
 

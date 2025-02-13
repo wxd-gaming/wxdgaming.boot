@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.function.*;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.MethodUtil;
@@ -184,9 +185,7 @@ public interface ContextAction {
                             }
                         }
                     } catch (Exception e) {
-                        final RuntimeException runtimeException = new RuntimeException(e.getMessage());
-                        runtimeException.setStackTrace(e.getStackTrace());
-                        throw runtimeException;
+                        throw Throw.as(e);
                     }
 
                     List<Object> list = hashMap.values().stream()
@@ -197,23 +196,16 @@ public interface ContextAction {
                                 if (c1 != c2) {
                                     return Integer.compare(c1, c2);
                                 }
+                                Method method1 = null;
+                                Method method2 = null;
                                 if (StringUtil.notEmptyOrNull(methodName)) {
-                                    Method method1 = MethodUtil.findMethod(o1.getClass(), methodName);
-                                    Method method2 = MethodUtil.findMethod(o2.getClass(), methodName);
-                                    int ms1 = Optional.ofNullable(AnnUtil.ann(method1, Sort.class)).map(Sort::value).orElse(99999);
-                                    int ms2 = Optional.ofNullable(AnnUtil.ann(method2, Sort.class)).map(Sort::value).orElse(99999);
-                                    if (ms1 != ms2) {
-                                        return Integer.compare(ms1, ms2);
-                                    }
+                                    method1 = MethodUtil.findMethod(o1.getClass(), methodName);
+                                    method2 = MethodUtil.findMethod(o2.getClass(), methodName);
                                 }
-                                Sort cs1 = AnnUtil.ann(o1.getClass(), Sort.class);
-                                Sort cs2 = AnnUtil.ann(o2.getClass(), Sort.class);
-                                if (cs1 != null && cs2 != null) {
-                                    return Integer.compare(cs1.value(), cs2.value());
-                                } else if (cs1 != null) {
-                                    return -1;
-                                } else if (cs2 != null) {
-                                    return -1;
+                                int ms1 = sortValue(o1.getClass(), method1);
+                                int ms2 = sortValue(o1.getClass(), method2);
+                                if (ms1 != ms2) {
+                                    return Integer.compare(ms1, ms2);
                                 }
                                 return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
                             })
@@ -223,4 +215,13 @@ public interface ContextAction {
                 .stream()
                 .map(v -> (R) v);
     }
+
+    default int sortValue(Class<?> clazz, Method method) {
+        Sort sort = AnnUtil.ann(method, Sort.class);
+        if (sort != null) return sort.value();
+        sort = AnnUtil.ann(clazz, Sort.class);
+        if (sort != null) return sort.value();
+        return 99999;
+    }
+
 }

@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
+import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.str.StringUtil;
@@ -22,6 +23,7 @@ import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.NioServer;
 import wxdgaming.boot.net.controller.MappingFactory;
+import wxdgaming.boot.net.controller.ann.TextMapping;
 import wxdgaming.boot.net.handler.SocketChannelHandler;
 import wxdgaming.boot.net.http.HttpDataAction;
 import wxdgaming.boot.net.http.HttpHeadValueType;
@@ -168,7 +170,12 @@ public class HttpServer extends NioServer<HttpSession> {
                         .orElse(null);
 
 
-                HttpListenerAction httpListenerAction = new HttpListenerAction(method, HttpServer.this, session);
+                HttpListenerAction httpListenerAction = new HttpListenerAction(
+                        method,
+                        HttpServer.this,
+                        session,
+                        AnnUtil.ann(method, TextMapping.class)
+                );
 
                 if (MappingFactory.HttpMappingSubmitBefore != null) {
                     try {

@@ -17,7 +17,7 @@ public class RedisModule extends ServiceModule {
     }
 
 
-    @Override protected RedisModule bind() throws Throwable {
+    @Override protected void bind() throws Throwable {
 
         BootConfig bootConfig = BootConfig.getInstance();
 
@@ -26,6 +26,5 @@ public class RedisModule extends ServiceModule {
         dbAction.accept(RedisService2.class, bootConfig.getRedis2());
         dbAction.accept(RedisService3.class, bootConfig.getRedis3());
 
-        return this;
     }
 }

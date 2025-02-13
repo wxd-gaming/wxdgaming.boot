@@ -30,8 +30,8 @@ public class SslContextServer implements Serializable {
     public static SSLContext sslContext(SslProtocolType sslProtocolType, String jks_path, String jks_pwd_path) {
 
         if (sslProtocolType == null
-                || jks_path == null || jks_path.isEmpty() || jks_path.isBlank()
-                || jks_pwd_path == null || jks_pwd_path.isEmpty() || jks_pwd_path.isBlank())
+            || jks_path == null || jks_path.isBlank()
+            || jks_pwd_path == null || jks_pwd_path.isBlank())
             return null;
 
         Map<String, SSLContext> row = sslContextMap.computeIfAbsent(sslProtocolType, l -> new ConcurrentHashMap<>());

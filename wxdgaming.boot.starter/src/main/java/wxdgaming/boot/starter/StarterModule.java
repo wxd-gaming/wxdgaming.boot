@@ -16,8 +16,7 @@ class StarterModule extends BaseModule<StarterModule> {
         super(reflectContext, onConfigure);
     }
 
-    protected StarterModule bind() {
-        return this;
+    protected void bind() {
     }
 
 }

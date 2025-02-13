@@ -10,8 +10,7 @@ public class TestBean extends UserModule {
         super(reflectContext);
     }
 
-    @Override protected TestBean bind() throws Throwable {
-        return null;
+    @Override protected void bind() throws Throwable {
     }
 
     @Provides
