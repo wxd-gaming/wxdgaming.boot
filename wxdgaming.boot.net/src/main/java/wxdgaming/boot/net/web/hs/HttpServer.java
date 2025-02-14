@@ -337,7 +337,6 @@ public class HttpServer extends NioServer<HttpSession> {
                 if (accept_Encoding != null && accept_Encoding.contains("gzip")) {
                     accept_gzip = true;
                 }
-
             }
 
             ByteBuf byteBuf;
@@ -350,6 +349,7 @@ public class HttpServer extends NioServer<HttpSession> {
             HttpResponse response = new DefaultFullHttpResponse(hv, hrs, byteBuf);
 
             session.getResCookie().serverCookie(response.headers());
+
             if (session.getResHeaderMap() != null && !session.getResHeaderMap().isEmpty()) {
                 for (Map.Entry<String, String> stringStringEntry : session.getResHeaderMap().entrySet()) {
                     response.headers().set(stringStringEntry.getKey(), stringStringEntry.getValue());
