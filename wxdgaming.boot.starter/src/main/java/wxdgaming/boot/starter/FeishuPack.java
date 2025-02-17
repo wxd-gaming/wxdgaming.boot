@@ -5,7 +5,7 @@ import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.collection.SplitCollection;
 import wxdgaming.boot.core.lang.LockBase;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.system.LocalHostUtil;
@@ -67,7 +67,7 @@ public class FeishuPack extends Event {
 
     /** feiShuN通知 "<at user_id=\"xxx\">xx</at>" */
     public void asyncFeiShuNotice(String url, String title, String content) {
-        if (StringUtil.emptyOrNull(url) || StringUtil.emptyOrNull(title) || StringUtil.emptyOrNull(content)) return;
+        if (StringUtils.isBlank(url) || StringUtils.isBlank(title) || StringUtils.isBlank(content)) return;
         lockBase.lock();
         try {
             TreeMap<String, SplitCollection<String>> map = cache.computeIfAbsent(url, l -> new TreeMap<>());

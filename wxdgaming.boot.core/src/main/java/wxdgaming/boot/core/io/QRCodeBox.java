@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -99,7 +99,7 @@ public class QRCodeBox {
 
     public void buildImage() {
         try {
-            if (StringUtil.emptyOrNull(content)) throw new RuntimeException("二维码内容空");
+            if (StringUtils.isBlank(content)) throw new RuntimeException("二维码内容空");
             HashMap<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
             hints.put(EncodeHintType.CHARACTER_SET, "UTF-8"); // 指定编码方式,避免中文乱码
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H); // 指定纠错等级 如果二维码里面的内容比较多的话推荐使用H 容错率30%， 这样可以避免一些扫描不出来的问题

@@ -17,7 +17,7 @@ import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.collection.MapOf;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.NioFactory;
@@ -241,7 +241,7 @@ public class HttpServer extends NioServer<HttpSession> {
     }
 
     public String resourcesPath() throws IOException {
-        if (StringUtil.emptyOrNull(resourcesPath)) {
+        if (StringUtils.isBlank(resourcesPath)) {
             resourcesPath = FileUtil.getCanonicalPath(new File("html"));
         }
         return resourcesPath;
@@ -462,7 +462,7 @@ public class HttpServer extends NioServer<HttpSession> {
      * {@code key=value&key=value&key=value&key=value&key=value}
      */
     public static void queryStringMap(Map paramsMap, String queryString) {
-        if (StringUtil.emptyOrNull(queryString)) {
+        if (StringUtils.isBlank(queryString)) {
             return;
         }
         QueryStringDecoder queryDecoder = new QueryStringDecoder(queryString, false);

@@ -11,7 +11,7 @@ import wxdgaming.boot.agent.io.FileWriteUtil;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.ObjectBase;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.controller.ann.ProtoMapping;
 
@@ -62,7 +62,7 @@ public class ProtoBuf2Pojo {
 
                     FileReadUtil.readLine(filePath, StandardCharsets.UTF_8, line -> {
                         line = line.trim();
-                        if (StringUtil.emptyOrNull(line)) return;
+                        if (StringUtils.isBlank(line)) return;
                         if (line.contains("java_multiple_files")) {
                             // if (line.contains("true")) {
                             //     multiple_files.set(true);
@@ -87,7 +87,7 @@ public class ProtoBuf2Pojo {
                             String string = comment.get().string();
                             if (multiple_files.get()) {
                                 String p1 = filePath.getName().replace(".proto", "").replace("Message", "");
-                                p1 = StringUtil.lowerFirst(p1);
+                                p1 = StringUtils.lowerFirst(p1);
                                 String to = "package " + packageName + "." + p1 + ";";
                                 to += "\n";
                                 for (String anImport : imports) {
@@ -157,7 +157,7 @@ public class ProtoBuf2Pojo {
         }
 
         public void addField(FiledInfo filedInfo) {
-            if (StringUtil.notEmptyOrNull(filedInfo.getField())) {
+            if (StringUtils.isNotBlank(filedInfo.getField())) {
                 if (filedInfos.stream().anyMatch(v -> v.getTag() == filedInfo.getTag())) {
                     // tag重复
                     throw new RuntimeException(className + " - tag " + filedInfo.getTag() + " 重复");
@@ -315,7 +315,7 @@ public class ProtoBuf2Pojo {
         private String comment = "";
 
         public FiledInfo(String classType, String line) {
-            if (StringUtil.emptyOrNull(line)) {
+            if (StringUtils.isBlank(line)) {
                 return;
             }
             line = line.trim();
@@ -329,7 +329,7 @@ public class ProtoBuf2Pojo {
                 tmp.add("enum");
             }
             for (String string : split1) {
-                if (StringUtil.emptyOrNull(string)) continue;
+                if (StringUtils.isBlank(string)) continue;
                 tmp.add(string.trim());
             }
 
@@ -380,7 +380,7 @@ public class ProtoBuf2Pojo {
                 default: {
                     if (string.startsWith("map<") && string.endsWith(">")) {
                         field = String.class.getSimpleName();
-                        field = StringUtil.upperFirst(field);
+                        field = StringUtils.upperFirst(field);
                         field = field
                                 .replace("bool", Boolean.class.getSimpleName())
                                 .replace("int32", Integer.class.getSimpleName())

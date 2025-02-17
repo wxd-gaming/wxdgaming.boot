@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 import wxdgaming.boot.net.http.HttpDataAction;
@@ -36,7 +36,7 @@ public interface HttpFtp {
         String search = putData.getString("search");
 
         String path = putData.getString("path");
-        if (StringUtil.emptyOrNull(path)) {
+        if (StringUtils.isBlank(path)) {
             path = userHome;
         }
 

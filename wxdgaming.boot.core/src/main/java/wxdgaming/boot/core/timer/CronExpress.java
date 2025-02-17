@@ -4,7 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.lang.ObjectBase;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.util.Arrays;
 import java.util.TreeSet;
@@ -75,10 +75,10 @@ public class CronExpress extends ObjectBase {
         String[] values = new String[7];
         Arrays.fill(values, "*");
 
-        if (StringUtil.notEmptyOrNull(cron)) {
+        if (StringUtils.isNotBlank(cron)) {
             String[] split = cron.split(" ");
             for (int i = 0; i < split.length; i++) {
-                if (StringUtil.emptyOrNull(split[i])) {
+                if (StringUtils.isBlank(split[i])) {
                     throw new RuntimeException("cron 表达式异常 [" + cron + "] 第 " + (i + 1) + " 个参数 空 不合法");
                 }
                 values[i] = split[i];

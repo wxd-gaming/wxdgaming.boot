@@ -14,7 +14,7 @@ import wxdgaming.boot.core.field.FieldMapping;
 import wxdgaming.boot.core.lang.ConvertUtil;
 import wxdgaming.boot.core.lang.LoggerException;
 import wxdgaming.boot.core.str.PatternStringUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.io.Serializable;
@@ -99,7 +99,7 @@ public abstract class DataWrapper<DM extends EntityTable>
         // 判断指定类型的注释是否存在于此元素上
         DbTable annotation = AnnUtil.ann(clazz, DbTable.class, true);
         // 拿到对应的表格注解类型
-        if (annotation == null || StringUtil.emptyOrNull(annotation.name())) {
+        if (annotation == null || StringUtils.isBlank(annotation.name())) {
             return clazz.getSimpleName().trim().toLowerCase();// 不存在就不需要获取其表名
         } else {
             return annotation.name().trim().toLowerCase();// 返回注解中的值，也就是表名
@@ -121,7 +121,7 @@ public abstract class DataWrapper<DM extends EntityTable>
     public String columnName(Field field, DbColumn dbColumn) {
         String fieldName = field.getName();
         if (dbColumn != null) {
-            if (StringUtil.notEmptyOrNull(dbColumn.name()))
+            if (StringUtils.isNotBlank(dbColumn.name()))
                 fieldName = dbColumn.name();
         }
         return fieldName;
@@ -182,7 +182,7 @@ public abstract class DataWrapper<DM extends EntityTable>
             entityTable.setSplitNumber(dbTable.splitTable());
         }
 
-        if (StringUtil.notEmptyOrNull(tableComment)) {
+        if (StringUtils.isNotBlank(tableComment)) {
             entityTable.setTableComment(tableComment);
         }
 
@@ -228,7 +228,7 @@ public abstract class DataWrapper<DM extends EntityTable>
             entityField.setColumnComment("");
             if (dbColumn != null) {
 
-                if (StringUtil.notEmptyOrNull(dbColumn.comment())) {
+                if (StringUtils.isNotBlank(dbColumn.comment())) {
                     entityField.setColumnComment(dbColumn.comment().trim());
                 }
 

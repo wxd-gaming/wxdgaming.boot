@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 import wxdgaming.boot.batis.struct.DbIndex;
 import wxdgaming.boot.batis.struct.TableName;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -100,12 +100,12 @@ public class EntityTable implements Serializable, DbIndex {
         String[] split = tableName.split("_|-");
         if (split.length > 1) {
             for (int i = 1; i < split.length; i++) {
-                split[i] = StringUtil.upperFirst(split[i]);
+                split[i] = StringUtils.upperFirst(split[i]);
             }
         }
         String codeName = String.join("", split);
 
-        return StringUtil.upperFirst(codeName);
+        return StringUtils.upperFirst(codeName);
     }
 
     /**

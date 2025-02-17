@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.net.Session;
@@ -79,7 +79,7 @@ public final class RpcListenerAction extends Event {
                         /*实现注入*/
                         Param annotation = parameter.getAnnotation(Param.class);
                         if (annotation.required() && !putData.containsKey(annotation.value())) {
-                            if (StringUtil.notEmptyOrNull(annotation.defaultValue())) {
+                            if (StringUtils.isNotBlank(annotation.defaultValue())) {
                                 putData.put(annotation.value(), annotation.defaultValue());
                             } else {
                                 throw new RuntimeException("listener " + listener + ", 接口 " + mappingRecord.method() + ", 参数 " + annotation.value() + " 为必传参数，但未传");

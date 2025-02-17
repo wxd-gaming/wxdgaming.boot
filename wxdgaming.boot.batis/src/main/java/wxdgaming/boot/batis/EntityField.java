@@ -7,7 +7,7 @@ import lombok.Setter;
 import wxdgaming.boot.batis.enums.ColumnType;
 import wxdgaming.boot.batis.enums.SortType;
 import wxdgaming.boot.core.field.FieldMapping;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.util.Objects;
 
@@ -66,7 +66,7 @@ public class EntityField extends FieldMapping {
         String[] s = tmp.split("[_-]");
         if (s.length > 1) {
             for (int i = 1; i < s.length; i++) {
-                s[i] = StringUtil.upperFirst(s[i]);
+                s[i] = StringUtils.upperFirst(s[i]);
             }
         }
         return String.join("", s);

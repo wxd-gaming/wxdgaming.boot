@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @author: wxd-gaming(無心道, 15388152619)
  * @version: 2020-12-30 20:33
  */
-public class StringUtil {
+public class StringUtils {
 
     public static final Charset GB2313 = Charset.forName("GB2312");
 
@@ -212,7 +212,7 @@ public class StringUtil {
     /** uuid字符格式 8-4-4-4-12 */
     public static String randomUuid16(String start, int len) {
         StringBuilder stringBuilder = new StringBuilder(len);
-        if (notEmptyOrNull(start)) {
+        if (isNotBlank(start)) {
             stringBuilder.append(start);
         }
         if (stringBuilder.length() < len) {
@@ -388,13 +388,13 @@ public class StringUtil {
     }
 
     /** 如果字符是null或者空白字符返回true */
-    public static boolean emptyOrNull(String str) {
-        return null == str || str.isEmpty() || str.isBlank();
+    public static boolean isBlank(String str) {
+        return null == str || str.isBlank();
     }
 
     /** 如果字符是null或者空白字符返回 false */
-    public static boolean notEmptyOrNull(String str) {
-        return !emptyOrNull(str);
+    public static boolean isNotBlank(String str) {
+        return !isBlank(str);
     }
 
     public static List<String> lines(String str) {

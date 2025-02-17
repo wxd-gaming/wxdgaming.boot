@@ -15,7 +15,7 @@ import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.lang.Record2;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.core.collection.SetOf;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.ProtobufMessageSerializerFastJson;
 import wxdgaming.boot.core.str.xml.XmlUtil;
 import wxdgaming.boot.core.system.BytesUnit;
@@ -97,7 +97,7 @@ public class AppContext {
         });
 
         GlobalUtil.exceptionCall = (o, throwable) -> {
-            if (StringUtil.notEmptyOrNull(FeishuPack.Default.DefaultFeishuUrl))
+            if (StringUtils.isNotBlank(FeishuPack.Default.DefaultFeishuUrl))
                 FeishuPack.Default.asyncFeiShuNotice("异常", String.valueOf(o), throwable);
         };
 
@@ -268,11 +268,11 @@ public class AppContext {
         stringAppend.append("\n\n")
                 .append(printString)
                 .append("\n")
-                .append("    -[ " + StringUtil.padRight("debug = " + debug + " | " + JvmUtil.processIDString(), len, ' ') + " ]-\n")
-                .append("    -[ " + StringUtil.padRight(serverId + " | " + serverName, len, ' ') + " ]-\n")
-                .append("    -[ " + StringUtil.padRight(JvmUtil.timeZone(), len, ' ') + " ]-\n");
+                .append("    -[ " + StringUtils.padRight("debug = " + debug + " | " + JvmUtil.processIDString(), len, ' ') + " ]-\n")
+                .append("    -[ " + StringUtils.padRight(serverId + " | " + serverName, len, ' ') + " ]-\n")
+                .append("    -[ " + StringUtils.padRight(JvmUtil.timeZone(), len, ' ') + " ]-\n");
         for (String extInfo : extInfos) {
-            stringAppend.append("    -[ " + StringUtil.padRight(extInfo, len, ' ') + " ]-\n");
+            stringAppend.append("    -[ " + StringUtils.padRight(extInfo, len, ' ') + " ]-\n");
         }
         stringAppend.append("\n");
         logger().warn(stringAppend.toString());

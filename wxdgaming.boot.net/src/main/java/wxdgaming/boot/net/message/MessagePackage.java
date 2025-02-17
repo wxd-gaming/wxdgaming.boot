@@ -3,7 +3,7 @@ package wxdgaming.boot.net.message;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.ReflectContext;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.pojo.PojoBase;
 
 import java.util.Map;
@@ -34,10 +34,10 @@ public class MessagePackage {
     }
 
     public static void main(String[] args) {
-        System.out.println(StringUtil.hashcode(new String(new char[]{2, 1})));
-        System.out.println(StringUtil.hashcode(new String(new char[]{1, 2})));
-        System.out.println(StringUtil.hashcode("re"));
-        System.out.println(StringUtil.hashcode("er"));
+        System.out.println(StringUtils.hashcode(new String(new char[]{2, 1})));
+        System.out.println(StringUtils.hashcode(new String(new char[]{1, 2})));
+        System.out.println(StringUtils.hashcode("re"));
+        System.out.println(StringUtils.hashcode("er"));
     }
 
     /** 获取 获取消息信息 messageName = msgid */
@@ -121,7 +121,7 @@ public class MessagePackage {
                     return;
                 }
             }
-            int number = StringUtil.hashcode(declaredClass.getSimpleName());
+            int number = StringUtils.hashcode(declaredClass.getSimpleName());
             final Integer nameNumber = MsgName2IdMap.get(messageName);
             if (nameNumber != null && number != nameNumber) {
                 throw new RuntimeException("存在相同的消息名称：" + messageName + "=" + nameNumber);

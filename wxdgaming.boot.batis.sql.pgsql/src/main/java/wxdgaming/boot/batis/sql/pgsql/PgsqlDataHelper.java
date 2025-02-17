@@ -7,13 +7,11 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
-import wxdgaming.boot.core.str.StringUtil;
-import wxdgaming.boot.core.timer.MyClock;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,7 @@ public class PgsqlDataHelper extends SqlDataHelper<PgsqlEntityTable, SqlDataWrap
         if (getDbConfig().isCreateDbBase()) {
             createDatabase();
         }
-        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+        if (StringUtils.isNotBlank(getDbConfig().getScanPackage())) {
             checkDataBase(getDbConfig().getScanPackage());
         }
 

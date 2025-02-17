@@ -5,7 +5,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +22,7 @@ public class Excel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected final Workbook builderWorkbook(File file) {
-        if (file == null || StringUtil.emptyOrNull(file.getName()) || file.getName().contains("@") || file.getName().contains("$")) {
+        if (file == null || StringUtils.isBlank(file.getName()) || file.getName().contains("@") || file.getName().contains("$")) {
             log.info("Excel文件不能解析：" + file.getPath());
             return null;
         }

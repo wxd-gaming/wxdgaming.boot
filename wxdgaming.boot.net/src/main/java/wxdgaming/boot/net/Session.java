@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.lang.LockBase;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.timer.MyClock;
 
 import java.io.Serializable;
@@ -143,19 +143,19 @@ public abstract class Session extends LockBase implements Serializable {
     }
 
     public String getIp() {
-        if (StringUtil.emptyOrNull(this.ip))
+        if (StringUtils.isBlank(this.ip))
             this.ip = NioFactory.getIP(this.channelContext);
         return ip;
     }
 
     public String getLocalAddress() {
-        if (StringUtil.emptyOrNull(this.localAddress))
+        if (StringUtils.isBlank(this.localAddress))
             this.localAddress = NioFactory.getLocalAddress(channelContext);
         return localAddress;
     }
 
     public String getRemoteAddress() {
-        if (StringUtil.emptyOrNull(this.remoteAddress))
+        if (StringUtils.isBlank(this.remoteAddress))
             this.remoteAddress = NioFactory.getRemoteAddress(channelContext);
         return remoteAddress;
     }

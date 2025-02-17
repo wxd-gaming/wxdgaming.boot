@@ -8,7 +8,7 @@ import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
 import wxdgaming.boot.batis.sql.SqlEntityTable;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -56,7 +56,7 @@ public class SqliteDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrapp
             this.startEnd = true;
         }
 
-        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+        if (StringUtils.isNotBlank(getDbConfig().getScanPackage())) {
             checkDataBase(getDbConfig().getScanPackage());
         }
 

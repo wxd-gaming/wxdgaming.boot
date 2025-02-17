@@ -10,7 +10,7 @@ import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.collection.MapOf;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.timer.MyClock;
 import wxdgaming.boot.net.SocketSession;
@@ -109,8 +109,8 @@ public class ProtoBufCreateController {
                     boolean matches = messageName.matches(_startsWithRegex);
                     if (matches) {
                         int indexOf = messageName.lastIndexOf('{');
-                        messageName = StringUtil.filterLine(messageName.substring(0, indexOf));
-                        int msgId = StringUtil.hashcode(messageName);
+                        messageName = StringUtils.filterLine(messageName.substring(0, indexOf));
+                        int msgId = StringUtils.hashcode(messageName);
                         String key = messagePackage.get() + "." + messageName;
                         if (msgIdMap.containsKey(key) || msgIdMap.containsValue(msgId)) {
                             throw new RuntimeException("存在相同的消息名称：" + key + ", id=" + msgId);
@@ -157,7 +157,7 @@ public class ProtoBufCreateController {
                     boolean matches = message.matches(_startsWithRegex);
                     if (matches) {
                         int indexOf = message.lastIndexOf('{');
-                        message = StringUtil.filterLine(message.substring(0, indexOf));
+                        message = StringUtils.filterLine(message.substring(0, indexOf));
 
                         String savePack = messagePackage.get().replace(".message", ".controller");
                         String saveClassName = message + "Controller";
@@ -192,7 +192,7 @@ public class ProtoBufCreateController {
                         objMap.put("savePack", savePack);
                         objMap.put("saveClassName", saveClassName);
 
-                        if (StringUtil.emptyOrNull(serviceClass)) {
+                        if (StringUtils.isBlank(serviceClass)) {
                             objMap.put("serviceClass", "");
                         } else {
                             objMap.put("serviceClass", "service = \"" + serviceClass + "\"");
@@ -213,7 +213,7 @@ public class ProtoBufCreateController {
                             out.writeLn("==============================================================================================================");
                             out.writeLn("消息文件：" + protoFile.getName());
                             out.writeLn("消息名称：" + messagePackage.get() + "." + message);
-                            out.writeLn("消息ID：" + StringUtil.hashcode(objMap.getString("messageName")));
+                            out.writeLn("消息ID：" + StringUtils.hashcode(objMap.getString("messageName")));
                             out.writeLn("文件包名：" + objMap.getString("savePack"));
                             out.writeLn("处理文件：" + objMap.getString("saveClassName") + ".java");
                             out.writeLn("==============================================================================================================");

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.IAssistMonitor;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -100,7 +100,7 @@ public abstract class Event implements Runnable, IAssistMonitor, RunMonitor {
     /** 提交待线程池执行 */
     public final void submit() {
         IExecutorServices executor;
-        if (StringUtil.notEmptyOrNull(getThreadName())) {
+        if (StringUtils.isNotBlank(getThreadName())) {
             executor = Executors.All_THREAD_LOCAL.get(getThreadName());
         } else if (isVt()) {
             executor = Executors.getVTExecutor();

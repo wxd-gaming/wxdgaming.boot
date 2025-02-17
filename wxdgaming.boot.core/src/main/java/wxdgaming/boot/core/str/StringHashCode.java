@@ -24,7 +24,7 @@ public interface StringHashCode {
      * 计算字符串的hashcode值
      */
     default int hashcode(String source) {
-        return StringUtil.hashcode(source);
+        return StringUtils.hashcode(source);
     }
 
 }

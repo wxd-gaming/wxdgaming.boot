@@ -2,7 +2,7 @@ package wxdgaming.boot.batis.sql;
 
 import wxdgaming.boot.agent.function.PredicateE;
 import wxdgaming.boot.core.lang.Tuple2;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +48,7 @@ interface SqlSelect<DM extends SqlEntityTable, DW extends SqlDataWrapper<DM>> ex
     /** 获取现有数据量 */
     default long rowCount(String tableName, String whereSqlString, Object... args) {
         String sqlString = "select count(1) usm from " + tableName;
-        if (StringUtil.notEmptyOrNull(whereSqlString)) {
+        if (StringUtils.isNotBlank(whereSqlString)) {
             sqlString += " where " + whereSqlString;
         }
         return this.executeScalar(sqlString, long.class, args);

@@ -9,7 +9,7 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
 import wxdgaming.boot.agent.system.ReflectContext;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -73,7 +73,7 @@ public class ProtobufMessageSerializerFastJson implements ObjectSerializer, Obje
     @Override
     public Object deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
         String fieldValue = (String) parser.parse(fieldName);
-        if (StringUtil.notEmptyOrNull(fieldValue)) {
+        if (StringUtils.isNotBlank(fieldValue)) {
             Class ft = (Class) type;
             if (Message.Builder.class.isAssignableFrom(ft)) {
                 return ProtobufSerializer.parseBuilder4Json(fieldValue, (Class) type);

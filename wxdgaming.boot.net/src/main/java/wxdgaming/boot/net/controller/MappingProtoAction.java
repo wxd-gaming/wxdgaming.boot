@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.MethodUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.SocketSession;
 import wxdgaming.boot.net.controller.ann.ProtoController;
@@ -66,7 +66,7 @@ public class MappingProtoAction {
             int messageId = MessagePackage.getMessageId(messageClass);
 
             String remarks = protoMapping.remarks();
-            if (StringUtil.emptyOrNull(remarks)) {
+            if (StringUtils.isBlank(remarks)) {
                 remarks = instance.getClass().getName() + "." + method.getName();
             }
             MappingFactory.putProto(

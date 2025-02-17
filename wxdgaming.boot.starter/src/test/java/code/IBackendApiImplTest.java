@@ -4,7 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import wxdgaming.boot.core.str.Md5Util;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.httpclient.apache.HttpBuilder;
 
@@ -44,7 +44,7 @@ public class IBackendApiImplTest {
                 .bodyUnicodeDecodeString();
 
         log.info("{} {}：{}", "dd", "接口测试", FastJsonUtil.toJson(result));
-        if (StringUtil.notEmptyOrNull(result)) {
+        if (StringUtils.isNotBlank(result)) {
             HashMap<String, String> resMap = FastJsonUtil.parse(result, new TypeReference<HashMap<String, String>>() {});
         }
     }

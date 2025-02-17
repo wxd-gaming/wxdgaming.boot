@@ -7,7 +7,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import wxdgaming.boot.core.collection.ListOf;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.format.ByteFormat;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.core.timer.MyClock;
@@ -41,8 +41,8 @@ public class FtpFileUtil implements Serializable {
 
         if (pageSize <= 0) pageSize = 50;
         if (pageNumber < 1) pageNumber = 1;
-        if (StringUtil.emptyOrNull(search)) search = "";
-        if (StringUtil.emptyOrNull(ftpPath) || !ftpPath.startsWith(userHome)) {
+        if (StringUtils.isBlank(search)) search = "";
+        if (StringUtils.isBlank(ftpPath) || !ftpPath.startsWith(userHome)) {
             ftpPath = userHome;
         }
 
@@ -94,7 +94,7 @@ public class FtpFileUtil implements Serializable {
             final String searchFile = search.toLowerCase();
             List<File> collect = Arrays.stream(files)
                     .filter(file1 -> {
-                        if (StringUtil.notEmptyOrNull(searchFile)) {
+                        if (StringUtils.isNotBlank(searchFile)) {
                             if (!file1.getName().toLowerCase().contains(searchFile)) {
                                 /*如果有搜索，不匹配不要*/
                                 return false;

@@ -3,7 +3,7 @@ package wxdgaming.boot.core.threading;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wxdgaming.boot.core.publisher.Mono;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.agent.GlobalUtil;
 
 import java.util.List;
@@ -306,7 +306,7 @@ public interface IExecutorServices extends Executor {
         /**定时器任务，需要重置一次*/
         job.initTaskTime = System.nanoTime();
         job.append.set(true);
-        if (StringUtil.notEmptyOrNull(queueName)) {
+        if (StringUtils.isNotBlank(queueName)) {
             ExecutorQueue executorQueue = getExecutorQueueMap().computeIfAbsent(queueName, k -> new ExecutorQueue(this, k));
             executorQueue.add(job);
         } else {

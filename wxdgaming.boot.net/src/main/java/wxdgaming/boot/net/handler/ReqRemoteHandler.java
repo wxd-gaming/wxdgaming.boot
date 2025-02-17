@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.append.StreamWriter;
 import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.net.SocketSession;
@@ -62,7 +62,7 @@ public class ReqRemoteHandler {
                 session.rpcResponse(rpcId, "OK!");
             }
             default -> {
-                if (StringUtil.emptyOrNull(cmd)) {
+                if (StringUtils.isBlank(cmd)) {
                     log.info("{} 命令参数 cmd , 未找到", session.toString());
                     if (rpcId > 0) {
                         session.rpcResponse(rpcId, RunResult.error("命令参数 cmd , 未找到").toJSONString());

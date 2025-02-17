@@ -9,7 +9,7 @@ import wxdgaming.boot.agent.system.Base64Util;
 import wxdgaming.boot.agent.zip.ZipUtil;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.PrintConsole;
 import wxdgaming.boot.httpclient.apache.HttpBuilder;
@@ -42,7 +42,7 @@ public class PostCode implements PrintConsole {
 
             for (Post_Run_Config.Urls urls : post_run_config.getUrlList()) {
                 i++;
-                System.out.print(StringUtil.padRight(urls.getServerId() + " - " + urls.getName(), maxLen, ' ') + "\t");
+                System.out.print(StringUtils.padRight(urls.getServerId() + " - " + urls.getName(), maxLen, ' ') + "\t");
                 if (i % 8 == 0) {
                     System.out.println();
                 }
@@ -55,7 +55,7 @@ public class PostCode implements PrintConsole {
             System.out.println();
             int sid = Integer.parseInt(readLine);
             Post_Run_Config.Urls urls = post_run_config.findBySid(sid);
-            if (StringUtil.notEmptyOrNull(urls.getPwd())) {
+            if (StringUtils.isNotBlank(urls.getPwd())) {
                 System.out.println("！！！！！！谨慎操作远程服务器请！！！！！");
                 System.out.print("输入密码：");
                 String pwd = bufferedReader.readLine();
@@ -68,7 +68,7 @@ public class PostCode implements PrintConsole {
             }
             String selectIp = urls.getUrl();
             System.out.println("选择服务器：" + urls.getName() + ", " + urls.getUrl());
-            if (StringUtil.notEmptyOrNull(urls.getPwd())) {
+            if (StringUtils.isNotBlank(urls.getPwd())) {
                 System.out.println("！！！！！！再次确认选择的服务器是否正确！！！！！");
                 bufferedReader.readLine();
             }

@@ -1,7 +1,6 @@
 package wxdgaming.boot.starter;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,7 @@ import wxdgaming.boot.agent.function.ConsumerE2;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.batis.DbConfig;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.controller.ann.ProtoController;
 import wxdgaming.boot.net.controller.ann.TextController;
 
@@ -77,12 +76,12 @@ abstract class BaseModule<T extends BaseModule> extends AbstractModule {
 
     protected final ConsumerE2<Class, TcpConfig> socketAction = (aClass, config) -> {
         if (config.getPort() > 0) {
-            if (StringUtil.notEmptyOrNull(config.getServiceClassName())) {
+            if (StringUtils.isNotBlank(config.getServiceClassName())) {
                 /*通过指定的类进行加载*/
                 aClass = BootStarterModule.class.getClassLoader().loadClass(config.getServiceClassName());
             }
             Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
-            if (StringUtil.emptyOrNull(config.getName())) {
+            if (StringUtils.isBlank(config.getName())) {
                 config.setName(newInstance.getClass().getSimpleName());
             }
             bindSingleton(aClass, newInstance);
@@ -92,7 +91,7 @@ abstract class BaseModule<T extends BaseModule> extends AbstractModule {
     protected final ConsumerE2<Class, DbConfig> dbAction = (aClass, config) -> {
         if (config.getDbPort() > 0) {
             Object newInstance = aClass.getDeclaredConstructor(config.getClass()).newInstance(config);
-            if (StringUtil.emptyOrNull(config.getName())) {
+            if (StringUtils.isBlank(config.getName())) {
                 config.setName(newInstance.getClass().getSimpleName());
             }
             bindSingleton(aClass, newInstance);

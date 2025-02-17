@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.threading;
 
 import wxdgaming.boot.agent.system.AnnUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,10 +22,10 @@ public class ThreadInfoImpl {
         ThreadInfo ann = AnnUtil.ann(method, ThreadInfo.class);
         if (ann != null) {
             vt.set(ann.vt());
-            if (StringUtil.notEmptyOrNull(ann.threadName())) {
+            if (StringUtils.isNotBlank(ann.threadName())) {
                 threadName.set(ann.threadName());
             }
-            if (StringUtil.notEmptyOrNull(ann.queueName())) {
+            if (StringUtils.isNotBlank(ann.queueName())) {
                 queueName.set(ann.queueName());
             }
         }

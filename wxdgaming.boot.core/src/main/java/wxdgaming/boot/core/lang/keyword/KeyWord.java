@@ -2,7 +2,7 @@ package wxdgaming.boot.core.lang.keyword;
 
 
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -231,10 +231,10 @@ public class KeyWord {
         }
         getKeyWords0(keyWordSet, txt, txt, matchType);
         if (checkENCNCase) {
-            getKeyWords0(keyWordSet, txt, StringUtil.replaceFilter(txt, StringUtil.PATTERN_REPLACE_UUU), matchType);
-            getKeyWords0(keyWordSet, txt, StringUtil.replaceFilter(txt, StringUtil.PATTERN_REPLACE_UUU_1), matchType);
-            getKeyWords0(keyWordSet, txt, StringUtil.replaceFilter(txt, StringUtil.PATTERN_REPLACE_UUU_2), matchType);
-            getKeyWords0(keyWordSet, txt, StringUtil.replaceFilter(txt, StringUtil.PATTERN_REPLACE_UUU_3), matchType);
+            getKeyWords0(keyWordSet, txt, StringUtils.replaceFilter(txt, StringUtils.PATTERN_REPLACE_UUU), matchType);
+            getKeyWords0(keyWordSet, txt, StringUtils.replaceFilter(txt, StringUtils.PATTERN_REPLACE_UUU_1), matchType);
+            getKeyWords0(keyWordSet, txt, StringUtils.replaceFilter(txt, StringUtils.PATTERN_REPLACE_UUU_2), matchType);
+            getKeyWords0(keyWordSet, txt, StringUtils.replaceFilter(txt, StringUtils.PATTERN_REPLACE_UUU_3), matchType);
         }
         return keyWordSet;
     }
@@ -321,10 +321,10 @@ public class KeyWord {
                 content = content.toLowerCase();
             }
             if (hasSensitiveWord0(content, matchType)/*整体过滤*/
-                    || hasSensitiveWord0(StringUtil.replaceFilter(content, StringUtil.PATTERN_REPLACE_UUU), matchType) /*过滤纯汉字的关键字*/
-                    || hasSensitiveWord0(StringUtil.replaceFilter(content, StringUtil.PATTERN_REPLACE_UUU_1), matchType) /*过滤纯英文的关键字*/
-                    || hasSensitiveWord0(StringUtil.replaceFilter(content, StringUtil.PATTERN_REPLACE_UUU_2), matchType) /*过滤纯数字的关键字*/
-                    || hasSensitiveWord0(StringUtil.replaceFilter(content, StringUtil.PATTERN_REPLACE_UUU_3), matchType)/*过滤掉汉字英文数字*/) {
+                    || hasSensitiveWord0(StringUtils.replaceFilter(content, StringUtils.PATTERN_REPLACE_UUU), matchType) /*过滤纯汉字的关键字*/
+                    || hasSensitiveWord0(StringUtils.replaceFilter(content, StringUtils.PATTERN_REPLACE_UUU_1), matchType) /*过滤纯英文的关键字*/
+                    || hasSensitiveWord0(StringUtils.replaceFilter(content, StringUtils.PATTERN_REPLACE_UUU_2), matchType) /*过滤纯数字的关键字*/
+                    || hasSensitiveWord0(StringUtils.replaceFilter(content, StringUtils.PATTERN_REPLACE_UUU_3), matchType)/*过滤掉汉字英文数字*/) {
                 return true;
             }
         }

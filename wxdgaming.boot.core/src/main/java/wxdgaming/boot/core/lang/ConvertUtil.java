@@ -1,6 +1,6 @@
 package wxdgaming.boot.core.lang;
 
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.math.BigDecimal;
@@ -141,7 +141,7 @@ public class ConvertUtil {
         if (obj == null) {
             return null;
         }
-        if (StringUtil.emptyOrNull(obj.toString())) {
+        if (StringUtils.isBlank(obj.toString())) {
             return defaultValue(clazz);
         }
         if (clazz.isInstance(obj) || clazz.isAssignableFrom(obj.getClass())) {

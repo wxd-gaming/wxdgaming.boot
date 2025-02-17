@@ -2,7 +2,7 @@ package wxdgaming.boot.core.append;
 
 
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -98,8 +98,8 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * @return
      */
     public StreamWriter write(Object append, Charset charsetName) {
-        if (append == null || StringUtil.nullStr.equals(append)) {
-            write(StringUtil.nullBytes);
+        if (append == null || StringUtils.nullStr.equals(append)) {
+            write(StringUtils.nullBytes);
         } else if (append instanceof byte[]) {
             write((byte[]) append);
         } else {
@@ -155,7 +155,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * @return
      */
     public StreamWriter writeLeft(Object src, int len, char ch) {
-        write(StringUtil.padLeft(String.valueOf(src), len, ch));
+        write(StringUtils.padLeft(String.valueOf(src), len, ch));
         return this;
     }
 
@@ -168,7 +168,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * @return
      */
     public StreamWriter writeRight(Object src, int len, char ch) {
-        write(StringUtil.padRight(String.valueOf(src), len, ch));
+        write(StringUtils.padRight(String.valueOf(src), len, ch));
         return this;
     }
 
@@ -176,7 +176,7 @@ public class StreamWriter implements Closeable, AutoCloseable {
      * 增加换行符
      */
     public StreamWriter writeLn() {
-        write(StringUtil.LineBytes);
+        write(StringUtils.LineBytes);
         return this;
     }
 

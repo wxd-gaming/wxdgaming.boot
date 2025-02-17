@@ -6,7 +6,7 @@ import wxdgaming.boot.agent.system.ReflectContext;
 import wxdgaming.boot.batis.DataWrapper;
 import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.batis.struct.DbBean;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -155,10 +155,10 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
     protected void addReloadMsg(StringBuilder out, DM entityTable, DbBean<?, ?> dbBean) {
         if (out != null) {
             out
-                    .append("|").append(StringUtil.padRight(String.valueOf(dbBean.dbSize()), 10, ' ')).append("\t")
-                    .append("|").append(StringUtil.padRight(entityTable.getTableName(), 40, ' ')).append("\t")
-                    .append("|").append(StringUtil.padRight(entityTable.getEntityClass().getSimpleName(), 40, ' ')).append("\t")
-                    .append("|").append(StringUtil.padRight(entityTable.getTableComment(), 60, ' ')).append("\t")
+                    .append("|").append(StringUtils.padRight(String.valueOf(dbBean.dbSize()), 10, ' ')).append("\t")
+                    .append("|").append(StringUtils.padRight(entityTable.getTableName(), 40, ' ')).append("\t")
+                    .append("|").append(StringUtils.padRight(entityTable.getEntityClass().getSimpleName(), 40, ' ')).append("\t")
+                    .append("|").append(StringUtils.padRight(entityTable.getTableComment(), 60, ' ')).append("\t")
                     .append("\n");
         }
     }
@@ -170,10 +170,10 @@ public abstract class DataRepository<DM extends EntityTable, DW extends DataWrap
         }
 
         out
-                .append("|").append(StringUtil.padRight("读取数量", 10, ' ')).append("\t")
-                .append("|").append(StringUtil.padRight("映射表名", 40, ' ')).append("\t")
-                .append("|").append(StringUtil.padRight("映射类名", 40, ' ')).append("\t")
-                .append("|").append(StringUtil.padRight("映射备注", 60, ' ')).append("\t")
+                .append("|").append(StringUtils.padRight("读取数量", 10, ' ')).append("\t")
+                .append("|").append(StringUtils.padRight("映射表名", 40, ' ')).append("\t")
+                .append("|").append(StringUtils.padRight("映射类名", 40, ' ')).append("\t")
+                .append("|").append(StringUtils.padRight("映射备注", 60, ' ')).append("\t")
                 .append("\n");
 
         if (type == 2) {

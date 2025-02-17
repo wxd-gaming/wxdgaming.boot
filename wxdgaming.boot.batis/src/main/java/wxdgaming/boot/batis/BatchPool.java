@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.collection.ConvertCollection;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
@@ -84,7 +84,7 @@ public abstract class BatchPool implements AutoCloseable {
         if (threads.length >= 1) {
             /*批量入库的时候根据主键hash数据*/
             final Object fieldValue = entityTable.getDataColumnKey().getFieldValue(obj);
-            index = StringUtil.hashIndex(fieldValue, true, threads.length);
+            index = StringUtils.hashIndex(fieldValue, true, threads.length);
         }
         Map<EntityField, Object> map = dataBuilder().toDbMap(obj);
         return new DataBuilder(index, tableName, obj, entityTable, map);

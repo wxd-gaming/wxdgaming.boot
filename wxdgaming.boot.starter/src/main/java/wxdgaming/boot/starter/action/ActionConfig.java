@@ -8,7 +8,7 @@ import wxdgaming.boot.agent.io.FileWriteUtil;
 import wxdgaming.boot.agent.lang.Record2;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.zip.GzipUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.str.xml.XmlUtil;
 import wxdgaming.boot.starter.config.Config;
@@ -36,7 +36,7 @@ public class ActionConfig {
         if (config != null) {
             /*配置文件路径*/
             String configPath = config.value();
-            if (StringUtil.emptyOrNull(configPath)) {
+            if (StringUtils.isBlank(configPath)) {
                 configPath = aClass.getSimpleName().toLowerCase() + "." + config.configType().name().toLowerCase();
             }
 
@@ -91,7 +91,7 @@ public class ActionConfig {
         Config config = AnnUtil.ann(object.getClass(), Config.class);
         /*配置文件路径*/
         String configPath = config.value();
-        if (StringUtil.emptyOrNull(configPath)) {
+        if (StringUtils.isBlank(configPath)) {
             configPath = "config/" + object.getClass().getSimpleName().toLowerCase() + "." + config.configType().name().toLowerCase();
         }
         switch (config.configType()) {

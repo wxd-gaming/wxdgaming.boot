@@ -2,7 +2,7 @@ package wxdgaming.boot.batis.struct;
 
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.EntityTable;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 /**
  * @author: wxd-gaming(無心道, 15388152619)
@@ -24,10 +24,10 @@ public interface DbIndex {
         } else if (fieldValue instanceof Long) {
             hashcode = (Long) fieldValue;
         } else {
-            hashcode = StringUtil.hashcode(fieldValue.toString(), true);
+            hashcode = StringUtils.hashcode(fieldValue.toString(), true);
         }
         /*采用双重冗余 hash 捅 分配数据 插槽 3.8 这个因子不能改*/
-        int index = StringUtil.hashIndex(hashcode, splitNumber);
+        int index = StringUtils.hashIndex(hashcode, splitNumber);
         return index;
     }
 

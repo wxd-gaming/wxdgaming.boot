@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.system;
 
 
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -160,7 +160,7 @@ public class JvmUtil {
      * 采用 GMT时区设置
      */
     public final static TimeZone setTimeZone(String zoneId) {
-        if (StringUtil.emptyOrNull(zoneId)) {
+        if (StringUtils.isBlank(zoneId)) {
             throw new RuntimeException("zoneId = " + zoneId);
         }
         TimeZone timeZone = TimeZone.getTimeZone(zoneId);

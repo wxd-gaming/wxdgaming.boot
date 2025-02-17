@@ -1,7 +1,7 @@
 package wxdgaming.boot.batis.save;
 
 
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 
 import java.util.Map;
@@ -44,7 +44,7 @@ public interface CheckSaveCode {
      * @return
      */
     default boolean checkSaveCode(String key, String saveStr) {
-        return checkSaveCode(key, StringUtil.hashcode(saveStr));
+        return checkSaveCode(key, StringUtils.hashcode(saveStr));
     }
 
 

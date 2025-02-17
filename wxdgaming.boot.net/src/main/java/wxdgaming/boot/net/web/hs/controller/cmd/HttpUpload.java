@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.controller.ann.TextMapping;
 import wxdgaming.boot.net.web.hs.HttpSession;
@@ -33,7 +33,7 @@ public interface HttpUpload {
         String fileDir = httpSession.reqParam("filedir");
 
         String dirPath = null;
-        if (StringUtil.emptyOrNull(fileDir)) {
+        if (StringUtils.isBlank(fileDir)) {
             dirPath = FileUtil.getCanonicalPath(new File("upload"));
         } else {
             dirPath = FileUtil.getCanonicalPath(new File(fileDir));

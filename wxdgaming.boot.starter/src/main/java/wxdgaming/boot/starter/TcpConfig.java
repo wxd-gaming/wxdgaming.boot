@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.simpleframework.xml.Element;
 import wxdgaming.boot.core.lang.ObjectBase;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.http.ssl.SslContextServer;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
 
@@ -51,7 +51,7 @@ public class TcpConfig extends ObjectBase implements Serializable {
     private String serviceClassName = null;
 
     public SslProtocolType sslProtocolType() throws Exception {
-        if (StringUtil.notEmptyOrNull(sslProtocolType)) {
+        if (StringUtils.isNotBlank(sslProtocolType)) {
             return SslProtocolType.of(sslProtocolType);
         }
         return SslProtocolType.TLSV12;

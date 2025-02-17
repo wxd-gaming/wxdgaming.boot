@@ -10,7 +10,7 @@ import wxdgaming.boot.agent.function.*;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.MethodUtil;
 import wxdgaming.boot.core.ann.Sort;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.starter.config.Config;
 
 import java.lang.reflect.Method;
@@ -198,7 +198,7 @@ public interface ContextAction {
                                 }
                                 Method method1 = null;
                                 Method method2 = null;
-                                if (StringUtil.notEmptyOrNull(methodName)) {
+                                if (StringUtils.isNotBlank(methodName)) {
                                     method1 = MethodUtil.findMethod(o1.getClass(), methodName);
                                     method2 = MethodUtil.findMethod(o2.getClass(), methodName);
                                 }

@@ -25,7 +25,7 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.struct.DataChecked;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.timer.MyClock;
 
@@ -119,7 +119,7 @@ public class MongoDataHelper extends DataHelper<MongoEntityTable, MongoDataWrapp
         clientSession.close();
         mongoDatabase = mongoClient.getDatabase(dbConfig.getDbBase());
 
-        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+        if (StringUtils.isNotBlank(getDbConfig().getScanPackage())) {
             checkDataBase(getDbConfig().getScanPackage());
         }
 

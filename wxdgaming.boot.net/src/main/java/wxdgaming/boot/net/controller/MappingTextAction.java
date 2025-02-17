@@ -2,7 +2,7 @@ package wxdgaming.boot.net.controller;
 
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.agent.system.MethodUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.NioBase;
 import wxdgaming.boot.net.controller.ann.TextController;
 import wxdgaming.boot.net.controller.ann.TextMapping;
@@ -42,7 +42,7 @@ public class MappingTextAction {
      */
     public static void bindCmd(Class<? extends NioBase> service, String parentUrl, Object instance, Collection<Method> methodList) {
         String url = parentUrl;
-        if (StringUtil.emptyOrNull(url)) {
+        if (StringUtils.isBlank(url)) {
             url = instance.getClass().getSimpleName().toLowerCase();
             if (url.endsWith("controller")) {
                 url = url.replace("controller", "");
@@ -70,7 +70,7 @@ public class MappingTextAction {
             TextMapping mapping = AnnUtil.ann(method, TextMapping.class);
             if (mapping != null) {
                 String cmdUrl = url;
-                if (StringUtil.notEmptyOrNull(mapping.basePath())) {
+                if (StringUtils.isNotBlank(mapping.basePath())) {
                     cmdUrl = mapping.basePath();
                 }
 
@@ -84,7 +84,7 @@ public class MappingTextAction {
 
                 String mappingName = mapping.path();
 
-                if (StringUtil.emptyOrNull(mappingName)) {
+                if (StringUtils.isBlank(mappingName)) {
                     cmdUrl += method.getName().toLowerCase().trim();
                 } else {
                     cmdUrl += mappingName.toLowerCase().trim();
@@ -92,7 +92,7 @@ public class MappingTextAction {
                 cmdUrl = "/" + cmdUrl;
 
                 String remarks = mapping.remarks();
-                if (StringUtil.emptyOrNull(remarks)) {
+                if (StringUtils.isBlank(remarks)) {
                     remarks = cmdUrl;
                 }
 

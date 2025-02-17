@@ -4,7 +4,7 @@ import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.util.JsonFormat;
 import wxdgaming.boot.agent.exception.Throw;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 /**
  * protobuf 消息协议序列化
@@ -20,7 +20,7 @@ public class ProtobufSerializer {
         try {
             stringBuilder.setLength(0);
             JsonFormat.printer().sortingMapKeys().appendTo(object, stringBuilder);
-            return StringUtil.filterLine(stringBuilder.toString());
+            return StringUtils.filterLine(stringBuilder.toString());
         } catch (Exception e) {
             throw Throw.of(e);
         }

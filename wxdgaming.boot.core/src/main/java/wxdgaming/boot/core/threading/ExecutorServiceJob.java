@@ -2,7 +2,7 @@ package wxdgaming.boot.core.threading;
 
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +33,7 @@ class ExecutorServiceJob implements Runnable, Job {
         if (task instanceof Event event) {
             this.runName = event.getTaskInfoString();
         }
-        if (StringUtil.emptyOrNull(runName)) {
+        if (StringUtils.isBlank(runName)) {
             StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stackTrace + 1];
             this.runName = stackTraceElement.getClassName()
                     + "." + stackTraceElement.getMethodName()
@@ -117,7 +117,7 @@ class ExecutorServiceJob implements Runnable, Job {
             if (v > logTime) {
 
                 String msg = "执行：" + runName + ", 耗时：" + v + " ms, 创建到执行完成：" + v2 + " ms, 主队列剩余：" + iExecutorServices.queueSize();
-                if (StringUtil.notEmptyOrNull(queueName)) {
+                if (StringUtils.isNotBlank(queueName)) {
                     msg = "子队列：" + queueName + ", 剩余" + iExecutorServices.getExecutorQueueMap().get(queueName).size() + "; " + msg;
                 }
 
@@ -143,7 +143,7 @@ class ExecutorServiceJob implements Runnable, Job {
     }
 
     @Override public boolean cancel() {
-        if (StringUtil.notEmptyOrNull(queueName)) {
+        if (StringUtils.isNotBlank(queueName)) {
             return iExecutorServices.getExecutorQueueMap().computeIfAbsent(queueName, k -> new ExecutorQueue(iExecutorServices, k)).remove(this);
         } else {
             return iExecutorServices.threadPoolQueue().remove(this);

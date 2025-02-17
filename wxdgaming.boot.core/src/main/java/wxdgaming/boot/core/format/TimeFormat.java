@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.core.lang.ConvertUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.Serializable;
 
@@ -94,7 +94,7 @@ public class TimeFormat implements Serializable {
         if (formatInfo != FormatInfo.MS) {
             obj = ConvertUtil.float2(allTime / 100 / formatInfo.getCode());
         }
-        stringBuilder.append(StringUtil.padLeft(obj, 12, ' ')).append(" ").append(formatInfo.getComment());
+        stringBuilder.append(StringUtils.padLeft(obj, 12, ' ')).append(" ").append(formatInfo.getComment());
     }
 
     public void toString(FormatInfo formatInfo, StringBuilder stringBuilder) {

@@ -15,7 +15,7 @@ import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.field.ClassMapping;
 import wxdgaming.boot.core.field.ClassWrapper;
 import wxdgaming.boot.core.lang.ConvertUtil;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.MarkTimer;
@@ -111,11 +111,11 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
             Sheet sheet = workbook.getSheetAt(i);
             String sheetName = sheet.getSheetName().trim().toLowerCase();
 
-            if (StringUtil.emptyOrNull(sheetName)
-                    || sheetName.startsWith("sheet")
-                    || sheetName.contains("@")
-                    || sheetName.contains("$")
-                    || !sheetName.startsWith("q_")) {
+            if (StringUtils.isBlank(sheetName)
+                || sheetName.startsWith("sheet")
+                || sheetName.contains("@")
+                || sheetName.contains("$")
+                || !sheetName.startsWith("q_")) {
                 log.debug("Excel文件不能解析：{}, sheetName={} - 需要是 q_ 开头 sheet name 才能解析", excelFile, sheetName);
                 continue;
             }
@@ -202,14 +202,14 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
         String cellName = getCellString(cellDataName, true);
         String cellExtend = getCellString(cellDataExtend, false);
 
-        if (StringUtil.emptyOrNull(cellName)
-                || StringUtil.emptyOrNull(cellType)
-                || "no".equalsIgnoreCase(cellExtend)) {
+        if (StringUtils.isBlank(cellName)
+            || StringUtils.isBlank(cellType)
+            || "no".equalsIgnoreCase(cellExtend)) {
             return;
         }
 
-        if (StringUtil.notEmptyOrNull(cellExtend) && !"all".equalsIgnoreCase(cellExtend)) {
-            if (StringUtil.notEmptyOrNull(haveExtend) && !haveExtend.equalsIgnoreCase(cellExtend)) {
+        if (StringUtils.isNotBlank(cellExtend) && !"all".equalsIgnoreCase(cellExtend)) {
+            if (StringUtils.isNotBlank(haveExtend) && !haveExtend.equalsIgnoreCase(cellExtend)) {
                 return;
             }
         }
@@ -265,7 +265,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
             Sheet sheet = workbook.getSheetAt(i);
             String sheetName = sheet.getSheetName().trim().toLowerCase();
 
-            if (StringUtil.emptyOrNull(sheetName)) {
+            if (StringUtils.isBlank(sheetName)) {
                 continue;
             }
 
@@ -293,7 +293,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                 boolean nullRow = true;
                 for (int c = 0; c < lastCellNum; c++) {
                     Cell rowCellData = row.getCell(c);
-                    if (StringUtil.notEmptyOrNull(getCellString(rowCellData, false))) {
+                    if (StringUtils.isNotBlank(getCellString(rowCellData, false))) {
                         nullRow = false;
                     }
                 }
@@ -308,8 +308,8 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                     /*数据映射名字*/
                     String cellName = getCellString(rowDataName.getCell(c), true);
 
-                    if (StringUtil.emptyOrNull(cellType)
-                            || StringUtil.emptyOrNull(cellName)) {
+                    if (StringUtils.isBlank(cellType)
+                        || StringUtils.isBlank(cellName)) {
                         /*忽略字段*/
                         continue;
                     }
@@ -330,7 +330,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                     rowMap.put(column, value);
                     if (value != null) {
                         final String valueOf = String.valueOf(value);
-                        if (!"0".equalsIgnoreCase(valueOf) && StringUtil.notEmptyOrNull(valueOf))
+                        if (!"0".equalsIgnoreCase(valueOf) && StringUtils.isNotBlank(valueOf))
                             checkAllCellNull = false;
                     }
                 }
@@ -703,7 +703,7 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
     }
 
     boolean notNullOrEmpty(String source) {
-        if (StringUtil.notEmptyOrNull(source)) {
+        if (StringUtils.isNotBlank(source)) {
             if (!"#null".equalsIgnoreCase(source)) {
                 return true;
             }
@@ -728,15 +728,15 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
                 /*字符类型*/
                 trim = data.getStringCellValue().trim();
             }
-            if (StringUtil.emptyOrNull(trim)) {
+            if (StringUtils.isBlank(trim)) {
                 trim = data.toString().trim();
             }
         }
-        if (StringUtil.notEmptyOrNull(trim)) {
+        if (StringUtils.isNotBlank(trim)) {
             trim = trim.replace("class", "clazz")
                     .replace("-", "_");
             if (isColumnName) {
-                trim = StringUtil.lowerFirst(trim);
+                trim = StringUtils.lowerFirst(trim);
             }
         }
         return trim.trim();
@@ -820,8 +820,8 @@ public abstract class ExcelRead<DM extends EntityTable, DW extends DataWrapper<D
         for (EntityField field : entityTable.getColumnMap().values()) {
             ClassMapping wrapper = ClassWrapper.wrapper(field.getClass());
             Map<String, Object> column = wrapper.toMap(field);
-            column.put("fieldNameLower", StringUtil.lowerFirst(field.getFieldName()));
-            column.put("fieldNameUpper", StringUtil.upperFirst(field.getFieldName()));
+            column.put("fieldNameLower", StringUtils.lowerFirst(field.getFieldName()));
+            column.put("fieldNameUpper", StringUtils.upperFirst(field.getFieldName()));
             columns.add(column);
         }
         parse.put("columns", columns);

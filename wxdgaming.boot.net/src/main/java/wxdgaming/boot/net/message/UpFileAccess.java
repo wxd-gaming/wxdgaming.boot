@@ -9,7 +9,7 @@ import wxdgaming.boot.agent.io.FileReadUtil;
 import wxdgaming.boot.agent.io.FileUtil;
 import wxdgaming.boot.agent.io.FileWriteUtil;
 import wxdgaming.boot.core.collection.MapOf;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.timer.MyClock;
@@ -58,7 +58,7 @@ public class UpFileAccess implements Serializable {
         }
 
         UpFileAccess upFileAccess = new UpFileAccess();
-        upFileAccess.fileId = StringUtil.hashcode(file.getPath());
+        upFileAccess.fileId = StringUtils.hashcode(file.getPath());
         upFileAccess.filePath = file.getPath();
         upFileAccess.jsonObject = MapOf.newJSONObject();
         upFileAccess.jsonObject.put(FileDir, upFileDir);
@@ -79,7 +79,7 @@ public class UpFileAccess implements Serializable {
 
         String fileDir = fileAccess.jsonObject.getString(FileDir);
         String upLoadPath;
-        if (StringUtil.emptyOrNull(fileDir)) {
+        if (StringUtils.isBlank(fileDir)) {
             upLoadPath = FileUtil.getCanonicalPath(new File("upload"));
         } else {
             upLoadPath = FileUtil.getCanonicalPath(new File(fileDir));

@@ -7,7 +7,7 @@ import wxdgaming.boot.batis.DbConfig;
 import wxdgaming.boot.batis.sql.SqlDataHelper;
 import wxdgaming.boot.batis.sql.SqlDataWrapper;
 import wxdgaming.boot.batis.sql.SqlEntityTable;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.sql.Connection;
 
@@ -54,7 +54,7 @@ public class MysqlDataHelper extends SqlDataHelper<SqlEntityTable, SqlDataWrappe
         if (getDbConfig().isCreateDbBase()) {
             createDatabase();
         }
-        if (StringUtil.notEmptyOrNull(getDbConfig().getScanPackage())) {
+        if (StringUtils.isNotBlank(getDbConfig().getScanPackage())) {
             checkDataBase(getDbConfig().getScanPackage());
         }
         if (dbConfig.isConnectionPool()) {

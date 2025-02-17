@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.collection.concurrent.ConcurrentHashSet;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.JvmUtil;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
@@ -197,7 +197,7 @@ public abstract class NioServer<S extends Session> extends NioBase implements Ru
 
     public boolean checkIPFilter(String ip) {
         try {
-            if (StringUtil.emptyOrNull(ip)) {
+            if (StringUtils.isBlank(ip)) {
                 log.warn("ip地址欺诈：：：" + ip);
                 return false;
             }

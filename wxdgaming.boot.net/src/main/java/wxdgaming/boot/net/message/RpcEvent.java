@@ -9,7 +9,7 @@ import wxdgaming.boot.core.format.UniqueID;
 import wxdgaming.boot.core.lang.Cache;
 import wxdgaming.boot.core.lang.RunResult;
 import wxdgaming.boot.core.publisher.Mono;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.system.MarkTimer;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.Executors;
@@ -154,7 +154,7 @@ public class RpcEvent {
             } catch (InterruptedException e) {
                 throw Throw.of(e);
             }
-            if (StringUtil.emptyOrNull(this.resJson)) {
+            if (StringUtils.isBlank(this.resJson)) {
                 throw new RuntimeException("get time out");
             }
         }

@@ -6,7 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import wxdgaming.boot.agent.zip.GzipUtil;
 import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.net.http.HttpHeadNameType;
 
 import java.nio.charset.Charset;
@@ -68,7 +68,7 @@ public final class Response<H extends HttpBase> {
     }
 
     public String bodyUnicodeDecodeString() {
-        return StringUtil.unicodeDecode(bodyString());
+        return StringUtils.unicodeDecode(bodyString());
     }
 
     public Response<H> logDebug() {

@@ -8,7 +8,7 @@ import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.agent.system.AnnUtil;
 import wxdgaming.boot.assist.JavaAssistBox;
 import wxdgaming.boot.core.ann.Sort;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.threading.Event;
 import wxdgaming.boot.core.threading.ThreadInfo;
 import wxdgaming.boot.core.timer.ann.Scheduled;
@@ -74,7 +74,7 @@ public class ScheduledInfo extends Event implements Comparable<ScheduledInfo> {
         javaAssist.getCtClass().defrost();
         javaAssist.getCtClass().detach();
 
-        if (StringUtil.notEmptyOrNull(scheduled.name())) {
+        if (StringUtils.isNotBlank(scheduled.name())) {
             this.name = "[scheduled-job]" + scheduled.name();
         } else {
             this.name = "[scheduled-job]" + instance.getClass().getName() + "." + method.getName();

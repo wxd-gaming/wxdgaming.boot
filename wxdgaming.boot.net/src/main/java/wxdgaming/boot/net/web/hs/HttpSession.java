@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.core.collection.MapOf;
 import wxdgaming.boot.core.lang.RunResult;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 import wxdgaming.boot.core.str.json.FastJsonUtil;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.timer.MyClock;
@@ -277,7 +277,7 @@ public class HttpSession extends Session implements Serializable {
             }
         }
 
-        if (StringUtil.emptyOrNull(uriPathString) || "/".equalsIgnoreCase(uriPathString)) {
+        if (StringUtils.isBlank(uriPathString) || "/".equalsIgnoreCase(uriPathString)) {
             uriPathString = "/index.html";
         }
 
@@ -363,7 +363,7 @@ public class HttpSession extends Session implements Serializable {
                     if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
                         Attribute attribute = (Attribute) data;
                         String get = this.getReqParams().getString(data.getName());
-                        if (StringUtil.notEmptyOrNull(get)) {
+                        if (StringUtils.isNotBlank(get)) {
                             get = get + "," + attribute.getValue();
                         } else {
                             get = attribute.getValue();
@@ -390,7 +390,7 @@ public class HttpSession extends Session implements Serializable {
             this.reqContent = new String(this.reqContentByteBuf, StandardCharsets.UTF_8);
             this.reqContent = URLDecoder.decode(this.reqContent, StandardCharsets.UTF_8);
             if (this.reqContentType.contains("json")) {
-                if (StringUtil.notEmptyOrNull(this.reqContent)) {
+                if (StringUtils.isNotBlank(this.reqContent)) {
                     final JSONObject jsonObject = FastJsonUtil.parse(this.reqContent);
                     if (jsonObject != null && !jsonObject.isEmpty()) {
                         this.getReqParams().putAll(jsonObject);

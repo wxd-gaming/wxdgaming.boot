@@ -5,7 +5,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.*;
 import io.netty.util.AsciiString;
 import lombok.extern.slf4j.Slf4j;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -63,8 +63,8 @@ public class CookiePack implements Serializable {
         return cookies.stream()
                 .filter(v -> Objects.equals(v.name(), cookieKey))
                 .filter(v -> {
-                    if (StringUtil.emptyOrNull(v.path())) return true;
-                    if (StringUtil.emptyOrNull(cookiePath)) return true;
+                    if (StringUtils.isBlank(v.path())) return true;
+                    if (StringUtils.isBlank(cookiePath)) return true;
                     return Objects.equals(v.path(), cookiePath);
                 })
                 .findFirst()
@@ -178,7 +178,7 @@ public class CookiePack implements Serializable {
      */
     public CookiePack clientCookie(HttpHeaders httpHeaders) {
         final String clientCookieString = clientCookieString();
-        if (StringUtil.notEmptyOrNull(clientCookieString)) {
+        if (StringUtils.isNotBlank(clientCookieString)) {
             httpHeaders.set(HttpHeaderNames.COOKIE, clientCookieString);
         }
         return this;

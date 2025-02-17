@@ -7,7 +7,7 @@ import wxdgaming.boot.core.str.TemplatePack;
 import wxdgaming.boot.batis.EntityField;
 import wxdgaming.boot.batis.EntityTable;
 import wxdgaming.boot.core.append.StreamWriter;
-import wxdgaming.boot.core.str.StringUtil;
+import wxdgaming.boot.core.str.StringUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -95,7 +95,7 @@ public class CreateCSharpCode implements Serializable, ICreateCode {
             streamWriter.write(fieldTypeString);
 
             streamWriter
-                    .write(" ").write(StringUtil.upperFirst(column.getFieldName())).write(" { get; set; }").writeLn();
+                    .write(" ").write(StringUtils.upperFirst(column.getFieldName())).write(" { get; set; }").writeLn();
         }
 
         streamWriter
@@ -132,7 +132,7 @@ public class CreateCSharpCode implements Serializable, ICreateCode {
     protected byte[] createCodeFactory(EntityTable entityTable, String packageName) {
         StreamWriter streamWriter = new StreamWriter();
         final EntityField dataColumnKey = entityTable.getDataColumnKey();
-        final String keyFieldName = StringUtil.upperFirst(dataColumnKey.getFieldName());
+        final String keyFieldName = StringUtils.upperFirst(dataColumnKey.getFieldName());
         final String KeyFieldTypeString = dataColumnKey.getFieldTypeString();
         streamWriter
                 .write("using System;\n")
