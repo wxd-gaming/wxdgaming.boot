@@ -5,6 +5,7 @@ import javassist.CtClass;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,11 +23,9 @@ public class AssistClassTransform implements ClassFileTransformer {
     private final JavaAssistBox javaAssistBox = JavaAssistBox.of();
 
     public AssistClassTransform(String filterPackage) {
-        if (filterPackage != null && !filterPackage.isEmpty() && !filterPackage.isBlank()) {
+        if (filterPackage != null && !filterPackage.isBlank()) {
             String[] split = filterPackage.split("\\|");
-            for (String string : split) {
-                Filter_PACKAGE.add(string);
-            }
+            Filter_PACKAGE.addAll(Arrays.asList(split));
         }
     }
 
