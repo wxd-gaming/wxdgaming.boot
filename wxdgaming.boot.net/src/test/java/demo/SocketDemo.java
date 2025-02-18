@@ -36,8 +36,8 @@ public class SocketDemo {
     public void test() throws InterruptedException {
         WebSocketClient<WebSession> socketClient = new WebSocketClient<>()
                 .setHost("127.0.0.1")
-                .setPort(18001)
-                .setUrlSuffix("websocket")
+                .setPort(8080)
+                .setUrlSuffix("ws")
                 .setOnOpen(webSession -> {
                     webSession.writeAndFlush("ws test");
                     webSession.writeBytes("ws test bytes".getBytes(StandardCharsets.UTF_8), true);
@@ -50,14 +50,14 @@ public class SocketDemo {
 
         new Thread(() -> {
             SocketDemo socketDemo = new SocketDemo();
-            socketDemo.bind(10001);
+            socketDemo.bind(11001);
         }).start();
 
         Thread.sleep(3000);
         {
             WebSocketClient<WebSession> socketClient = new WebSocketClient<>()
                     .setHost("127.0.0.1")
-                    .setPort(18001)
+                    .setPort(11001)
                     .setUrlSuffix("ws")
                     .setOnOpen(webSession -> {
                         webSession.writeAndFlush("ws test");
@@ -65,15 +65,15 @@ public class SocketDemo {
                     });
             socketClient.connect();
         }
-        {
-            TcpClient<TcpSession> tcpClient = new TcpClient<>().setHost("127.0.0.1").setPort(10001);
-            tcpClient.setOnOpen(tcpSession -> {
-                ByteBuf byteBuf = ByteBufUtil.pooledByteBuf(64);
-                byteBuf.writeBytes("tcp test".getBytes(StandardCharsets.UTF_8));
-                tcpSession.write0(byteBuf, true);
-            });
-            tcpClient.connect();
-        }
+        // {
+        //     TcpClient<TcpSession> tcpClient = new TcpClient<>().setHost("127.0.0.1").setPort(11001);
+        //     tcpClient.setOnOpen(tcpSession -> {
+        //         ByteBuf byteBuf = ByteBufUtil.pooledByteBuf(64);
+        //         byteBuf.writeBytes("tcp test".getBytes(StandardCharsets.UTF_8));
+        //         tcpSession.write0(byteBuf, true);
+        //     });
+        //     tcpClient.connect();
+        // }
     }
 
     //配置服务端线程组
