@@ -49,13 +49,13 @@
 
     <repositories>
         <repository>
-            <id>public</id>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <id>central</id>
+            <url>https://maven.aliyun.com/repository/central</url>
             <!--            <url>https://repo1.maven.org/maven2/</url>-->
         </repository>
         <repository>
-            <id>central</id>
-            <url>https://maven.aliyun.com/repository/central</url>
+            <id>public</id>
+            <url>https://maven.aliyun.com/repository/public</url>
             <!--            <url>https://repo1.maven.org/maven2/</url>-->
         </repository>
     </repositories>
@@ -113,12 +113,19 @@
             <dependency>
                 <groupId>org.graalvm.js</groupId>
                 <artifactId>js-scriptengine</artifactId>
-                <version>22.3.1</version>
+                <version>24.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.js</groupId>
+                <artifactId>js-community</artifactId>
+                <version>24.1.2</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.graalvm.js</groupId>
                 <artifactId>js</artifactId>
-                <version>22.3.1</version>
+                <version>24.1.2</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
