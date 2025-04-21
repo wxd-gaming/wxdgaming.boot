@@ -1,6 +1,7 @@
 package wxdgaming.boot.net.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import wxdgaming.boot.agent.GlobalUtil;
 import wxdgaming.boot.core.append.StreamWriter;
@@ -26,6 +27,7 @@ import java.util.function.Consumer;
  * @version: 2023-12-19 15:38
  **/
 @Slf4j
+@Getter
 public final class RpcListenerAction extends Event {
 
     private final TextMappingRecord mappingRecord;
