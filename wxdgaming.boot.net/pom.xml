@@ -56,7 +56,7 @@
             </extension>
         </extensions>
         <plugins>
-            <!--protobuf插件-->
+<!--            &lt;!&ndash;protobuf插件&ndash;&gt;-->
 <!--            <plugin>-->
 <!--                <groupId>org.xolstice.maven.plugins</groupId>-->
 <!--                <artifactId>protobuf-maven-plugin</artifactId>-->
@@ -73,7 +73,7 @@
 <!--                    &lt;!&ndash; proto文件放置的目录 &ndash;&gt;-->
 <!--                    <protoSourceRoot>src/main/proto</protoSourceRoot>-->
 <!--                    &lt;!&ndash; 生成文件的目录 &ndash;&gt;-->
-<!--                    <outputDirectory>src/main/java</outputDirectory>-->
+<!--                    <outputDirectory>src/test/java</outputDirectory>-->
 <!--                    &lt;!&ndash; 生成文件前是否把目标目录清空，这个最好设置为false，以免误删项目文件 &ndash;&gt;-->
 <!--                    <clearOutputDirectory>false</clearOutputDirectory>-->
 <!--                </configuration>-->

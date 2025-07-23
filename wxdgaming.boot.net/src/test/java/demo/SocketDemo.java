@@ -1,22 +1,17 @@
 package demo;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import wxdgaming.boot.core.system.BytesUnit;
 import wxdgaming.boot.core.system.JvmUtil;
+import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.http.ssl.SslContextServer;
 import wxdgaming.boot.net.http.ssl.SslProtocolType;
-import wxdgaming.boot.net.NioFactory;
 import wxdgaming.boot.net.ssl.WxOptionalSslHandler;
-import wxdgaming.boot.net.ts.TcpClient;
-import wxdgaming.boot.net.ts.TcpSession;
-import wxdgaming.boot.net.util.ByteBufUtil;
 import wxdgaming.boot.net.web.ws.WebSession;
 import wxdgaming.boot.net.web.ws.WebSocketClient;
 
@@ -32,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class SocketDemo {
 
-    @Test
     public void test() throws InterruptedException {
         WebSocketClient<WebSession> socketClient = new WebSocketClient<>()
                 .setHost("127.0.0.1")

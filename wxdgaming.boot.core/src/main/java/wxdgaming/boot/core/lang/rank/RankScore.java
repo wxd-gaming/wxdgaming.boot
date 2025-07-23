@@ -3,7 +3,6 @@ package wxdgaming.boot.core.lang.rank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.checkerframework.checker.units.qual.K;
 import wxdgaming.boot.core.lang.ObjectBaseLock;
 
 import java.util.Comparator;

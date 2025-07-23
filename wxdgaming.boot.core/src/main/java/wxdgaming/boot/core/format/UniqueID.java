@@ -1,8 +1,8 @@
 package wxdgaming.boot.core.format;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import wxdgaming.boot.core.lang.ObjectBase;
+import wxdgaming.boot.core.system.AssertUtil;
 import wxdgaming.boot.core.timer.MyClock;
 
 import java.util.UUID;
@@ -57,7 +57,7 @@ public final class UniqueID {
 
         public long next(long head) {
 
-            Preconditions.checkArgument(
+            AssertUtil.assertTrue(
                     1 <= head && head < Head_Max,
                     "1<= head <" + Head_Max
             );

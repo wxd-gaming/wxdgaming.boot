@@ -43,7 +43,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.compilerVersion>${java.version}</maven.compiler.compilerVersion>
-        <protobuf-java.version>3.23.4</protobuf-java.version>
+        <protobuf-java.version>4.31.1</protobuf-java.version>
         <kotlin.version>2.0.0</kotlin.version>
     </properties>
 
@@ -84,6 +84,12 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
+                <version>5.11.4</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
                 <version>5.11.4</version>
                 <scope>test</scope>
             </dependency>
@@ -207,11 +213,11 @@
                 <artifactId>javax.mail</artifactId>
                 <version>1.6.2</version>
             </dependency>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${protobuf-java.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.google.protobuf</groupId>-->
+<!--                <artifactId>protobuf-java</artifactId>-->
+<!--                <version>${protobuf-java.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java-util</artifactId>
@@ -369,12 +375,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

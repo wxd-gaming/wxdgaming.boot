@@ -1,7 +1,7 @@
 package wxdgaming.boot.core.lang.bit;
 
 
-import com.google.common.base.Preconditions;
+import wxdgaming.boot.core.system.AssertUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -117,14 +117,14 @@ public class BitUtil {
     }
 
     public static int leftShift(short v, int shift) {
-        Preconditions.checkArgument(shift > 0);
-        Preconditions.checkArgument(shift < 32);
+        AssertUtil.assertTrue(shift > 0);
+        AssertUtil.assertTrue(shift < 32);
         return v << shift;
     }
 
     public static int leftShift1(int shift) {
-        Preconditions.checkArgument(shift >= 0);
-        Preconditions.checkArgument(shift < 32);
+        AssertUtil.assertTrue(shift >= 0);
+        AssertUtil.assertTrue(shift < 32);
         return 1 << shift;
     }
 

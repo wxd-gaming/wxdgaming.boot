@@ -1,11 +1,12 @@
 package wxdgaming.boot.core.threading;
 
-import com.google.common.base.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import wxdgaming.boot.agent.exception.Throw;
 import wxdgaming.boot.core.publisher.Mono;
+
+import java.util.function.Supplier;
 
 /**
  * 自动重试类
